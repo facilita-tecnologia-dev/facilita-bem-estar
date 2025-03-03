@@ -23,7 +23,7 @@
                 </h1>
                 <p class="text-lg font-medium text-center text-teal-700">Nas últimas 2 semanas, com que frequência você foi incomodado por algum dos problemas abaixo?</p>
             </div>
-            <form action="{{ route('submit-test', 'depressao')}}" id="test-form" class="flex-1 overflow-auto w-full space-y-5" method="post">
+            <form action="{{ route('test.submit', 'depressao')}}" id="test-form" class="flex-1 overflow-auto w-full space-y-5" method="post">
                 @csrf
 
                 @foreach ($questions as $key => $question)
