@@ -7,13 +7,13 @@ class TestRepository
     protected $tests = [
         'ansiedade' => [
             'displayName' => 'Teste de Ansiedade',
-            'nextTest' => 'depressao',
+            'nextStep' => 'depressao',
             'numberOfQuestions' => 7,
             'handlerType' => 'anxiety'
         ],
         'depressao' => [
             'displayName' => 'Teste de Depressão',
-            'nextTest' => '',
+            'nextStep' => '',
             'numberOfQuestions' => 9,
             'handlerType' => 'depression'
         ],
@@ -31,7 +31,7 @@ class TestRepository
         return $this->tests;
     }
 
-    public function getNextTest(string $currentTest){
-        return $this->tests[$currentTest]['nextTest'] ?? null;
+    public function getNextStep(string $currentTest){
+        return $this->tests[$currentTest]['nextStep'] ?? null;
     }
 }

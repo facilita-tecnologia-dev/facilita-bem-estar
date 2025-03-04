@@ -20,6 +20,7 @@ class TestsController
             return back();
         }
 
+
         return view('tests.' . $test);
     }
 
@@ -41,8 +42,8 @@ class TestsController
 
         $result = $this->testService->processTest($test, $validatedData);
 
-        if(!empty($testInfo['nextTest'])){
-            return to_route('test', $testInfo['nextTest']);
+        if(!empty($testInfo['nextStep'])){
+            return to_route('test', $testInfo['nextStep']);
         }
 
         return back();

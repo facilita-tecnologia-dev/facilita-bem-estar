@@ -9,16 +9,18 @@ class AnxietyTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 15) {
-            $severity = 'severe';
+            $severity = 'alto';
         } elseif ($totalPoints >= 10) {
-            $severity = 'moderate';
+            $severity = 'médio';
         } elseif ($totalPoints >= 5) {
-            $severity = 'mild';
+            $severity = 'baixo';
         } else {
-            $severity = 'minimal';
+            $severity = 'mínimo';
         }
         
         return [
+            'answers' => $answers,
+            'totalPoints' => $totalPoints,
             'severity' => $severity,
             'recommendations' => $this->getRecommendations($severity)
         ];

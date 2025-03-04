@@ -5,10 +5,10 @@ namespace App\Handlers;
 interface TestHandlerInterface
 {
     /**
-     * Processa as respostas de um teste específico
      *
-     * @param array $answers As respostas do teste
-     * @return array Resultado processado do teste
+     *
+     * @param array $answers Test Answers
+     * @return array Test Result
      */
     public function process(array $answers): array;
 }

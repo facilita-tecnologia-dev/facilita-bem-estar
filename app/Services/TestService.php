@@ -39,14 +39,12 @@ class TestService
 
         $result = $handler->process($answers);
 
-        $totalPoints = collect($answers)->sum();
-
         // Armazena os resultados na sessão
-        session([$test . '_answers' => $answers]);
-        session([$test . '_total_points' => $totalPoints]);
+        session([$test . '_result' => $result]);
+        // session([$test . '_total_points' => $totalPoints]);
         
         // Adiciona a categoria ao resultado para referência futura
-        $result['total_points'] = $totalPoints;
+        // $result['total_points'] = $totalPoints;
         
         return $result;
     }
