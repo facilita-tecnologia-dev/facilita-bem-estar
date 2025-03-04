@@ -20,8 +20,9 @@ class TestsController
             return back();
         }
 
+        $testInfo = $this->testService->getTestInfo($test) ?? '';
 
-        return view('tests.' . $test);
+        return view('tests.' . $test, ['testInfo' => $testInfo]);
     }
 
     public function handleTestSubmitted(Request $request, $test){
@@ -42,19 +43,14 @@ class TestsController
 
         $result = $this->testService->processTest($test, $validatedData);
 
+        if($test === 'estresse'){
+            return to_route('results.dashboard');
+        }
+
         if(!empty($testInfo['nextStep'])){
             return to_route('test', $testInfo['nextStep']);
         }
 
         return back();
     }
-
-
-    // public function results()
-    // {
-    //     $results = $this->testService->getAllResults();
-    //     return view('tests.results', compact('results'));
-    // }
-
-  
 }

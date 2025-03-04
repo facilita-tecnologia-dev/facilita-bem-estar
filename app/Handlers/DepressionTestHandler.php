@@ -9,15 +9,20 @@ class DepressionTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 20) {
-            $severity = 'alto';
+            $severity = 'Grave';
+            $color = 'red';
         } elseif ($totalPoints >= 15) {
-            $severity = 'médio-alto';
+            $severity = 'Moderadamente grave';
+            $color = 'orange';
         } elseif ($totalPoints >= 10) {
-            $severity = 'medio';
+            $severity = 'Moderada';
+            $color = 'yellow';
         } elseif ($totalPoints >= 5) {
-            $severity = 'baixo';
+            $severity = 'Leve';
+            $color = 'blue';
         } else {
-            $severity = 'mínimo';
+            $severity = 'Mínima';
+            $color = 'green';
         }
         
         $suicidalThoughts = isset($answers[9]) && $answers[9] > 0;
@@ -27,6 +32,7 @@ class DepressionTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severity' => $severity,
             'suicidal_risk' => $suicidalThoughts,
+            'color' => $color,
             'recommendations' => $this->getRecommendations($severity, $suicidalThoughts)
         ];
     }
@@ -35,11 +41,11 @@ class DepressionTestHandler implements TestHandlerInterface
     {
 
         $baseRecommendations = [
-            'severe' => ['Consultar um profissional imediatamente'],
-            'moderately_severe' => ['Consultar um profissional logo'],
-            'moderate' => ['Consultar um profissional'],
-            'mild' => ['Considerar conversar com um profissional'],
-            'minimal' => ['Nenhuma medida recomendada']
+            'Grave' => ['Consultar um profissional imediatamente'],
+            'Moderadamente grave' => ['Consultar um profissional logo'],
+            'Moderada' => ['Consultar um profissional'],
+            'Leve' => ['Considerar conversar com um profissional'],
+            'Mínima' => ['Nenhuma medida recomendada']
         ];
         
         $recommendations = $baseRecommendations[$severity] ?? [];

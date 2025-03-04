@@ -2,23 +2,20 @@
 
 namespace App\Handlers;
 
-class AnxietyTestHandler implements TestHandlerInterface
+class BurnoutTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
         
-        if ($totalPoints >= 15) {
-            $severity = 'Grave';
+        if ($totalPoints >= 27) {
+            $severity = 'Zona de Risco - Alto Burnout';  
             $color = 'red';
-        } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
+        } elseif ($totalPoints >= 14) {
+            $severity = 'Zona de Alerta - Burnout Moderado';
             $color = 'yellow';
-        } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
         } else {
-            $severity = 'Mínima';
+            $severity = 'Zona de Bem-estar - Baixo Burnout';
             $color = 'green';
         }
         
@@ -34,10 +31,9 @@ class AnxietyTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severity): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            'Zona de Risco - Alto Burnout' => ['Necessidade urgente de intervenção'],
+            'Zona de Alerta - Burnout Moderado' => ['Recomenda-se atenção e estratégias de prevenção'],
+            'Zona de Bem-estar - Baixo Burnout' => ['Recursos pessoais bem gerenciados']
         ];
         
         return $recommendations[$severity] ?? [];

@@ -37,14 +37,13 @@ class TestService
 
         $handler = $this->handlerFactory->getHandler($test);
 
-        $result = $handler->process($answers);
+        $testInfo = $this->getTestInfo($test);
+        
+        $processedTest = $handler->process($answers);
+        $result = array_merge(['testName' => $testInfo['displayName']], $processedTest);
 
         // Armazena os resultados na sessão
         session([$test . '_result' => $result]);
-        // session([$test . '_total_points' => $totalPoints]);
-        
-        // Adiciona a categoria ao resultado para referência futura
-        // $result['total_points'] = $totalPoints;
         
         return $result;
     }

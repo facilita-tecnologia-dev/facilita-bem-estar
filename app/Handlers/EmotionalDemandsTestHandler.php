@@ -2,23 +2,20 @@
 
 namespace App\Handlers;
 
-class AnxietyTestHandler implements TestHandlerInterface
+class EmotionalDemandsTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
         
-        if ($totalPoints >= 15) {
-            $severity = 'Grave';
+        if ($totalPoints >= 33) {
+            $severity = 'Alta exigência emocional';
             $color = 'red';
-        } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
+        } elseif ($totalPoints >= 21) {
+            $severity = 'Média exigência emocional';
             $color = 'yellow';
-        } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
         } else {
-            $severity = 'Mínima';
+            $severity = 'Baixa exigência emocional';
             $color = 'green';
         }
         
@@ -34,10 +31,9 @@ class AnxietyTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severity): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            'Alta exigência emocional' => ['Grande necessidade de controle e supressão emocional'],
+            'Média exigência emocional' => ['Necessidade intermediária de regulação emocional'],
+            'Baixa exigência emocional' => ['Baixa necessidade de controle emocional',],
         ];
         
         return $recommendations[$severity] ?? [];

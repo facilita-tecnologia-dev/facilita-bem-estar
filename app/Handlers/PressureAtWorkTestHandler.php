@@ -2,23 +2,20 @@
 
 namespace App\Handlers;
 
-class AnxietyTestHandler implements TestHandlerInterface
+class PressureAtWorkTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
         
-        if ($totalPoints >= 15) {
-            $severity = 'Grave';
+        if ($totalPoints >= 29) {
+            $severity = 'Alta Pressão';
             $color = 'red';
-        } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
+        } elseif ($totalPoints >= 17) {
+            $severity = 'Pressão Moderada';
             $color = 'yellow';
-        } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
         } else {
-            $severity = 'Mínima';
+            $severity = 'Baixa Pressão';
             $color = 'green';
         }
         
@@ -34,10 +31,9 @@ class AnxietyTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severity): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            'Alta Pressão' => ['Buscar suporte organizacional'],
+            'Pressão Moderada' => ['Implementar gestão de tempo'],
+            'Baixa Pressão' => ['Implementar gestão de tempo'],
         ];
         
         return $recommendations[$severity] ?? [];

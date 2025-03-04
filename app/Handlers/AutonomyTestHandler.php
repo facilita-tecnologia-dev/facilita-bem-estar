@@ -2,24 +2,21 @@
 
 namespace App\Handlers;
 
-class AnxietyTestHandler implements TestHandlerInterface
+class AutonomyTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
         
-        if ($totalPoints >= 15) {
-            $severity = 'Grave';
-            $color = 'red';
-        } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
-            $color = 'yellow';
-        } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
-        } else {
-            $severity = 'Mínima';
+        if ($totalPoints >= 29) {
+            $severity = 'Alta Autonomia';
             $color = 'green';
+        } elseif ($totalPoints >= 10) {
+            $severity = 'Autonomia Moderada';
+            $color = 'yellow';
+        } else {
+            $severity = 'Baixa Autonomia';
+            $color = 'red';
         }
         
         return [
@@ -34,10 +31,9 @@ class AnxietyTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severity): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            'Alta Autonomia' => ['Capacidade de autogestão significativa'],
+            'Autonomia Moderada' => ['Necessidade de melhorias na flexibilidade'],
+            'Baixa Autonomia' => ['Indica pouca liberdade e flexibilidade no trabalho'],
         ];
         
         return $recommendations[$severity] ?? [];

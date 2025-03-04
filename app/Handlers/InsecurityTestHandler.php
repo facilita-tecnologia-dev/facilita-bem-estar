@@ -2,24 +2,21 @@
 
 namespace App\Handlers;
 
-class AnxietyTestHandler implements TestHandlerInterface
+class InsecurityTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
         
-        if ($totalPoints >= 15) {
-            $severity = 'Grave';
+        if ($totalPoints >= 33) {
+            $severity = 'Alta Insegurança';
             $color = 'red';
-        } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
+        } elseif ($totalPoints >= 21) {
+            $severity = 'Insegurança Moderada';
             $color = 'yellow';
-        } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
         } else {
-            $severity = 'Mínima';
-            $color = 'green';
+            $severity = 'Baixa Insegurança';
+            $color = 'red';
         }
         
         return [
@@ -34,10 +31,9 @@ class AnxietyTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severity): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            'Alta Insegurança' => ['Nível alto de insegurança'],
+            'Insegurança Moderada' => ['Nível médio de insegurança'],
+            'Baixa Insegurança' => ['Nível baixo de insegurança'],
         ];
         
         return $recommendations[$severity] ?? [];

@@ -2,23 +2,20 @@
 
 namespace App\Handlers;
 
-class AnxietyTestHandler implements TestHandlerInterface
+class StressTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
         
-        if ($totalPoints >= 15) {
-            $severity = 'Grave';
+        if ($totalPoints >= 27) {
+            $severity = 'Alto Estresse';
             $color = 'red';
-        } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
-            $color = 'yellow';
-        } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
+        } elseif ($totalPoints >= 14) {
+            $severity = 'Estresse Moderado';
+             $color = 'yellow';
         } else {
-            $severity = 'Mínima';
+            $severity = 'Baixo Estresse';
             $color = 'green';
         }
         
@@ -34,10 +31,9 @@ class AnxietyTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severity): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            'Alto Estresse' => ['Indica possível necessidade de intervenção ou estratégias de gestão de estresse'],
+            'Estresse Moderado' => ['Indica algumas dificuldades no manejo de situações estressantes'],
+            'Baixo Estresse' => ['Sugere boa capacidade de gerenciamento de situações estressantes']
         ];
         
         return $recommendations[$severity] ?? [];
