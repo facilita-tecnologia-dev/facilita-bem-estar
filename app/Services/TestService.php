@@ -42,28 +42,11 @@ class TestService
         $processedTest = $handler->process($answers);
         $result = array_merge(['testName' => $testInfo['displayName']], $processedTest);
 
+        // dd('processed test', $processedTest, 'result', $result);
+
         // Armazena os resultados na sessão
         session([$test . '_result' => $result]);
         
         return $result;
     }
-
-    // public function getAllResults(): array
-    // {
-    //     $results = [];
-    //     $tests = $this->testRepository->getAllTests();
-        
-    //     foreach ($tests as $testName => $testInfo) {
-    //         if (session()->has($testName . '_total_points')) {
-    //             $results[$testName] = [
-    //                 'name' => $testName,
-    //                 'display_name' => $testInfo['displayName'],
-    //                 'total_points' => session($testName . '_total_points'),
-    //                 'answers' => session($testName . '_answers'),
-    //             ];
-    //         }
-    //     }
-        
-    //     return $results;
-    // }
 }

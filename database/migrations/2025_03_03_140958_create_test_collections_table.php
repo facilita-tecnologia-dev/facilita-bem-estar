@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('test_forms', function (Blueprint $table) {
+        Schema::create('test_collections', function (Blueprint $table) {
             $table->id();
-            $table->integer('test_collection_id');
-            $table->string('testName');
-            $table->integer('total_points');
-            $table->string('severityTitle');
-            $table->string('severityColor');
-            $table->string('recommendation');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('test_forms');
+        Schema::dropIfExists('test_collections');
     }
 };

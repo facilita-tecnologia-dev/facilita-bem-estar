@@ -9,4 +9,8 @@ class TestForm extends Model
 {
     /** @use HasFactory<\Database\Factories\TestFormFactory> */
     use HasFactory;
+
+    public function testCollection(){
+        return $this->belongsTo(TestCollection::class, 'test_collection_id');
+    }
 }

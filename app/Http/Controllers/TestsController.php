@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TestCollection;
+use App\Models\TestForm;
 use App\Services\TestService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TestsController
 {
@@ -26,6 +29,8 @@ class TestsController
     }
 
     public function handleTestSubmitted(Request $request, $test){
+       
+
         $testInfo = $this->testService->getTestInfo($test);
 
         if(!$testInfo){
@@ -43,7 +48,31 @@ class TestsController
 
         $result = $this->testService->processTest($test, $validatedData);
 
+        
         if($test === 'estresse'){
+            $testResults = collect(session()->all())
+            ->filter(function ($value, $key) {
+                return str_ends_with($key, '_result');
+            })
+            ->toArray();
+
+
+            $newTestCollection = TestCollection::create([
+                'user_id' => Auth::user()->id,
+            ]);
+
+
+            foreach($testResults as $testResult){
+                TestForm::create([
+                    'test_collection_id' => $newTestCollection->id,
+                    'testName' => $testResult['testName'],
+                    'total_points' => $testResult['totalPoints'],
+                    'severityTitle' => $testResult['severityTitle'],
+                    'severityColor' => $testResult['severityColor'],
+                    'recommendation' => $testResult['recommendations'][0]
+                ]);
+            }
+            
             return to_route('results.dashboard');
         }
 

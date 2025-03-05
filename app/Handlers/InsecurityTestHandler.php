@@ -16,7 +16,7 @@ class InsecurityTestHandler implements TestHandlerInterface
             $severityColor = 'yellow';
         } else {
             $severityTitle = 'Baixa Insegurança';
-            $severityColor = 'red';
+            $severityColor = 'green';
         }
         
         return [

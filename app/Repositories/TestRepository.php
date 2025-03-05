@@ -990,8 +990,8 @@ class TestRepository
                 [
                     'statement' => 'Com que frequência você discorda com outros no trabalho?',
                     'options' => [
-                        [
-                            'content' => '1 - Nunca',
+                            [
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1007,7 +1007,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1016,7 +1016,7 @@ class TestRepository
                     'statement' => 'Com que frequência outros são rudes com você?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1032,7 +1032,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1041,7 +1041,7 @@ class TestRepository
                     'statement' => 'Com que frequência há tensão nas relações de trabalho?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1057,7 +1057,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1066,7 +1066,7 @@ class TestRepository
                     'statement' => 'Há conflitos não resolvidos em sua equipe?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1082,7 +1082,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1091,7 +1091,7 @@ class TestRepository
                     'statement' => 'Você se sente respeitado por seus colegas?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1107,7 +1107,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1116,7 +1116,7 @@ class TestRepository
                     'statement' => 'Há competição prejudicial entre colegas?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1132,7 +1132,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1141,7 +1141,7 @@ class TestRepository
                     'statement' => 'Os conflitos são gerenciados de forma construtiva?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1157,7 +1157,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
@@ -1166,7 +1166,7 @@ class TestRepository
                     'statement' => 'Você se sente à vontade para expressar opiniões divergentes?',
                     'options' => [
                         [
-                            'content' => '1 - Nunca',
+                            'content' => '1 - Nunca / Quase nunca',
                             'value' => 1
                         ],
                         [
@@ -1182,7 +1182,7 @@ class TestRepository
                             'value' => 4
                         ],
                         [
-                            'content' => '5 - Muito Frequentemente',
+                            'content' => '5 - Sempre',
                             'value' => 5
                         ]
                     ]
