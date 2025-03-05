@@ -9,26 +9,26 @@ class ConflictsTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 33) {
-            $severity = 'Alto Nível de Conflitos';
-            $color = 'red';
+            $severityTitle = 'Alto Nível de Conflitos';
+            $severityColor = 'red';
         } elseif ($totalPoints >= 21) {
-            $severity = 'Conflitos Moderados';
-            $color = 'yellow';
+            $severityTitle = 'Conflitos Moderados';
+            $severityColor = 'yellow';
         } else {
-            $severity = 'Baixo Nível de Conflitos';
-            $color = 'green';
+            $severityTitle = 'Baixo Nível de Conflitos';
+            $severityColor = 'green';
         }
         
         return [
             'answers' => $answers,
             'totalPoints' => $totalPoints,
-            'severity' => $severity,
-            'color' => $color,
-            'recommendations' => $this->getRecommendations($severity),
+            'severityTitle' => $severityTitle,
+            'severityColor' => $severityColor,
+            'recommendations' => $this->getRecommendations($severityTitle),
         ];
     }
     
-    private function getRecommendations(string $severity): array
+    private function getRecommendations(string $severityTitle): array
     {
         $recommendations = [
             'Alto Nível de Conflitos' => ['Treinamento em comunicação não-violenta'],
@@ -36,6 +36,6 @@ class ConflictsTestHandler implements TestHandlerInterface
             'Baixo Nível de Conflitos' => ['Ambiente de trabalho relativamente harmonioso'],
         ];
         
-        return $recommendations[$severity] ?? [];
+        return $recommendations[$severityTitle] ?? [];
     }
 }

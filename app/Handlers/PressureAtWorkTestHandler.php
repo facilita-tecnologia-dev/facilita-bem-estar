@@ -9,26 +9,26 @@ class PressureAtWorkTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 29) {
-            $severity = 'Alta Pressão';
-            $color = 'red';
+            $severityTitle = 'Alta Pressão';
+            $severityColor = 'red';
         } elseif ($totalPoints >= 17) {
-            $severity = 'Pressão Moderada';
-            $color = 'yellow';
+            $severityTitle = 'Pressão Moderada';
+            $severityColor = 'yellow';
         } else {
-            $severity = 'Baixa Pressão';
-            $color = 'green';
+            $severityTitle = 'Baixa Pressão';
+            $severityColor = 'green';
         }
         
         return [
             'answers' => $answers,
             'totalPoints' => $totalPoints,
-            'severity' => $severity,
-            'color' => $color,
-            'recommendations' => $this->getRecommendations($severity)
+            'severityTitle' => $severityTitle,
+            'severityColor' => $severityColor,
+            'recommendations' => $this->getRecommendations($severityTitle)
         ];
     }
     
-    private function getRecommendations(string $severity): array
+    private function getRecommendations(string $severityTitle): array
     {
         $recommendations = [
             'Alta Pressão' => ['Buscar suporte organizacional'],
@@ -36,6 +36,6 @@ class PressureAtWorkTestHandler implements TestHandlerInterface
             'Baixa Pressão' => ['Implementar gestão de tempo'],
         ];
         
-        return $recommendations[$severity] ?? [];
+        return $recommendations[$severityTitle] ?? [];
     }
 }

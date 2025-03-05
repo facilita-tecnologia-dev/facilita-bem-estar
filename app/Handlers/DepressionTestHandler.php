@@ -9,20 +9,20 @@ class DepressionTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 20) {
-            $severity = 'Grave';
-            $color = 'red';
+            $severityTitle = 'Grave';
+            $severityColor = 'red';
         } elseif ($totalPoints >= 15) {
-            $severity = 'Moderadamente grave';
-            $color = 'orange';
+            $severityTitle = 'Moderadamente grave';
+            $severityColor = 'orange';
         } elseif ($totalPoints >= 10) {
-            $severity = 'Moderada';
-            $color = 'yellow';
+            $severityTitle = 'Moderada';
+            $severityColor = 'yellow';
         } elseif ($totalPoints >= 5) {
-            $severity = 'Leve';
-            $color = 'blue';
+            $severityTitle = 'Leve';
+            $severityColor = 'blue';
         } else {
-            $severity = 'Mínima';
-            $color = 'green';
+            $severityTitle = 'Mínima';
+            $severityColor = 'green';
         }
         
         $suicidalThoughts = isset($answers[9]) && $answers[9] > 0;
@@ -30,14 +30,14 @@ class DepressionTestHandler implements TestHandlerInterface
         return [
             'answers' => $answers,
             'totalPoints' => $totalPoints,
-            'severity' => $severity,
+            'severityTitle' => $severityTitle,
             'suicidal_risk' => $suicidalThoughts,
-            'color' => $color,
-            'recommendations' => $this->getRecommendations($severity, $suicidalThoughts)
+            'severityColor' => $severityColor,
+            'recommendations' => $this->getRecommendations($severityTitle, $suicidalThoughts)
         ];
     }
     
-    private function getRecommendations(string $severity, bool $suicidalThoughts): array
+    private function getRecommendations(string $severityTitle, bool $suicidalThoughts): array
     {
 
         $baseRecommendations = [
@@ -48,7 +48,7 @@ class DepressionTestHandler implements TestHandlerInterface
             'Mínima' => ['Nenhuma medida recomendada']
         ];
         
-        $recommendations = $baseRecommendations[$severity] ?? [];
+        $recommendations = $baseRecommendations[$severityTitle] ?? [];
         
         if ($suicidalThoughts) {
             array_unshift($recommendations, 'Buscar ajuda imediata');

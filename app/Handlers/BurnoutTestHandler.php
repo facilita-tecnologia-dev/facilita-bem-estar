@@ -9,26 +9,26 @@ class BurnoutTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 27) {
-            $severity = 'Zona de Risco - Alto Burnout';  
-            $color = 'red';
+            $severityTitle = 'Zona de Risco - Alto Burnout';  
+            $severityColor = 'red';
         } elseif ($totalPoints >= 14) {
-            $severity = 'Zona de Alerta - Burnout Moderado';
-            $color = 'yellow';
+            $severityTitle = 'Zona de Alerta - Burnout Moderado';
+            $severityColor = 'yellow';
         } else {
-            $severity = 'Zona de Bem-estar - Baixo Burnout';
-            $color = 'green';
+            $severityTitle = 'Zona de Bem-estar - Baixo Burnout';
+            $severityColor = 'green';
         }
         
         return [
             'answers' => $answers,
             'totalPoints' => $totalPoints,
-            'severity' => $severity,
-            'color' => $color,
-            'recommendations' => $this->getRecommendations($severity)
+            'severityTitle' => $severityTitle,
+            'severityColor' => $severityColor,
+            'recommendations' => $this->getRecommendations($severityTitle)
         ];
     }
     
-    private function getRecommendations(string $severity): array
+    private function getRecommendations(string $severityTitle): array
     {
         $recommendations = [
             'Zona de Risco - Alto Burnout' => ['Necessidade urgente de intervenção'],
@@ -36,6 +36,6 @@ class BurnoutTestHandler implements TestHandlerInterface
             'Zona de Bem-estar - Baixo Burnout' => ['Recursos pessoais bem gerenciados']
         ];
         
-        return $recommendations[$severity] ?? [];
+        return $recommendations[$severityTitle] ?? [];
     }
 }

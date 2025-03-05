@@ -9,26 +9,26 @@ class InsecurityTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 33) {
-            $severity = 'Alta Insegurança';
-            $color = 'red';
+            $severityTitle = 'Alta Insegurança';
+            $severityColor = 'red';
         } elseif ($totalPoints >= 21) {
-            $severity = 'Insegurança Moderada';
-            $color = 'yellow';
+            $severityTitle = 'Insegurança Moderada';
+            $severityColor = 'yellow';
         } else {
-            $severity = 'Baixa Insegurança';
-            $color = 'red';
+            $severityTitle = 'Baixa Insegurança';
+            $severityColor = 'red';
         }
         
         return [
             'answers' => $answers,
             'totalPoints' => $totalPoints,
-            'severity' => $severity,
-            'color' => $color,
-            'recommendations' => $this->getRecommendations($severity)
+            'severityTitle' => $severityTitle,
+            'severityColor' => $severityColor,
+            'recommendations' => $this->getRecommendations($severityTitle)
         ];
     }
     
-    private function getRecommendations(string $severity): array
+    private function getRecommendations(string $severityTitle): array
     {
         $recommendations = [
             'Alta Insegurança' => ['Nível alto de insegurança'],
@@ -36,6 +36,6 @@ class InsecurityTestHandler implements TestHandlerInterface
             'Baixa Insegurança' => ['Nível baixo de insegurança'],
         ];
         
-        return $recommendations[$severity] ?? [];
+        return $recommendations[$severityTitle] ?? [];
     }
 }

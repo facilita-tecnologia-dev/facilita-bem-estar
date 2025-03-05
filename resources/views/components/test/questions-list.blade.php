@@ -12,7 +12,7 @@
     
     <div class="w-full border border-zinc-700 rounded-md">
         @foreach ($question['options'] as $optionNumber => $option)
-            <x-option :option="$option" questionNumber="{{ $questionNumber }}" optionNumber="{{ $optionNumber }}" />
+            <x-test.option :option="$option" questionNumber="{{ $questionNumber }}" optionNumber="{{ $optionNumber }}" />
         @endforeach
 
         @error("question_$questionNumber")
