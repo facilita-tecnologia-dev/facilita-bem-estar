@@ -29,50 +29,25 @@ class TestsController
     }
 
     public function handleTestSubmitted(Request $request, $test){
-       
-
         $testInfo = $this->testService->getTestInfo($test);
 
         if(!$testInfo){
             return back();
         }
 
-        // Cria as regras de validação dinamicamente
-        $validationRules = [];
-        for ($i = 1; $i <= $testInfo['numberOfQuestions']; $i++) {
-            $validationRules['question_' . $i] = 'required';
-        }
-
-        // Valida todas as respostas
-        $validatedData = $request->validate($validationRules);
+        $validatedData = $this->validateAnswers($request, $testInfo);
 
         $result = $this->testService->processTest($test, $validatedData);
-
         
         if($test === 'estresse'){
-            $testResults = collect(session()->all())
-            ->filter(function ($value, $key) {
-                return str_ends_with($key, '_result');
-            })
-            ->toArray();
-
-
-            $newTestCollection = TestCollection::create([
-                'user_id' => Auth::user()->id,
-            ]);
-
-
-            foreach($testResults as $testResult){
-                TestForm::create([
-                    'test_collection_id' => $newTestCollection->id,
-                    'testName' => $testResult['testName'],
-                    'total_points' => $testResult['totalPoints'],
-                    'severityTitle' => $testResult['severityTitle'],
-                    'severityColor' => $testResult['severityColor'],
-                    'recommendation' => $testResult['recommendations'][0]
-                ]);
-            }
+            $allTestResults = $this->getAllResultsFromSession();
             
+            $storedResults = $this->storeResultsOnDatabase($allTestResults);
+
+            if(!$storedResults){
+                return back();
+            }
+
             return to_route('test-results');
         }
 
@@ -81,5 +56,46 @@ class TestsController
         }
 
         return back();
+    }
+
+    private function validateAnswers($request, $testInfo){
+        $validationRules = [];
+        for ($i = 1; $i <= $testInfo['numberOfQuestions']; $i++) {
+            $validationRules['question_' . $i] = 'required';
+        }
+
+        $validatedData = $request->validate($validationRules);
+
+        return $validatedData;
+    }
+
+    private function getAllResultsFromSession(){
+        $allTestResults = collect(session()->all())
+        ->filter(function ($value, $key) {
+            return str_ends_with($key, '_result');
+        })
+        ->toArray();
+
+        return $allTestResults;
+    }
+
+    private function storeResultsOnDatabase($allTestResults){
+        $newTestCollection = TestCollection::create([
+            'user_id' => Auth::user()->id,
+        ]);
+
+
+        foreach($allTestResults as $testResult){
+            TestForm::create([
+                'test_collection_id' => $newTestCollection->id,
+                'testName' => $testResult['testName'],
+                'total_points' => $testResult['totalPoints'],
+                'severityTitle' => $testResult['severityTitle'],
+                'severityColor' => $testResult['severityColor'],
+                'recommendation' => $testResult['recommendations'][0]
+            ]);
+        }
+
+        return $allTestResults;
     }
 }

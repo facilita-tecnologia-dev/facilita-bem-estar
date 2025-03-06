@@ -18,19 +18,12 @@ class DashboardController
     }
 
     public function index(){
-        $testResults = collect(session()->all())
-        ->filter(function ($value, $key) {
-            return str_ends_with($key, '_result');
-        })
-        ->toArray();
-
         $generalResults = $this->getGeneralResults();
 
         $testsParticipation = $this->getTestsParticipation(); 
         
 
         return view('dashboard', [
-            'testResults' => $testResults,
             'generalResults' => $generalResults,
             'testsParticipation' => $testsParticipation
         ]);
@@ -52,7 +45,6 @@ class DashboardController
         $usersLatestTestCollections = $this->getUsersLatestTestCollections();
 
         $usersLatestTestResults = TestForm::whereIn('test_collection_id', $usersLatestTestCollections->pluck('id'))->get()->groupBy('testName')->toArray();
-
 
         $generalResults = [];
 
