@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TestCollection;
 use App\Models\TestForm;
+use App\Models\User;
 use App\Services\TestService;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,14 +24,35 @@ class DashboardController
         })
         ->toArray();
 
-     
+        $generalResults = $this->getGeneralResults();
+
+        $testsParticipation = $this->getTestsParticipation(); 
+        
+
+        return view('dashboard', [
+            'testResults' => $testResults,
+            'generalResults' => $generalResults,
+            'testsParticipation' => $testsParticipation
+        ]);
+    }
+
+
+    private function getUsersLatestTestCollections(){
         $usersLatestTestCollections = TestCollection::whereIn('created_at', function($query){
             $query->selectRaw('MAX(created_at)')
             ->from('test_collections')
             ->groupBy('user_id');
         })->get();
 
+        return $usersLatestTestCollections;
+    }
+
+
+    private function getGeneralResults(){
+        $usersLatestTestCollections = $this->getUsersLatestTestCollections();
+
         $usersLatestTestResults = TestForm::whereIn('test_collection_id', $usersLatestTestCollections->pluck('id'))->get()->groupBy('testName')->toArray();
+
 
         $generalResults = [];
 
@@ -52,6 +74,23 @@ class DashboardController
             $generalResults[$ungroupedTestType[0]['testName']] = $item;
         }
 
-        return view('dashboard', ['testResults' => $testResults, 'generalResults' => $generalResults]);
+        return $generalResults;
+    }
+
+    private function getTestsParticipation(){
+        $usersLatestTestCollections = $this->getUsersLatestTestCollections();
+
+        $testCollectionsArray = $usersLatestTestCollections->toArray();
+        $countTestCollections = count($testCollectionsArray);
+
+        $users = User::all();
+
+        $usersArray = $users->toArray();
+        $countUsers = count($usersArray);
+
+        
+        $countTestsParticipation = [$countTestCollections, ($countUsers - $countTestCollections)];
+
+        return $countTestsParticipation;
    }
 }

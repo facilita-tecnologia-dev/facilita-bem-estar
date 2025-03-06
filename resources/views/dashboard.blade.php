@@ -1,5 +1,3 @@
-{{-- @dump($generalResults) --}}
-
 <x-layouts.app>
     <main class="w-screen h-screen flex items-center justify-center">
         <div class="bg-white rounded-md w-full max-w-screen-2xl min-h-2/4 max-h-screen shadow-md m-8 p-10 flex flex-col items-center justify-center gap-6">
@@ -23,7 +21,8 @@
                 <p>Média da empresa em geral</p>
             </div>
 
-            <div id="charts" class="flex flex-wrap gap-5 w-full justify-center">            
+            <div id="charts" class="grid grid-cols-6 gap-5 w-full justify-center">
+
             </div>
 
     
@@ -36,88 +35,145 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    const chartsWrapper = document.querySelector('#charts');
 
-    const generalResults = @json($generalResults)
+    const testsParticipation = @json($testsParticipation)    
 
-    console.log(generalResults)
 
+    const testParticipationChartId = 'chart_test_participation';
+
+    const testParticipationChartWrapper = document.createElement('div')
+    testParticipationChartWrapper.className = 'shadow-md rounded-md border border-teal-700'
+    testParticipationChartWrapper.innerHTML = `<a href="" class="w-full h-full p-4 flex justify-center"><canvas id="${testParticipationChartId}" class=""></canvas></a>`;
+
+    chartsWrapper.appendChild(testParticipationChartWrapper);
+
+    testParticipationChartCanvas = document.getElementById(testParticipationChartId);
+
+    new Chart(testParticipationChartCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['Fez os testes', 'Não fez os testes'],
+            datasets: [{
+                label: 'Participação nos testes',
+                data: testsParticipation,
+                backgroundColor: ["#64B5F6", "#BBDEFB"]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Participação nos testes',
+                    font: {
+                        size: 16,
+                        weight: 'normal'
+                    },
+                    padding: {
+                        bottom: 10
+                    }
+                },
+                legend: {
+                    display: false,
+                    position: 'bottom',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            console.log(context.dataset.data)
+                            const percentage = ((value / total) * 100).toFixed(1);
+
+                            return ` ${percentage}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+
+
+    const generalResults = @json($generalResults)    
     const labels = Object.keys(generalResults)
-
+    
+    console.log(generalResults)
     console.log(labels)
 
     
     const testSeverityColors = {
         "Ansiedade": {
-            "Mínima": "#28a745",
+            "Mínima": "#4CAF50",
             "Leve": "#a9f5ac",
-            "Moderada": "#ffcc00",
-            "Grave": "#f44336",
+            "Moderada": "#eddd58",
+            "Grave": "#f55547",
         },
         "Depressão": {
-            "Mínima": "#28a745",
+            "Mínima": "#4CAF50",
             "Leve": "#a9f5ac",
-            "Moderada": "#ffcc00",
-            "Moderadamente grave": "#ff9800",
-            "Grave": "#f44336",
+            "Moderada": "#eddd58",
+            "Moderadamente grave": "#FFB74D",
+            "Grave": "#f55547",
         },
         "Pressão no Trabalho": {
-            "Baixa Pressão": "#28a745",
-            "Pressão Moderada": "#ffcc00",
-            "Alta Pressão": "#f44336",
+            "Baixa Pressão": "#4CAF50",
+            "Pressão Moderada": "#eddd58",
+            "Alta Pressão": "#f55547",
         },
         "Pressão por Resultados": {
-            "Baixa Pressão": "#28a745",
-            "Pressão Moderada": "#ffcc00",
-            "Alta Pressão": "#ff9800",
-            "Pressão Crítica": "#f44336",
+            "Baixa Pressão": "#4CAF50",
+            "Pressão Moderada": "#eddd58",
+            "Alta Pressão": "#FFB74D",
+            "Pressão Crítica": "#f55547",
         },
         "Insegurança": {
-            "Baixa Insegurança": "#28a745",
-            "Insegurança Moderada": "#ffcc00",
-            "Alta Insegurança": "#f44336",
+            "Baixa Insegurança": "#4CAF50",
+            "Insegurança Moderada": "#eddd58",
+            "Alta Insegurança": "#f55547",
         },
         "Conflitos": {
-            "Baixo Nível de Conflitos": "#28a745",
-            "Conflitos Moderados": "#ffcc00",
-            "Alto Nível de Conflitos": "#f44336",
+            "Baixo Nível de Conflitos": "#4CAF50",
+            "Conflitos Moderados": "#eddd58",
+            "Alto Nível de Conflitos": "#f55547",
         },
         "Relações Sociais": {
-            "Baixo Risco": "#28a745",
-            "Risco Moderado": "#ffcc00",
-            "Alto Risco": "#ff9800",
-            "Risco Crítico": "#f44336",
+            "Baixo Risco": "#4CAF50",
+            "Risco Moderado": "#eddd58",
+            "Alto Risco": "#FFB74D",
+            "Risco Crítico": "#f55547",
         },
         "Exigências Emocionais": {
-            "Baixa exigência emocional": "#28a745",
-            "Média exigência emocional": "#ffcc00",
-            "Alta exigência emocional": "#f44336",
+            "Baixa exigência emocional": "#4CAF50",
+            "Média exigência emocional": "#eddd58",
+            "Alta exigência emocional": "#f55547",
         },
         "Autonomia": {
-            "Alta Autonomia": "#28a745",
-            "Autonomia Moderada": "#ffcc00",
-            "Baixa Autonomia": "#f44336",
+            "Alta Autonomia": "#4CAF50",
+            "Autonomia Moderada": "#eddd58",
+            "Baixa Autonomia": "#f55547",
         },
         "Burnout": {
-            "Zona de Bem-estar - Baixo Burnout": "#28a745",
-            "Zona de Alerta - Burnout Moderado": "#ffcc00",
-            "Zona de Risco - Alto Burnout": "#f44336",
+            "Zona de Bem-estar - Baixo Burnout": "#4CAF50",
+            "Zona de Alerta - Burnout Moderado": "#eddd58",
+            "Zona de Risco - Alto Burnout": "#f55547",
         },
         "Estresse": {
-            "Baixo Estresse": "#28a745",
-            "Estresse Moderado": "#ffcc00",
-            "Alto Estresse": "#f44336",
+            "Baixo Estresse": "#4CAF50",
+            "Estresse Moderado": "#eddd58",
+            "Alto Estresse": "#f55547",
         },
     }
 
     Object.values(generalResults).forEach((testType, index) => {
         const chartId = `chart_${index}`;
         
-        const chartWrapper = document.createElement('div');
-        chartWrapper.className = 'shadow-md rounded-md border border-teal-700 mb-4 p-4';
-        chartWrapper.innerHTML = `<canvas id="${chartId}" class="w-40! h-40!"></canvas>`;
+        const testChartWrapper = document.createElement('div');
+        testChartWrapper.className = 'shadow-md rounded-md border border-teal-700';
+        testChartWrapper.innerHTML = `<a href="" class="w-full h-full p-4 flex justify-center"><canvas id="${chartId}" class=""></canvas><a/>`;
         
-        const wrapper = document.querySelector('#charts');
-        wrapper.appendChild(chartWrapper);
+        chartsWrapper.appendChild(testChartWrapper);
 
         const canvas = document.getElementById(chartId);
 
@@ -177,5 +233,4 @@
         });
     });
 
-    console.log(Object.values(generalResults))
 </script>
