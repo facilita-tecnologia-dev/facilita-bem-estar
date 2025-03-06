@@ -73,7 +73,7 @@ class TestsController
                 ]);
             }
             
-            return to_route('results.dashboard');
+            return to_route('test-results');
         }
 
         if(!empty($testInfo['nextStep'])){
