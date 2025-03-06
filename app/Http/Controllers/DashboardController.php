@@ -10,13 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController
 {
-    protected $testService;
-    
-    public function __construct(TestService $testService)
-    {
-        $this->testService = $testService;
-    }
-
     public function index(){
         $generalResults = $this->getGeneralResults();
 

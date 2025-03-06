@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\TestCollection;
 use App\Models\TestForm;
+use App\Models\TestQuestion;
+use App\Models\TestType;
 use App\Services\TestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,17 +21,14 @@ class TestsController
     }
 
     public function index(string $test){
-        if(! $this->testService->testExists($test)){
-            return back();
-        }
+        $testTypeInfo = TestType::query()->where('key_name', '=', $test)->first();
+        $testQuestions = TestQuestion::query()->where('test_type_id', '=', $testTypeInfo->id)->with('questionOptions')->get();
 
-        $testInfo = $this->testService->getTestInfo($test) ?? '';
-
-        return view('tests.' . $test, ['testInfo' => $testInfo]);
+        return view('tests.' . $test, ['testQuestions' => $testQuestions]);
     }
 
     public function handleTestSubmitted(Request $request, $test){
-        $testInfo = $this->testService->getTestInfo($test);
+        $testInfo = TestType::query()->where('key_name', '=', $test)->first();
 
         if(!$testInfo){
             return back();
@@ -37,7 +36,7 @@ class TestsController
 
         $validatedData = $this->validateAnswers($request, $testInfo);
 
-        $result = $this->testService->processTest($test, $validatedData);
+        $result = $this->testService->processTest($test, $validatedData, $testInfo);
         
         if($test === 'estresse'){
             $allTestResults = $this->getAllResultsFromSession();
@@ -51,8 +50,8 @@ class TestsController
             return to_route('test-results');
         }
 
-        if(!empty($testInfo['nextStep'])){
-            return to_route('test', $testInfo['nextStep']);
+        if(!empty($testInfo['next_step'])){
+            return to_route('test', $testInfo['next_step']);
         }
 
         return back();
@@ -60,12 +59,11 @@ class TestsController
 
     private function validateAnswers($request, $testInfo){
         $validationRules = [];
-        for ($i = 1; $i <= $testInfo['numberOfQuestions']; $i++) {
+        for ($i = 1; $i <= $testInfo['number_of_questions']; $i++) {
             $validationRules['question_' . $i] = 'required';
         }
 
         $validatedData = $request->validate($validationRules);
-
         return $validatedData;
     }
 
@@ -83,7 +81,6 @@ class TestsController
         $newTestCollection = TestCollection::create([
             'user_id' => Auth::user()->id,
         ]);
-
 
         foreach($allTestResults as $testResult){
             TestForm::create([

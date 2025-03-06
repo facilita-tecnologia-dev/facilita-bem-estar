@@ -2,26 +2,20 @@
 
 namespace App\Handlers;
 
+use App\Models\TestType;
 use App\Repositories\TestRepository;
 
 class TestHandlerFactory
 {
-    protected $testRepository;
-    
-    public function __construct(TestRepository $testRepository)
+    public function getHandler(string $test, TestType $testInfo): TestHandlerInterface
     {
-        $this->testRepository = $testRepository;
-    }
-    
-    public function getHandler(string $test): TestHandlerInterface
-    {
-        $testInfo = $this->testRepository->getTestInfo($test);
+        $testInfo = $testInfo;
         
         if (!$testInfo) {
             return new DefaultTestHandler();
         }
         
-        switch ($testInfo['handlerType']) {
+        switch ($testInfo['handler_type']) {
             case 'anxiety':
                 return new AnxietyTestHandler();
             case 'depression':

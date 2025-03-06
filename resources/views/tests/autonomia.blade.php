@@ -16,7 +16,7 @@
             
             <x-test.questions-form action="{{ route('test.submit', 'autonomia')}}" id="test-form" post>
 
-                <x-test.questions-list :testInfo="$testInfo"  />
+                <x-test.questions-list :testQuestions="$testQuestions"  />
 
             </x-test.questions-form>
     

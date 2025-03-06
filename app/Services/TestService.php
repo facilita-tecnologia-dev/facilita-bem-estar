@@ -3,28 +3,19 @@
 namespace App\Services;
 
 use App\Handlers\TestHandlerFactory;
+use App\Models\TestType;
 use App\Repositories\TestRepository;
 
 class TestService
 {
-    protected $testRepository;
     protected $handlerFactory;
 
-    public function __construct(TestRepository $testRepository, TestHandlerFactory $handlerFactory)
+    public function __construct(TestHandlerFactory $handlerFactory)
     {
-        $this->testRepository = $testRepository;
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function testExists(string $test){
-        return $this->testRepository->exists($test);
-    }
-
-    public function getTestInfo(string $test){
-        return $this->testRepository->getTestInfo($test);
-    }
-
-    public function processTest(string $test, array $validatedData){
+    public function processTest(string $test, array $validatedData, TestType $testInfo){
         $answers = collect($validatedData)
         ->filter(function ($value, $key) {
             return str_starts_with($key, 'question_');
@@ -35,14 +26,11 @@ class TestService
         })
         ->toArray();
 
-        $handler = $this->handlerFactory->getHandler($test);
-
-        $testInfo = $this->getTestInfo($test);
+        
+        $handler = $this->handlerFactory->getHandler($test, $testInfo);
         
         $processedTest = $handler->process($answers);
-        $result = array_merge(['testName' => $testInfo['displayName']], $processedTest);
-
-        // dd('processed test', $processedTest, 'result', $result);
+        $result = array_merge(['testName' => $testInfo['display_name']], $processedTest);
 
         // Armazena os resultados na sessão
         session([$test . '_result' => $result]);

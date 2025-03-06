@@ -13,7 +13,7 @@
     <title>Bem Estar | Facilita</title>
 </head>
 <body class="bg-teal-50">
-    <main class="w-screen h-screen flex flex-col gap-5 items-center justify-center">
+    <main class="w-screen h-screen flex flex-col gap-5 items-center justify-center p-10">
         {{ $slot }}
     </main>
 </body>
