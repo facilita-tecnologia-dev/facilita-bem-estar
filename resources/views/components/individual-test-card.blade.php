@@ -4,7 +4,7 @@
 ])
 
 
-<div @class([
+<a {{ $attributes }} @class([
     "w-full max-w-80 shadow-md rounded-md border flex flex-col items-center overflow-hidden",
     'border-[#f55547]' => $severityColor == "5",
     'border-[#FFB74D]' => $severityColor == "4",
@@ -24,4 +24,4 @@
     </p>
 
     {{ $slot }}
-</div>
+</a>

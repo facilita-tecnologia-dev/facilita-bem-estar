@@ -23,11 +23,62 @@ class DashboardController
         ]);
     }
 
-    public function renderIndividualTestStats(Request $request, $test){
-        $testStats = $this->getIndividualTestStats($test);
+    public function renderIndividualTestStats($test){
+        $testResults = $this->getIndividualTestStats($test);
+
+        $testStats = [];
+        
+        // Monta o array com os usuarios por severidade
+        foreach ($testResults as $key => $testCollection) {
+            $testSeverityName = $testCollection['tests'][0]["severityTitle"];
+            $testUser = $testCollection['user']['name'];
+            $testSeverityColor = $testCollection['tests'][0]["severityColor"];
+            
+            if(!isset($testStats[$test][$testSeverityColor])){
+                $testStats[$test][$testSeverityColor] = [];
+            }
+
+            $testStats[$test][$testSeverityColor]['severityName'] = $testSeverityName;
+            $testStats[$test][$testSeverityColor]['users'][] = $testUser;
+        }
+        
+        ksort($testStats[$test]);
+        
         
         return view('dashboard.individual-test-result', [
             'testStats' => $testStats
+        ]);
+    }
+
+    public function renderIndividualTestList(Request $request, $test){
+        $testResults = $this->getIndividualTestStats($test);
+
+        $testStatsList = [];
+
+        foreach($testResults as $key => $testCollection){
+            $userName = $testCollection["user"]["name"];
+            $userAge = $testCollection["user"]["age"];
+            $userOccupation = $testCollection["user"]["occupation"];
+
+            $testTotalPoints = $testCollection["tests"][0]["total_points"];
+            $testSeverityTitle = $testCollection["tests"][0]['severityTitle'];
+            $testSeverityColor = $testCollection["tests"][0]['severityColor'];
+            $testRecommendation = $testCollection["tests"][0]['recommendation'];
+
+            $testStatsList[] = [
+                'name' => $userName,
+                'age' => $userAge,
+                'occupation' => $userOccupation,
+                'testTotalPoints' => $testTotalPoints,                
+                'testSeverityTitle' => $testSeverityTitle,
+                'testSeverityColor' => $testSeverityColor,
+                'testRecommendation' => $testRecommendation,
+            ];
+        }
+
+        return view('dashboard.individual-test-list', [
+            'testName' => $test,
+            'testStatsList' => $testStatsList
         ]);
     }
 
@@ -100,24 +151,7 @@ class DashboardController
         ->get()
         ->toArray();
 
-        $groupedTestResults = [];
-        
-        // Monta o array com os usuarios por severidade
-        foreach ($testResults as $key => $testCollection) {
-            $testSeverityName = $testCollection['tests'][0]["severityTitle"];
-            $testUser = $testCollection['user']['name'];
-            $testSeverityColor = $testCollection['tests'][0]["severityColor"];
-            
-            if(!isset($groupedTestResults[$test][$testSeverityColor])){
-                $groupedTestResults[$test][$testSeverityColor] = [];
-            }
 
-            $groupedTestResults[$test][$testSeverityColor]['severityName'] = $testSeverityName;
-            $groupedTestResults[$test][$testSeverityColor]['users'][] = $testUser;
-        }
-        
-        ksort($groupedTestResults[$test]);
-
-        return $groupedTestResults;
+        return $testResults;
    }
 }

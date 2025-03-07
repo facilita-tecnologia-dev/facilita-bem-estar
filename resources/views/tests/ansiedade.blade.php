@@ -35,6 +35,13 @@
 
         </div>
 
+        @if(session('errors'))
+            <div class="bg-red-400 p-3 rounded-md fixed right-5 bottom-5">
+                <p class="text-white font-medium" >Todas as perguntas devem ser respondidas!</p>
+            </div>
+        @endif
+
+        
         <x-footer>
             Baseado no GAD-7 (Generalized Anxiety Disorder-7) [Spitzer et al., 2006]
         </x-footer>

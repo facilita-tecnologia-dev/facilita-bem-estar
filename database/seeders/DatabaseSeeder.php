@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\QuestionOption;
+use App\Models\TestCollection;
+use App\Models\TestForm;
 use App\Models\TestQuestion;
 use App\Models\TestType;
 use App\Models\User;
@@ -17,8 +19,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
+        User::factory(50)->create();
 
+        $users = User::all();
+
+        // $testNames = ['Ansiedade', 'Depressão', 'Pressão no Trabalho', 'Pressão por Resultados', 'Insegurança', 'Conflitos', 'Relações Sociais', 'Exigências Emocionais', 'Autonomia', 'Burnout', 'Estresse'];
 
         $tests = [
             'ansiedade' => [
@@ -2404,6 +2409,73 @@ class DatabaseSeeder extends Seeder
                 ]
             ],
         ];
+
+        // $testsPointsMap = [
+        //     'ansiedade' => [
+        //         'min' => 0,
+        //         'max' => 21,
+        //     ],
+        //     'depressao' => [
+        //         'min' => 0,
+        //         'max' => 27,
+        //     ],
+        //     'pressao-no-trabalho' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'pressao-por-resultados' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'inseguranca' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'conflitos' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'relacoes-sociais' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'exigencias-emocionais' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'autonomia' => [
+        //         'min' => 8,
+        //         'max' => 40,
+        //     ],
+        //     'burnout' => [
+        //         'min' => 0,
+        //         'max' => 54,
+        //     ],
+        //     'estresse' => [
+        //         'min' => 0,
+        //         'max' => 40,
+        //     ],
+        // ];
+
+        // foreach($users as $user){
+        //     $testCollection = TestCollection::factory()->create([
+        //         'user_id' => $user->id,
+        //     ]);
+
+        //     for($i = 0; $i < 11; $i++){
+        //         $totalPoints = rand($testsPointsMap[$tests[$i]['keyName']]['min'], );
+
+
+        //         TestForm::factory()->create([
+        //             'test_collection_id' => $testCollection->id,
+        //             'testName' => $tests[$i]['displayName'],
+        //             'total_points' => $totalPoints,
+        //             'severityTitle' => ,
+        //             'severityColor' => ,
+        //             'recommendation' => ,
+        //         ])
+        //     }
+        // }
         
         foreach($tests as $testType){
             $storedTestType = TestType::factory()->create([
@@ -2430,6 +2502,8 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+
+        
         
     }
 }

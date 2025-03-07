@@ -10,14 +10,14 @@
                 <p>Lista de pessoas em cada severidade no teste de <span class="font-bold text-teal-700">{{ array_keys($testStats)[0] }}</span></p>
             </div>
 
+            
             <div class="flex gap-4 items-start w-full justify-center">
-                @foreach ($testStats as $testStat)
-                
-                @foreach ($testStat as $severityColorKey => $severityData)
-                        <x-individual-test-card :severityName="$severityData['severityName']" :severityColor="$severityColorKey">
+                @foreach ($testStats as $testName => $testStat)
+                    @foreach ($testStat as $severityColorKey => $severityData)
+                        <x-individual-test-card href="{{ route('test-results-list.dashboard', $testName) }}" :severityName="$severityData['severityName']" :severityColor="$severityColorKey">
                             <div class="flex flex-col w-full">
                                 @foreach ($severityData['users'] as $username)
-                                    <a href="" class="w-full py-1.5 px-3 hover:bg-gray-200 transition">{{ $username }}</a>
+                                    <p class="w-full py-1.5 px-3 ">{{ $username }}</p>
                                 @endforeach
                             </div>
                         </x-individual-test-card>

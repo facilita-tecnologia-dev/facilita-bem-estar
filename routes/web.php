@@ -13,6 +13,7 @@ Route::middleware(AutoLoginMiddleware::class)->group(function(){
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('general-results.dashboard');
     Route::get('/dashboard/{test}', [DashboardController::class, 'renderIndividualTestStats'])->name('test-results.dashboard');
+    Route::get('/dashboard/{test}/lista', [DashboardController::class, 'renderIndividualTestList'])->name('test-results-list.dashboard');
     
     Route::get('/resultado', [TestResultsController::class, 'index'])->name('test-results');
 });

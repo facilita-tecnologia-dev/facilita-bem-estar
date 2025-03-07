@@ -13,9 +13,9 @@
         @foreach ($question['question_options'] as $optionNumber => $option)
             <x-test.option :option="$option" questionNumber="{{ $questionNumber }}" optionNumber="{{ $optionNumber }}" />
         @endforeach
-
-        @error("question_$questionNumber")
-            <span class="text-rose-400 text-sm">{{ $message }}</span>
-        @enderror
     </div>
+    
+    @error("question_$questionNumber")
+        <span class="text-rose-400 text-md">{{ $message }}</span>
+    @enderror
 @endforeach

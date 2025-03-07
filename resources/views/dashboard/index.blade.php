@@ -37,7 +37,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 
-
 <script>
 
     // Tests Participation
