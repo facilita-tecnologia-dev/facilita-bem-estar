@@ -38,6 +38,7 @@ class TestsController
 
         $result = $this->testService->processTest($test, $validatedData, $testInfo);
         
+
         if($test === 'estresse'){
             $allTestResults = $this->getAllResultsFromSession();
             
@@ -81,11 +82,14 @@ class TestsController
         $newTestCollection = TestCollection::create([
             'user_id' => Auth::user()->id,
         ]);
-
+  
         foreach($allTestResults as $testResult){
+            $testType = TestType::query()->where('display_name', '=', $testResult['testName'])->first();
+
             TestForm::create([
                 'test_collection_id' => $newTestCollection->id,
                 'testName' => $testResult['testName'],
+                'test_type_id' => $testType->id,
                 'total_points' => $testResult['totalPoints'],
                 'severityTitle' => $testResult['severityTitle'],
                 'severityColor' => $testResult['severityColor'],

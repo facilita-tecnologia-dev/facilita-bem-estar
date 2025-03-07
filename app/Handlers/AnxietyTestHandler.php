@@ -10,16 +10,16 @@ class AnxietyTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 15) {
             $severityTitle = 'Grave';
-            $severityColor = 'red';
+            $severityColor = 5;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Moderada';
-            $severityColor = 'yellow';
+            $severityColor = 3;
         } elseif ($totalPoints >= 5) {
             $severityTitle = 'Leve';
-            $severityColor = 'blue';
+            $severityColor = 2;
         } else {
             $severityTitle = 'Mínima';
-            $severityColor = 'green';
+            $severityColor = 1;
         }
         
         return [
@@ -27,19 +27,19 @@ class AnxietyTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severityTitle' => $severityTitle,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle)
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityTitle): array
+    private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            'Grave' => ['Grave'],
-            'Moderada' => ['Moderada'],
-            'Leve' => ['Leve'],
-            'Mínima' => ['Mínima']
+            5 => ['Grave'],
+            3 => ['Moderada'],
+            2 => ['Leve'],
+            1 => ['Mínima']
         ];
         
-        return $recommendations[$severityTitle] ?? [];
+        return $recommendations[$severityColor] ?? [];
     }
 }

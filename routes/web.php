@@ -12,5 +12,7 @@ Route::middleware(AutoLoginMiddleware::class)->group(function(){
     Route::post('/teste/{test}/submit', [TestsController::class, 'handleTestSubmitted'])->name('test.submit');
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('general-results.dashboard');
+    Route::get('/dashboard/{test}', [DashboardController::class, 'renderIndividualTestStats'])->name('test-results.dashboard');
+    
     Route::get('/resultado', [TestResultsController::class, 'index'])->name('test-results');
 });

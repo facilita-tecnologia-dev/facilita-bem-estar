@@ -10,13 +10,13 @@ class AutonomyTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 29) {
             $severityTitle = 'Alta Autonomia';
-            $severityColor = 'green';
+            $severityColor = 1;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Autonomia Moderada';
-            $severityColor = 'yellow';
+            $severityColor = 3;
         } else {
             $severityTitle = 'Baixa Autonomia';
-            $severityColor = 'red';
+            $severityColor = 5;
         }
         
         return [
@@ -24,18 +24,18 @@ class AutonomyTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severityTitle' => $severityTitle,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle)
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityTitle): array
+    private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            'Alta Autonomia' => ['Capacidade de autogestão significativa'],
-            'Autonomia Moderada' => ['Necessidade de melhorias na flexibilidade'],
-            'Baixa Autonomia' => ['Indica pouca liberdade e flexibilidade no trabalho'],
+            1 => ['Capacidade de autogestão significativa'],
+            3 => ['Necessidade de melhorias na flexibilidade'],
+            5 => ['Indica pouca liberdade e flexibilidade no trabalho'],
         ];
         
-        return $recommendations[$severityTitle] ?? [];
+        return $recommendations[$severityColor] ?? [];
     }
 }

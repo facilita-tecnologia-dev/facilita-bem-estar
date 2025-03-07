@@ -10,13 +10,13 @@ class StressTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 27) {
             $severityTitle = 'Alto Estresse';
-            $severityColor = 'red';
+            $severityColor = 5;
         } elseif ($totalPoints >= 14) {
             $severityTitle = 'Estresse Moderado';
-             $severityColor = 'yellow';
+             $severityColor = 3;
         } else {
             $severityTitle = 'Baixo Estresse';
-            $severityColor = 'green';
+            $severityColor = 1;
         }
         
         return [
@@ -24,18 +24,18 @@ class StressTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severityTitle' => $severityTitle,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle)
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityTitle): array
+    private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            'Alto Estresse' => ['Indica possível necessidade de intervenção ou estratégias de gestão de estresse'],
-            'Estresse Moderado' => ['Indica algumas dificuldades no manejo de situações estressantes'],
-            'Baixo Estresse' => ['Sugere boa capacidade de gerenciamento de situações estressantes']
+            5 => ['Indica possível necessidade de intervenção ou estratégias de gestão de estresse'],
+            3 => ['Indica algumas dificuldades no manejo de situações estressantes'],
+            1 => ['Sugere boa capacidade de gerenciamento de situações estressantes']
         ];
         
-        return $recommendations[$severityTitle] ?? [];
+        return $recommendations[$severityColor] ?? [];
     }
 }

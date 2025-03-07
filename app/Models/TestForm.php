@@ -13,4 +13,8 @@ class TestForm extends Model
     public function testCollection(){
         return $this->belongsTo(TestCollection::class, 'test_collection_id');
     }
+
+    public function testType(){
+        return $this->belongsTo(TestType::class, 'test_type_id');
+    }
 }

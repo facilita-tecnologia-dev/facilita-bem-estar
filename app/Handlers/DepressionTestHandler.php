@@ -10,19 +10,19 @@ class DepressionTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 20) {
             $severityTitle = 'Grave';
-            $severityColor = 'red';
+            $severityColor = 5;
         } elseif ($totalPoints >= 15) {
             $severityTitle = 'Moderadamente grave';
-            $severityColor = 'orange';
+            $severityColor = 4;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Moderada';
-            $severityColor = 'yellow';
+            $severityColor = 3;
         } elseif ($totalPoints >= 5) {
             $severityTitle = 'Leve';
-            $severityColor = 'blue';
+            $severityColor = 2;
         } else {
             $severityTitle = 'Mínima';
-            $severityColor = 'green';
+            $severityColor = 1;
         }
         
         $suicidalThoughts = isset($answers[9]) && $answers[9] > 0;
@@ -33,22 +33,22 @@ class DepressionTestHandler implements TestHandlerInterface
             'severityTitle' => $severityTitle,
             'suicidal_risk' => $suicidalThoughts,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle, $suicidalThoughts)
+            'recommendations' => $this->getRecommendations($severityColor, $suicidalThoughts)
         ];
     }
     
-    private function getRecommendations(string $severityTitle, bool $suicidalThoughts): array
+    private function getRecommendations(string $severityColor, bool $suicidalThoughts): array
     {
 
         $baseRecommendations = [
-            'Grave' => ['Consultar um profissional imediatamente'],
-            'Moderadamente grave' => ['Consultar um profissional logo'],
-            'Moderada' => ['Consultar um profissional'],
-            'Leve' => ['Considerar conversar com um profissional'],
-            'Mínima' => ['Nenhuma medida recomendada']
+            5 => ['Consultar um profissional imediatamente'],
+            4 => ['Consultar um profissional logo'],
+            3 => ['Consultar um profissional'],
+            2 => ['Considerar conversar com um profissional'],
+            1 => ['Nenhuma medida recomendada']
         ];
         
-        $recommendations = $baseRecommendations[$severityTitle] ?? [];
+        $recommendations = $baseRecommendations[$severityColor] ?? [];
         
         if ($suicidalThoughts) {
             array_unshift($recommendations, 'Buscar ajuda imediata');

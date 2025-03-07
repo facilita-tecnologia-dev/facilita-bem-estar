@@ -20,7 +20,7 @@ class AutoLoginMiddleware
 
 
         if (!Auth::check()) {
-            $user = User::find(4);
+            $user = User::find(5);
             Auth::login($user);
         }
 

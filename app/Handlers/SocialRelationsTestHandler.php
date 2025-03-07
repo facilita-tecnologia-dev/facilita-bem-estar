@@ -10,16 +10,16 @@ class SocialRelationsTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 15) {
             $severityTitle = 'Baixo Risco';
-            $severityColor = 'green';
+            $severityColor = 1;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Risco Moderado';
-            $severityColor = 'yellow';
+            $severityColor = 3;
         } elseif ($totalPoints >= 5) {
             $severityTitle = 'Alto Risco';
-            $severityColor = 'orange';
+            $severityColor = 4;
         } else {
             $severityTitle = 'Risco Crítico';
-            $severityColor = 'red';
+            $severityColor = 5;
         }
         
         return [
@@ -27,19 +27,19 @@ class SocialRelationsTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severityTitle' => $severityTitle,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle)
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityTitle): array
+    private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            'Baixo Risco' => ['Relações interpessoais muito positivas'],
-            'Risco Moderado' => ['Algumas áreas necessitam de pequenos ajustes'],
-            'Alto Risco' => ['Necessidade de intervenções urgentes'],
-            'Risco Crítico' => ['Requer reestruturação imediata das dinâmicas sociais']
+            1 => ['Relações interpessoais muito positivas'],
+            3 => ['Algumas áreas necessitam de pequenos ajustes'],
+            4 => ['Necessidade de intervenções urgentes'],
+            5 => ['Requer reestruturação imediata das dinâmicas sociais']
         ];
         
-        return $recommendations[$severityTitle] ?? [];
+        return $recommendations[$severityColor] ?? [];
     }
 }

@@ -10,16 +10,16 @@ class PressureForResultsTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 33) {
             $severityTitle = 'Pressão Crítica';
-            $severityColor = 'red';
+            $severityColor = 5;
         } elseif ($totalPoints >= 25) {
             $severityTitle = 'Alta Pressão';
-            $severityColor = 'orange';
+            $severityColor = 4;
         } elseif ($totalPoints >= 17) {
             $severityTitle = 'Pressão Moderada';
-            $severityColor = 'yellow';
+            $severityColor = 3;
         } else {
             $severityTitle = 'Baixa Pressão';
-            $severityColor = 'green';
+            $severityColor = 1;
         }
         
         return [
@@ -27,19 +27,19 @@ class PressureForResultsTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severityTitle' => $severityTitle,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle)
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityTitle): array
+    private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            'Pressão Crítica' => ['Buscar suporte da gestão'],
-            'Alta Pressão' => ['Propor discussões sobre cultura organizacional'],
-            'Pressão Moderada' => ['Manter práticas existentes'],
-            'Baixa Pressão' => ['Manter práticas existentes']
+            5 => ['Buscar suporte da gestão'],
+            4 => ['Propor discussões sobre cultura organizacional'],
+            3 => ['Manter atenção nas metas e resultados previstos'],
+            1 => ['Manter práticas existentes']
         ];
         
-        return $recommendations[$severityTitle] ?? [];
+        return $recommendations[$severityColor] ?? [];
     }
 }

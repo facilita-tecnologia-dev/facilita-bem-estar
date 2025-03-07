@@ -10,13 +10,13 @@ class EmotionalDemandsTestHandler implements TestHandlerInterface
         
         if ($totalPoints >= 33) {
             $severityTitle = 'Alta exigência emocional';
-            $severityColor = 'red';
+            $severityColor = 5;
         } elseif ($totalPoints >= 21) {
             $severityTitle = 'Média exigência emocional';
-            $severityColor = 'yellow';
+            $severityColor = 3;
         } else {
             $severityTitle = 'Baixa exigência emocional';
-            $severityColor = 'green';
+            $severityColor = 1;
         }
         
         return [
@@ -24,18 +24,18 @@ class EmotionalDemandsTestHandler implements TestHandlerInterface
             'totalPoints' => $totalPoints,
             'severityTitle' => $severityTitle,
             'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityTitle)
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityTitle): array
+    private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            'Alta exigência emocional' => ['Grande necessidade de controle e supressão emocional'],
-            'Média exigência emocional' => ['Necessidade intermediária de regulação emocional'],
-            'Baixa exigência emocional' => ['Baixa necessidade de controle emocional',],
+            5 => ['Grande necessidade de controle e supressão emocional'],
+            3 => ['Necessidade intermediária de regulação emocional'],
+            1 => ['Baixa necessidade de controle emocional'],
         ];
         
-        return $recommendations[$severityTitle] ?? [];
+        return $recommendations[$severityColor] ?? [];
     }
 }
