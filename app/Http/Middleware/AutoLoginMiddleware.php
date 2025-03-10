@@ -19,10 +19,10 @@ class AutoLoginMiddleware
     {
 
 
-        // if (!Auth::check()) {
-        //     $user = User::find(6);
-        //     Auth::login($user);
-        // }
+        if (!Auth::check()) {
+            $user = User::find(7);
+            Auth::login($user);
+        }
 
 
         // Auth::logout();

@@ -21,10 +21,16 @@ class TestsController
     }
 
     public function index(string $test){
+        // Busca informações do teste no banco de dados
         $testTypeInfo = TestType::query()->where('key_name', '=', $test)->first();
+        
+        // Busca as questões do teste
         $testQuestions = TestQuestion::query()->where('test_type_id', '=', $testTypeInfo->id)->with('questionOptions')->get();
 
-        return view('tests.' . $test, ['testQuestions' => $testQuestions]);
+        return view('tests.' . $test, [
+            'testName' => $testTypeInfo['display_name'],
+            'testQuestions' => $testQuestions
+        ]);
     }
 
     public function handleTestSubmitted(Request $request, $test){
@@ -35,7 +41,7 @@ class TestsController
         }
 
         $validatedData = $this->validateAnswers($request, $testInfo);
-
+        
         $result = $this->testService->processTest($test, $validatedData, $testInfo);
         
 

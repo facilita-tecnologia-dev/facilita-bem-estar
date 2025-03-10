@@ -1,5 +1,5 @@
 @props([
-    'action',
+    'action' => null,
     'post' => null,
     'put' => null,
     'patch' => null,
@@ -11,7 +11,9 @@
 @endphp
 
 <form action="{{ $action }}" class="flex-1 overflow-auto w-full space-y-5" method="{{ $method }}" {{ $attributes }}>
-    @csrf
+    @if($method !== 'GET')
+        @csrf
+    @endif
 
     @if($post)
         @method('post')
@@ -30,7 +32,5 @@
     @endif
 
 
-    <div class="flex flex-col items-center gap-4">
-        {{ $slot }}
-    </div>
+    {{ $slot }}
 </form>

@@ -14,11 +14,11 @@
 
             </x-test.title-container>
             
-            <x-test.questions-form action="{{ route('test.submit', 'autonomia')}}" id="test-form" post>
+            <x-form action="{{ route('test.submit', 'autonomia')}}" id="test-form" post>
 
                 <x-test.questions-list :testQuestions="$testQuestions"  />
 
-            </x-test.questions-form>
+            </x-form>
     
             
             <div class="flex items-center justify-between w-full">

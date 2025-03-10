@@ -10,24 +10,28 @@
                 <p>Lista de pessoas em cada severidade no teste de <span class="font-bold text-teal-700">{{ $testName }}</span></p>
             </div>
 
-            <div class="border border-gray-300 rounded-md">
-                <div class="grid grid-cols-5 bg-teal-700 p-2 rounded-t-md">
-                    <span class="px-2 text-center text-white">Nome</span>
-                    <span class="px-2 text-center text-white">Idade</span>
-                    <span class="px-2 text-center text-white">Cargo</span>
-                    <span class="px-2 text-center text-white">Total de Pontos</span>
-                    <span class="px-2 text-center text-white">Severidade</span>
-                </div>
+            <x-form>
+                <input type="text" name="search" class="border border-teal-700 rounded-md">
+            </x-form>
+
+            <x-table>
+                <x-table.thead>
+                    <x-table.th>Nome</x-table.th>
+                    <x-table.th>Idade</x-table.th>
+                    <x-table.th>Cargo</x-table.th>
+                    <x-table.th>Total de Pontos</x-table.th>
+                    <x-table.th>Severidade</x-table.th>
+                </x-table.thead>
                 @foreach ($testStatsList as $testStats)
-                    <a href="" class="grid grid-cols-5 p-2 hover:bg-gray-200 transition">
-                        <span class="px-2 py-1 text-sm text-center">{{ $testStats['name'] }}</span>
-                        <span class="px-2 py-1 text-sm text-center">{{ $testStats['age'] }}</span>
-                        <span class="px-2 py-1 text-sm text-center">{{ $testStats['occupation'] }}</span>
-                        <span class="px-2 py-1 text-sm text-center">{{ $testStats['testTotalPoints'] }}</span>
-                        <span class="px-2 py-1 text-sm text-center">{{ $testStats['testSeverityTitle'] }}</span>
-                    </a>
+                    <x-table.tr>
+                        <x-table.td>{{ $testStats['name'] }}</x-table.td>
+                        <x-table.td>{{ $testStats['age'] }}</x-table.td>
+                        <x-table.td>{{ $testStats['occupation'] }}</x-table.td>
+                        <x-table.td>{{ $testStats['testTotalPoints'] }}</x-table.td>
+                        <x-table.td :severityColor="$testStats['testSeverityColor']">{{ $testStats['testSeverityTitle'] }}</x-table.td>
+                    </x-table.tr>
                 @endforeach
-            </div>
+            </x-table>
 
         </div>
     </main>

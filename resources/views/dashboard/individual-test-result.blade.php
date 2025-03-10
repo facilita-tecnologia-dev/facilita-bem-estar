@@ -14,7 +14,7 @@
             <div class="flex gap-4 items-start w-full justify-center">
                 @foreach ($testStats as $testName => $testStat)
                     @foreach ($testStat as $severityColorKey => $severityData)
-                        <x-individual-test-card href="{{ route('test-results-list.dashboard', $testName) }}" :severityName="$severityData['severityName']" :severityColor="$severityColorKey">
+                        <x-individual-test-card href="{{ route('test-results-list.dashboard', $testName) }}?severidade={{ $severityData['severityName'] }}" :severityName="$severityData['severityName']" :severityColor="$severityColorKey">
                             <div class="flex flex-col w-full">
                                 @foreach ($severityData['users'] as $username)
                                     <p class="w-full py-1.5 px-3 ">{{ $username }}</p>

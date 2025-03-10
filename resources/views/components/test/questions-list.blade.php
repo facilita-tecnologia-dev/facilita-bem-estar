@@ -2,6 +2,7 @@
     'testQuestions',
 ])
 
+<div class="flex flex-col items-center gap-4">
 @foreach ($testQuestions->toArray() as $key => $question)
     @php
         $questionNumber = $key + 1
@@ -19,3 +20,4 @@
         <span class="text-rose-400 text-md">{{ $message }}</span>
     @enderror
 @endforeach
+</div>

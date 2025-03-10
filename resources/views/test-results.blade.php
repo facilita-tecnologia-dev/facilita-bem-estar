@@ -57,11 +57,11 @@
         };
 
         const severityColors = {
-            'green': '#4CAF50',
-            'blue': '#a9f5ac',
-            'yellow': '#eddd58',
-            'orange': '#FFB74D',
-            'red': '#f55547',
+            1: '#4CAF50',
+            2: '#a9f5ac',
+            3: '#eddd58',
+            4: '#FFB74D',
+            5: '#f55547',
         }
 
         const severityColorPointsMap = {
@@ -201,110 +201,60 @@
             return $recommendation
         }
 
-
-        // Cover page --------------------------------------------------------------
         doc.setFillColor(colors.background);
         doc.rect(0, 0, 210, 297, 'F');
         
         doc.setFillColor(colors.primary);
-        // doc.rect(0, 0, 210, 7, 'F')
 
-        doc.triangle(177, 0, 210, 0, 210, 33, 'F')
-        // doc.triangle(155, 0, 210, 0, 210, 55, 'F')
-        doc.triangle(0, 264, 0, 297, 33, 297, 'F')
+        // Resultados
 
-
-        doc.setFontSize(24);
-        doc.setTextColor(colors.text);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Relatório de Bem-estar Individual', 105, 110, { align: 'center' });
-
-
-        doc.setFillColor(colors.primary);
-        doc.rect(40, 113, 130, 0.5, 'F')
-
-        const today = new Date();
-        const dateStr = today.toLocaleDateString('pt-BR', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-        
-        doc.setFontSize(12);
-        doc.setTextColor(colors.subText);
-        doc.text(dateStr, 105, 120, { align: 'center' });
-        
-        doc.setFontSize(14);
-        doc.setTextColor(colors.text);
-        doc.setFont('helvetica', 'normal');
-        doc.text(userData.userInfo.name, 105, 130, { align: 'center' });
-
-        doc.setFontSize(14);
-        doc.setTextColor(colors.text);
-        doc.setFont('helvetica', 'normal');
-        doc.text(userData.userInfo.gender, 105, 140, { align: 'center' });
-        
-        doc.setFontSize(14);
-        doc.setTextColor(colors.text);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`${userData.userInfo.age} anos`, 105, 150, { align: 'center' });
-
-        doc.setFontSize(14);
-        doc.setTextColor(colors.text);
-        doc.setFont('helvetica', 'normal');
-        doc.text(userData.userInfo.occupation, 105, 160, { align: 'center' });
-        
-        // ----------------------------------------------------------------------
-
-
-        // New page - Summary
-
-        doc.addPage();
         doc.setFillColor('white');
         doc.rect(0, 0, 210, 297, 'F');
         
-        addHeader('Resultado dos testes', 20, 20);
+        addHeader(userData.userInfo.name, 20, 20);
+        addText(`${userData.userInfo.age} anos - ${userData.userInfo.occupation}`, 27, colors.subText, 12);
         
         Object.values(userData.testResults).forEach((test, index) => {
+            console.log(test);
             doc.setFont('helvetica', 'normal');
-            addText(`${test.testName}`, (35 + (18 * index)), null, 12);
+            addText(`${test.testName}`, (38 + (18 * index)), null, 12);
             doc.setFont('helvetica', 'bold')
-            addText(`${test.recommendations[0]}`, (42 + (18 * index)), severityColors[test['severityColor']], 14);
+            addText(`${test.recommendations[0]}`, (45 + (18 * index)), severityColors[test['severityColor']], 14);
             doc.setFillColor(colors.text);
-            doc.rect(20, (45 + (18 * index)), 170, 0.1, 'F')
+            doc.rect(20, (48 + (18 * index)), 170, 0.1, 'F')
         });
         
 
-        const severityPoints = Object.values(groupedData.testResults).map((test) => {
-            return severityColorPointsMap[test.severityColor]
-        })
+        // const severityPoints = Object.values(groupedData.testResults).map((test) => {
+        //     return severityColorPointsMap[test.severityColor]
+        // })
 
-        const totalPoints = severityPoints.reduce((acc, item) => acc + item, 0)
-        const severityPercentage = Math.round(totalPoints / (5 * Object.values(groupedData.testResults).length) * 100)
-        const totalSeverity = getTotalResultSeverity(totalPoints)
+        // const totalPoints = severityPoints.reduce((acc, item) => acc + item, 0)
+        // const severityPercentage = Math.round(totalPoints / (5 * Object.values(groupedData.testResults).length) * 100)
+        // const totalSeverity = getTotalResultSeverity(totalPoints)
         
-        // Summary metrics with circular progress indicators
-        doc.setFont('helvetica', 'normal');
-        addText(`Índice Geral de Saúde Mental`, 232, null, 12);
-        drawCircleProgress(35, 254, 15, severityPercentage, colors.primary, 'Activity', `${severityPercentage}%`);
+        // // Summary metrics with circular progress indicators
+        // doc.setFont('helvetica', 'normal');
+        // addText(`Índice Geral de Saúde Mental`, 232, null, 12);
+        // drawCircleProgress(35, 254, 15, severityPercentage, colors.primary, 'Activity', `${severityPercentage}%`);
 
 
-        const content = totalSeverity['content'];
+        // const content = totalSeverity['content'];
 
-        // Definir a largura máxima para o texto
-        const maxWidth = 200; // Largura máxima do texto (em unidades do PDF)
+        // // Definir a largura máxima para o texto
+        // const maxWidth = 200; // Largura máxima do texto (em unidades do PDF)
 
-        // Dividir o texto em várias linhas
-        const lines = doc.splitTextToSize(content, maxWidth);
+        // // Dividir o texto em várias linhas
+        // const lines = doc.splitTextToSize(content, maxWidth);
 
-        // addText(totalSeverity, 255, null, 12);
-        doc.setFontSize(14);
-        doc.setTextColor(colors.text);
-        doc.text(totalSeverity['title'], 55, 249);
+        // // addText(totalSeverity, 255, null, 12);
+        // doc.setFontSize(14);
+        // doc.setTextColor(colors.text);
+        // doc.text(totalSeverity['title'], 55, 249);
 
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(lines, 55, 255);
+        // doc.setFontSize(10);
+        // doc.setFont('helvetica', 'normal');
+        // doc.text(lines, 55, 255);
         
         // Footer on all pages
         const pageCount = doc.getNumberOfPages();

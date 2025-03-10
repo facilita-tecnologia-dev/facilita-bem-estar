@@ -1,3 +1,9 @@
+@php
+
+dump(session()->all());
+@endphp
+
+
 <x-layouts.app>
     
         <div class="bg-white rounded-md w-full max-w-screen-md min-h-2/4 max-h-3/4 shadow-md p-10 flex flex-col items-center justify-center gap-8">
@@ -14,11 +20,11 @@
 
             </x-test.title-container>
             
-            <x-test.questions-form action="{{ route('test.submit', 'estresse')}}" id="test-form" post>
+            <x-form action="{{ route('test.submit', 'estresse')}}" id="test-form" post>
 
                 <x-test.questions-list :testQuestions="$testQuestions"  />
 
-            </x-test.questions-form>
+            </x-form>
     
             
             <div class="flex items-center justify-between w-full">
