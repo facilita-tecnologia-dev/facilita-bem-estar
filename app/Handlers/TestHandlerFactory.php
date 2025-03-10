@@ -7,10 +7,8 @@ use App\Repositories\TestRepository;
 
 class TestHandlerFactory
 {
-    public function getHandler(string $test, TestType $testInfo): TestHandlerInterface
-    {
-        $testInfo = $testInfo;
-        
+    public function getHandler(TestType $testInfo): TestHandlerInterface
+    {   
         if (!$testInfo) {
             return new DefaultTestHandler();
         }

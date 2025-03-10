@@ -25,19 +25,19 @@ class DepressionTestHandler implements TestHandlerInterface
             $severityColor = 1;
         }
         
-        $suicidalThoughts = isset($answers[9]) && $answers[9] > 0;
+        // $suicidalThoughts = isset($answers[9]) && $answers[9] > 0;
         
         return [
             'answers' => $answers,
-            'totalPoints' => $totalPoints,
-            'severityTitle' => $severityTitle,
-            'suicidal_risk' => $suicidalThoughts,
-            'severityColor' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityColor, $suicidalThoughts)
+            'total_points' => $totalPoints,
+            'severity_title' => $severityTitle,
+            // 'suicidal_risk' => $suicidalThoughts,
+            'severity_color' => $severityColor,
+            'recommendations' => $this->getRecommendations($severityColor)
         ];
     }
     
-    private function getRecommendations(string $severityColor, bool $suicidalThoughts): array
+    private function getRecommendations(string $severityColor): array
     {
 
         $baseRecommendations = [
@@ -50,9 +50,9 @@ class DepressionTestHandler implements TestHandlerInterface
         
         $recommendations = $baseRecommendations[$severityColor] ?? [];
         
-        if ($suicidalThoughts) {
-            array_unshift($recommendations, 'Buscar ajuda imediata');
-        }
+        // if ($suicidalThoughts) {
+        //     array_unshift($recommendations, 'Buscar ajuda imediata');
+        // }
         
         return $recommendations;
     }

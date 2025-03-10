@@ -13,4 +13,8 @@ class TestType extends Model
     public function tests(){
         return $this->hasMany(TestForm::class, 'test_type_id');
     }
+
+    public function questions(){
+        return $this->hasMany(TestQuestion::class, 'test_type_id');
+    }
 }

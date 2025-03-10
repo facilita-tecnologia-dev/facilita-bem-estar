@@ -19,7 +19,6 @@ class TestTypeFactory extends Factory
         return [
             'key_name' => fake()->name(),
             'display_name' => fake()->name(),
-            'next_step' => fake()->name(),
             'number_of_questions' => fake()->numberBetween(1,9),
             'handler_type' => fake()->word(),
         ];

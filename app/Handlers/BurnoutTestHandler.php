@@ -21,9 +21,9 @@ class BurnoutTestHandler implements TestHandlerInterface
         
         return [
             'answers' => $answers,
-            'totalPoints' => $totalPoints,
-            'severityTitle' => $severityTitle,
-            'severityColor' => $severityColor,
+            'total_points' => $totalPoints,
+            'severity_title' => $severityTitle,
+            'severity_color' => $severityColor,
             'recommendations' => $this->getRecommendations($severityColor)
         ];
     }

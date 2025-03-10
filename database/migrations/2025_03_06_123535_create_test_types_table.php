@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('key_name');
             $table->string('display_name');
-            $table->string('next_step');
+            $table->string('statement');
+            $table->string('reference');
             $table->string('number_of_questions');
             $table->string('handler_type');
+            $table->integer('order');
             $table->timestamps();
         });
     }

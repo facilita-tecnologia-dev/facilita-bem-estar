@@ -5,16 +5,16 @@
             <x-test.title-container>
 
                 <x-test.heading>
-                    2 - Depressão
+                    {{ $testIndex }} - {{ $testName }}
                 </x-test.heading>
                 
                 <x-test.subtitle>
-                    Nas últimas 2 semanas, com que frequência você foi incomodado por algum dos problemas abaixo?
+                    {{ $testStatement }}
                 </x-test.subtitle>
 
             </x-test.title-container>
             
-            <x-form action="{{ route('test.submit', 'depressao')}}" id="test-form" post>
+            <x-form action="{{ route('test.submit', $testIndex)}}" id="test-form" post>
 
                 <x-test.questions-list :testQuestions="$testQuestions"  />
 
@@ -23,8 +23,8 @@
             
             <div class="flex items-center justify-between w-full">
 
-                <x-actions.anchor href="{{ route('test', 'ansiedade') }}" variant="outline" color="danger">
-                    Refazer teste anterior
+                <x-actions.anchor href="{{ route('test', $testIndex - 1) }}" variant="outline" color="danger">
+                    Cancelar
                 </x-actions.anchor>
 
                 <x-actions.button form="test-form" type="submit" variant="solid" color="success">
@@ -32,11 +32,18 @@
                 </x-actions.button>
 
             </div>
-            
+
         </div>
 
+        @if(session('errors'))
+            <div class="bg-red-400 p-3 rounded-md fixed right-5 bottom-5">
+                <p class="text-white font-medium" >Todas as perguntas devem ser respondidas!</p>
+            </div>
+        @endif
+
+        
         <x-footer>
-            Baseado no PHQ-9 (Patient Health Questionnaire-9) [Kroenke et al., 2001]
+            {{ $testReference }}
         </x-footer>
 
 </x-layouts.app>

@@ -54,12 +54,12 @@
 
 
     // Tests
-
     const generalResults = @json($generalResults)    
     const labels = Object.keys(generalResults)
+    
+    console.log(Object.values(generalResults));
 
    
-
     const testSeverityColors = {
         1: "#4CAF50",
         2: "#a9f5ac",
@@ -68,90 +68,25 @@
         5: "#f55547",
     }
 
-    // const testSeverityColors = {
-    //     "Ansiedade": {
-    //         1: "#4CAF50",
-    //         2: "#a9f5ac",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Depressão": {
-    //         1: "#4CAF50",
-    //         2: "#a9f5ac",
-    //         3: "#eddd58",
-    //         4: "#FFB74D",
-    //         5: "#f55547",
-    //     },
-    //     "Pressão no Trabalho": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Pressão por Resultados": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         4: "#FFB74D",
-    //         5: "#f55547",
-    //     },
-    //     "Insegurança": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Conflitos": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Relações Sociais": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         4: "#FFB74D",
-    //         5: "#f55547",
-    //     },
-    //     "Exigências Emocionais": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Autonomia": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Burnout": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    //     "Estresse": {
-    //         1: "#4CAF50",
-    //         3: "#eddd58",
-    //         5: "#f55547",
-    //     },
-    // }
-
     Object.values(generalResults).forEach((testType, index) => {
-      
         const testChartId = `chart_${index}`;
         const testChartWrapper = document.getElementById(labels[index])
-
+        
         const testChartSeverities = Object.keys(testType)
+        
+        const tests = Object.values(testType)
 
-        const testChartSeverityColors = Object.values(testType)
-
-        const testChartBackgroundColors = testChartSeverityColors.map(severity => {
-            severityKey = severity[0].severityColor
+        const testChartBackgroundColors = tests.map(test => {
+            severityKey = test[0].severity_color
             
             return severityKey in testSeverityColors
             ? testSeverityColors[severityKey]
             : '#cccccc';
         });
 
-        const testChartData = testChartSeverities.map(severity => (
-                            testType[severity] ? testType[severity].length : 0
-        ));
-
+        const testChartData = tests.map(test => {
+            return tests ? test.length : 0
+        });
         
         createNewChart(testChartWrapper, testChartId, testChartSeverities, testChartData, testChartBackgroundColors)
     });

@@ -20,36 +20,56 @@ class TestsController
         $this->testService = $testService;   
     }
 
-    public function index(string $test){
+    public function index(string $index){
+        if($index == 0){
+            return view('welcome');
+        }
+
         // Busca informações do teste no banco de dados
-        $testTypeInfo = TestType::query()->where('key_name', '=', $test)->first();
+        $testTypeInfo = TestType::query()->where('order', '=', $index)->first();
         
+        $testIndex = $testTypeInfo['order'];
+        $testName = $testTypeInfo['display_name'];
+        $testStatement = $testTypeInfo['statement'];
+        $testReference = $testTypeInfo['reference'];
+
         // Busca as questões do teste
         $testQuestions = TestQuestion::query()->where('test_type_id', '=', $testTypeInfo->id)->with('questionOptions')->get();
-
-        return view('tests.' . $test, [
-            'testName' => $testTypeInfo['display_name'],
-            'testQuestions' => $testQuestions
+        
+        return view('test', [
+            'testIndex' => $testIndex,
+            'testName' => $testName,
+            'testStatement' => $testStatement,
+            'testQuestions' => $testQuestions,
+            'testReference' => $testReference,
         ]);
     }
 
-    public function handleTestSubmitted(Request $request, $test){
-        $testInfo = TestType::query()->where('key_name', '=', $test)->first();
+    public function handleTestSubmit(Request $request, $testIndex){
 
+        // Busca as informações para verificar se o teste existe
+        $testInfo = TestType::query()->where('order', '=', $testIndex)->first();
+        
         if(!$testInfo){
             return back();
         }
 
-        $validatedData = $this->validateAnswers($request, $testInfo);
+        // Gera as regras de validação dinamicamente
+        $validationRules = $this->generateValidationRules($testInfo);
         
-        $result = $this->testService->processTest($test, $validatedData, $testInfo);
+        // Valida as respostas
+        $validatedData = $request->validate($validationRules);
+
+        // Processa o teste
+        $this->testService->processTest($testIndex, $validatedData, $testInfo);
         
 
-        if($test === 'estresse'){
+        // Se for o último teste
+        if($testIndex === "11"){
             $allTestResults = $this->getAllResultsFromSession();
             
             $storedResults = $this->storeResultsOnDatabase($allTestResults);
-
+            
             if(!$storedResults){
                 return back();
             }
@@ -57,26 +77,26 @@ class TestsController
             return to_route('test-results');
         }
 
-        if(!empty($testInfo['next_step'])){
-            return to_route('test', $testInfo['next_step']);
+        // Envia para o próximo passo
+        if(!empty($testInfo['order'])){
+            return to_route('test', $testIndex + 1);
         }
 
         return back();
     }
 
-    private function validateAnswers($request, $testInfo){
+    private function generateValidationRules($testInfo): array {
         $validationRules = [];
         for ($i = 1; $i <= $testInfo['number_of_questions']; $i++) {
             $validationRules['question_' . $i] = 'required';
         }
 
-        $validatedData = $request->validate($validationRules);
-        return $validatedData;
+        return $validationRules;
     }
 
-    private function getAllResultsFromSession(){
+    private function getAllResultsFromSession(): array {
         $allTestResults = collect(session()->all())
-        ->filter(function ($value, $key) {
+        ->filter(function ($_, $key) {
             return str_ends_with($key, '_result');
         })
         ->toArray();
@@ -84,21 +104,21 @@ class TestsController
         return $allTestResults;
     }
 
-    private function storeResultsOnDatabase($allTestResults){
+    private function storeResultsOnDatabase($allTestResults): array {
         $newTestCollection = TestCollection::create([
             'user_id' => Auth::user()->id,
         ]);
   
         foreach($allTestResults as $testResult){
-            $testType = TestType::query()->where('display_name', '=', $testResult['testName'])->first();
+            $testType = TestType::query()->where('display_name', '=', $testResult['test_name'])->first();
 
             TestForm::create([
                 'test_collection_id' => $newTestCollection->id,
-                'testName' => $testResult['testName'],
+                'test_name' => $testResult['test_name'],
                 'test_type_id' => $testType->id,
-                'total_points' => $testResult['totalPoints'],
-                'severityTitle' => $testResult['severityTitle'],
-                'severityColor' => $testResult['severityColor'],
+                'total_points' => $testResult['total_points'],
+                'severity_title' => $testResult['severity_title'],
+                'severity_color' => $testResult['severity_color'],
                 'recommendation' => $testResult['recommendations'][0]
             ]);
         }

@@ -10,7 +10,7 @@
                  da Facilita!
             </h1>
             
-            <a href="{{ route('test', 'ansiedade') }}" class="bg-teal-700 rounded-md px-4 py-1 text-base font-medium text-teal-50 text-center hover:bg-teal-400 transition">
+            <a href="{{ route('test', 1) }}" class="bg-teal-700 rounded-md px-4 py-1 text-base font-medium text-teal-50 text-center hover:bg-teal-400 transition">
                 Começar
             </a>
         </div>

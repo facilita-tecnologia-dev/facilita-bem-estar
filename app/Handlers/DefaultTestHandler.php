@@ -8,7 +8,7 @@ class DefaultTestHandler implements TestHandlerInterface
     {
         return [
             'answers' => $answers,
-            'totalPoints' => array_sum($answers),
+            'total_points' => array_sum($answers),
             'recommendations' => []
         ];
     }

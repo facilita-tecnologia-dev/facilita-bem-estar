@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'depressao',
                 'numberOfQuestions' => 7,
                 'handlerType' => 'anxiety',
+                'statement' => 'Nas últimas 2 semanas, com que frequência você foi incomodado pelos problemas abaixo?',
+                'reference' => 'Baseado no GAD-7 (Generalized Anxiety Disorder-7) [Spitzer et al., 2006]',
+                'order' => 1,
                 'questions' => [
                     [
                         'statement' => 'Sentir-se nervoso, ansioso ou muito tenso',
@@ -188,6 +191,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'pressao-no-trabalho',
                 'numberOfQuestions' => 9,
                 'handlerType' => 'depression',
+                'order' => 2,
+                'statement' => 'Nas últimas 2 semanas, com que frequência você foi incomodado pelos problemas abaixo?',
+                'reference' => 'Baseado no PHQ-9 (Patient Health Questionnaire-9) [Kroenke et al., 2001]',
                 'questions' => [
                     [
                         'statement' => 'Pouco interesse ou prazer em fazer as coisas',
@@ -386,6 +392,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'pressao-por-resultados',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'pressure-at-work',
+                'order' => 3,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado na ISO 45003:2021 e Copenhagen Psychosocial Questionnaire (COPSOQ) [Kristensen et al., 2005]',
                 'questions' => [
                     [
                         'statement' => 'Com que frequência você não tem tempo para completar todas as suas tarefas?',
@@ -595,6 +604,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'inseguranca',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'pressure-for-results',
+                'order' => 4,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado na ISO 45003:2021 e Job Content Questionnaire (JCQ) [Karasek et al., 1998]',
                 'questions' => [
                     [
                         'statement' => 'Sinto-me pressionado a atingir metas irrealistas',
@@ -804,6 +816,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'conflitos',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'insecurity',
+                'order' => 5,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado no Job Insecurity Scale (JIS) [De Witte, 2000] e ISO 45003:2021',
                 'questions' => [
                     [
                         'statement' => 'Sinto-me inseguro sobre o futuro do meu emprego',
@@ -1013,6 +1028,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'relacoes-sociais',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'conflicts',
+                'order' => 6,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado no Interpersonal Conflict at Work Scale (ICAWS) [Spector & Jex, 1998]',
                 'questions' => [
                     [
                         'statement' => 'Com que frequência você discorda com outros no trabalho?',
@@ -1222,6 +1240,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'exigencias-emocionais',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'social-relations',
+                'order' => 7,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado no COPSOQ II [Pejtersen et al., 2010] e ISO 45003:2021',
                 'questions' => [
                     [
                         'statement' => 'Você recebe ajuda e suporte dos seus colegas?',
@@ -1431,6 +1452,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'autonomia',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'emotional-demands',
+                'order' => 8,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado no COPSOQ II [Pejtersen et al., 2010]',
                 'questions' => [
                     [
                         'statement' => 'Seu trabalho coloca você em situações emocionalmente perturbadoras?',
@@ -1640,6 +1664,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'burnout',
                 'numberOfQuestions' => 8,
                 'handlerType' => 'autonomy',
+                'order' => 9,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado no Job Autonomy Scale [Breaugh, 1985] e ISO 45003:2021',
                 'questions' => [
                     [
                         'statement' => 'Posso decidir como fazer meu trabalho',
@@ -1849,6 +1876,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => 'estresse',
                 'numberOfQuestions' => 9,
                 'handlerType' => 'burnout',
+                'order' => 10,
+                'statement' => 'Responda numa escala de 0 (Nunca) a 6 (Todos os dias):',
+                'reference' => 'Baseado no Maslach Burnout Inventory (MBI) [Maslach et al., 1996]',
                 'questions' => [
                     [
                         'statement' => 'Sinto-me emocionalmente esgotado com meu trabalho',
@@ -2155,6 +2185,9 @@ class DatabaseSeeder extends Seeder
                 'nextStep' => '',
                 'numberOfQuestions' => 10,
                 'handlerType' => 'stress',
+                'order' => 11,
+                'statement' => 'Responda numa escala de 1 (Nunca/Quase nunca) a 5 (Sempre):',
+                'reference' => 'Baseado na Perceived Stress Scale (PSS) [Cohen et al., 1983]',
                 'questions' => [
                     [
                         'statement' => 'Ficou chateado por algo que aconteceu inesperadamente?',
@@ -2410,80 +2443,64 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        // $testsPointsMap = [
-        //     'ansiedade' => [
-        //         'min' => 0,
-        //         'max' => 21,
-        //     ],
-        //     'depressao' => [
-        //         'min' => 0,
-        //         'max' => 27,
-        //     ],
-        //     'pressao-no-trabalho' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'pressao-por-resultados' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'inseguranca' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'conflitos' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'relacoes-sociais' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'exigencias-emocionais' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'autonomia' => [
-        //         'min' => 8,
-        //         'max' => 40,
-        //     ],
-        //     'burnout' => [
-        //         'min' => 0,
-        //         'max' => 54,
-        //     ],
-        //     'estresse' => [
-        //         'min' => 0,
-        //         'max' => 40,
-        //     ],
-        // ];
+        $testsPointsMap = [
+            'ansiedade' => [
+                'min' => 0,
+                'max' => 21,
+            ],
+            'depressao' => [
+                'min' => 0,
+                'max' => 27,
+            ],
+            'pressao-no-trabalho' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'pressao-por-resultados' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'inseguranca' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'conflitos' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'relacoes-sociais' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'exigencias-emocionais' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'autonomia' => [
+                'min' => 8,
+                'max' => 40,
+            ],
+            'burnout' => [
+                'min' => 0,
+                'max' => 54,
+            ],
+            'estresse' => [
+                'min' => 0,
+                'max' => 40,
+            ],
+        ];
 
-        // foreach($users as $user){
-        //     $testCollection = TestCollection::factory()->create([
-        //         'user_id' => $user->id,
-        //     ]);
-
-        //     for($i = 0; $i < 11; $i++){
-        //         $totalPoints = rand($testsPointsMap[$tests[$i]['keyName']]['min'], );
-
-
-        //         TestForm::factory()->create([
-        //             'test_collection_id' => $testCollection->id,
-        //             'testName' => $tests[$i]['displayName'],
-        //             'total_points' => $totalPoints,
-        //             'severityTitle' => ,
-        //             'severityColor' => ,
-        //             'recommendation' => ,
-        //         ])
-        //     }
-        // }
+        $testsValues = array_values($tests);
         
         foreach($tests as $testType){
             $storedTestType = TestType::factory()->create([
                 'key_name' => $testType['keyName'],
                 'display_name' => $testType['displayName'],
-                'next_step' => $testType['nextStep'],
                 'number_of_questions' => $testType['numberOfQuestions'],
                 'handler_type' => $testType['handlerType'],
+                'order' => $testType['order'],
+                'reference' => $testType['reference'],
+                'statement' => $testType['statement'],
             ]);
 
 
@@ -2503,7 +2520,27 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        
+        foreach($users as $user){
+            $testCollection = TestCollection::factory()->create([
+                'user_id' => $user->id,
+            ]);
+
+
+            for($i = 0; $i < 11; $i++){
+                $totalPoints = rand($testsPointsMap[$testsValues[$i]['keyName']]['min'], $testsPointsMap[$testsValues[$i]['keyName']]['max']);
+
+
+                TestForm::factory()->create([
+                    'test_collection_id' => $testCollection->id,
+                    'test_name' => $testsValues[$i]['displayName'],
+                    'total_points' => $totalPoints,
+                    'severity_title' => 'oi',
+                    'severity_color' => 'klçda',
+                    'recommendation' => 'djalsd',
+                    'test_type_id' => $i + 1,
+                ]);
+            }
+        }
         
     }
 }

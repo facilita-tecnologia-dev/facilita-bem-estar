@@ -1,27 +1,36 @@
-
+@dump($testStats)
 <x-layouts.app>
     <main class="w-screen h-screen flex items-center justify-center">
         <div class="bg-white rounded-md w-full max-w-screen-2xl min-h-2/4 max-h-screen shadow-md m-8 p-10 flex flex-col items-center justify-center gap-6">
             <h1 class="text-4xl font-semibold leading-tight tracking-tight text-teal-700  text-center">
-                {{ array_keys($testStats)[0] }}
+                {{ $testName }}
             </h1>
 
             <div class="text-center">
-                <p>Lista de pessoas em cada severidade no teste de <span class="font-bold text-teal-700">{{ array_keys($testStats)[0] }}</span></p>
+                <p>Listagem de setores no teste de <span class="font-bold text-teal-700">{{ $testName }}</span></p>
             </div>
 
             
-            <div class="flex gap-4 items-start w-full justify-center">
-                @foreach ($testStats as $testName => $testStat)
-                    @foreach ($testStat as $severityColorKey => $severityData)
-                        <x-individual-test-card href="{{ route('test-results-list.dashboard', $testName) }}?severidade={{ $severityData['severityName'] }}" :severityName="$severityData['severityName']" :severityColor="$severityColorKey">
-                            <div class="flex flex-col w-full">
-                                @foreach ($severityData['users'] as $username)
-                                    <p class="w-full py-1.5 px-3 ">{{ $username }}</p>
-                                @endforeach
-                            </div>
-                        </x-individual-test-card>
-                    @endforeach
+            <div class="grid grid-cols-5 gap-4 w-full justify-center items-start">
+                @foreach ($testStats as $occupationName => $testSeverity)
+                        <x-table>
+                            <x-table.thead>
+                                <x-table.th>{{ $occupationName }}</x-table.th>
+                            </x-table.thead>
+                            @foreach ($testSeverity['severities'] as $severityName => $testsQty )
+                                <div class="
+                                    w-full flex items-center justify-between
+                                    @if(!$loop->last) border-b border-zinc-300 @endif
+                                ">
+                                
+                                    <x-table.td>{{ $severityName }}</x-table.td>
+                                    <x-table.td severity_color="{{ $testsQty['severity_color'] }}">
+                                        {{ round($testsQty['count'] / $testSeverity['total'] * 100) }}%
+                                    </x-table.td>
+                                
+                                </div>
+                            @endforeach
+                        </x-table>
                 @endforeach
             </div>
 

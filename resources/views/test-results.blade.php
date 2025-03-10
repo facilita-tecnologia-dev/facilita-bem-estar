@@ -1,17 +1,17 @@
-{{-- @dump($testResults) --}}
+{{-- @dd($testResults, $userInfo) --}}
 <x-layouts.app>
-    <div class="bg-white rounded-md w-full max-w-screen-2xl min-h-2/4 max-h-screen shadow-md p-10 flex flex-col items-center justify-center gap-6">
+    <div class="bg-white rounded-md w-full max-w-screen-3xl min-h-2/4 max-h-screen shadow-md p-10 flex flex-col items-center justify-center gap-6">
         <h1 class="text-4xl font-semibold leading-tight tracking-tight text-teal-700 text-center">
             Resultado dos testes
         </h1>
 
-        <div class="text-center">
-            <p>Nome do colaborador: Júlio da Silva</p>
-            <p>Função do colaborador: Operador de Prensa</p>
+        <div class="text-left max-w-sm">
+            <p>Nome do colaborador: {{ $userInfo['name'] }}</p>
+            <p>Função do colaborador: {{ $userInfo['occupation'] }}</p>
         </div>
 
 
-        <div class="grid grid-cols-6 gap-5 w-full max-w-10/12 justify-center">            
+        <div class="grid grid-cols-6 gap-5 w-full max-w-12/12 justify-center">            
             @foreach ($testResults as $testResult)
                 <x-result-card :testResult="$testResult" />
             @endforeach
@@ -27,9 +27,11 @@
 
 <script>
 
-    const groupedData = @json($groupedData)    
+    const userInfo = @json($userInfo)    
+    const testResults = @json($testResults)    
+  
 
-    function generateMentalCareReport(userData) {
+    function generateMentalCareReport(userInfo, testResults) {
         // Initialize jsPDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({
@@ -210,16 +212,16 @@
 
         doc.setFillColor('white');
         doc.rect(0, 0, 210, 297, 'F');
+
+        addHeader(userInfo.name, 20, 20);
+        addText(`${userInfo.age} anos - ${userInfo.occupation}`, 27, colors.subText, 12);
         
-        addHeader(userData.userInfo.name, 20, 20);
-        addText(`${userData.userInfo.age} anos - ${userData.userInfo.occupation}`, 27, colors.subText, 12);
-        
-        Object.values(userData.testResults).forEach((test, index) => {
+        testResults.forEach((test, index) => {
             console.log(test);
             doc.setFont('helvetica', 'normal');
-            addText(`${test.testName}`, (38 + (18 * index)), null, 12);
+            addText(`${test.test_name}`, (38 + (18 * index)), null, 12);
             doc.setFont('helvetica', 'bold')
-            addText(`${test.recommendations[0]}`, (45 + (18 * index)), severityColors[test['severityColor']], 14);
+            addText(`${test.recommendation}`, (45 + (18 * index)), severityColors[test['severity_color']], 14);
             doc.setFillColor(colors.text);
             doc.rect(20, (48 + (18 * index)), 170, 0.1, 'F')
         });
@@ -273,7 +275,7 @@
 
     // Generate and save the PDF
     function downloadPDF() {
-        const doc = generateMentalCareReport(groupedData);
+        const doc = generateMentalCareReport(userInfo, testResults);
         doc.save(`relatorio_de_bem_estar.pdf`);
     }
 

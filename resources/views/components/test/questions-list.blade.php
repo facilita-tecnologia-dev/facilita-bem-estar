@@ -17,7 +17,7 @@
     </div>
     
     @error("question_$questionNumber")
-        <span class="text-rose-400 text-md">{{ $message }}</span>
+        <span class="bg-rose-400 text-white text-md py-0.5 px-2 rounded-md">{{ $message }}</span>
     @enderror
 @endforeach
 </div>
