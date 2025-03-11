@@ -38,11 +38,16 @@ class IndividualTestResultController
             $testStats[$collection->user->occupation]['severities'][$severityTitle]['count'] += 1;
             $testStats[$collection->user->occupation]['severities'][$severityTitle]['severity_color'] = (int) $severityColor;
         };
+        
+        $testsSorted = array_map(function($item){
+            $item['severities'] = $this->bubbleSortSeverities($item['severities']);
 
+            return $item;
+        }, $testStats);
         
         return view('dashboard.individual-test-result', [
             'testName' => $testName,
-            'testStats' => $testStats
+            'testStats' => $testsSorted
         ]);
     }
 
@@ -61,5 +66,28 @@ class IndividualTestResultController
 
 
         return $testResults;
-   }
+    }
+
+    private function bubbleSortSeverities($array) {
+        $keys = array_keys($array);
+        $n = count($keys);
+        
+        for ($i = 0; $i < $n - 1; $i++) {
+            for ($j = 0; $j < $n - $i - 1; $j++) {
+                if ($array[$keys[$j]]['severity_color'] < $array[$keys[$j + 1]]['severity_color']) {
+                    // Swap the elements
+                    $temp = $keys[$j];
+                    $keys[$j] = $keys[$j + 1];
+                    $keys[$j + 1] = $temp;
+                }
+            }
+        }
+        
+        $result = [];
+        foreach ($keys as $key) {
+            $result[$key] = $array[$key];
+        }
+        
+        return $result;
+    }
 }

@@ -23,52 +23,6 @@ class DashboardController
     }
 
 
-    // public function renderIndividualTestList(Request $request, $test){
-    //     $severity = $request['severidade'];
-    //     $search = $request['search'];
-
-    //     if($severity){
-    //         $testResults = $this->getIndividualTestStats($test, $severity, $search);
-    //     } else{
-    //         $testResults = $this->getIndividualTestStats($test);
-    //     }
-
-
-
-    //     $testStatsList = [];
-
-    //     foreach($testResults as $key => $testCollection){
-
-    //         if($testCollection['tests']){
-    //             $userName = $testCollection["user"]["name"];
-    //             $userAge = $testCollection["user"]["age"];
-    //             $userOccupation = $testCollection["user"]["occupation"];
-                
-    //             $testTotalPoints = $testCollection["tests"][0]["total_points"];
-    //             $testSeverityTitle = $testCollection["tests"][0]['severityTitle'];
-    //             $testSeverityColor = $testCollection["tests"][0]['severityColor'];
-    //             $testRecommendation = $testCollection["tests"][0]['recommendation'];
-                
-    //             $testStatsList[] = [
-    //                 'name' => $userName,
-    //                 'age' => $userAge,
-    //                 'occupation' => $userOccupation,
-    //                 'testTotalPoints' => $testTotalPoints,                
-    //                 'testSeverityTitle' => $testSeverityTitle,
-    //                 'testSeverityColor' => $testSeverityColor,
-    //                 'testRecommendation' => $testRecommendation,
-    //             ];
-    //         }
-    //     }
-
-
-    //     return view('dashboard.individual-test-list', [
-    //         'testName' => $test,
-    //         'testStatsList' => $testStatsList
-    //     ]);
-    // }
-
-
     private function getUsersLatestTestCollections(){
         $usersLatestTestCollections = TestCollection::whereIn('created_at', function($query){
             $query->selectRaw('MAX(created_at)')

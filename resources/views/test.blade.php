@@ -14,7 +14,7 @@
 
             </x-test.title-container>
             
-            <x-form action="{{ route('test.submit', $testIndex)}}" id="test-form" post>
+            <x-form action="{{ route('test.submit', $testIndex)}}" class="flex-1 overflow-auto w-full space-y-5" id="test-form" post>
 
                 <x-test.questions-list :testQuestions="$testQuestions"  />
 

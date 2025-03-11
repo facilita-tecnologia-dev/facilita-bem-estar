@@ -10,7 +10,7 @@
     $method = $post || $put || $patch || $delete ? 'POST':'GET'
 @endphp
 
-<form action="{{ $action }}" class="flex-1 overflow-auto w-full space-y-5" method="{{ $method }}" {{ $attributes }}>
+<form action="{{ $action }}" {{ $attributes->merge(['class' => '']) }} method="{{ $method }}">
     @if($method !== 'GET')
         @csrf
     @endif
@@ -34,3 +34,4 @@
 
     {{ $slot }}
 </form>
+
