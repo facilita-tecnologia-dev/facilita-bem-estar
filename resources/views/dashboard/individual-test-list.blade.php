@@ -32,29 +32,24 @@
                         <x-table.head.tr>
                             <x-table.head.th onclick="reorderTable(event, 0)">
                                 Nome
-                                <i class="fa-solid fa-arrows-up-down ml-2"></i>
                             </x-table.head.th>
                             <x-table.head.th onclick="reorderTable(event, 1)">
                                 Idade
-                                <i class="fa-solid fa-arrows-up-down ml-2"></i>
                             </x-table.head.th>
                             <x-table.head.th onclick="reorderTable(event, 2)">
                                 Setor
-                                <i class="fa-solid fa-arrows-up-down ml-2"></i>
                             </x-table.head.th>
                             <x-table.head.th onclick="reorderTable(event, 3)">
                                 Total de Pontos
-                                <i class="fa-solid fa-arrows-up-down ml-2"></i>
                             </x-table.head.th>
                             <x-table.head.th onclick="reorderTable(event, 4)">
-                                Severidade
-                                <i class="fa-solid fa-arrows-up-down ml-2"></i>
+                                {{ $testName }}
                             </x-table.head.th>
                         </x-table.head.tr>
                     </x-table.head>
                     <x-table.body class="block overflow-auto h-[365px] scrollbar-hide">
                         @foreach ($testStatsList as $testStats)
-                            <x-table.body.tr :noBorder="$loop->last" anchor href="#">
+                            <x-table.body.tr :noBorder="$loop->last" anchor href="{{ route('user.info', $testStats['userId']) }}">
                                 <x-table.body.td>
                                     {{ $testStats['name'] }}
                                 </x-table.body.td>
@@ -80,10 +75,13 @@
 </x-layouts.app>
 
 <script>
+
+    const tableHeaders = Array.from(document.querySelectorAll('[data-role="th"]'));
+    
     let direcao = [true, true, true, true, true]; 
 
     function reorderTable(event, column) {
-        console.log(event.target);
+        // console.log(event.target);
 
         let tabela = document.getElementById("tests-list");
         let body = document.querySelector('[data-role="tbody"]'); 
@@ -108,9 +106,16 @@
                     : cellB.localeCompare(cellA);
             }
         });
-
-  
     
         rows.forEach(row => body.appendChild(row));
+
+        tableHeaders.forEach((item) => {
+            const icon = item.querySelector('i');
+            if(icon){
+                icon.remove();
+            }
+        })
+
+        event.target.innerHTML += `<i class="fa-solid fa-arrows-up-down ml-2"></i>`
     }
 </script>

@@ -32,8 +32,8 @@ class IndividualTestListController
         $testStatsList = [];
 
         foreach($testResults as $key => $user){
-            
             if($user && isset($user->testCollections[0]->tests[0])){
+                $userId = $user->id;
                 $userName = $user->name;
                 $userAge = $user->age;
                 $userOccupation = $user->occupation;
@@ -45,6 +45,7 @@ class IndividualTestListController
                 $testRecommendation = $user->testCollections[0]->tests[0]['recommendation'];
                 
                 $testStatsList[] = [
+                    'userId' => $userId,
                     'name' => $userName,
                     'age' => $userAge,
                     'occupation' => $userOccupation,
