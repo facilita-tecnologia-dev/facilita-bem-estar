@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Admin\Dashboard;
 
 use App\Models\TestCollection;
 use App\Models\TestForm;
@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\TestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController
 {
@@ -67,7 +68,9 @@ class DashboardController
         $testCollectionsArray = $usersLatestTestCollections->toArray();
         $countTestCollections = count($testCollectionsArray);
 
-        $users = User::all();
+        $userRoles = DB::table('role_user')->where('role_id', '=', 2)->get();
+
+        $users = User::query()->whereIn('id', $userRoles->pluck('user_id'))->get();
 
         $usersArray = $users->toArray();
         $countUsers = count($usersArray);

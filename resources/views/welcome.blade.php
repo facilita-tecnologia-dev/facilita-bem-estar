@@ -5,7 +5,7 @@
                 Bem vindo(a) aos Testes de 
                 <span class="relative text-teal-400">
                     Bem-estar
-                    <img src="assets/svg-line.svg" alt="" class="absolute top-full left-0">
+                    <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
                 </span>
                  da Facilita!
             </h1>
@@ -13,6 +13,8 @@
             <a href="{{ route('test', 1) }}" class="bg-teal-700 rounded-md px-6 py-2 text-base font-medium text-teal-50 text-center hover:bg-teal-400 transition">
                 Começar
             </a>
+
+            <a href="{{ route('logout') }}" class="underline text-sm text-rose-400" onclick="return confirm('Você deseja mesmo sair?')">Fazer Logout / Sair</a>
         </div>
     </main>
 </x-layouts.app>

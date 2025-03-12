@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Users;
 
 use App\Models\TestCollection;
 use App\Models\TestForm;
@@ -20,7 +20,7 @@ class TestsController
         $this->testService = $testService;   
     }
 
-    public function index(string $index){
+    public function index(Request $request, string $index){
         if($index == 0){
             return view('welcome');
         }

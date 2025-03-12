@@ -1,6 +1,12 @@
 <x-layouts.app>
     <main class="w-screen h-screen flex items-center justify-center">
-        <div class="bg-white rounded-md w-full max-w-screen-2xl min-h-2/4 max-h-screen shadow-md m-8 p-10 flex flex-col items-center justify-center gap-6">
+        <div class="bg-white rounded-md w-full max-w-screen-2xl min-h-2/4 relative max-h-screen shadow-md m-8 p-10 flex flex-col items-center justify-center gap-6">
+            <div class="absolute left-10 top-14">
+                <x-actions.anchor href="{{ route('logout') }}" color="danger" variant="solid" onclick="return confirm('Você deseja mesmo sair?')">
+                    Sair
+                </x-actions.anchor>
+            </div>
+            
             <h1 class="text-4xl font-semibold leading-tight tracking-tight text-teal-700  text-center">
                 Dashboard
             </h1>

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\TestType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('test_questions', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(TestType::class);
-            $table->string('statement');
+            $table->string('name');
+            $table->string('cnpj');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('test_questions');
+        Schema::dropIfExists('companies');
     }
 };

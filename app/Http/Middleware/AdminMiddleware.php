@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AutoLoginMiddleware
+class AdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,19 +17,9 @@ class AutoLoginMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-
-        if (!Auth::check()) {
-            $user = User::find(1);
-            Auth::login($user);
+        if (!Auth::user()->isAdmin()) {
+            return back();
         }
-
-
-        // Auth::logout();
-
-        // $request->session()->invalidate();
-    
-        // $request->session()->regenerateToken();
-        
 
         return $next($request);
     }

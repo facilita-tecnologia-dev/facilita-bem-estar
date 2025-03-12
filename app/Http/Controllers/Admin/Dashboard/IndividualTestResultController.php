@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Admin\Dashboard;
 
 use App\Models\TestCollection;
 use Illuminate\Http\Request;
