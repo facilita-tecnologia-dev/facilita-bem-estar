@@ -15,18 +15,19 @@ class TestService
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function processTest(string $test, array $validatedData, TestType $testInfo){
+    public function processTest(array $validatedData, TestType $testInfo){
         // Transforma cada resposta em pontos (numero inteiro)
         $answers = array_map(function($value){
             return (int) $value;
         }, $validatedData);
 
+        
         // Busca o handler do teste atual
         $handler = $this->handlerFactory->getHandler($testInfo);
         
         // Processa o teste
         $processedTest = $handler->process($answers);
-
+        
         $result = array_merge(['test_name' => $testInfo['display_name']], $processedTest);
         
         // Armazena os resultados na sessão

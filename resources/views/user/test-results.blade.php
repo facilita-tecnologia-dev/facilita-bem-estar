@@ -1,24 +1,32 @@
 {{-- @dd($testResults, $userInfo) --}}
 <x-layouts.app>
-    <div class="bg-white rounded-md w-full max-w-screen-3xl min-h-2/4 max-h-screen shadow-md p-10 flex flex-col items-center justify-center gap-6">
-        <h1 class="text-4xl font-semibold leading-tight tracking-tight text-teal-700 text-center">
+    <x-box>
+        <x-heading>
             Resultado dos testes
-        </h1>
+        </x-heading>
 
-        <div class="text-left max-w-sm">
-            <p>Nome do colaborador: {{ $userInfo['name'] }}</p>
-            <p>Função do colaborador: {{ $userInfo['occupation'] }}</p>
+        <div class="text-center mb-3 mt-3">
+            <p class="text-sm md:text-base">Nome do colaborador: {{ $userInfo['name'] }}</p>
+            <p class="text-sm md:text-base">Função do colaborador: {{ $userInfo['occupation'] }}</p>
         </div>
 
 
-        <div class="grid grid-cols-6 gap-5 w-full max-w-12/12 justify-center">            
+        <div class="flex flex-wrap gap-x-[1%] gap-y-2 flex-1 overflow-y-auto justify-start mb-5">            
             @foreach ($testResults as $testResult)
                 <x-result-card :testResult="$testResult" />
             @endforeach
         </div>
 
-        <button class="bg-teal-700 text-white font-semibold px-4 py-2 rounded-md hover:bg-teal-600 transition cursor-pointer" onclick="downloadPDF()">Download do Relatório em PDF</button>
-    </div>
+        <x-actions.button form="test-form" type="submit" variant="solid" color="success" onclick="downloadPDF()">
+            Download do Relatório em PDF
+        </x-actions.button>
+
+        @if($isAdmin)
+            <x-actions.anchor href="{{ route('admin.welcome') }}" variant="underline" color="success">
+                Voltar para o início
+            </x-actions.anchor>
+        @endif
+    </x-box>
 </x-layouts.app>
 
 

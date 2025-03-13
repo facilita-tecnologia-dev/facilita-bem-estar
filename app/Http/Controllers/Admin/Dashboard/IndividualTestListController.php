@@ -15,10 +15,20 @@ class IndividualTestListController
     public function index(Request $request, $test){
         $search = $request['search'];
         $severity = $request['severidade'];
+        $gender = $request['sexo'];
+        $department = $request['setor'];
+        
 
         $testResults = User::query()
+            ->where('company_id', '=', session('company_id'))
             ->when($search, function($query) use($search){
                 return $query->where('name', 'like', "%$search%");
+            })
+            ->when($gender, function($query) use($gender){
+                return $query->where('gender', '=', $gender);
+            })
+            ->when($department, function($query) use($department){
+                return $query->where('department', '=', $department);
             })
             ->with('testCollections.tests', function($query) use($test, $severity){
                 $query->where('test_name', '=', $test)
@@ -28,6 +38,7 @@ class IndividualTestListController
             })
             ->get();
 
+       
         
         $testStatsList = [];
 
@@ -36,7 +47,9 @@ class IndividualTestListController
                 $userId = $user->id;
                 $userName = $user->name;
                 $userAge = $user->age;
+                $userGender = $user->gender;
                 $userOccupation = $user->occupation;
+                $userDepartment = $user->department;
 
                 
                 $testTotalPoints = $user->testCollections[0]->tests[0]['total_points'];
@@ -48,6 +61,8 @@ class IndividualTestListController
                     'userId' => $userId,
                     'name' => $userName,
                     'age' => $userAge,
+                    'gender' => $userGender,
+                    'department' => $userDepartment,
                     'occupation' => $userOccupation,
                     'testTotalPoints' => $testTotalPoints,                
                     'testSeverityTitle' => $testSeverityTitle,
@@ -60,11 +75,15 @@ class IndividualTestListController
         $testsSorted =  $this->bubbleSortNames($testStatsList);
 
         $severities = $this->getSeveritiesToFilter($test);
+        $genders = $this->getGendersToFilter($test);
+        $departments = $this->getDepartmentsToFilter($test);
 
-        return view('dashboard.individual-test-list', [
+        return view('admin.dashboard.individual-test-list', [
             'testName' => $test,
             'testStatsList' => $testsSorted,
-            'severities' => $severities
+            'severities' => $severities,
+            'genders' => $genders,
+            'departments' => $departments,
         ]);
     }
 
@@ -129,5 +148,34 @@ class IndividualTestListController
         arsort($severities);
 
         return $severities;
+    }
+
+    private function getGendersToFilter($test){
+        $users = User::query()->where('company_id', '=', session('company_id'))->get();
+
+        $genders = [];
+        
+        foreach ($users as $key => $user) {
+            if(!in_array($user->gender, $genders)){
+                $genders[] = $user->gender;
+            }
+        }
+
+        return $genders;
+    }
+
+    
+    private function getDepartmentsToFilter($test){
+        $users = User::query()->where('company_id', '=', session('company_id'))->get();
+
+        $deparments = [];
+        
+        foreach ($users as $key => $user) {
+            if(!in_array($user->department, $deparments)){
+                $deparments[] = $user->department;
+            }
+        }
+
+        return $deparments;
     }
 }

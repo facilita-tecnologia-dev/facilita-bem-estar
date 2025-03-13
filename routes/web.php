@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\Dashboard\IndividualTestListController;
 use App\Http\Controllers\Admin\Dashboard\IndividualTestResultController;
@@ -33,8 +34,9 @@ Route::middleware(GuestMiddleware::class)->group(function(){
 Route::middleware(AuthMiddleware::class)->group(function(){
     /* Rotas do colaborador */
 
-    Route::middleware(UserMiddleware::class)->group(function(){
+    // Route::middleware(UserMiddleware::class)->group(function(){
         Route::get('/bem-vindo', [WelcomeController::class, 'index'])->name('welcome');
+        Route::get('/bem-vindo/start', [WelcomeController::class, 'startTests'])->name('welcome.start');
                 
         // Rotas dos formulários de teste
         Route::get('/teste/{test}', [TestsController::class, 'index'])->name('test');
@@ -42,13 +44,15 @@ Route::middleware(AuthMiddleware::class)->group(function(){
         
         // Rotas do resultado individual
         Route::get('/resultado', [TestResultsController::class, 'index'])->name('test-results');
-    });
+    // });
     /* ------------------------------------------------------------------------------------------------ */
     
     /* Rotas do gestor */
    
     // Rotas do Dashboard Geral
     Route::middleware(AdminMiddleware::class)->group(function(){
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.welcome');
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('general-results.dashboard');
     
         Route::get('/dashboard/{test}', [IndividualTestResultController::class, 'index'])->name('test-results.dashboard');

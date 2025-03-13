@@ -1,24 +1,23 @@
 <x-layouts.app>
     
-        <div class="bg-white rounded-md w-full max-w-md min-h-2/4 max-h-3/4 shadow-md p-10 flex flex-col items-center justify-center gap-8">
-
-            <div class="bg-teal-700 p-1.5 rounded-md">
-                <img src="{{ asset('assets/logo_company.png') }}" alt="" class="h-14">
+        <x-box class="!w-full max-w-sm">
+            <div class="bg-teal-700 p-1.5 rounded-md mb-3">
+                <img src="{{ asset('assets/logo_company.png') }}" alt="" class="h-10 sm:h-12 md:h-14">
             </div>
 
-            <h1 class="text-4xl font-semibold leading-tight tracking-tight text-teal-700  text-center"> 
+            <x-heading>
                 <span class="relative text-teal-400">
                     Bem-estar
                     <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
                 </span> Facilita!
-            </h1>
+            </x-heading>
 
-            <div class="text-center">
-                <p class="text-lg font-medium">Login do Colaborador</p>
+            <div class="text-center mt-6 mb-5">
+                <p class="text-lg font-medium">Login do colaborador</p>
             </div>
 
 
-            <x-form action="{{ route('auth.login.user') }}" class="w-full flex flex-col items-stretch gap-2" post>
+            <x-form action="{{ route('auth.login.user') }}" class="w-full flex flex-col items-stretch gap-2 mb-2" post>
                 <div class="flex flex-col items-start w-full space-y-0.5">
                     <label for="cpf">CPF apenas números</label>
                     <input type="text" id="cpf" name="cpf" class=" w-full px-2 h-8 rounded-md border border-teal-700 focus:outline-none" placeholder="Digite aqui seu cpf...">
@@ -35,8 +34,10 @@
             </x-form>
             
 
-            <a href="{{ route('auth.initial') }}" class="underline text-sm text-rose-400">Voltar para a página inicial</a>
+            <x-actions.anchor href="{{ route('auth.initial') }}" variant="underline" color="danger">
+                Voltar para a página inicial
+            </x-actions.anchor>
 
-        </div>
+        </x-box>
 
 </x-layouts.app>

@@ -4,7 +4,7 @@
 
 
 <div @class([
-        "border border-zinc-300 overflow-hidden flex flex-col gap-2 p-4 rounded-md shadow-md relative",
+        "border border-zinc-300 overflow-hidden flex flex-col gap-1 xl:gap-2 p-3 xl:p-4 rounded-md shadow-md relative items-start w-[100%] sm:w-[32%] lg:w-[24%]",
     ])>
 
     <div @class([
@@ -17,7 +17,7 @@
         ])>
     </div>
 
-    <p class="text-lg font-bold text-zinc-800 text-left relative">{{ $testResult['test_name'] }} </p>
+    <p class="text-sm md:text-base xl:text-lg font-bold text-zinc-800 text-left relative">{{ $testResult['test_name'] }} </p>
     <h1 
         class="text-sm font-normal text-left relative"
         >

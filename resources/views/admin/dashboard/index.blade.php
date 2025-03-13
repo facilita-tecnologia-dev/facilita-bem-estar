@@ -1,40 +1,42 @@
 <x-layouts.app>
-    <main class="w-screen h-screen flex items-center justify-center">
-        <div class="bg-white rounded-md w-full max-w-screen-2xl min-h-2/4 relative max-h-screen shadow-md m-8 p-10 flex flex-col items-center justify-center gap-6">
-            <div class="absolute left-10 top-14">
-                <x-actions.anchor href="{{ route('logout') }}" color="danger" variant="solid" onclick="return confirm('Você deseja mesmo sair?')">
-                    Sair
-                </x-actions.anchor>
-            </div>
-            
-            <h1 class="text-4xl font-semibold leading-tight tracking-tight text-teal-700  text-center">
-                Dashboard
-            </h1>
+    <x-box class="w-full">
+        <div class="mr-auto relative md:absolute md:left-10 md:top-4 mb-4">
+            <x-actions.anchor href="{{ route('admin.welcome') }}" color="success" variant="solid">
+                Voltar
+            </x-actions.anchor>
+        </div>
+        
+        <x-heading>
+            Dashboard
+        </x-heading>
 
-            <div class="text-center">
-                <p class="text-lg font-medium">Resultados de todos os testes de bem-estar realizados pelos funcionários</p>
+        <div class="text-center mt-4 mb-4">
+            <p class="text-sm sm:text-md md:text-lg font-medium">Resultados de todos os testes de bem-estar realizados pelos funcionários</p>
+        </div>
+
+        <div id="charts" class="flex-1 flex flex-wrap overflow-auto gap-[1%] gap-y-3 w-full justify-center">
+            <div class="shadow-md rounded-md border border-teal-700 w-[100%] min-[430px]:w-[49%] sm:w-[32%] md:w-[24%] lg:w-[19%] xl:w-[15%]">
+                <a href="" class="w-full h-full p-4 flex flex-col justify-between gap-3 items-center">
+                    <p class="text-center">Participação nos testes</p>
+                    <div class="w-36 h-36 xl:w-40 xl:h-40" id="Participação">
+                        
+                    </div>
+                </a>
             </div>
 
-            <div id="charts" class="grid grid-cols-6 gap-5 w-full justify-center">
-                <div class="shadow-md rounded-md border border-teal-700">
-                    <a id="Participação" href="" class="w-full h-full p-4 flex flex-col gap-3 items-center">
-                        <p>Participação nos testes</p>
-                    
+            @foreach ($generalResults as $testName => $testData)
+                <div class="shadow-md rounded-md border border-teal-700 w-[100%] min-[430px]:w-[49%] sm:w-[32%] md:w-[24%] lg:w-[19%] xl:w-[15%]">
+                    <a href="{{ route('test-results.dashboard', $testName)}}" class="w-full h-full p-4 flex flex-col justify-between gap-3 items-center">
+                        <p class="text-center">{{ $testName }}</p>
+                        <div class="w-36 h-36 xl:w-40 xl:h-40" id="{{ $testName }}">
+                            
+                        </div>
                     </a>
                 </div>
-    
-                @foreach ($generalResults as $testName => $testData)
-                    <div class="shadow-md rounded-md border border-teal-700">
-                        <a id="{{ $testName }}" href="{{ route('test-results.dashboard', $testName)}}" class="w-full h-full p-4 flex flex-col gap-3 items-center">
-                            <p>{{ $testName }}</p>
-
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-
+            @endforeach
         </div>
-    </main>
+
+    </x-box>
 </x-layouts.app>
 
 

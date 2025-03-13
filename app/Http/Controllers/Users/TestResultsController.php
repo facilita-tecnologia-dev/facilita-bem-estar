@@ -6,6 +6,7 @@ use App\Models\TestCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TestResultsController
 {
@@ -17,12 +18,16 @@ class TestResultsController
         })->with('tests')->first()->toArray();
 
         $testResults = $lastUserTestCollection['tests']; 
+          
+        $user = Auth::user();
+        $userRole = DB::table('role_user')->where('user_id', '=', $user->id)->first();
+        
+        $isAdmin = $userRole->role_id === 1;
 
-        $userInfo = User::query()->where('id', '=', Auth::user()->id)->first();
-
-        return view('test-results', [
-            'userInfo' => $userInfo,
+        return view('user.test-results', [
+            'userInfo' => $user,
             'testResults' => $testResults,
+            'isAdmin' => $isAdmin,
         ]);
     }
 }

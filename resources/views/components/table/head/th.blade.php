@@ -1,12 +1,18 @@
 @props([
     'noBorder' => null,
+    'lgNone' => null,
+    'mdNone' => null,
+    'smNone' => null,
 ])
 
 <div data-role="th" {{ $attributes }}
     @class([
-        'py-2 px-4 text-left  text-white cursor-pointer',
+        'text-sm py-1.5 lg:py-2 px-3 lg:px-4 text-left text-white cursor-pointer whitespace-nowrap',
         'border-r-0' => $noBorder,
         'border-r border-zinc-200/50' => !$noBorder,
+        'hidden lg:block' => $lgNone,
+        'hidden md:block' => $mdNone,
+        'hidden sm:block' => $smNone,
     ])
 >
     {{ $slot }}

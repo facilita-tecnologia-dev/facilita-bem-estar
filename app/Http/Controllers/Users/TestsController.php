@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Models\PendingTestAnswer;
+use App\Models\QuestionOption;
 use App\Models\TestCollection;
 use App\Models\TestForm;
 use App\Models\TestQuestion;
@@ -22,7 +24,7 @@ class TestsController
 
     public function index(Request $request, string $index){
         if($index == 0){
-            return view('welcome');
+            return to_route('welcome');
         }
 
         // Busca informações do teste no banco de dados
@@ -36,12 +38,15 @@ class TestsController
         // Busca as questões do teste
         $testQuestions = TestQuestion::query()->where('test_type_id', '=', $testTypeInfo->id)->with('questionOptions')->get();
         
-        return view('test', [
+        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_type_id', '=', $testTypeInfo->id)->get();
+
+        return view('user.test', [
             'testIndex' => $testIndex,
             'testName' => $testName,
             'testStatement' => $testStatement,
             'testQuestions' => $testQuestions,
             'testReference' => $testReference,
+            'pendingAnswers' => $pendingAnswers ?? [],
         ]);
     }
 
@@ -61,8 +66,28 @@ class TestsController
         $validatedData = $request->validate($validationRules);
 
         // Processa o teste
-        $this->testService->processTest($testIndex, $validatedData, $testInfo);
+        $result = $this->testService->processTest($validatedData, $testInfo);
         
+        $testInfos = TestType::query()
+        ->where('id', '=', $testIndex)
+        ->with('questions', function($query){
+            return $query->with('questionOptions');
+        })->first();
+
+        PendingTestAnswer::query()->where('test_type_id', '=', $testInfos->id)->delete();
+        
+        foreach(array_values($result['answers']) as $questionNumber => $answer){
+            $question = $testInfos->questions[$questionNumber];
+            $selectedOption = $question->questionOptions->firstWhere('value', $answer);
+
+            PendingTestAnswer::query()->create([
+                'value' => $answer,
+                'user_id' => Auth::user()->id,
+                'test_type_id' => $testInfos->id,
+                'test_question_id' => $question->id,
+                'question_option_id' => $selectedOption->id
+            ]);
+        }
 
         // Se for o último teste
         if($testIndex === "11"){
@@ -73,6 +98,10 @@ class TestsController
             if(!$storedResults){
                 return back();
             }
+
+            $keysToRemoveFromSession = array_keys($allTestResults);
+
+            $request->session()->forget($keysToRemoveFromSession);
 
             return to_route('test-results');
         }
@@ -105,6 +134,8 @@ class TestsController
     }
 
     private function storeResultsOnDatabase($allTestResults): array {
+        PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->delete();
+
         $newTestCollection = TestCollection::create([
             'user_id' => Auth::user()->id,
         ]);

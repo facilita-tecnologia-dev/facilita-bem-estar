@@ -8,7 +8,7 @@
     
     <a class="w-full max-w-80 shadow-md rounded-md border flex flex-col items-center overflow-hidden">
     
-        <p class="text-md font-medium py-2 w-full text-center text-zinc-100 bg-teal-700">
+        <p class="text-base font-medium py-2 w-full text-center text-zinc-100 bg-teal-700">
             {{ $occupationName }}
         </p>
         

@@ -17,22 +17,10 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // dd(Auth::check());
 
-        if (!Auth::check()) {
+        if (!Auth::user()) {
             return to_route('auth.initial');
         }
-        // if (!Auth::check()) {
-        //     $user = User::find(1);
-        //     Auth::login($user);
-        // }
-
-
-        // Auth::logout();
-
-        // $request->session()->invalidate();
-    
-        // $request->session()->regenerateToken();
         
 
         return $next($request);
