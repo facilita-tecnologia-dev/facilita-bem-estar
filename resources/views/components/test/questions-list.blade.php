@@ -19,7 +19,9 @@
         </div>
         
         @error("question_$questionNumber")
-            <span class="bg-rose-400 text-white text-base py-0.5 px-2 rounded-md">A questão {{ $questionNumber }} deve ser respondida</span>
+            <span class="bg-rose-400  text-white text-base py-0.5 px-2 rounded-md">A questão {{ $questionNumber }} deve ser respondida</span>
         @enderror
+
+        {{-- teste --}}
     @endforeach
 </div>
