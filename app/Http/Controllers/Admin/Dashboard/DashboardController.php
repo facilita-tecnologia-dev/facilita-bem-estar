@@ -34,35 +34,29 @@ class DashboardController
             $query->selectRaw('MAX(created_at)')
             ->from('test_collections')
             ->groupBy('user_id');
-        })->get();
-
+        })->with('tests')->get();
 
         return $usersLatestTestCollections;
     }
 
     private function getGeneralResults(){
-       $usersLatestCollections = $this->getUsersLatestTestCollections();
+        $usersLatestCollections = $this->getUsersLatestTestCollections()->toArray();
 
-        $usersLatestTestResults = TestForm::query()->whereIn('test_collection_id', $usersLatestCollections->pluck('id'))->get()->groupBy('test_name')->toArray();
-        
         $generalResults = [];
 
-        foreach($usersLatestTestResults as $test){
-            $ungroupedTestType = $test;
-            $test = [];
-            
-            foreach($ungroupedTestType as $testResult){
-                $severity = $testResult['severity_title'];
-                
-                if(!isset($test[$severity])){
-                    $test[$severity] = [];
-                }
-                
-                $test[$severity][] = $testResult;
-            }
-        
+        foreach($usersLatestCollections as $testCollection){
+            foreach($testCollection['tests'] as $test){
+                $severity = $test['severity_title'];
+                $testName = $test['test_name'];
 
-            $generalResults[$ungroupedTestType[0]['test_name']] = $test;
+                if(!isset($generalResults[$testName][$severity]['count'])){
+                    $generalResults[$testName][$severity]['count'] = 0;
+                }
+
+                $generalResults[$testName][$severity]['severity_color'] = $test['severity_color'];
+                $generalResults[$testName][$severity]['count'] += 1;
+            }
+            
         }
 
         return $generalResults;

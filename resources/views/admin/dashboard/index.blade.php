@@ -74,6 +74,8 @@
         5: "#f55547",
     }
 
+
+
     Object.values(generalResults).forEach((testType, index) => {
         const testChartId = `chart_${index}`;
         const testChartWrapper = document.getElementById(labels[index])
@@ -83,7 +85,7 @@
         const tests = Object.values(testType)
 
         const testChartBackgroundColors = tests.map(test => {
-            severityKey = test[0].severity_color
+            severityKey = test.severity_color
             
             return severityKey in testSeverityColors
             ? testSeverityColors[severityKey]
@@ -91,7 +93,7 @@
         });
 
         const testChartData = tests.map(test => {
-            return tests ? test.length : 0
+            return test.count
         });
         
         createNewChart(testChartWrapper, testChartId, testChartSeverities, testChartData, testChartBackgroundColors)
