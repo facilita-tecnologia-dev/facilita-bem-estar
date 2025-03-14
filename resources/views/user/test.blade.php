@@ -3,7 +3,7 @@
         <x-test.title-container>
 
             <x-heading>
-                {{ $testIndex }} - {{ $testName }}
+                Etapa - {{ $testIndex }}
             </x-heading>
 
             <p class="text-sm md:text-base lg:text-lg font-medium text-center text-teal-700 mb-4 mt-4">

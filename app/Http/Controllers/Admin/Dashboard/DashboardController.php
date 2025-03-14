@@ -30,7 +30,7 @@ class DashboardController
         
         $users = User::query()->where('company_id', '=', session('company_id'))->whereIn('id', $userRoles->pluck('user_id'))->get();
 
-        $usersLatestTestCollections = TestCollection::whereIn('id', $userRoles->pluck('user_id'))->whereIn('created_at', function($query){
+        $usersLatestTestCollections = TestCollection::whereIn('user_id', $users->pluck('id'))->whereIn('created_at', function($query){
             $query->selectRaw('MAX(created_at)')
             ->from('test_collections')
             ->groupBy('user_id');

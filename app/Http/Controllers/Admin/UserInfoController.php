@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Date;
 class UserInfoController
 {
     public function index(User $user){
-        $admissionDate = Carbon::parse($user->admission);
+        $admissionDate = Carbon::createFromFormat('d/m/Y', $user->admission);
         $now = Carbon::now();
         $admissionDiff = $now->diff($admissionDate)->format('%y anos, %m meses e %d dias.');
 

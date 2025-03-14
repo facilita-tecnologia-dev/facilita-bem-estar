@@ -40,6 +40,7 @@ class TestsController
         
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_type_id', '=', $testTypeInfo->id)->get();
 
+
         return view('user.test', [
             'testIndex' => $testIndex,
             'testName' => $testName,

@@ -12,6 +12,10 @@ class IndividualTestResultController
     public function index($test){
         $testCollections = $this->getIndividualTestStats($test);
         
+        if(count($testCollections) === 0){
+            return back();
+        }
+
         $testName = $testCollections[0]->tests[0]['test_name']; 
 
         $testStats = [];
@@ -56,7 +60,6 @@ class IndividualTestResultController
     }
 
     private function getIndividualTestStats($test){
-        $userRoles = DB::table('role_user')->where('role_id', '=', 2)->get();
         $users = User::query()->where('company_id', '=', session('company_id'))->get();
 
         $testResults = TestCollection::whereIn('user_id', $users->pluck('id'))->whereIn('created_at', function($query){
@@ -70,6 +73,7 @@ class IndividualTestResultController
         })
         ->get();
 
+        // dd($testResults);
 
         return $testResults;
     }

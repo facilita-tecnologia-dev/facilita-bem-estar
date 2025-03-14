@@ -20,9 +20,12 @@ class UserLoginController
 
         $user = User::query()->where('cpf', '=', $validatedData['cpf'])->first();
 
-        $userRole = DB::table('role_user')->where('role_id', '=', 2)->where('user_id', '=', $user->id)->get();
+        $userRole = '';
+        if($user){
+            $userRole = DB::table('role_user')->where('role_id', '=', 2)->where('user_id', '=', $user->id)->get();
+        }
 
-        if(!$user || !$userRole){
+        if(!$user || !(count($userRole) > 0)){
             return back()->with('errorMessage', 'O usuário não existe.');
         }
 

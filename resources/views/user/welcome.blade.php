@@ -18,9 +18,11 @@
                 @endif
             </x-actions.anchor>
 
-            <x-actions.anchor href="{{ route('test-results') }}" variant="outline" color="success">
-                Ver o resultado dos últimos testes
-            </x-actions.anchor>
+            @if($hasLatestCollection)
+                <x-actions.anchor href="{{ route('test-results') }}" variant="outline" color="success">
+                    Ver o resultado dos últimos testes
+                </x-actions.anchor>
+            @endif
         </div>
 
         @if($isAdmin)

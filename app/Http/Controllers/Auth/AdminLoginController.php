@@ -21,12 +21,16 @@ class AdminLoginController
 
         $user = User::query()->where('cpf', '=', $validatedData['cpf'])->first();
         
-        
-        if(!$user){
-            return back()->with('errorMessage', 'O usuário não existe ou não é um administrador.');
+        $userRole = '';
+        if($user){
+            $userRole = DB::table('role_user')->where('role_id', '=', 1)->where('user_id', '=', $user->id)->get();
         }
 
-        // $userRole = DB::table('role_user')->where('role_id', '=', 1)->where('user_id', '=', $user->id)->get();
+    
+        if(!$user || !($userRole)){
+            return back()->with('errorMessage', 'O usuário não existe ou não é um administrador.');
+        }
+        
 
         $company = Company::query()->where('id', '=', $user->company_id)->first();
 

@@ -225,7 +225,7 @@
         addText(`${userInfo.age} anos - ${userInfo.occupation}`, 27, colors.subText, 12);
         
         testResults.forEach((test, index) => {
-            console.log(test);
+            // console.log(test);
             doc.setFont('helvetica', 'normal');
             addText(`${test.test_name}`, (38 + (18 * index)), null, 12);
             doc.setFont('helvetica', 'bold')
@@ -233,38 +233,6 @@
             doc.setFillColor(colors.text);
             doc.rect(20, (48 + (18 * index)), 170, 0.1, 'F')
         });
-        
-
-        // const severityPoints = Object.values(groupedData.testResults).map((test) => {
-        //     return severityColorPointsMap[test.severityColor]
-        // })
-
-        // const totalPoints = severityPoints.reduce((acc, item) => acc + item, 0)
-        // const severityPercentage = Math.round(totalPoints / (5 * Object.values(groupedData.testResults).length) * 100)
-        // const totalSeverity = getTotalResultSeverity(totalPoints)
-        
-        // // Summary metrics with circular progress indicators
-        // doc.setFont('helvetica', 'normal');
-        // addText(`Índice Geral de Saúde Mental`, 232, null, 12);
-        // drawCircleProgress(35, 254, 15, severityPercentage, colors.primary, 'Activity', `${severityPercentage}%`);
-
-
-        // const content = totalSeverity['content'];
-
-        // // Definir a largura máxima para o texto
-        // const maxWidth = 200; // Largura máxima do texto (em unidades do PDF)
-
-        // // Dividir o texto em várias linhas
-        // const lines = doc.splitTextToSize(content, maxWidth);
-
-        // // addText(totalSeverity, 255, null, 12);
-        // doc.setFontSize(14);
-        // doc.setTextColor(colors.text);
-        // doc.text(totalSeverity['title'], 55, 249);
-
-        // doc.setFontSize(10);
-        // doc.setFont('helvetica', 'normal');
-        // doc.text(lines, 55, 255);
         
         // Footer on all pages
         const pageCount = doc.getNumberOfPages();

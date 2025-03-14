@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Users;
 
 use App\Models\PendingTestAnswer;
+use App\Models\TestCollection;
 use App\Models\TestType;
 use App\Services\TestService;
 use Illuminate\Http\Request;
@@ -24,12 +25,19 @@ class WelcomeController
 
         $user = Auth::user();
         $userRole = DB::table('role_user')->where('user_id', '=', $user->id)->first();
-        
+        $userLatestCollection =  TestCollection::where('user_id', $user->id)->whereIn('created_at', function($query){
+            $query->selectRaw('MAX(created_at)')
+            ->from('test_collections')
+            ->groupBy('user_id');
+        })->get();
+
+
         $isAdmin = $userRole->role_id === 1;
 
         return view('user.welcome', [
             'isAdmin' => $isAdmin,
             'hasPendingAnswers' => $hasPendingAnswers ?? '',
+            'hasLatestCollection' => count($userLatestCollection) > 0 ? true : false,
         ]);
     }
 

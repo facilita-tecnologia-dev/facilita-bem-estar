@@ -64,8 +64,6 @@
     // Tests
     const generalResults = @json($generalResults)    
     const labels = Object.keys(generalResults)
-    
-    console.log(Object.values(generalResults));
 
    
     const testSeverityColors = {

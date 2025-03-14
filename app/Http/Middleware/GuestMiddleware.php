@@ -23,11 +23,11 @@ class GuestMiddleware
         if($user){
             $userRole = DB::table('role_user')->where('user_id', '=', $user->id)->first();
 
-            if ($userRole->role_id == 1) {
+            if ($userRole && $userRole->role_id == 1) {
                 return to_route('general-results.dashboard');
             }
     
-            if ($userRole->role_id == 2) {
+            if ($userRole && $userRole->role_id == 2) {
                 return to_route('welcome');
             }
         }
