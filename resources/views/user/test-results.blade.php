@@ -1,6 +1,11 @@
 {{-- @dd($testResults, $userInfo) --}}
 <x-layouts.app>
     <x-box>
+        <div class="mr-auto relative md:absolute md:left-10 md:top-4 mb-4">
+            <x-actions.anchor href="{{ route('welcome') }}" color="success" variant="solid">
+                Voltar
+            </x-actions.anchor>
+        </div>
         <x-heading>
             Resultado dos testes
         </x-heading>

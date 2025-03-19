@@ -61,7 +61,7 @@
                 </button>
             </x-form>
 
-            <x-table id="tests-list" class="flex flex-col flex-1 max-w-full overflow-scroll">
+            <x-table id="tests-list" class="flex flex-col flex-1 max-w-full overflow-auto">
                 <x-table.head>
                     <x-table.head.tr>
                         <x-table.head.th onclick="reorderTable(event, 0)">

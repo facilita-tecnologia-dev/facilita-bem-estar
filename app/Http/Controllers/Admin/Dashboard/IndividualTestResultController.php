@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Dashboard;
 
+use App\Helpers\Helper;
 use App\Models\TestCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,40 +10,65 @@ use Illuminate\Support\Facades\DB;
 
 class IndividualTestResultController
 {
-    public function index($test){
-        $testCollections = $this->getIndividualTestStats($test);
-        
-        if(count($testCollections) === 0){
+    protected $helper;
+
+    public function __construct(Helper $helper)
+    {
+        $this->helper = $helper;
+    }
+
+
+    public function index($testName){
+        $usersLatestCollections = $this->helper->getUsersLatestCollections();
+      
+        if(count($usersLatestCollections) === 0){
             return back();
         }
+        
+        $testData = $this->compileTestsData($testName, $usersLatestCollections);
+       
+        return view('admin.dashboard.individual-test-result', [
+            'testName' => $testName,
+            'testStats' => $testData,
+        ]);
+    }
 
-        $testName = $testCollections[0]->tests[0]['test_name']; 
-
+    /**
+     * Compila os dados dividindo-os por setor para enviar para a view
+     * @return array
+     */
+    private function compileTestsData($testName, $usersLatestCollections): array{
         $testStats = [];
+        
+        foreach($usersLatestCollections as $user){
+            foreach($user->testCollections as $collection){
+                $test = array_merge(...array_filter($collection->tests->toArray(), function($test) use($testName) {
+                    return $test['test_name'] === $testName;
+                }));
 
-        foreach($testCollections as $collection){
-            $severityTitle = $collection->tests[0]['severity_title'];
-            $severityColor = $collection->tests[0]['severity_color'];
-
-            if(!isset($testStats[$collection->user->department])){
-                $testStats[$collection->user->department] = [];
+                $severityTitle = $test['severity_title'];
+                $severityColor = $test['severity_color'];
+                
+                if(!isset($testStats[$user->department])){
+                    $testStats[$user->department] = [];
+                }
+                
+                if(!isset($testStats[$user->department]['total'])){
+                    $testStats[$user->department]['total'] = 0;
+                }
+                
+                if(!isset($testStats[$user->department]['severities'][$severityTitle]['count'])){
+                    $testStats[$user->department]['severities'][$severityTitle]['count'] = 0;
+                }
+                
+                if(!isset($testStats[$user->department]['severities'][$severityTitle]['severity_color'])){
+                    $testStats[$user->department]['severities'][$severityTitle]['severity_color'] = '';
+                }
+                
+                $testStats[$user->department]['total'] += 1;
+                $testStats[$user->department]['severities'][$severityTitle]['count'] += 1;
+                $testStats[$user->department]['severities'][$severityTitle]['severity_color'] = (int) $severityColor;
             }
-
-            if(!isset($testStats[$collection->user->department]['total'])){
-                $testStats[$collection->user->department]['total'] = 0;
-            }
-
-            if(!isset($testStats[$collection->user->department]['severities'][$severityTitle]['count'])){
-                $testStats[$collection->user->department]['severities'][$severityTitle]['count'] = 0;
-            }
-
-            if(!isset($testStats[$collection->user->department]['severities'][$severityTitle]['severity_color'])){
-                $testStats[$collection->user->department]['severities'][$severityTitle]['severity_color'] = '';
-            }
-            
-            $testStats[$collection->user->department]['total'] += 1;
-            $testStats[$collection->user->department]['severities'][$severityTitle]['count'] += 1;
-            $testStats[$collection->user->department]['severities'][$severityTitle]['severity_color'] = (int) $severityColor;
         };
         
         $testsSorted = array_map(function($item){
@@ -51,34 +77,14 @@ class IndividualTestResultController
             return $item;
         }, $testStats);
 
-
-        
-        return view('admin.dashboard.individual-test-result', [
-            'testName' => $testName,
-            'testStats' => $testsSorted
-        ]);
+        return $testsSorted;
     }
 
-    private function getIndividualTestStats($test){
-        $users = User::query()->where('company_id', '=', session('company_id'))->get();
-
-        $testResults = TestCollection::whereIn('user_id', $users->pluck('id'))->whereIn('created_at', function($query){
-            $query->selectRaw('MAX(created_at)')
-            ->from('test_collections')
-            ->groupBy('user_id');
-        })
-        ->with('user')
-        ->with('tests', function($query) use($test) {
-            $query->where('test_name','=', $test)->orderBy('severity_color');
-        })
-        ->get();
-
-        // dd($testResults);
-
-        return $testResults;
-    }
-
-    private function bubbleSortSeverities($array) {
+    /**
+     * Função básica de Bubble Sort para ordenar com base na severidade
+     * @return array
+     */
+    private function bubbleSortSeverities($array): array {
         $keys = array_keys($array);
         $n = count($keys);
         

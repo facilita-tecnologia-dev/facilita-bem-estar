@@ -1,15 +1,16 @@
 <x-layouts.app>
     
-        <x-box class="!w-full max-w-sm">
+        <x-box class="">
             <div class="bg-teal-700 p-1.5 rounded-md mb-3">
                 <img src="{{ asset('assets/logo_company.png') }}" alt="" class="h-10 sm:h-12 md:h-14">
             </div>
 
             <x-heading>
+                Facilita
                 <span class="relative text-teal-400">
                     Bem-estar
                     <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
-                </span> Facilita!
+                </span>
             </x-heading>
 
             <div class="text-center mt-6 mb-5">
@@ -17,7 +18,7 @@
             </div>
 
 
-            <x-form action="{{ route('auth.login.admin') }}" class="w-full flex flex-col items-stretch gap-2" post>
+            <x-form action="{{ route('auth.login.admin') }}" class="max-w-sm w-full flex flex-col items-stretch gap-2" post>
                 <div class="flex flex-col items-start w-full space-y-0.5">
                     <label for="cpf">CPF apenas números</label>
                     <input type="text" id="cpf" name="cpf" class=" w-full px-2 h-8 rounded-md border border-teal-700 focus:outline-none" placeholder="Digite aqui seu cpf...">

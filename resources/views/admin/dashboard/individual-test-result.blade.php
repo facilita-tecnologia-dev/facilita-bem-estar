@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <x-box>
+    <x-box class="w-full">
         <div class="mr-auto relative md:absolute md:left-10 md:top-4 mb-4">
             <x-actions.anchor href="{{ route('admin.welcome') }}" color="success" variant="solid">
                 Voltar
@@ -16,8 +16,10 @@
         </div>
 
         
-        <div class="flex flex-wrap gap-[1%] gap-y-3 overflow-auto justify-start items-start">
+        <div class="flex flex-wrap gap-[1%] gap-y-3 overflow-auto justify-start items-start w-full">
             @foreach ($testStats as $occupationName => $testSeverity)
+                    {{-- @dump($testStats) --}}
+
                     <x-table class="w-[100%] min-[575px]:w-[49%] md:w-[32%] lg:w-[24%]">
                         <a href="{{ route('test-results-list.dashboard', $testName)}}">
                             <x-table.head>

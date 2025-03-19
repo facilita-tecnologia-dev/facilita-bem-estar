@@ -12,6 +12,13 @@ use Illuminate\Support\Collection;
 
 class IndividualTestListController
 {
+    protected $users;
+
+    public function __construct()
+    {
+        $this->users = User::query()->where('company_id', '=', session('company_id'))->get();
+    }
+
     public function index(Request $request, $test){
         $search = $request['search'];
         $severity = $request['severidade'];
@@ -38,7 +45,7 @@ class IndividualTestListController
             })
             ->get();
 
-       
+        // dd($testResults);
         
         $testStatsList = [];
 
@@ -87,29 +94,10 @@ class IndividualTestListController
         ]);
     }
 
-    private function bubbleSortSeverities($array) {
-        $keys = array_keys($array);
-        $n = count($keys);
-        
-        for ($i = 0; $i < $n - 1; $i++) {
-            for ($j = 0; $j < $n - $i - 1; $j++) {
-                if ($array[$keys[$j]]['testSeverityColor'] < $array[$keys[$j + 1]]['testSeverityColor']) {
-                    // Swap the elements
-                    $temp = $keys[$j];
-                    $keys[$j] = $keys[$j + 1];
-                    $keys[$j + 1] = $temp;
-                }
-            }
-        }
-        
-        $result = [];
-        foreach ($keys as $key) {
-            $result[$key] = $array[$key];
-        }
-        
-        return $result;
-    }
-
+    /*
+    * Função básica de Bubble Sort para ordenar com base no nome
+    * @return array
+    */
     private function bubbleSortNames($array) {
         $keys = array_keys($array);
         $n = count($keys);
@@ -134,6 +122,7 @@ class IndividualTestListController
         return $result;
     }
 
+
     private function getSeveritiesToFilter($test){
         $tests = TestForm::query()->where('test_name', '=', $test)->get();
 
@@ -150,9 +139,9 @@ class IndividualTestListController
         return $severities;
     }
 
-    private function getGendersToFilter($test){
-        $users = User::query()->where('company_id', '=', session('company_id'))->get();
 
+    private function getGendersToFilter($test){
+        $users = $this->users;
         $genders = [];
         
         foreach ($users as $key => $user) {
@@ -166,7 +155,7 @@ class IndividualTestListController
 
     
     private function getDepartmentsToFilter($test){
-        $users = User::query()->where('company_id', '=', session('company_id'))->get();
+        $users = $this->users;
 
         $deparments = [];
         

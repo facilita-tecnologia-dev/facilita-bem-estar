@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Admin\Dashboard;
 
-use App\Models\PendingTestAnswer;
-use App\Models\TestCollection;
-use App\Models\TestForm;
-use App\Models\TestType;
+use App\Helpers\Helper;
 use App\Models\User;
-use App\Services\TestService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController
 {
+    protected $helper;
+    protected $usersLatestCollections;
+
+    public function __construct(Helper $helper)
+    {  
+        $this->helper = $helper; 
+        $this->usersLatestCollections = $helper->getUsersLatestCollections(); 
+    }
+
     public function index(){
-        $generalResults = $this->getGeneralResults();
+        $generalResults = $this->getCompiledResults();
         $testsParticipation = $this->getTestsParticipation(); 
 
         return view('admin.dashboard.index', [
@@ -24,61 +26,45 @@ class DashboardController
         ]);
     }
 
-
-    private function getUsersLatestTestCollections(){
-        $userRoles = DB::table('role_user')->where('role_id', '=', 2)->get();
+    /**
+     * Retorna um array com os dados compilados de todos os testes.
+     * @return array
+     */
+    private function getCompiledResults(): array{
+        $usersLatestCollections = $this->usersLatestCollections;
+        $compiledResults = [];
         
-        $users = User::query()->where('company_id', '=', session('company_id'))->whereIn('id', $userRoles->pluck('user_id'))->get();
-
-        $usersLatestTestCollections = TestCollection::whereIn('user_id', $users->pluck('id'))->whereIn('created_at', function($query){
-            $query->selectRaw('MAX(created_at)')
-            ->from('test_collections')
-            ->groupBy('user_id');
-        })->with('tests')->get();
-
-        return $usersLatestTestCollections;
-    }
-
-    private function getGeneralResults(){
-        $usersLatestCollections = $this->getUsersLatestTestCollections()->toArray();
-
-        $generalResults = [];
-
-        foreach($usersLatestCollections as $testCollection){
-            foreach($testCollection['tests'] as $test){
+        foreach($usersLatestCollections as $user){
+            foreach($user->testCollections[0]->tests as $test){
                 $severity = $test['severity_title'];
                 $testName = $test['test_name'];
 
-                if(!isset($generalResults[$testName][$severity]['count'])){
-                    $generalResults[$testName][$severity]['count'] = 0;
+                if(!isset($compiledResults[$testName][$severity]['count'])){
+                    $compiledResults[$testName][$severity]['count'] = 0;
                 }
 
-                $generalResults[$testName][$severity]['severity_color'] = $test['severity_color'];
-                $generalResults[$testName][$severity]['count'] += 1;
+                $compiledResults[$testName][$severity]['severity_color'] = $test['severity_color'];
+                $compiledResults[$testName][$severity]['count'] += 1;
             }
             
         }
 
-        return $generalResults;
+        return $compiledResults;
     }
 
-    private function getTestsParticipation(){
-        $usersLatestTestCollections = $this->getUsersLatestTestCollections();
+    /**
+     * Retorna um array com 2 itens.
+     * @return array [Total de usuários, usuários que realizaram os testes]
+     */
+    private function getTestsParticipation(): array{
+        $countTestCollections = count($this->usersLatestCollections);
 
-        $testCollectionsArray = $usersLatestTestCollections->toArray();
-        $countTestCollections = count($testCollectionsArray);
+        $users = User::query()->where('company_id', '=', session('company_id'))->get()->toArray();
+        
+        $countUsers = count($users);
+        
+        $testsParticipation = [$countTestCollections, ($countUsers - $countTestCollections)];
 
-        
-        $users = User::query()->where('company_id', '=', session('company_id'))->get();
-        
-        
-        $usersArray = $users->toArray();
-        $countUsers = count($usersArray);
-        
-        
-        $countTestsParticipation = [$countTestCollections, ($countUsers - $countTestCollections)];
-
-
-        return $countTestsParticipation;
+        return $testsParticipation;
    }
 }

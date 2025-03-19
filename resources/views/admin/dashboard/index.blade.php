@@ -65,7 +65,6 @@
     const generalResults = @json($generalResults)    
     const labels = Object.keys(generalResults)
 
-   
     const testSeverityColors = {
         1: "#4CAF50",
         2: "#a9f5ac",
@@ -73,8 +72,6 @@
         4: "#FFB74D",
         5: "#f55547",
     }
-
-
 
     Object.values(generalResults).forEach((testType, index) => {
         const testChartId = `chart_${index}`;

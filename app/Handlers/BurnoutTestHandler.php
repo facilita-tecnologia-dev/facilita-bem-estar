@@ -9,13 +9,13 @@ class BurnoutTestHandler implements TestHandlerInterface
         $totalPoints = array_sum($answers);
         
         if ($totalPoints >= 27) {
-            $severityTitle = 'Zona de Risco - Alto Burnout';  
+            $severityTitle = 'Zona de Risco';  
             $severityColor = 5;
         } elseif ($totalPoints >= 14) {
-            $severityTitle = 'Zona de Alerta - Burnout Moderado';
+            $severityTitle = 'Zona de Alerta';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Zona de Bem-estar - Baixo Burnout';
+            $severityTitle = 'Zona de Bem-estar';
             $severityColor = 1;
         }
         

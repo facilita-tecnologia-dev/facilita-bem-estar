@@ -4,7 +4,7 @@
 
 
 <div @class([
-        "border border-zinc-300 overflow-hidden flex flex-col gap-1 xl:gap-2 p-3 xl:p-4 rounded-md shadow-md relative items-start w-[100%] sm:w-[32%] lg:w-[24%]",
+        "border border-zinc-300 overflow-hidden flex flex-col justify-center gap-1 xl:gap-2 p-3 xl:p-4 rounded-md shadow-md relative items-start w-[100%] sm:w-[32%] lg:w-[24%]",
     ])>
 
     <div @class([

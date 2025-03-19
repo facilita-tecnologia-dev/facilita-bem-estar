@@ -6,10 +6,11 @@
             </div>
 
             <x-heading>
+                Facilita
                 <span class="relative text-teal-400">
                     Bem-estar
                     <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
-                </span> Facilita!
+                </span>
             </x-heading>
 
             <div class="text-center mt-6 mb-5">
