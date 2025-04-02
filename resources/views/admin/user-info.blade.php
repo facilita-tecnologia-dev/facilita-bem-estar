@@ -51,8 +51,8 @@
 
         // Set document properties
         doc.setProperties({
-            title: 'Relatório de Bem-estar',
-            subject: 'Dados de Bem-estar Pessoal',
+            title: 'Relatório de Saúde Mental',
+            subject: 'Dados de Saúde Mental Pessoal',
             author: 'Facilita',
             creator: 'jsPDF'
         });

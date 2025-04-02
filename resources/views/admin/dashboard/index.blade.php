@@ -11,7 +11,7 @@
         </x-heading>
 
         <div class="text-center mt-4 mb-4">
-            <p class="text-sm sm:text-md md:text-lg font-medium">Resultados de todos os testes de bem-estar realizados pelos funcionários</p>
+            <p class="text-sm sm:text-md md:text-lg font-medium">Resultados de todos os testes de saúde mental realizados pelos funcionários</p>
         </div>
 
         <div id="charts" class="flex-1 flex flex-wrap overflow-auto gap-[1%] gap-y-3 w-full justify-center">

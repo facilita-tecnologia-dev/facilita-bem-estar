@@ -6,7 +6,7 @@
                 Etapa - {{ $testIndex }}
             </x-heading>
 
-            <p class="text-sm md:text-base lg:text-lg font-medium text-center text-teal-700 mb-4 mt-4">
+            <p class="text-sm md:text-base lg:text-lg font-medium text-center text-fuchsia-600 mb-4 mt-4">
                 {{ $testStatement }}
             </p>
 

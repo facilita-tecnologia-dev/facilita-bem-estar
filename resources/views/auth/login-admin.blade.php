@@ -1,15 +1,14 @@
 <x-layouts.app>
     
         <x-box class="">
-            <div class="bg-teal-700 p-1.5 rounded-md mb-3">
+            <div class="p-1.5 rounded-md mb-3">
                 <img src="{{ asset('assets/logo_company.png') }}" alt="" class="h-10 sm:h-12 md:h-14">
             </div>
 
             <x-heading>
                 Facilita
-                <span class="relative text-teal-400">
-                    Bem-estar
-                    <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
+                <span class="relative text-fuchsia-600">
+                    Saúde Mental
                 </span>
             </x-heading>
 

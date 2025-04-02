@@ -1,10 +1,10 @@
 <x-layouts.app>
     <x-box>
         <x-heading>
-            <span class="relative text-teal-400">
-                Bem-estar
-                <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
-            </span> Facilita!
+            Facilita
+            <span class="relative text-fuchsia-600">
+                Saúde Mental
+            </span>
         </x-heading>
 
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-8 justify-items-center mb-4 mt-4 sm:mb-6 sm:mt-6">

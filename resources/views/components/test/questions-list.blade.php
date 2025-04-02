@@ -10,7 +10,7 @@
             $pendingAnswer = $pendingAnswers[$key]->value ?? '';
         @endphp
 
-        <p class="text-center text-sm sm:text-base font-normal text-teal-700">{{ $questionNumber }}. {{ $question['statement'] }}</p>
+        <p class="text-center text-sm sm:text-base font-normal text-fuchsia-600">{{ $questionNumber }}. {{ $question['statement'] }}</p>
         
         <div class="w-full border border-zinc-700 rounded-md">
             @foreach ($question['question_options'] as $optionNumber => $option)

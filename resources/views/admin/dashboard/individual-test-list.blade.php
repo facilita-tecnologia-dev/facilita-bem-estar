@@ -55,7 +55,7 @@
                     </select>
                 </div>
                 
-                <button type="submit" class="flex items-center gap-2 bg-teal-700 rounded-md text-sm lg:text-base h-7 lg:h-8 px-6 text-white">
+                <button type="submit" class="flex items-center gap-2 bg-fuchsia-600 rounded-md text-sm lg:text-base h-7 lg:h-8 px-6 text-white">
                     Filtrar
                     <i class="fa-solid fa-filter text-xs lg:text-sm"></i>
                 </button>

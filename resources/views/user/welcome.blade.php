@@ -1,12 +1,10 @@
 <x-layouts.app>
     <x-box>
         <x-heading>
-            Bem vindo(a) aos Testes de 
-            <span class="relative text-teal-400">
-                Bem-estar
-                <img src="{{ asset('assets/svg-line.svg') }}" alt="" class="absolute top-full left-0">
+            Facilita
+            <span class="relative text-fuchsia-600">
+                Saúde Mental
             </span>
-                da Facilita!
         </x-heading>
         
         <div class="space-y-2 mb-6 mt-6">

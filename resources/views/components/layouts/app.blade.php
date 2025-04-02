@@ -11,10 +11,10 @@
     <script src="https://kit.fontawesome.com/1cb73192b4.js" crossorigin="anonymous"></script>
 
     @vite('resources/css/app.css')
-    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-Cbhb992i.css') }}"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-Dasl6xyn.css') }}"> --}}
     <title>Bem Estar | Facilita</title>
 </head>
-<body class="bg-teal-50">
+<body class="bg-fuchsia-200">
     <main class="w-screen h-screen flex flex-col gap-5 items-center justify-center p-4 md:p-8 lg:p-10">
         {{ $slot }}
     </main>

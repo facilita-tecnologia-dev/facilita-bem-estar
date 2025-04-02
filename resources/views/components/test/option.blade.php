@@ -16,7 +16,7 @@
     }
 @endphp
 
-<label {{ $attributes }} for="question_{{ $questionNumber }}_{{ $optionNumber }}" class="border-b border-b-zinc-300 bg-transparent px-3 lg:px-4 py-1 lg:py-1.5 flex items-center text-sm sm:text-base gap-2 cursor-pointer hover:bg-teal-100 transition has-[:checked]:text-teal-700">
+<label {{ $attributes }} for="question_{{ $questionNumber }}_{{ $optionNumber }}" class="border-b border-b-zinc-300 bg-transparent px-3 lg:px-4 py-1 lg:py-1.5 flex items-center text-sm sm:text-base gap-2 cursor-pointer hover:bg-fuchsia-100 transition has-[:checked]:text-fuchsia-600">
     <input 
         type="radio" 
         name="question_{{ $questionNumber }}" 
