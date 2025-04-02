@@ -11,15 +11,11 @@
     <script src="https://kit.fontawesome.com/1cb73192b4.js" crossorigin="anonymous"></script>
 
     @vite('resources/css/app.css')
-    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-Dasl6xyn.css') }}"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-COZfCADL.css') }}"> --}}
     <title>Facilita Saúde Mental</title>
 </head>
-<body
-    style="
-        background-image: url('{{ asset('assets/background-gradient.png') }}')
-    "
-    class="bg-cover h-screen"
->
-    {{ $slot }}
+<body class="bg-gray-100">
+    <x-form.input-text name="cpf" class="w-[500px]" />
+    <x-form.input-text type="password" name="password" class="w-[500px]" />
 </body>
 </html>

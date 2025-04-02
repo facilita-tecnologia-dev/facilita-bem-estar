@@ -18,4 +18,18 @@
         -webkit-font-smoothing: antialiased;
         font-family: "Roboto", sans-serif;
     }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #1f293760;
+        border-radius: 3px;
+        transition: 0.2s;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #1f293780;
+    }
 }

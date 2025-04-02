@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth\Login;
 
 use App\Models\Company;
 use App\Models\User;
@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class AdminLoginController
+class InternalManagerLoginController
 {
-    public function index(){
-        return view('auth.login-admin');
+    public function __invoke(){
+        return view('auth.login.internal-manager');
     }
 
     public function attemptLogin(Request $request){

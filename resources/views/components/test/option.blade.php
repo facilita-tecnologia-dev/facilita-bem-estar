@@ -16,15 +16,21 @@
     }
 @endphp
 
-<label {{ $attributes }} for="question_{{ $questionNumber }}_{{ $optionNumber }}" class="border-b border-b-zinc-300 bg-transparent px-3 lg:px-4 py-1 lg:py-1.5 flex items-center text-sm sm:text-base gap-2 cursor-pointer hover:bg-fuchsia-100 transition has-[:checked]:text-fuchsia-600">
+<label {{ $attributes }} for="question_{{ $questionNumber }}_{{ $optionNumber }}" class="bg-gray-100 w-full px-4 h-[38px] md:h-[45px] flex items-center gap-3 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 transition">
     <input 
         type="radio" 
         name="question_{{ $questionNumber }}" 
         id="question_{{ $questionNumber }}_{{ $optionNumber }}" 
         value="{{ $option['value'] }}" 
-        class="w-3.5 h-3 rounded-full accent-current"
+        class="hidden"
+        data-role="option-checkbox"
         {{ $pendingAnswer ==  $option['value'] || $old == $option['value'] ? 'checked' : '' }}
     />
-    
+    <div data-role="option-icon" class="{{ $pendingAnswer ==  $option['value'] || $old == $option['value'] ? 'opacity-100' : 'opacity-0' }}">
+        <i class="fa-solid fa-check"></i>
+    </div>
+
     {{ $option['content'] }}
 </label>
+
+

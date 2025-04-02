@@ -19,7 +19,7 @@ class AuthMiddleware
     {
 
         if (!Auth::user()) {
-            return to_route('auth.initial');
+            return to_route('presentation');
         }
         
 

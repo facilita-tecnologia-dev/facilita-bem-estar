@@ -41,7 +41,7 @@ class TestsController
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_type_id', '=', $testTypeInfo->id)->get();
 
 
-        return view('user.test', [
+        return view('test', [
             'testIndex' => $testIndex,
             'testName' => $testName,
             'testStatement' => $testStatement,
@@ -52,7 +52,7 @@ class TestsController
     }
 
     public function handleTestSubmit(Request $request, $testIndex){
-
+        dd($request->all());
         // Busca as informações para verificar se o teste existe
         $testInfo = TestType::query()->where('order', '=', $testIndex)->first();
         

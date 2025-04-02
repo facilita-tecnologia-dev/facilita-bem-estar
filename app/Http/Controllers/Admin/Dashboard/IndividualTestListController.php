@@ -85,7 +85,7 @@ class IndividualTestListController
         $genders = $this->getGendersToFilter($test);
         $departments = $this->getDepartmentsToFilter($test);
 
-        return view('admin.dashboard.individual-test-list', [
+        return view('admin.dashboard.test-results-list', [
             'testName' => $test,
             'testStatsList' => $testsSorted,
             'severities' => $severities,

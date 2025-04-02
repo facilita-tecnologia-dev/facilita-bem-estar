@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IndividualTestResultController
+class TestResultsPerDepartmentController
 {
     protected $helper;
 
@@ -16,7 +16,6 @@ class IndividualTestResultController
     {
         $this->helper = $helper;
     }
-
 
     public function index($testName){
         $usersLatestCollections = $this->helper->getUsersLatestCollections();
@@ -27,7 +26,7 @@ class IndividualTestResultController
         
         $testData = $this->compileTestsData($testName, $usersLatestCollections);
        
-        return view('admin.dashboard.individual-test-result', [
+        return view('admin.dashboard.test-results-per-department', [
             'testName' => $testName,
             'testStats' => $testData,
         ]);

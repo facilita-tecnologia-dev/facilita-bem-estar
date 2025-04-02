@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth\Login;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class UserLoginController
+class EmployeeLoginController
 {
-    public function index(){
-        return view('auth.login-user');
+    public function __invoke(){
+        return view('auth.login.employee');
     }
 
     public function attemptLogin(Request $request){
@@ -31,6 +31,6 @@ class UserLoginController
 
         Auth::login($user);
 
-        return to_route('welcome');
+        return to_route('choose-test');
     }
 }
