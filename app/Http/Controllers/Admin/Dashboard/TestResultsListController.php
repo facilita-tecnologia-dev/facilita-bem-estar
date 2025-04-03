@@ -2,24 +2,20 @@
 
 namespace App\Http\Controllers\Admin\Dashboard;
 
-use App\Models\TestCollection;
 use App\Models\TestForm;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
 
-class IndividualTestListController
+class TestResultsListController
 {
     protected $users;
 
     public function __construct()
     {
-        $this->users = User::query()->where('company_id', '=', session('company_id'))->get();
+        $this->users = User::query()->where('company_id', '=', session('company')->id)->get();
     }
 
-    public function index(Request $request, $test){
+    public function __invoke(Request $request, $test){
         $search = $request['search'];
         $severity = $request['severidade'];
         $gender = $request['sexo'];
@@ -27,7 +23,7 @@ class IndividualTestListController
         
 
         $testResults = User::query()
-            ->where('company_id', '=', session('company_id'))
+            ->where('company_id', '=', session('company')->id)
             ->when($search, function($query) use($search){
                 return $query->where('name', 'like', "%$search%");
             })

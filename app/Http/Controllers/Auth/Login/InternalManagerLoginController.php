@@ -34,10 +34,11 @@ class InternalManagerLoginController
 
         $company = Company::query()->where('id', '=', $user->company_id)->first();
 
-        session(['company_id' => $company->id]);
+        session(['company' => $company]);
+        session(['user' => $user]);
         
         Auth::login($user);
 
-        return to_route('admin.welcome');
+        return to_route('dashboard.charts');
     }
 }

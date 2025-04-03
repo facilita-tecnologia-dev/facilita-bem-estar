@@ -24,7 +24,7 @@ class GuestMiddleware
             $userRole = DB::table('role_user')->where('user_id', '=', $user->id)->first();
 
             if ($userRole && $userRole->role_id == 1) {
-                return to_route('general-results.dashboard');
+                return to_route('dashboard.charts');
             }
     
             if ($userRole && $userRole->role_id == 2) {

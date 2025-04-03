@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 
-class UserInfoController
+class EmployeeProfileController
 {
-    public function index(User $user){
-        $admissionDate = Carbon::createFromFormat('d/m/Y', $user->admission);
+    public function __invoke(User $employee){
+        $admissionDate = Carbon::createFromFormat('d/m/Y', $employee->admission);
         $now = Carbon::now();
         $admissionDiff = $now->diff($admissionDate)->format('%y anos, %m meses e %d dias.');
 
-        $lastTestCollection = TestCollection::query()->where('user_id', '=', $user->id)->whereIn('created_at', function($query){
+        $lastTestCollection = TestCollection::query()->where('user_id', '=', $employee->id)->whereIn('created_at', function($query){
             $query->selectRaw('MAX(created_at)')
             ->from('test_collections')
             ->groupBy('user_id');
@@ -37,28 +37,28 @@ class UserInfoController
 
         $lastTestCollectionDate = $lastTestCollectionDateTimeFormatted . ' - '. $lastTestCollectionDateDiffFromNowFormatted . ' atrás.';
 
+        $cpfFormatted = preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $employee->cpf);
 
-        $cpfFormatted = preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $user->cpf);
+        $employeeInfo = [];
 
-        $userInfo = [];
-
-        $userInfo['Nome'] = $user->name;
-        $userInfo['CPF'] = $cpfFormatted;
-        $userInfo['Idade'] = $user->age;
-        $userInfo['Setor'] = $user->department;
-        $userInfo['Cargo'] = $user->occupation;
-        $userInfo['Sexo'] = $user->gender;
-        $userInfo['Tempo de empresa'] = $admissionDiff;
-        $userInfo['Último teste realizado'] = $lastTestCollectionDate;
+        $employeeInfo['Nome'] = $employee->name;
+        $employeeInfo['CPF'] = $cpfFormatted;
+        $employeeInfo['Idade'] = $employee->age;
+        $employeeInfo['Setor'] = $employee->department;
+        $employeeInfo['Cargo'] = $employee->occupation;
+        $employeeInfo['Sexo'] = $employee->gender;
+        $employeeInfo['Data de Admissão'] = $employee->admission;
+        $employeeInfo['Tempo de empresa'] = $admissionDiff;
+        $employeeInfo['Último teste realizado'] = $lastTestCollectionDate;
 
 
         // --------------------------------------------------------
 
 
-        $lastUserTestCollection = TestCollection::whereIn('created_at', function($query) use($user){
+        $lastUserTestCollection = TestCollection::whereIn('created_at', function($query) use($employee){
             $query->selectRaw('MAX(created_at)')
             ->from('test_collections')
-            ->where('user_id', '=', $user->id);
+            ->where('user_id', '=', $employee->id);
         })->with('tests')->first()->toArray();
 
         // dump($lastUserTestCollection);
@@ -66,9 +66,9 @@ class UserInfoController
         $testResults = $lastUserTestCollection['tests']; 
 
 
-        return view('admin.user-info', [
-            'user' => $user,
-            'userInfo' => $userInfo,
+        return view('admin.employee-profile', [
+            'employee' => $employee,
+            'employeeInfo' => $employeeInfo,
             'testResults' => $testResults,
         ]);
     }

@@ -1,32 +1,31 @@
 <x-layouts.app>
-    <x-box>
-        <div class="mr-auto relative md:absolute md:left-10 md:top-4 mb-4">
-            <x-actions.anchor href="{{ route('admin.welcome') }}" color="success" variant="solid">
-                Voltar
-            </x-actions.anchor>
-        </div>
+    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-0">
+        <x-sidebar />
         
-
-        <x-heading>
-            {{ $userInfo['Nome'] }}
-        </x-heading>
-
-        <div class="text-left mt-5 mb-5">
-            <p class="text-xl font-medium">Informações do usuário</p>
-        </div>
-
-        <div class="w-full grid grid-cols-1 min-[575px]:grid-cols-2 xl:grid-cols-3 gap-4 mb-6 overflow-auto">
-            @foreach ($userInfo as $userInfoName => $userInfoData)
-                <div class="flex items-start flex-wrap gap-1">
-                    <span class="whitespace-nowrap">{{ $userInfoName }}:</span>
-                    <span class="font-bold">{{ $userInfoData }}</span>
+        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-start justify-start gap-6">
+            <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
+                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">{{ $employeeInfo['Nome'] }}</h2>
+            </div>
+    
+            <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
+                <div class="w-full grid gri-cols-1 md:grid-cols-2 gap-4">
+                    @foreach ($employeeInfo as $userInfoName => $userInfoData)
+                        <div class="">
+                            <p class="font-semibold text-lg text-left">{{ $userInfoName }}:</p>
+                            <p class="text-base text-left">{{ $userInfoData }}</p>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
+
+                <div class="w-full flex flex-col md:flex-row justify-between gap-2">
+                    <x-action onclick="downloadPDF()">Relatório em PDF</x-action>
+                    <x-action href="{{ route('employee-profile.update', $employee) }}">Editar</x-action>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <button class="bg-teal-700 text-white font-semibold px-4 py-2 rounded-md hover:bg-teal-600 transition cursor-pointer" onclick="downloadPDF()">Download do Relatório do Usuário em PDF</button>
-
-    </x-box>
+    <script src="{{ asset('js/global.js') }}"></script>
 </x-layouts.app>
 
 
@@ -36,7 +35,7 @@
 
 <script>
 
-    const userInfo = @json($user)    
+    const userInfo = @json($employee)    
     const testResults = @json($testResults)    
   
 

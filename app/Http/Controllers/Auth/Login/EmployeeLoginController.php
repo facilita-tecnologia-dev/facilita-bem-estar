@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth\Login;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,11 @@ class EmployeeLoginController
         if(!$user || !(count($userRole) > 0)){
             return back()->with('errorMessage', 'O usuário não existe.');
         }
+
+        $company = Company::query()->where('id', '=', $user->company_id)->first();
+
+        session(['company' => $company]);
+        session(['user' => $user]);
 
         Auth::login($user);
 

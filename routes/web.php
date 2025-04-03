@@ -2,15 +2,20 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
-use App\Http\Controllers\Admin\Dashboard\IndividualTestListController;
+use App\Http\Controllers\Admin\Dashboard\TestResultsListController;
 use App\Http\Controllers\Admin\Dashboard\TestResultsPerDepartmentController;
-use App\Http\Controllers\Admin\UserInfoController;
+use App\Http\Controllers\Admin\EmployeeProfileController;
 use App\Http\Controllers\Auth\Login\EmployeeLoginController;
 use App\Http\Controllers\Auth\Login\ExternalManagerLoginController;
 use App\Http\Controllers\Auth\Login\HealthWorkerLoginController;
 use App\Http\Controllers\Auth\Login\InternalManagerLoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\CompanyProfileController;
+use App\Http\Controllers\EmployeesListController;
+use App\Http\Controllers\ImportUsersController;
 use App\Http\Controllers\PresentationController;
+use App\Http\Controllers\UpdateCompanyProfileController;
+use App\Http\Controllers\UpdateEmployeeProfileController;
 use App\Http\Controllers\Users\TestResultsController;
 use App\Http\Controllers\Users\TestsController;
 use App\Http\Controllers\Users\WelcomeController;
@@ -36,8 +41,7 @@ Route::middleware(GuestMiddleware::class)->group(function(){
   
 Route::middleware(AuthMiddleware::class)->group(function(){
 
-        Route::view('/testes', 'choose-test')->name('choose-test');
-
+        Route::view('/escolha-teste', 'choose-test')->name('choose-test');
 
         /* Rotas do colaborador */
 
@@ -57,15 +61,28 @@ Route::middleware(AuthMiddleware::class)->group(function(){
    
     // Rotas do Dashboard Geral
     Route::middleware(AdminMiddleware::class)->group(function(){
-        Route::get('/admin', [AdminController::class, 'index'])->name('admin.welcome');
+        Route::get('/perfil-empresa', CompanyProfileController::class)->name('company-profile');
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('general-results.dashboard');
+        Route::get('/perfil-empresa/editar', UpdateCompanyProfileController::class)->name('company-profile.update');
+        Route::post('/perfil-empresa/editar', [UpdateCompanyProfileController::class, 'updateCompanyProfile']);
+
+        Route::get('/empresa/lista-colaboradores', EmployeesListController::class)->name('employees-list');
+        
+        Route::get('/importar-colaboradores', ImportUsersController::class)->name('import-employees');
+        Route::post('/importar-colaboradores', [ImportUsersController::class, 'importUsers']);
+
+        Route::get('/dashboard', DashboardController::class)->name('dashboard.charts');
     
-        Route::get('/dashboard/{test}', [TestResultsPerDepartmentController::class, 'index'])->name('test-results.dashboard');
+        Route::get('/dashboard/{test}', TestResultsPerDepartmentController::class)->name('dashboard.test-result-per-department');
         
-        Route::get('/dashboard/{test}/lista', [IndividualTestListController::class, 'index'])->name('test-results-list.dashboard');
+        Route::get('/dashboard/{test}/lista', TestResultsListController::class)->name('dashboard.test-results-list');
+
+        Route::get('/colaborador/{employee}', EmployeeProfileController::class)->name('employee-profile');
         
-        Route::get('/user/{user}', [UserInfoController::class, 'index'])->name('user.info');
+        Route::get('/colaborador/{employee}/update', UpdateEmployeeProfileController::class)->name('employee-profile.update');
+        Route::post('/colaborador/{employee}/update', [UpdateEmployeeProfileController::class, 'updateEmployeeProfile']);
+        
+
     });
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');

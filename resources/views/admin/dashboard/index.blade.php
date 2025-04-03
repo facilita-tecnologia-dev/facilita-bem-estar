@@ -4,7 +4,7 @@
         
         <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-start justify-start gap-6">
             <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-4xl text-gray-800 font-semibold text-left">Dashboard</h2>
+                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Dashboard</h2>
             </div>
     
             <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -15,17 +15,17 @@
             </div>
 
             <div id="charts" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <div class="shadow-md rounded-md w-full bg-white/25">
-                    <a href="" class="w-full h-full p-5 flex flex-col justify-between gap-3 items-center">
+                <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                    <div class="w-full h-full p-5 flex flex-col justify-between gap-3 items-center">
                         <p class="text-center">Participação nos testes</p>
                         <div class="w-40 h-40 xl:w-44 xl:h-44" id="Participação">
                             
                         </div>
-                    </a>
+                    </div>
                 </div>
                 @foreach ($generalResults as $testName => $testData)
-                    <div class="shadow-md rounded-md w-full bg-white/25">
-                        <a href="{{ route('test-results.dashboard', $testName)}}" class="w-full h-full p-5 flex flex-col justify-between gap-3 items-center">
+                    <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                        <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full h-full p-5 flex flex-col justify-between gap-3 items-center">
                             <p class="text-center">{{ $testName }}</p>
                             <div class="w-40 h-40 xl:w-44 xl:h-44" id="{{ $testName }}">
                                 

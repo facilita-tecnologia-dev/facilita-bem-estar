@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth\Login;
 
+use App\Http\Controllers\GeneralController;
 use Illuminate\Http\Request;
 
 class HealthWorkerLoginController

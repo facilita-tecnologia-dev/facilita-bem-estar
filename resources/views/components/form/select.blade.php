@@ -19,7 +19,7 @@
     
     <input type="hidden" name="{{ $name }}" value="{{ $value }}">
     
-    <span>{{ $placeholder }}</span>
+    <span class="pointer-events-none">{{ $placeholder }}</span>
 
     <i class="fa-solid fa-chevron-down pointer-events-none"></i>
     

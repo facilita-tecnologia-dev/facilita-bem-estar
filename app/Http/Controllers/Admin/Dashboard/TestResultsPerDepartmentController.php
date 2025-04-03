@@ -17,7 +17,7 @@ class TestResultsPerDepartmentController
         $this->helper = $helper;
     }
 
-    public function index($testName){
+    public function __invoke($testName){
         $usersLatestCollections = $this->helper->getUsersLatestCollections();
       
         if(count($usersLatestCollections) === 0){

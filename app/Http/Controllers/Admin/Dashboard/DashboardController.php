@@ -16,7 +16,7 @@ class DashboardController
         $this->usersLatestCollections = $helper->getUsersLatestCollections(); 
     }
 
-    public function index(){
+    public function __invoke(){
         $generalResults = $this->getCompiledResults();
         $testsParticipation = $this->getTestsParticipation(); 
 
@@ -73,7 +73,7 @@ class DashboardController
         $countCollections = count($usersWithCollections);
 
         
-        $users = User::query()->where('company_id', '=', session('company_id'))->get()->toArray();
+        $users = User::query()->where('company_id', '=', session('company')->id)->get()->toArray();
         
         $countUsers = count($users);
         
