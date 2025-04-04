@@ -1,24 +1,24 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\Dashboard\DashboardController;
-use App\Http\Controllers\Admin\Dashboard\TestResultsListController;
-use App\Http\Controllers\Admin\Dashboard\TestResultsPerDepartmentController;
-use App\Http\Controllers\Admin\EmployeeProfileController;
 use App\Http\Controllers\Auth\Login\EmployeeLoginController;
 use App\Http\Controllers\Auth\Login\ExternalManagerLoginController;
 use App\Http\Controllers\Auth\Login\HealthWorkerLoginController;
 use App\Http\Controllers\Auth\Login\InternalManagerLoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\CompanyProfileController;
-use App\Http\Controllers\EmployeesListController;
-use App\Http\Controllers\ImportUsersController;
-use App\Http\Controllers\PresentationController;
-use App\Http\Controllers\UpdateCompanyProfileController;
-use App\Http\Controllers\UpdateEmployeeProfileController;
-use App\Http\Controllers\Users\TestResultsController;
-use App\Http\Controllers\Users\TestsController;
-use App\Http\Controllers\Users\WelcomeController;
+use App\Http\Controllers\Private\CompanyProfileController;
+use App\Http\Controllers\Private\Dashboard\DashboardController;
+use App\Http\Controllers\Private\Dashboard\TestResultsListController;
+use App\Http\Controllers\Private\Dashboard\TestResultsPerDepartmentController;
+use App\Http\Controllers\Private\EmployeeProfileController;
+use App\Http\Controllers\Private\EmployeesListController;
+use App\Http\Controllers\Private\ImportUsersController;
+use App\Http\Controllers\Private\TestResultsController;
+use App\Http\Controllers\Private\TestsController;
+use App\Http\Controllers\Private\UpdateCompanyProfileController;
+use App\Http\Controllers\Private\UpdateEmployeeProfileController;
+use App\Http\Controllers\Private\WelcomeController;
+use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
@@ -49,7 +49,8 @@ Route::middleware(AuthMiddleware::class)->group(function(){
         Route::get('/bem-vindo/start', [WelcomeController::class, 'startTests'])->name('welcome.start');
                 
         // Rotas dos formulários de teste
-        Route::get('/teste/{test}', [TestsController::class, 'index'])->name('test');
+        Route::get('/teste/{test?}', TestsController::class)->name('test');
+
         Route::post('/teste/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
         
         // Rotas do resultado individual

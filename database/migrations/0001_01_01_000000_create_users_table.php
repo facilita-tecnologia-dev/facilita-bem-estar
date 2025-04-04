@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('admission')->nullable();
             $table->string('gender');
             $table->string('email')->unique()->nullable();
+            $table->foreignIdFor(Company::class);
             $table->rememberToken();
             $table->timestamps();
         });

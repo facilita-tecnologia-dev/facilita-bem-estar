@@ -18,7 +18,9 @@
                 </div>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-action onclick="downloadPDF()">Relatório em PDF</x-action>
+                    @if($testResults)
+                        <x-action onclick="downloadPDF()">Relatório em PDF</x-action>
+                    @endif
                     <x-action href="{{ route('employee-profile.update', $employee) }}">Editar</x-action>
                 </div>
             </div>

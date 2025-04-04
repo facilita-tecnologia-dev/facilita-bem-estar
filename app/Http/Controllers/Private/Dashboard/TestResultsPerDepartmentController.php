@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Dashboard;
+namespace App\Http\Controllers\Private\Dashboard;
 
 use App\Helpers\Helper;
 use App\Models\TestCollection;

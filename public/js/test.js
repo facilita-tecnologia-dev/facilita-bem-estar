@@ -19,3 +19,38 @@ testQuestions.forEach((question) => {
         optionIcon.classList.replace("opacity-0", "opacity-100");
     });
 });
+
+// document.addEventListener("DOMContentLoaded", () => {
+//     testQuestions.forEach(function (question, index) {
+//         const options = document.querySelectorAll(
+//             '[data-role="option-checkbox"]'
+//         );
+
+//         const proximaPergunta = question.nextElementSibling;
+
+//         options.forEach((option) => {
+//             option.addEventListener("change", () => {
+//                 if (option.checked) {
+//                     if (index < testQuestions.length - 1) {
+//                         if (proximaPergunta) {
+//                             // Faz o scroll suave para a próxima pergunta
+//                             proximaPergunta.scrollIntoView({
+//                                 behavior: "smooth",
+//                                 block: "start",
+//                             });
+//                         }
+//                     }
+//                 }
+//             });
+//         });
+//     });
+// });
+
+function scrollToNextQuestion(event) {
+    const questionElement = event.target.closest('[data-role="test-question"]');
+    const nextQuestion = questionElement.nextElementSibling;
+
+    if (nextQuestion && nextQuestion.hasAttribute("data-role")) {
+        nextQuestion.scrollIntoView({ behavior: "smooth" });
+    }
+}

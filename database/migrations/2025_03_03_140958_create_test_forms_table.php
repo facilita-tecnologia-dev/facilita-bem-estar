@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\TestCollection;
+use App\Models\TestType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('severity_title');
             $table->string('severity_color');
             $table->string('recommendation');
+            $table->foreignIdFor(TestType::class);
             $table->timestamps();
         });
     }

@@ -10,11 +10,12 @@
             <div class="flex flex-col items-center gap-8">
                 <div class="flex flex-col gap-3 w-full max-w-[550px] max-h-full">
                     <p class="text-lg font-semibold text-left text-gray-800">
-                        {{ $testStatement }}
+                        {{ $test->statement }}
                     </p>
                     
                     <x-form action="{{ route('test.submit', $testIndex)}}" class="flex-1  flex flex-col gap-5" id="test-form" post>
-                        @foreach ($testQuestions->toArray() as $key => $question)
+                        @foreach ($test->questions->toArray() as $key => $question)
+                        {{-- @dd($question) --}}
                             @php
                                 $questionNumber = $key + 1;
                                 $pendingAnswer = $pendingAnswers[$key]->value ?? '';
@@ -24,21 +25,21 @@
                                 <div class="w-full px-4 py-2">
                                     <p class="text-base text-gray-800 text-left flex items-center gap-4 font-medium">
                                         <i class="fa-solid fa-question"></i>
-                                        {{ $questionNumber }}. {{ $question['statement'] }}
+                                        {{ $question['statement'] }}
                                     </p>
                                 </div>
                                 
                                 @foreach ($question['question_options'] as $optionNumber => $option)
                                     <x-test.option 
                                         :option="$option" 
-                                        questionNumber="{{ $questionNumber }}" 
+                                        questionNumber="{{ $question['id'] }}" 
                                         optionNumber="{{ $optionNumber }}" 
                                         :pendingAnswer="$pendingAnswer" 
                                     />
                                 @endforeach
 
-                                @error("question_$questionNumber")
-                                    <span class="bg-rose-400  text-white text-base py-0.5 px-2 rounded-md">A questão {{ $questionNumber }} deve ser respondida</span>
+                                @error("question_" . $question['id'])
+                                    <span class="bg-rose-400  text-white text-base py-0.5 px-2 rounded-md">A questão {{ $question['id'] }} deve ser respondida</span>
                                 @enderror
                             </div>
                         @endforeach
@@ -55,7 +56,7 @@
             </div>
 
             <div class="w-full max-w-[550px]">
-                <p class="text-xs md:text-sm text-center">{{ $testReference }}</p>
+                <p class="text-xs md:text-sm text-center">{{ $test->reference }}</p>
             </div>
         </div>
 

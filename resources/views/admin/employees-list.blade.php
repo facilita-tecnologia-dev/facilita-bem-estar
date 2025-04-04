@@ -8,7 +8,22 @@
             </div>
   
             
-            <div class="w-full flex items-end sm:items-center gap-4 flex-col sm:flex-row sm:justify-end">
+            <div class="w-full flex items-end sm:items-end gap-4 flex-col sm:flex-row sm:justify-end">
+                @if($queryStringName || $queryStringDepartment || $queryStringOccupation)
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm">Você filtrou por:</span>
+                        @if($queryStringName)
+                            <span class="px-3 py-1 rounded-md bg-gray-100/50 text-sm">Nome: {{ $queryStringName }}</span>
+                        @endif
+                        @if($queryStringDepartment)
+                            <span class="px-3 py-1 rounded-md bg-gray-100/50 text-sm">Setor: {{ $queryStringDepartment }}</span>
+                        @endif
+                        @if($queryStringOccupation)
+                            <span class="px-3 py-1 rounded-md bg-gray-100/50 text-sm">Cargo: {{ $queryStringOccupation }}</span>
+                        @endif
+                    </div>
+                @endif
+
                 <button data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
                     <i class="fa-solid fa-filter"></i>
                 </button>
@@ -20,10 +35,9 @@
 
                     <x-form class="w-full flex flex-col gap-4 items-center">
                         <x-form.input-text icon="search" name="name" placeholder="Nome do colaborador" />
-                        <x-form.input-text name="age" placeholder="Idade" />
 
-                        <x-form.select name="department" placeholder="Setor" :options="['1', '2', '3', '4']" />
-                        <x-form.select name="occupation" placeholder="Cargo" :options="['1', '2', '3', '4']" />
+                        <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" />
+                        <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" />
 
                         <x-action tag="button">Filtrar</x-action>
                     </x-form>

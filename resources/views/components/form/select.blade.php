@@ -23,7 +23,7 @@
 
     <i class="fa-solid fa-chevron-down pointer-events-none"></i>
     
-    <div class="dropdown z-20 absolute hidden top-[110%] left-0 w-full bg-gray-200  p-3 rounded-md border border-gray-300 space-y-0.5">
+    <div class="dropdown z-20 absolute hidden max-h-[250px] overflow-auto top-[110%] left-0 w-full bg-gray-200  p-3 rounded-md border border-gray-300 space-y-0.5">
         @foreach ($options as $option)
             @php
                 $optionText = isset($option['option']) ? $option['option'] : $option;

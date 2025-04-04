@@ -12,8 +12,17 @@ class TestHandlerFactory
         if (!$testInfo) {
             return new DefaultTestHandler();
         }
-        
-        switch ($testInfo['handler_type']) {
+
+        switch ($testInfo->handler_type) {
+            case 'work-context':
+                return new AnxietyTestHandler();
+            case 'management-style':
+                return new DepressionTestHandler();
+            case 'work-experiences':
+                return new PressureAtWorkTestHandler();
+            case 'work-problems':
+                return new PressureForResultsTestHandler();
+
             case 'anxiety':
                 return new AnxietyTestHandler();
             case 'depression':

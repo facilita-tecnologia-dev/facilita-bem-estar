@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('key_name');
             $table->string('display_name');
-            $table->string('statement');
+            $table->text('statement');
             $table->string('reference');
             $table->string('number_of_questions');
             $table->string('handler_type');

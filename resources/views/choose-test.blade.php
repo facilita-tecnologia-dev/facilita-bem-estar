@@ -36,7 +36,7 @@
                 </a>
 
                 <a 
-                    href="{{ route('test', 1) }}"
+                    href="{{ route('test') }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 

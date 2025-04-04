@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Private;
 
 use App\Models\TestCollection;
 use App\Models\User;

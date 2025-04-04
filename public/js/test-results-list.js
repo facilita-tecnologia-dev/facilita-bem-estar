@@ -15,7 +15,7 @@ function reorderTable(event, column) {
 
         let cellA, cellB;
 
-        if (column === 4) {
+        if (column === 3) {
             cellA = parseFloat(cellsA[column].dataset.value) || 0;
             cellB = parseFloat(cellsB[column].dataset.value) || 0;
         } else {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Private;
 
 use App\Imports\UsersImport;
 use Illuminate\Http\Request;
