@@ -23,7 +23,7 @@ class TestService
         }, $data);
 
         $handler = $this->handlerFactory->getHandler($testInfo);
-        $processedTest = $handler->process($answersValues);
+        $processedTest = $handler->process($answersValues, $testInfo);
 
         session([$testInfo->key_name . '-result' => $processedTest]);
 

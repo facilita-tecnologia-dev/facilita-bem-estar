@@ -10,5 +10,5 @@ interface TestHandlerInterface
      * @param array $answers Test Answers
      * @return array Test Result
      */
-    public function process(array $answers): array;
+    public function process(array $answers, $testInfo): array;
 }

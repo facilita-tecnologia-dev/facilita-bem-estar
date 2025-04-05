@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\Login\HealthWorkerLoginController;
 use App\Http\Controllers\Auth\Login\InternalManagerLoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Private\CompanyProfileController;
+use App\Http\Controllers\Private\CreateEmployeeController;
 use App\Http\Controllers\Private\Dashboard\DashboardController;
 use App\Http\Controllers\Private\Dashboard\TestResultsListController;
 use App\Http\Controllers\Private\Dashboard\TestResultsPerDepartmentController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PresentationController::class, 'index'])->name('presentation');
@@ -77,9 +79,12 @@ Route::middleware(AuthMiddleware::class)->group(function(){
         Route::get('/dashboard/{test}', TestResultsPerDepartmentController::class)->name('dashboard.test-result-per-department');
         
         Route::get('/dashboard/{test}/lista', TestResultsListController::class)->name('dashboard.test-results-list');
+        
+        Route::get('/colaborador/create', CreateEmployeeController::class)->name('employee-profile.create');
+        Route::post('/colaborador/create', [CreateEmployeeController::class, 'createEmployeeProfile']);
 
         Route::get('/colaborador/{employee}', EmployeeProfileController::class)->name('employee-profile');
-        
+
         Route::get('/colaborador/{employee}/update', UpdateEmployeeProfileController::class)->name('employee-profile.update');
         Route::post('/colaborador/{employee}/update', [UpdateEmployeeProfileController::class, 'updateEmployeeProfile']);
         

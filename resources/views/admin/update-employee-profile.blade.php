@@ -29,6 +29,10 @@
                     <x-form.input-text name="department" label="Setor" value="{{ $employee->department }}" placeholder="Digite o departamento do colaborador"/>
                     
                     <x-form.input-text name="occupation" label="Cargo" value="{{ $employee->occupation }}" placeholder="Digite o cargo do colaborador"/>
+
+                    <x-form.select name="role" value="{{ $currentUserRole }}" label="Gestor/Colaborador" :options="$rolesToSelect" />
+                        
+
                 </x-form>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">

@@ -18,4 +18,9 @@ class TestQuestion extends Model
     public function testType(){
         return $this->belongsTo(TestType::class, 'test_type_id');
     }
+
+    public function testAnswers()
+    {
+        return $this->hasMany(TestAnswer::class, 'test_question_id', 'id');
+    }
 }

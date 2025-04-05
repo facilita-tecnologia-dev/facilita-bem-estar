@@ -7,6 +7,7 @@ use App\Models\TestCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class TestResultsPerDepartmentController
 {
@@ -18,6 +19,10 @@ class TestResultsPerDepartmentController
     }
 
     public function __invoke($testName){
+        if (Gate::denies('view-manager-screens')) {
+            abort(403, 'Acesso não autorizado');
+        }
+
         $usersLatestCollections = $this->helper->getUsersLatestCollections();
       
         if(count($usersLatestCollections) === 0){

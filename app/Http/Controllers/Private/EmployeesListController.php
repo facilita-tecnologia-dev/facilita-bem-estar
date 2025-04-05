@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Private;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EmployeesListController
 {
     protected $employees;
 
     public function __invoke(Request $request){
+        if (Gate::denies('view-manager-screens')) {
+            abort(403, 'Acesso não autorizado');
+        }
+
         $this->employees = User::where('company_id', '=', session('company')->id);
 
         $queryStringName = $request->name;

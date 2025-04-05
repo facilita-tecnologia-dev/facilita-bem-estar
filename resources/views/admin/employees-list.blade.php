@@ -7,6 +7,14 @@
                 <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Lista de colaboradores</h2>
             </div>
   
+            @if(session('message'))
+                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
+                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                        {{ session('message') }}
+                    </p>
+                </div>
+            @endif
             
             <div class="w-full flex items-end sm:items-end gap-4 flex-col sm:flex-row sm:justify-end">
                 @if($queryStringName || $queryStringDepartment || $queryStringOccupation)
@@ -27,6 +35,9 @@
                 <button data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
                     <i class="fa-solid fa-filter"></i>
                 </button>
+                <a href="{{ route('employee-profile.create') }}" data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+                    <i class="fa-solid fa-plus"></i>
+                </a>
             </div>
 
             <div data-role="filter-modal" class="hidden z-50 left-0 top-0 fixed w-screen h-screen bg-gray-800/30 px-4 items-center justify-center">

@@ -16,9 +16,9 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::user()->isUser()) {
-            return back();
-        }
+        // if (!Auth::user()->isUser()) {
+        //     return back();
+        // }
 
         return $next($request);
     }

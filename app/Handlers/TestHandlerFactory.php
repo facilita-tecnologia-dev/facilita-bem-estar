@@ -15,13 +15,13 @@ class TestHandlerFactory
 
         switch ($testInfo->handler_type) {
             case 'work-context':
-                return new AnxietyTestHandler();
+                return new WorkContextHandler();
             case 'management-style':
-                return new DepressionTestHandler();
+                return new ManagementStyleHandler();
             case 'work-experiences':
-                return new PressureAtWorkTestHandler();
+                return new WorkExperienceHandler();
             case 'work-problems':
-                return new PressureForResultsTestHandler();
+                return new WorkProblemsHandler();
 
             case 'anxiety':
                 return new AnxietyTestHandler();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Private;
 
 use App\Models\PendingTestAnswer;
 use App\Models\QuestionOption;
+use App\Models\TestAnswer;
 use App\Models\TestCollection;
 use App\Models\TestForm;
 use App\Models\TestQuestion;
@@ -50,8 +51,8 @@ class TestsController
         $validationRules = $this->generateValidationRules($testInfo);
         $validatedData = $request->validate($validationRules);
         
-        $this->testService->processTest($validatedData, $testInfo);
-        
+        $processedTest = $this->testService->processTest($validatedData, $testInfo);
+
         $totalTests = TestType::max('order');
         if ($testIndex == $totalTests) {
             $testResults = $this->getTestResultsFromSession();
@@ -97,12 +98,11 @@ class TestsController
         $newTestCollection = TestCollection::create([
             'user_id' => Auth::user()->id,
         ]);
-        
         foreach($testResults as $key => $testResult){
             $testKeyName = str_replace("-result", "", $key);
             $testType = TestType::query()->where('key_name', '=', $testKeyName)->first();
-
-            TestForm::create([
+            
+            $testForm = TestForm::create([
                 'test_collection_id' => $newTestCollection->id,
                 'test_name' => $testType->display_name,
                 'test_type_id' => $testType->id,
@@ -111,6 +111,14 @@ class TestsController
                 'severity_color' => $testResult['severity_color'],
                 'recommendation' => '',
             ]);
+
+            foreach($testResult['answers'] as $questionId => $answer){
+                TestAnswer::create([
+                    'test_question_id' => $questionId,
+                    'test_form_id' => $testForm->id,
+                    'value' => $answer
+                ]);
+            }
         }
 
         return $testResults;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Private;
 
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class UpdateCompanyProfileController
@@ -16,6 +17,10 @@ class UpdateCompanyProfileController
     }
 
     public function __invoke(){
+        if (Gate::denies('view-manager-screens')) {
+            abort(403, 'Acesso não autorizado');
+        }
+
         return view('admin.update-company-profile', [
             'company' => $this->company,
         ]);

@@ -17,4 +17,21 @@ class TestForm extends Model
     public function testType(){
         return $this->belongsTo(TestType::class, 'test_type_id');
     }
+
+    public function answers()
+    {
+        return $this->hasMany(TestAnswer::class, 'test_form_id', 'id');
+    }
+
+    public function questions()
+    {
+        return $this->hasManyThrough(
+            TestQuestion::class,
+            TestType::class,
+            'id',           // Chave primária em TestType
+            'test_type_id', // Chave estrangeira em TestQuestion
+            'test_type_id', // Chave estrangeira em TestForm
+            'id'            // Chave primária em TestType
+        );
+    }
 }

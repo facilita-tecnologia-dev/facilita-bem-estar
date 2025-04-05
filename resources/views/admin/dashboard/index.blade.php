@@ -10,13 +10,13 @@
             <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
                 <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
                     <i class="fa-solid fa-circle-info text-lg"></i>
-                    Compilado geral dos resultados de todos os colaboradores, considerando apenas a última bateria de testes de cada um.
+                    Compilado geral dos resultados de todos os colaboradores.
                 </p>
             </div>
 
             <div id="charts" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
-                    <div class="w-full h-full p-5 flex flex-col justify-between gap-3 items-center">
+                    <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
                         <p class="text-center">Participação nos testes</p>
                         <div class="w-40 h-40 xl:w-44 xl:h-44" id="Participação">
                             
@@ -24,13 +24,25 @@
                     </div>
                 </div>
                 @foreach ($generalResults as $testName => $testData)
-                    <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
-                        <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full h-full p-5 flex flex-col justify-between gap-3 items-center">
+                    <div class="shadow-md rounded-md w-full flex flex-col items-center bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                        <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full px-5 py-6 flex flex-col justify-start gap-4 items-center">
                             <p class="text-center">{{ $testName }}</p>
                             <div class="w-40 h-40 xl:w-44 xl:h-44" id="{{ $testName }}">
                                 
                             </div>
+
+                            <div class="w-full flex flex-col gap-2">
+                                @foreach ($subfactorResults[$testName] as $subfactorName => $subfactorValue)
+                                    <div class="w-full flex flex-col gap-1">
+                                        <p class="text-sm">{{ $subfactorName }}</p>
+                                        <div data-role="subfactor-bar" data-value="{{ $subfactorValue }}" class="w-full h-5 bg-gray-300/50 rounded-md overflow-hidden">
+                                            <div style="width: 0" class="opacity-50 bar h-full"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </a>
+
                     </div>
                 @endforeach
             </div>
@@ -45,6 +57,27 @@
 
 
 <script>
+    const subfactorBars = document.querySelectorAll('[data-role="subfactor-bar"]');
+
+    subfactorBars.forEach((subfactor)=>{
+        const value = subfactor.dataset.value;
+        const percentage = convertToPercentage(value);
+        const bar = subfactor.querySelector('.bar');
+        const barWitdth = (value - 1) * 25;
+        
+        bar.style.width = barWitdth.toFixed() + "%";
+        bar.style.backgroundColor = getColor(percentage);
+    })
+
+    function convertToPercentage(value) {
+        const percentage = (value - 1) * 25;
+        return Math.min(Math.max(percentage, 0), 100);
+    }
+
+    function getColor(percentage) {
+        const hue = (1 - percentage / 100) * 120
+        return `hsl(${hue}, 100%, 50%)`;
+    }
 
     // Tests Participation
 
@@ -73,12 +106,13 @@
     }
 
     Object.values(generalResults).forEach((testType, index) => {
+        console.log(testType);
         const testChartId = `chart_${index}`;
         const testChartWrapper = document.getElementById(labels[index])
+
+        const testChartSeverities = Object.keys(testType.general)
         
-        const testChartSeverities = Object.keys(testType)
-        
-        const tests = Object.values(testType)
+        const tests = Object.values(testType.general)
 
         const testChartBackgroundColors = tests.map(test => {
             severityKey = test.severity_color
@@ -91,6 +125,7 @@
         const testChartData = tests.map(test => {
             return test.count
         });
+
         
         createNewChart(testChartWrapper, testChartId, testChartSeverities, testChartData, testChartBackgroundColors)
     });

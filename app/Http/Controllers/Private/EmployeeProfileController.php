@@ -8,32 +8,33 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Gate;
 
 class EmployeeProfileController
 {
     protected $employee;
 
     public function __invoke(User $employee){
+        if (Gate::denies('view-manager-screens')) {
+            abort(403, 'Acesso não autorizado');
+        }
+
         $this->employee = $employee;
 
         $admission = $this->getFormattedAdmissionDate();
 
-        // 2. Pegando a última coleta de teste (mais recente) e carregando os testes
         $lastTestCollection = TestCollection::where('user_id', $employee->id)
             ->with('tests')
             ->latest('created_at')
             ->first();
 
-        // 3. Montando variáveis para exibir na view
         $lastTestCollectionDate = null;
         $testResults = null;
 
         if ($lastTestCollection) {
-            // 3.1 Formatando data do último teste
             $collectionDateTime = $lastTestCollection->created_at;
             $formattedDate = $collectionDateTime->format('d/m/Y');
 
-            // 3.2 Calculando a diferença entre hoje e a data do teste
             $diff = Carbon::now()->startOfDay()->diff($collectionDateTime->startOfDay());
 
             if ($diff->y >= 1) {
@@ -46,11 +47,9 @@ class EmployeeProfileController
 
             $lastTestCollectionDate = "{$formattedDate} - {$timeAgo} atrás.";
 
-            // 3.3 Armazenando resultados dos testes
             $testResults = $lastTestCollection->tests->toArray();
         }
 
-        // 4. Formatando CPF
         $cpf = $this->getFormattedCPF();
 
         $employeeInfo = [

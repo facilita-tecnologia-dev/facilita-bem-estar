@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Private\Dashboard;
 use App\Models\TestForm;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TestResultsListController
 {
@@ -17,6 +18,10 @@ class TestResultsListController
     }
 
     public function __invoke(Request $request, $test){
+        if (Gate::denies('view-manager-screens')) {
+            abort(403, 'Acesso não autorizado');
+        }
+
         $this->test = $test;
 
         $queryStringName = $request->name;
@@ -40,7 +45,7 @@ class TestResultsListController
             ->select(['id', 'name', 'occupation', 'department'])
             ->with('testCollections', function($query) use($test){
                 $query->latest()->with('tests', function($q) use($test){
-                    $q->where('test_name', '=', $test)->select(['id', 'test_collection_id', 'severity_title', 'severity_color'])->get();
+                    $q->where('test_name', '=', $test)->select(['id', 'test_type_id', 'test_collection_id', 'severity_title', 'severity_color'])->get();
                 });
             })
             ->orderBy('name', 'asc')

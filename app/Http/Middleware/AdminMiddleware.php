@@ -17,9 +17,9 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-        if (!Auth::user()->isAdmin()) {
-            return back();
-        }
+        // if (!Auth::user()->isAdmin()) {
+        //     return back();
+        // }
 
         return $next($request);
     }

@@ -15,15 +15,17 @@
     </div>
 
     <div class="flex-1 px-4 py-8 flex flex-col gap-6">
-        <div class="submenu space-y-3">
-            <p class="uppercase text-xs font-semibold px-2">Dados</p>
-            <a href="{{ route('dashboard.charts') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                <div class="w-5 flex justify-center items-center">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                Dashboard
-            </a>
-        </div>
+        @can('view-manager-screens')
+            <div class="submenu space-y-3">
+                <p class="uppercase text-xs font-semibold px-2">Dados</p>
+                <a href="{{ route('dashboard.charts') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    Dashboard
+                </a>
+            </div>
+        @endcan
 
         <div class="submenu space-y-3">
             <p class="uppercase text-xs font-semibold px-2">Testes</p>
@@ -35,23 +37,26 @@
             </a>
         </div>
 
-        <div class="submenu space-y-3">
-            <p class="uppercase text-xs font-semibold px-2">Empresa</p>
-            <a href="{{ route('employees-list') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                <div class="w-5 flex justify-center items-center">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                Colaboradores
-            </a>
-            <a href="{{ route('company-profile') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                <div class="w-5 flex justify-center items-center">
-                    <i class="fa-solid fa-building"></i>
-                </div>
-                Empresa
-            </a>
-        </div>
+        @can('view-manager-screens')
+            <div class="submenu space-y-3">
+                <p class="uppercase text-xs font-semibold px-2">Empresa</p>
+                <a href="{{ route('employees-list') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    Colaboradores
+                </a>
+                <a href="{{ route('company-profile') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    Empresa
+                </a>
+            </div>
+        @endcan
 
-        <div class="submenu space-y-3">
+
+        {{-- <div class="submenu space-y-3">
             <p class="uppercase text-xs font-semibold px-2">Saúde</p>
             <a href="" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
                 <div class="w-5 flex justify-center items-center">
@@ -59,7 +64,7 @@
                 </div>
                 Buscar consulta
             </a>
-        </div>
+        </div> --}}
 
         <div class="submenu space-y-3">
             <p class="uppercase text-xs font-semibold px-2">Logout</p>
