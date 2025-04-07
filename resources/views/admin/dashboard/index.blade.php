@@ -30,7 +30,7 @@
                             @foreach ($metrics as $metric)
                                 <div class="w-full">
                                     <p class="text-sm">{{ $metric->metricType->display_name }}</p>
-                                    <div data-role="metric-bar" data-value="{{ $metric->value }}" class="w-full bg-[#BBDEFB]">
+                                    <div data-role="metric-bar" data-value="{{ $metric->value }}" class="w-full bg-[#BBDEFB] rounded-md overflow-hidden">
                                         <div class="bar h-6 bg-[#64B5F6]"></div>
                                     </div>
                                 </div>
@@ -51,7 +51,7 @@
                                     @foreach ($risks[$testName] as $riskName => $risk)
                                         <div class="w-full space-y-1">
                                             <p class="text-xs">{{ $riskName }}</p>
-                                            <div data-role="risk-bar" data-value="{{ $risk['score'] }}" class="relative w-full h-6 border border-gray-800/50">
+                                            <div data-role="risk-bar" data-value="{{ $risk['score'] }}" class="relative w-full h-6 border border-gray-800/50 rounded-md overflow-hidden">
                                                 <div class="bar bg-red-500 h-full"></div>
                                                 <p class="text-xs absolute top-1/2 -translate-y-1/2 right-2 text-gray-800">{{ $risk['risk'] }}</p>
                                             </div>

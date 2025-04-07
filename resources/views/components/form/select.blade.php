@@ -17,6 +17,7 @@
 
     <div for="role" class="relative w-full flex items-center overflow-hidden gap-3 bg-gray-100 rounded-md border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
         <select name="{{ $name }}" id="{{ $name }}" class="flex-1 pl-3 pr-9 h-[43px] bg-transparent appearance-none focus:outline-none">
+            <option value="" {{ !$value ? 'selected' : '' }}>Todos</option>
             @foreach ($options as $option)
                 @php
                     $optionText = isset($option['option']) ? $option['option'] : $option;

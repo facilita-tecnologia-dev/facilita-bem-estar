@@ -24,7 +24,7 @@
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
                     <x-action href="{{ route('import-employees') }}">Importação de colaboradores</x-action>
-                    <x-action href="{{ route('company-profile.update') }}">Editar</x-action>
+                    <x-action href="{{ route('company.edit', session('company')) }}">Editar</x-action>
                 </div>
             </div>
         </div>

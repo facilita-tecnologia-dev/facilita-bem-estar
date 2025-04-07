@@ -25,8 +25,8 @@
         <div class="flex items-center gap-2">
             <a href="{{ route('auth.login.employee') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Colaborador</a>
             <a href="{{ route('auth.login.internal-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Interno</a>
-            <a href="{{ route('auth.login.external-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Externo</a>
-            <a href="{{ route('auth.login.health-worker') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Profissional de Saúde</a>
+            {{-- <a href="{{ route('auth.login.external-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Externo</a>
+            <a href="{{ route('auth.login.health-worker') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Profissional de Saúde</a> --}}
         </div>
 
     </header>

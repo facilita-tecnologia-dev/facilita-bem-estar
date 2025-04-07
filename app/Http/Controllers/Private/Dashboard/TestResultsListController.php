@@ -28,7 +28,6 @@ class TestResultsListController
         $queryStringName = $request->name;
         $queryStringDepartment = $request->department;
         $queryStringOccupation = $request->occupation;
-        $queryStringSeverities = $request->severities;
         
        
 
@@ -55,6 +54,7 @@ class TestResultsListController
 
         $departmentsToFilter = $this->getDepartmentsToFilter();
         $occupationsToFilter = $this->getOccupationsToFilter();
+        // $severitiesToFilter = $this->getSeveritiesToFilter($test);
 
         return view('admin.dashboard.test-results-list', [
             'testName' => $test,
@@ -80,4 +80,9 @@ class TestResultsListController
         
         return $occupations;
     }
+
+    // private function getSeveritiesToFilter($test){
+    //     // $severities = 
+    //     dd($test)
+    // }
 }

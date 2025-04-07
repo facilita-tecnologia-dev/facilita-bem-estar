@@ -46,7 +46,7 @@
 
                         <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" />
                         <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" />
-                        <x-form.select name="severities" placeholder="Severidade" :options="['1', '2', '3', '4']" />
+                        {{-- <x-form.select name="severity" placeholder="Severidade" :options="['1', '2', '3', '4']" /> --}}
 
                         <x-action tag="button">Filtrar</x-action>
                     </x-form>
@@ -66,7 +66,7 @@
                         @foreach ($usersList as $user)
                             <a
                                 data-role="tr"
-                                href="{{ route('employee-profile', $user->id) }}"
+                                href="{{ route('employee.show', $user->id) }}"
                                 class="
                                     px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all
                                     {{ $user->testCollections[0]->tests[0]->severity_color == "5" ? 'to-[#fc6f6f50]' : '' }}

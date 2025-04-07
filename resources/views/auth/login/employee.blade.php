@@ -16,7 +16,7 @@
                         <x-action tag="button">Fazer login</x-action>
                     </x-form>
 
-                    <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">
+                    {{-- <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">
                         <div class="w-full flex items-center gap-4">
                             <div class="flex-1 h-[1px] bg-gray-800"></div>
                             <span class="text-base font-semibold text-gray-800 leading-tight">ou</span>
@@ -26,7 +26,7 @@
                             <i class="fa-brands fa-google"></i> 
                             Fazer login com Google
                         </x-action>
-                    </div>
+                    </div> --}}
 
                     <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>
                 </div>

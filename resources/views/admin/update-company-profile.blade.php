@@ -17,7 +17,7 @@
             @endif
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
-                <x-form action="{{ route('company-profile.update') }}" id="form-update-company-profile" post class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
+                <x-form action="{{ route('company.update', session('company')) }}" id="form-update-company-profile" put class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
                     <div class="md:col-span-2">
                         <label class="block text-base font-semibold mb-1 text-gray-800" for="logo">
                             Logo
@@ -32,7 +32,7 @@
                 </x-form>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-action href="{{ route('company-profile') }}">Cancelar</x-action>
+                    <x-action href="{{ route('company.show', session('company')) }}">Cancelar</x-action>
                     <x-action tag="button" form="form-update-company-profile">Salvar</x-action>
                 </div>
             </div>

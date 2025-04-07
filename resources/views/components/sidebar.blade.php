@@ -40,13 +40,13 @@
         @can('view-manager-screens')
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Empresa</p>
-                <a href="{{ route('employees-list') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                <a href="{{ route('employee.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-users"></i>
                     </div>
                     Colaboradores
                 </a>
-                <a href="{{ route('company-profile') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                <a href="{{ route('company.show', session('company')) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-building"></i>
                     </div>
