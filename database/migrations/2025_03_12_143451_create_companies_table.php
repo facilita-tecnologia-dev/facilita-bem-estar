@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('cnpj');
             $table->string('logo');
             $table->string('department');
+            $table->string('i_turnover');
+            $table->string('i_absenteeism');
+            $table->string('i_overtime');
+            $table->string('i_accidents');
+            $table->string('i_absence');
             $table->timestamps();
         });
     }

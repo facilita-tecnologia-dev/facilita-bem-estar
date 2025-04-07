@@ -2,26 +2,29 @@
 
 namespace App\Handlers;
 
+use App\Helpers\Helper;
+use App\Models\TestType;
+use App\Services\RiskEvaluatorService;
 use Illuminate\Support\Facades\DB;
 
 class WorkExperienceHandler implements TestHandlerInterface
 {
+    public function __construct(private RiskEvaluatorService $riskEvaluatorService){}
+
     public function process(array $answers, $testInfo): array
     {
-        $totalPoints = array_sum($answers);
-        $average = $totalPoints / count($answers);
-
-        $questions = DB::table('test_questions')->where('test_type_id', $testInfo->id)->get();
+        $score = array_sum($answers);
+        $average = $score / count($answers);
         
-        $factorDivision = [];
-
-        foreach($answers as $questionId => $answer){
-            $question = $questions->where('id', $questionId)->first();
-            $factorDivision[$question->factor][] = $answer;
-        }
+        $testType = TestType::where('id', $testInfo->id)->with('questions')->first();
+        $risks = Helper::getTestRisks($testType);
         
-        foreach($factorDivision as $key => $factor){
-            $factorDivision[$key] = array_sum($factor) / count($factor);
+        $risksList = [];
+        
+        foreach($risks as $risk){
+            $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average);
+            $risksList[$risk->name] = $evaluatedRisk;
         }
 
         if ($average >= 3.7) {
@@ -37,23 +40,11 @@ class WorkExperienceHandler implements TestHandlerInterface
         
         return [
             'answers' => $answers,
-            'total_points' => $totalPoints,
+            'score' => $score,
             'average' => number_format($average, 2),
             'severity_title' => $severityTitle,
             'severity_color' => $severityColor,
-            // 'recommendations' => $this->getRecommendations($severityColor)
+            'risks' => $risksList,
         ];
     }
-    
-    // private function getRecommendations(string $severityColor): array
-    // {
-    //     $recommendations = [
-    //         5 => ['Grave'],
-    //         3 => ['Moderada'],
-    //         2 => ['Leve'],
-    //         1 => ['Mínima']
-    //     ];
-        
-    //     return $recommendations[$severityColor] ?? [];
-    // }
 }

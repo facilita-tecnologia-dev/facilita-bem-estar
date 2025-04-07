@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Private;
 use App\Models\PendingTestAnswer;
 use App\Models\QuestionOption;
 use App\Models\TestAnswer;
-use App\Models\TestCollection;
+use App\Models\Collection;
+use App\Models\Risk;
 use App\Models\TestForm;
 use App\Models\TestQuestion;
 use App\Models\TestType;
 use App\Services\TestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TestsController
 {
@@ -31,10 +33,11 @@ class TestsController
                 $q->orderBy('value');
             });    
         }
-        )->firstOrFail();
-        
-        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_type_id', '=', $test->id)->get();
+        )
+        ->firstOrFail();
 
+        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get();
+        
         return view('test', [
             'test' => $test,
             'testIndex' => $testIndex,
@@ -52,12 +55,12 @@ class TestsController
         $validatedData = $request->validate($validationRules);
         
         $processedTest = $this->testService->processTest($validatedData, $testInfo);
-
+        
         $totalTests = TestType::max('order');
         if ($testIndex == $totalTests) {
             $testResults = $this->getTestResultsFromSession();
             $storedResults = $this->storeResultsOnDatabase($testResults);
-            
+
             if(!$storedResults){
                 return back();
             }
@@ -95,32 +98,59 @@ class TestsController
     private function storeResultsOnDatabase($testResults): array {
         PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->delete();
 
-        $newTestCollection = TestCollection::create([
-            'user_id' => Auth::user()->id,
-        ]);
-        foreach($testResults as $key => $testResult){
-            $testKeyName = str_replace("-result", "", $key);
-            $testType = TestType::query()->where('key_name', '=', $testKeyName)->first();
-            
-            $testForm = TestForm::create([
-                'test_collection_id' => $newTestCollection->id,
-                'test_name' => $testType->display_name,
-                'test_type_id' => $testType->id,
-                'total_points' => $testResult['total_points'],
-                'severity_title' => $testResult['severity_title'],
-                'severity_color' => $testResult['severity_color'],
-                'recommendation' => '',
+        DB::transaction(function() use($testResults){
+            $newTestCollectionId = DB::table('user_collections')->insertGetId([
+                'user_id' => Auth::user()->id,
+                'collection_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
+      
+            $tests = TestType::with('questions.questionOptions')->get();
+            
+            foreach($testResults as $key => $testResult){
+                $testKeyName = str_replace('-result', '', $key);
 
-            foreach($testResult['answers'] as $questionId => $answer){
-                TestAnswer::create([
-                    'test_question_id' => $questionId,
-                    'test_form_id' => $testForm->id,
-                    'value' => $answer
+                $testType = $tests->where('key_name', $testKeyName)->firstOrFail();
+                $userTest = TestForm::create([
+                    'user_collection_id'  => $newTestCollectionId,
+                    'test_id'        => $testType->id,
+                    'score'          => $testResult['score'],
+                    'severity_title' => $testResult['severity_title'],
+                    'severity_color' => $testResult['severity_color'],
                 ]);
-            }
-        }
 
+                foreach($testResult['answers'] as $questionId => $answer){
+                    $question = $testType->questions->where('id', $questionId)->first();
+                    $option = $question->questionOptions->where('value', $answer)->first();
+
+                    DB::table('user_answers')->insert([
+                        'question_option_id' => $option->id,
+                        'question_id' => $questionId,
+                        'user_test_id' => $userTest->id,
+                    ]);
+                }
+
+
+                $riskNames = array_keys($testResult['risks']);
+                $risks = Risk::whereIn('name', $riskNames)
+                    ->select('id', 'name')
+                    ->get()
+                    ->keyBy('name');
+                    
+                foreach($testResult['risks'] as $key => $risk){
+                    DB::table('user_risk_results')->insert([
+                        'user_collection_id' => $newTestCollectionId,
+                        'risk_id' => $risks[$key]->id,
+                        'score' => $risk,
+                    ]);
+                }
+
+            }
+
+        });
+
+        
         return $testResults;
     }
 }

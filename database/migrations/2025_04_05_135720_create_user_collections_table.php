@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\TestType;
+use App\Models\Collection;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,10 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('test_questions', function (Blueprint $table) {
+        Schema::create('user_collections', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(TestType::class);
-            $table->string('statement');
+            $table->foreignIdFor(User::class);
+            $table->foreignId('collection_id')->constrained();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('test_questions');
+        Schema::dropIfExists('user_collections');
     }
 };

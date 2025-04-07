@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Private;
 
-use App\Models\TestCollection;
+use App\Models\Collection;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class EmployeeProfileController
@@ -23,16 +24,17 @@ class EmployeeProfileController
 
         $admission = $this->getFormattedAdmissionDate();
 
-        $lastTestCollection = TestCollection::where('user_id', $employee->id)
-            ->with('tests')
+        $lastTestCollection = DB::table('user_collections')->where('user_id', $employee->id)
+            // ->with('tests')
             ->latest('created_at')
             ->first();
 
-        $lastTestCollectionDate = null;
-        $testResults = null;
-
-        if ($lastTestCollection) {
-            $collectionDateTime = $lastTestCollection->created_at;
+            
+            $lastTestCollectionDate = null;
+            $testResults = null;
+            
+            if ($lastTestCollection) {
+            $collectionDateTime = Carbon::parse($lastTestCollection->created_at);
             $formattedDate = $collectionDateTime->format('d/m/Y');
 
             $diff = Carbon::now()->startOfDay()->diff($collectionDateTime->startOfDay());
@@ -47,7 +49,7 @@ class EmployeeProfileController
 
             $lastTestCollectionDate = "{$formattedDate} - {$timeAgo} atrás.";
 
-            $testResults = $lastTestCollection->tests->toArray();
+            // $testResults = $lastTestCollection->tests->toArray();
         }
 
         $cpf = $this->getFormattedCPF();
@@ -70,7 +72,7 @@ class EmployeeProfileController
         return view('admin.employee-profile', [
             'employee'     => $employee,
             'employeeInfo' => $employeeInfo,
-            'testResults'  => $testResults,
+            // 'testResults'  => $testResults,
         ]);
     }
 

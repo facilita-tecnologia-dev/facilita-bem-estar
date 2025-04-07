@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Private;
 
-use App\Models\TestCollection;
+use App\Models\Collection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class TestResultsController
 {
     public function index(){
-        $lastUserTestCollection = TestCollection::whereIn('created_at', function($query){
+        $lastUserTestCollection = Collection::whereIn('created_at', function($query){
             $query->selectRaw('MAX(created_at)')
             ->from('test_collections')
             ->where('user_id', '=', Auth::user()->id);

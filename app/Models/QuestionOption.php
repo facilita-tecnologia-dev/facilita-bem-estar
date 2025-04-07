@@ -9,4 +9,6 @@ class QuestionOption extends Model
 {
     /** @use HasFactory<\Database\Factories\QuestionOptionFactory> */
     use HasFactory;
+
+    protected $table = 'question_options';
 }

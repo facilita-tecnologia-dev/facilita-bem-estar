@@ -10,11 +10,13 @@ class TestType extends Model
     /** @use HasFactory<\Database\Factories\TestTypeFactory> */
     use HasFactory;
 
-    public function tests(){
-        return $this->hasMany(TestForm::class, 'test_type_id');
-    }
+    protected $table = 'tests';
+
+    // public function tests(){
+    //     return $this->hasMany(TestForm::class, 'test_type_id');
+    // }
 
     public function questions(){
-        return $this->hasMany(TestQuestion::class, 'test_type_id');
+        return $this->hasMany(TestQuestion::class, 'test_id');
     }
 }

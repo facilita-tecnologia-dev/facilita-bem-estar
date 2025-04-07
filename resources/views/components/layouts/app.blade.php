@@ -16,7 +16,7 @@
 </head>
 <body
     style="
-        background-image: url('{{ asset('assets/background-gradient.png') }}')
+        background: linear-gradient(215deg , #F4C5E0 0%, #F6F1F550 100%);
     "
     class="bg-cover h-screen"
 >

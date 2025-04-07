@@ -22,9 +22,9 @@ class TestService
             return (int) $value;
         }, $data);
 
+        
         $handler = $this->handlerFactory->getHandler($testInfo);
         $processedTest = $handler->process($answersValues, $testInfo);
-
         session([$testInfo->key_name . '-result' => $processedTest]);
 
         $pendingAnswers = [];
@@ -38,16 +38,17 @@ class TestService
                 $pendingAnswers[] = [
                     'value' => $answer,
                     'question_option_id' => $option->id,
-                    'test_question_id' => $questionId,
-                    'test_type_id' => $testInfo->id,
+                    'question_id' => $questionId,
+                    'test_id' => $testInfo->id,
                     'user_id' => Auth::user()->id,
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
             }
         }
+
         if (!empty($pendingAnswers)) {
-            PendingTestAnswer::where('test_type_id', '=', $pendingAnswers[0]['test_type_id'])->delete();
+            PendingTestAnswer::where('test_id', '=', $pendingAnswers[0]['test_id'])->delete();
 
             PendingTestAnswer::insert($pendingAnswers);
         }

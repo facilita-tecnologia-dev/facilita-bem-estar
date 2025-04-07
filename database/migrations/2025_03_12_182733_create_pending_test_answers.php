@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('value');
             $table->foreignIdFor(QuestionOption::class);
             $table->foreignIdFor(User::class);
-            $table->foreignIdFor(TestQuestion::class)->unique()->constrained();
-            $table->foreignIdFor(TestType::class);
+            $table->foreignId('question_id')->unique()->constrained();
+            $table->foreignId('test_id');
             $table->timestamps();
         });
     }

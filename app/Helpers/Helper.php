@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Helpers;
+
+use App\Models\Risk;
+use App\Models\TestType;
 use App\Models\User;
 
 class Helper
@@ -19,5 +22,17 @@ class Helper
         ->get();
         
         return $usersLatestCollections;
+    }
+
+    public static function getTestRisks(TestType $testType){
+        $risks = Risk::whereHas('questionMaps', function ($q) use ($testType) {
+                $q->whereIn('question_id', $testType->questions->pluck('id'));
+            })
+            ->with(['questionMaps' => function ($q) use ($testType) {
+                $q->whereIn('question_id', $testType->questions->pluck('id'));
+            }])
+            ->get();
+        
+        return $risks;
     }
 }

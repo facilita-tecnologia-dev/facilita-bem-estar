@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\QuestionOption;
-use App\Models\TestCollection;
+use App\Models\Collection;
 use App\Models\TestForm;
 use App\Models\TestQuestion;
 use App\Models\TestType;
@@ -2521,7 +2521,7 @@ class DatabaseSeeder extends Seeder
         }
 
         foreach($users as $user){
-            $testCollection = TestCollection::factory()->create([
+            $testCollection = Collection::factory()->create([
                 'user_id' => $user->id,
             ]);
 

@@ -18,9 +18,9 @@
                 </div>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    @if($testResults)
+                    {{-- @if($testResults)
                         <x-action onclick="downloadPDF()">Relatório em PDF</x-action>
-                    @endif
+                    @endif --}}
                     <x-action href="{{ route('employee-profile.update', $employee) }}">Editar</x-action>
                 </div>
             </div>
@@ -34,7 +34,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-
+{{-- 
 <script>
 
     const userInfo = @json($employee)    
@@ -260,4 +260,4 @@
         doc.save(`${usernameToFileName}_relatorio_de_bem_estar.pdf`);
     }
 
-</script>
+</script> --}}

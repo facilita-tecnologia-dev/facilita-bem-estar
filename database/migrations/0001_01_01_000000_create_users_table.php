@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('admission')->nullable();
             $table->string('gender');
             $table->string('email')->unique()->nullable();
-            $table->foreignIdFor(Company::class);
             $table->rememberToken();
             $table->timestamps();
         });

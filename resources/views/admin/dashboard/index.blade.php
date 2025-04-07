@@ -14,7 +14,7 @@
                 </p>
             </div>
 
-            <div id="charts" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div id="charts" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start">
                 <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                     <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
                         <p class="text-center">Participação nos testes</p>
@@ -23,29 +23,43 @@
                         </div>
                     </div>
                 </div>
-                @foreach ($generalResults as $testName => $testData)
-                    <div class="shadow-md rounded-md w-full flex flex-col items-center bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
-                        <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full px-5 py-6 flex flex-col justify-start gap-4 items-center">
-                            <p class="text-center">{{ $testName }}</p>
-                            <div class="w-40 h-40 xl:w-44 xl:h-44" id="{{ $testName }}">
-                                
-                            </div>
-
-                            <div class="w-full flex flex-col gap-2">
-                                @foreach ($subfactorResults[$testName] as $subfactorName => $subfactorValue)
-                                    <div class="w-full flex flex-col gap-1">
-                                        <p class="text-sm">{{ $subfactorName }}</p>
-                                        <div data-role="subfactor-bar" data-value="{{ $subfactorValue }}" class="w-full h-5 bg-gray-300/50 rounded-md overflow-hidden">
-                                            <div style="width: 0" class="opacity-50 bar h-full"></div>
+                @if($generalResults)
+                    @foreach ($generalResults as $testName => $testData)
+                        <div class="shadow-md rounded-md w-full flex flex-col items-center bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                            <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center">
+                                <p class="text-center">{{ $testName }}</p>
+                                <div class="w-40 h-40 xl:w-44 xl:h-44" id="{{ $testName }}">
+                                    
+                                </div>
+                                <div class="w-full space-y-2 px-4">
+                                    @foreach ($risks[$testName] as $riskName => $risk)
+                                        <div class="w-full space-y-1">
+                                            <p class="text-xs">{{ $riskName }}</p>
+                                            <div data-role="risk-bar" data-value="{{ $risk['score'] }}" class="relative w-full h-6 border border-gray-800/50">
+                                                <div class="bar bg-red-500 h-full"></div>
+                                                <p class="text-xs absolute top-1/2 -translate-y-1/2 right-2 text-gray-800">{{ $risk['risk'] }}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </a>
-
-                    </div>
-                @endforeach
+                                    @endforeach
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                @endif
             </div>
+            {{-- <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
+                    <p class="text-center">Riscos</p>
+                    <div class="w-full grid grid-cols-4 gap-3">
+                        @dd($risks['Organização do Trabalho'])
+                        @foreach ($risks as $testName => $test)
+                            @foreach ($test as $riskName => $risk)
+                    
+                            @endforeach
+                        @endforeach
+                    </div>
+                </div>
+            </div> --}}
         </div>
     </div>
 
@@ -57,26 +71,29 @@
 
 
 <script>
-    const subfactorBars = document.querySelectorAll('[data-role="subfactor-bar"]');
-
-    subfactorBars.forEach((subfactor)=>{
-        const value = subfactor.dataset.value;
-        const percentage = convertToPercentage(value);
-        const bar = subfactor.querySelector('.bar');
-        const barWitdth = (value - 1) * 25;
+    const riskBars = document.querySelectorAll('[data-role="risk-bar"]');
+    riskBars.forEach((risk)=>{
+        const value = risk.dataset.value;
+        const bar = risk.querySelector('.bar');
+        const barWidth = (value / 3) * 100; 
         
-        bar.style.width = barWitdth.toFixed() + "%";
-        bar.style.backgroundColor = getColor(percentage);
+        bar.style.width = barWidth.toFixed() + "%";
+        bar.style.backgroundColor = getColor(value);
     })
 
-    function convertToPercentage(value) {
-        const percentage = (value - 1) * 25;
-        return Math.min(Math.max(percentage, 0), 100);
-    }
+    // function convertToPercentage(value) {
+    //     const percentage = (value - 1) * 25;
+    //     return Math.min(Math.max(percentage, 0), 100);
+    // }
 
-    function getColor(percentage) {
-        const hue = (1 - percentage / 100) * 120
-        return `hsl(${hue}, 100%, 50%)`;
+    function getColor(value) {
+        if(value == 1){
+            return `#4CAF5070`
+        } else if(value == 2){
+            return `#eddd5870`
+        } else{
+            return `#f55547570`
+        }
     }
 
     // Tests Participation
@@ -106,13 +123,12 @@
     }
 
     Object.values(generalResults).forEach((testType, index) => {
-        console.log(testType);
         const testChartId = `chart_${index}`;
         const testChartWrapper = document.getElementById(labels[index])
 
-        const testChartSeverities = Object.keys(testType.general)
+        const testChartSeverities = Object.keys(testType)
         
-        const tests = Object.values(testType.general)
+        const tests = Object.values(testType)
 
         const testChartBackgroundColors = tests.map(test => {
             severityKey = test.severity_color

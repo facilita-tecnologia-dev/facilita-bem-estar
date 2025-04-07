@@ -14,12 +14,10 @@ return new class extends Migration
     {
         Schema::create('question_options', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('question_id');
+            $table->foreignId('question_id')->constrained();
             $table->string('content');
             $table->integer('value');
             $table->timestamps();
-            
-            $table->foreign('question_id')->references('id')->on('test_questions');
         });
     }
 

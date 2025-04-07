@@ -15,7 +15,7 @@ class User extends Authenticatable
     protected $guarded = [];
 
     public function testCollections(){
-        return $this->hasMany(TestCollection::class);
+        return $this->hasMany(Collection::class);
     }
 
     public function roles()
