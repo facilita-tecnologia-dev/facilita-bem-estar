@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private\Dashboard;
 
 use App\Helpers\Helper;
+use App\Models\CompanyMetric;
 use App\Models\TestAnswer;
 use App\Models\TestQuestion;
 use App\Models\TestType;
@@ -31,12 +32,14 @@ class DashboardController
         $testsParticipation = $this->getTestsParticipation(); 
 
         $risks = $this->getRisks();
+        $metrics = $this->getMetrics();
 
         
         return view('admin.dashboard.index', [
             'generalResults' => $generalResults,
             'testsParticipation' => $testsParticipation,
-            'risks' => $risks
+            'risks' => $risks,
+            'metrics' => $metrics,
         ]);
     }
 
@@ -282,5 +285,11 @@ class DashboardController
             }
         }
         return $mappedRisks;
+   }
+
+   private function getMetrics(){
+        $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get();
+
+        return $metrics;
    }
 }

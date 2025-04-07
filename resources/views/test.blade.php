@@ -15,7 +15,6 @@
                     
                     <x-form action="{{ route('test.submit', $testIndex)}}" class="flex-1  flex flex-col gap-5" id="test-form" post>
                         @foreach ($test->questions->toArray() as $key => $question)
-                        {{-- @dd($question) --}}
                             @php
                                 $questionNumber = $key + 1;
                                 $pendingAnswer = $pendingAnswers[$key]->value ?? '';
@@ -55,9 +54,9 @@
                 </div>
             </div>
 
-            <div class="w-full max-w-[550px]">
+            {{-- <div class="w-full max-w-[550px]">
                 <p class="text-xs md:text-sm text-center">{{ $test->reference }}</p>
-            </div>
+            </div> --}}
         </div>
 
         @if(session('errors'))

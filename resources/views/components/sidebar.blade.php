@@ -52,6 +52,12 @@
                     </div>
                     Empresa
                 </a>
+                <a href="{{ route('company-metrics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-percent"></i>
+                    </div>
+                    Indicadores
+                </a>
             </div>
         @endcan
 

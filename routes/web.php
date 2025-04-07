@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\Login\ExternalManagerLoginController;
 use App\Http\Controllers\Auth\Login\HealthWorkerLoginController;
 use App\Http\Controllers\Auth\Login\InternalManagerLoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\CompanyMetricsController;
 use App\Http\Controllers\Private\CompanyProfileController;
 use App\Http\Controllers\Private\CreateEmployeeController;
 use App\Http\Controllers\Private\Dashboard\DashboardController;
@@ -68,6 +69,9 @@ Route::middleware(AuthMiddleware::class)->group(function(){
 
         Route::get('/perfil-empresa/editar', UpdateCompanyProfileController::class)->name('company-profile.update');
         Route::post('/perfil-empresa/editar', [UpdateCompanyProfileController::class, 'updateCompanyProfile']);
+
+        Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
+        Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
 
         Route::get('/empresa/lista-colaboradores', EmployeesListController::class)->name('employees-list');
         

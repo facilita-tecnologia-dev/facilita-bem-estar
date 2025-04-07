@@ -14,20 +14,36 @@
                 </p>
             </div>
 
-            <div id="charts" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start">
+            <div id="charts" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 ">
                 <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                     <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
-                        <p class="text-center">Participação nos testes</p>
+                        <p class="text-center font-semibold">Participação nos testes</p>
                         <div class="w-40 h-40 xl:w-44 xl:h-44" id="Participação">
                             
                         </div>
                     </div>
                 </div>
+                <div class="shadow-md rounded-md w-full bg-white/25 relative sm:col-span-1 lg:col-span-2 xl:col-span-3 left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                    <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
+                        <p class="text-center font-semibold">Indicadores</p>
+                        <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            @foreach ($metrics as $metric)
+                                <div class="w-full">
+                                    <p class="text-sm">{{ $metric->metricType->display_name }}</p>
+                                    <div data-role="metric-bar" data-value="{{ $metric->value }}" class="w-full bg-[#BBDEFB]">
+                                        <div class="bar h-6 bg-[#64B5F6]"></div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+           
                 @if($generalResults)
                     @foreach ($generalResults as $testName => $testData)
                         <div class="shadow-md rounded-md w-full flex flex-col items-center bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                             <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center">
-                                <p class="text-center">{{ $testName }}</p>
+                                <p class="text-center font-semibold">{{ $testName }}</p>
                                 <div class="w-40 h-40 xl:w-44 xl:h-44" id="{{ $testName }}">
                                     
                                 </div>
@@ -47,19 +63,6 @@
                     @endforeach
                 @endif
             </div>
-            {{-- <div class="shadow-md rounded-md w-full bg-white/25 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
-                <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
-                    <p class="text-center">Riscos</p>
-                    <div class="w-full grid grid-cols-4 gap-3">
-                        @dd($risks['Organização do Trabalho'])
-                        @foreach ($risks as $testName => $test)
-                            @foreach ($test as $riskName => $risk)
-                    
-                            @endforeach
-                        @endforeach
-                    </div>
-                </div>
-            </div> --}}
         </div>
     </div>
 
@@ -71,6 +74,18 @@
 
 
 <script>
+    const metricBars = document.querySelectorAll('[data-role="metric-bar"]');
+    metricBars.forEach((metric) => {
+        const value = metric.dataset.value;
+        console.log(value);
+        const bar = metric.querySelector('.bar');
+
+        bar.style.width = value + "%";
+    });
+
+
+
+
     const riskBars = document.querySelectorAll('[data-role="risk-bar"]');
     riskBars.forEach((risk)=>{
         const value = risk.dataset.value;
@@ -81,18 +96,13 @@
         bar.style.backgroundColor = getColor(value);
     })
 
-    // function convertToPercentage(value) {
-    //     const percentage = (value - 1) * 25;
-    //     return Math.min(Math.max(percentage, 0), 100);
-    // }
-
     function getColor(value) {
         if(value == 1){
-            return `#4CAF5070`
+            return `#4CAF5075`
         } else if(value == 2){
-            return `#eddd5870`
+            return `#eddd5875`
         } else{
-            return `#f55547570`
+            return `#f5554775`
         }
     }
 
