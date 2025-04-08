@@ -17,7 +17,7 @@
             @endif
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
-                <x-form action="{{ route('import-employees') }}" id="form-import-employees" post enctype="multipart/form-data">
+                <x-form action="{{ route('import-employees.import', session('company')) }}" id="form-import-employees" post enctype="multipart/form-data">
                     <x-form.input-file name="import_employees" accept=".xlsx"/>
                 </x-form>                
 

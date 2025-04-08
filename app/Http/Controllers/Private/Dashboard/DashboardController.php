@@ -49,7 +49,7 @@ class DashboardController
      */
     private function getCompiledResults(): array{
         $usersLatestCollections = User::
-        whereRelation('companies', 'companies.id', 1)
+        whereRelation('companies', 'companies.id', session('company')->id)
         ->has('testCollections')
         ->with('testCollections', function($query){
             $query->latest()->limit(1)
@@ -103,7 +103,7 @@ class DashboardController
         $countCollections = count($usersWithCollections);
 
         
-        $users = User::query()->whereRelation('companies', 'companies.id', 1)->get()->toArray();
+        $users = User::query()->whereRelation('companies', 'companies.id', session('company')->id)->get()->toArray();
         
         $countUsers = count($users);
         
@@ -112,9 +112,9 @@ class DashboardController
         return $testsParticipation;
    }
 
-   private function getRisks(){
+    private function getRisks(){
         $usersLatestCollections = User::
-        whereRelation('companies', 'companies.id', 1)
+        whereRelation('companies', 'companies.id', session('company')->id)
         ->has('testCollections')
         ->with('testCollections', function($query){
             $query->with('risks', function($q){
@@ -146,19 +146,19 @@ class DashboardController
             "Falta de Reconhecimento" => 'Estilos de Gestão',
             "Gestão Individualista" => 'Estilos de Gestão',
 
-            "Dificuldade de Concentração" => 'Indicadores de Sofrimento',
-            "Irritabilidade" => 'Indicadores de Sofrimento',
-            "Frustração ou Desmotivação" => 'Indicadores de Sofrimento',
-            "Isolamento Social" => 'Indicadores de Sofrimento',
-            "Ansiedade ou Estresse" => 'Indicadores de Sofrimento',
-            "Esgotamento Emocional" => 'Indicadores de Sofrimento',
+            "Dificuldade de Concentração" => 'Indicadores de Adversidades',
+            "Irritabilidade" => 'Indicadores de Adversidades',
+            "Frustração ou Desmotivação" => 'Indicadores de Adversidades',
+            "Isolamento Social" => 'Indicadores de Adversidades',
+            "Ansiedade ou Estresse" => 'Indicadores de Adversidades',
+            "Esgotamento Emocional" => 'Indicadores de Adversidades',
 
-            "Deterioração da Vida Pessoal" => 'Danos Relacionados ao Trabalho',
-            "Problemas Psicossomáticos" => 'Danos Relacionados ao Trabalho',
-            "Distúrbios do Sono" => 'Danos Relacionados ao Trabalho',
-            "Afastamentos Frequentes" => 'Danos Relacionados ao Trabalho',
-            "Danos Psicológicos" => 'Danos Relacionados ao Trabalho',
-            "Danos Físicos" => 'Danos Relacionados ao Trabalho',
+            "Deterioração da Vida Pessoal" => 'Distúrbios Relacionados ao Trabalho',
+            "Problemas Psicossomáticos" => 'Distúrbios Relacionados ao Trabalho',
+            "Distúrbios do Sono" => 'Distúrbios Relacionados ao Trabalho',
+            "Afastamentos Frequentes" => 'Distúrbios Relacionados ao Trabalho',
+            "Distúrbios Psicológicos" => 'Distúrbios Relacionados ao Trabalho',
+            "Distúrbios Físicos" => 'Distúrbios Relacionados ao Trabalho',
         ];
 
         $mappedRisks = [];
@@ -189,7 +189,7 @@ class DashboardController
    }
 
    private function getMetrics(){
-        $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get();
+        $metrics = CompanyMetric::where('company_id', session('company')->id)->where('value', '!=', 'null')->with('metricType')->get();
 
         return $metrics;
    }

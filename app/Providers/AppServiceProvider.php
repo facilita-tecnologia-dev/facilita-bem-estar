@@ -28,5 +28,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('view-manager-screens', function (User $user) {
             return $user->isAdmin();
         });
+
+        // Gate::define('answer-test', function (User $user) {
+        //     return !$user->testCollections->count();
+        // });
     }
 }

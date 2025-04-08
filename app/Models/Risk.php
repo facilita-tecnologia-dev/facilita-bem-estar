@@ -13,4 +13,8 @@ class Risk extends Model
     {
         return $this->hasMany(RiskQuestionMap::class, 'risk_id');
     }
+
+    public function controlActions(){
+        return $this->hasMany(ControlAction::class);
+    }
 }

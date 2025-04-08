@@ -22,7 +22,7 @@
                         <label class="block text-base font-semibold mb-1 text-gray-800" for="logo">
                             Logo
                         </label>
-                        <x-form.input-file id="logo" name="logo" />
+                        <x-form.input-file id="logo" name="logo" accept=".jpg, .jpeg, .avif, .png, .webp"/>
                         @error('logo')
                             <x-form.error-span text="{{ $message }}" />
                         @enderror

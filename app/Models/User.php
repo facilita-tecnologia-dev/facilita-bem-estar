@@ -34,6 +34,13 @@ class User extends Authenticatable
                     ->withPivot('company_id');
     }
 
+    public function roleInCompany($companyId)
+    {
+        return $this->roles()
+                    ->wherePivot('company_id', $companyId)
+                    ->first();  
+    }
+
     public function isAdmin()
     {
         return $this->roles()->where('name', 'Gestor')->exists();

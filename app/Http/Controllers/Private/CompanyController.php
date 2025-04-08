@@ -14,7 +14,7 @@ class CompanyController
      */
     public function create()
     {
-        //
+        return view('auth.register.company');
     }
 
     /**
@@ -22,7 +22,13 @@ class CompanyController
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|min:4|max:255',
+            'cnpj' => 'required|size:14'
+        ]);
+
+        
+        return to_route('employee.create-first', $validatedData);
     }
 
     /**

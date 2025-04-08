@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private;
 
 use App\Imports\UsersImport;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,9 +18,9 @@ class ImportUsersController
         return view('admin.import-employees');
     }
 
-    public function importUsers(Request $request){
-        // dd($request->file('import_employees'));
-        Excel::import(new UsersImport, $request->file('import_employees')->store('temp'));
+    public function importUsers(Request $request, Company $company){
+        // dd($request->file('import_employees'), $company);
+        Excel::import(new UsersImport($company), $request->file('import_employees')->store('temp'));
         
         return back()->with('message', 'Usuários importados com sucesso');
     }

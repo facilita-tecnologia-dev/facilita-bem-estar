@@ -44,8 +44,8 @@
                     <x-form class="w-full flex flex-col gap-4 items-center">
                         <x-form.input-text icon="search" name="name" placeholder="Nome do colaborador" />
 
-                        <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" />
-                        <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" />
+                        <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" defaultValue />
+                        <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" defaultValue />
                         {{-- <x-form.select name="severity" placeholder="Severidade" :options="['1', '2', '3', '4']" /> --}}
 
                         <x-action tag="button">Filtrar</x-action>

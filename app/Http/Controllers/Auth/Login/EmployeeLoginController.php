@@ -23,14 +23,14 @@ class EmployeeLoginController
 
         $userRole = '';
         if($user){
-            $userRole = DB::table('role_user')->where('role_id', '=', 2)->where('user_id', '=', $user->id)->get();
+            $userRole = DB::table('company_users')->where('role_id', '=', 2)->where('user_id', '=', $user->id)->get();
         }
 
         if(!$user || !(count($userRole) > 0)){
             return back()->with('errorMessage', 'O usuário não existe.');
         }
 
-        $company = Company::query()->where('id', '=', $user->company_id)->first();
+        $company = Company::query()->where('id', '=', $user->companies[0]->id)->first();
 
         session(['company' => $company]);
         session(['user' => $user]);

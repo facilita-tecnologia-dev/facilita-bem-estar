@@ -57,9 +57,9 @@ class RiskEvaluatorFactory
                 return new DisturbiosSono();
             case 'Afastamentos Frequentes':
                 return new Afastamentos();
-            case 'Danos Psicológicos':
+            case 'Distúrbios Psicológicos':
                 return new DanosPsicologicos();
-            case 'Danos Físicos':
+            case 'Distúrbios Físicos':
                 return new DanosFisicos();
             default:
                 return null;

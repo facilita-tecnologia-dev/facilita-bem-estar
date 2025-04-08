@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/1cb73192b4.js" crossorigin="anonymous"></script>
 
-    @vite('resources/css/app.css')
-    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-COZfCADL.css') }}"> --}}
+    {{-- @vite('resources/css/app.css') --}}
+    <link rel="stylesheet" href="{{ asset('build/assets/app-Cx4MhzVQ.css') }}">
     <title>Facilita Saúde Mental</title>
 </head>
 <body class="bg-gray-100">
@@ -23,8 +23,15 @@
         </a>
 
         <div class="flex items-center gap-2">
-            <a href="{{ route('auth.login.employee') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Colaborador</a>
-            <a href="{{ route('auth.login.internal-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Interno</a>
+            <a href="{{ route('auth.login.employee') }}" class="sm:text-base font-medium bg-gray-100 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+                <i class="fa-solid fa-user"></i>
+                Colaborador
+            </a>
+            <a href="{{ route('auth.login.internal-manager') }}" class="sm:text-base font-medium bg-gray-100 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+                <i class="fa-solid fa-briefcase"></i>
+                Gestor interno
+            </a>
+            {{-- <a href="{{ route('company.create') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Registrar empresa</a> --}}
             {{-- <a href="{{ route('auth.login.external-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Externo</a>
             <a href="{{ route('auth.login.health-worker') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Profissional de Saúde</a> --}}
         </div>
@@ -48,8 +55,8 @@
 
             <div class="flex flex-col gap-6 w-full max-w-[500px]">
                 <div class="flex flex-col gap-2 items-center lg:items-start">
-                    <h2 class="w-fit tracking-tight text-4xl lg:text-5xl lg:text-[3.5rem] font-semibold leading-12 text-gray-800 text-center lg:text-left">
-                        Análise via questionário
+                    <h2 class="w-fit tracking-tight text-4xl lg:text-4xl font-semibold leading-12 text-gray-800 text-center lg:text-left">
+                        Análise via indicadores subjetivos e objetivos
                     </h2>
                     <p class="text-gray-800 text-base lg:text-lg font-normal leading-relaxed text-center lg:text-left">Verificado por corpo técnico (RH, SESMT e Psicólogo) apoiada em 3 pilares:</p>
                 </div>
@@ -74,7 +81,7 @@
 
             <div class="flex flex-col gap-6 w-full max-w-[500px]">
                 <div class="flex flex-col gap-2 items-center lg:items-start">
-                    <h2 class="w-fit tracking-tight text-4xl lg:text-5xl lg:text-[3.5rem] font-semibold leading-12 text-gray-800 text-center lg:text-left">
+                    <h2 class="w-fit tracking-tight text-4xl lg:text-4xl lg:text-[3.5rem] font-semibold leading-12 text-gray-800 text-center lg:text-left">
                         Resultado
                     </h2>
                     <p class="text-gray-800 text-base lg:text-lg font-normal leading-relaxed text-center lg:text-left">Mostra a tendência dos riscos psicossociais:</p>

@@ -18,9 +18,9 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-        if (!Auth::user()) {
-            return to_route('presentation');
-        }
+        // if (!Auth::user()) {
+        //     return to_route('presentation');
+        // }
         
 
         return $next($request);

@@ -23,7 +23,7 @@ class InternalManagerLoginController
         
         $userRole = '';
         if($user){
-            $userRole = DB::table('role_user')->where('role_id', '=', 1)->where('user_id', '=', $user->id)->get();
+            $userRole = DB::table('company_users')->where('role_id', '=', 1)->where('user_id', '=', $user->id)->get();
         }
 
     
@@ -31,8 +31,8 @@ class InternalManagerLoginController
             return back()->with('errorMessage', 'O usuário não existe ou não é um administrador.');
         }
         
-
-        $company = Company::query()->where('id', '=', $user->company_id)->first();
+        
+        $company = Company::query()->where('id', '=', $user->companies[0]->id)->first();
 
         session(['company' => $company]);
         session(['user' => $user]);

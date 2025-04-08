@@ -10,8 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/1cb73192b4.js" crossorigin="anonymous"></script>
 
-    @vite('resources/css/app.css')
-    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-Dasl6xyn.css') }}"> --}}
+    {{-- <link rel="shortcut icon" href="{{ asset('assets/icon-facilita.svg') }}" type="image/x-icon"> --}}
+
+    {{-- @vite('resources/css/app.css') --}}
+    <link rel="stylesheet" href="{{ asset('build/assets/app-Cx4MhzVQ.css') }}">
     <title>Facilita Saúde Mental</title>
 </head>
 <body

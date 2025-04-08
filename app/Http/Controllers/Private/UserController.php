@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController
 {
+    protected $employees;
+
     /**
      * Display a listing of the resource.
      */
@@ -21,12 +23,14 @@ class UserController
             abort(403, 'Acesso não autorizado');
         }
 
+        $this->employees = User::whereRelation('companies', 'companies.id', session('company')->id);
+
         $queryStringName = $request->name;
         $queryStringDepartment = $request->department;
         $queryStringOccupation = $request->occupation;
 
         $employees = User::
-        whereRelation('companies', 'companies.id', 1)
+        whereRelation('companies', 'companies.id', session('company')->id)
         ->when($queryStringName, function($query) use($queryStringName){
             return $query->where('name', 'like', "%$queryStringName%");
         })
@@ -39,8 +43,8 @@ class UserController
         ->get();
 
         
-        $departmentsToFilter = $this->getDepartmentsToFilter($employees);
-        $occupationsToFilter = $this->getOccupationsToFilter($employees);
+        $departmentsToFilter = $this->getDepartmentsToFilter();
+        $occupationsToFilter = $this->getOccupationsToFilter();
 
         return view('admin.employees-list', [
             'employees' => $employees,
@@ -51,6 +55,13 @@ class UserController
             'queryStringName' => $queryStringName,
             'queryStringDepartment' => $queryStringDepartment,
             'queryStringOccupation' => $queryStringOccupation,
+        ]);
+    }
+
+    public function createFirstUser($companyToCreate){
+        dd($companyToCreate);
+        return view('auth.register.user', [
+            'companyToCreate' => $companyToCreate,
         ]);
     }
 
@@ -167,7 +178,7 @@ class UserController
         
         $rolesToSelect = $this->getRolesToSelect();
 
-        $currentUserRole = DB::table('role_user')->where('user_id', '=', $employee->id)->first()->role_id;
+        $currentUserRole = DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->first()->role_id;
  
         return view('admin.update-employee-profile', [
             'employee' => $employee,
@@ -217,14 +228,14 @@ class UserController
     }
 
 
-    private function getDepartmentsToFilter($employees){
-        $departments = array_unique($employees->pluck('department')->toArray());
+    private function getDepartmentsToFilter(){
+        $departments = array_unique($this->employees->pluck('department')->toArray());
 
         return $departments;
     }
     
-    private function getOccupationsToFilter($employees){
-        $occupations = array_unique($employees->pluck('occupation')->toArray());
+    private function getOccupationsToFilter(){
+        $occupations = array_unique($this->employees->pluck('occupation')->toArray());
         
         return $occupations;
     }

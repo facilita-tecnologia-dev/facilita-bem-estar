@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\CompanyMetricsController;
 use App\Http\Controllers\Private\CompanyController;
 use App\Http\Controllers\Private\Dashboard\DashboardController;
+use App\Http\Controllers\Private\Dashboard\RisksController;
 use App\Http\Controllers\Private\Dashboard\TestResultsListController;
 use App\Http\Controllers\Private\Dashboard\TestResultsPerDepartmentController;
 use App\Http\Controllers\Private\ImportUsersController;
@@ -35,21 +36,24 @@ Route::middleware(GuestMiddleware::class)->group(function(){
    
   
 Route::middleware(AuthMiddleware::class)->group(function(){
-    Route::view('/escolha-teste', 'choose-test')->name('choose-test');
+    Route::get('/escolha-teste', [TestsController::class, 'showChooseScreen'])->name('choose-test');
         
     Route::get('/teste/{test?}', TestsController::class)->name('test');
     Route::post('/teste/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
 
     Route::resource('company', CompanyController::class);
+    // Route::get('/employee/create-first/{company}', [UserController::class, 'createFirstUser'])->name('employee.create-first');
     Route::resource('employee', UserController::class);
 
     Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
     Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
     
-    Route::get('/importar-colaboradores', ImportUsersController::class)->name('import-employees');
-    Route::post('/importar-colaboradores', [ImportUsersController::class, 'importUsers']);
+    Route::get('/importar-colaboradores', ImportUsersController::class)->name('import-employees.show');
+    Route::post('/importar-colaboradores/{company}', [ImportUsersController::class, 'importUsers'])->name('import-employees.import');
 
     Route::get('/dashboard', DashboardController::class)->name('dashboard.charts');
+    Route::get('/dashboard/riscos', RisksController::class)->name('dashboard.risks');
+    Route::get('/dashboard/riscos/inventario', [RisksController::class, 'generatePDF'])->name('dashboard.risks.pdf');
     Route::get('/dashboard/{test}', TestResultsPerDepartmentController::class)->name('dashboard.test-result-per-department');
     Route::get('/dashboard/{test}/lista', TestResultsListController::class)->name('dashboard.test-results-list');
 
