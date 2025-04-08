@@ -26,7 +26,7 @@ class UserController
         $queryStringOccupation = $request->occupation;
 
         $employees = User::
-        where('company_id', '=', session('company')->id)
+        whereRelation('companies', 'companies.id', 1)
         ->when($queryStringName, function($query) use($queryStringName){
             return $query->where('name', 'like', "%$queryStringName%");
         })
@@ -71,9 +71,6 @@ class UserController
      */
     public function store(StoreUserRequest $request)
     {
-        
-        // dd($validatedData);
-
         $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation', 'admission']);
         $userRole = $request->only('role');
 
@@ -90,9 +87,10 @@ class UserController
             "company_id" => session('company')->id,
         ]);
 
-        DB::table('role_user')->insert([
+        DB::table('company_users')->insert([
             'role_id' => $userRole['role'],
-            'user_id' => $employee->id
+            'user_id' => $employee->id,
+            'company_id' => session('company')->id
         ]);
 
         return to_route('employee.index')->with('message', 'Perfil do colaborador criado com sucesso!');
@@ -196,7 +194,7 @@ class UserController
         $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation']);
         $userRole = $request->only('role');
         
-        DB::table('role_user')->where('user_id', '=', $employee->id)->update(['role_id' => $userRole['role']]);
+        DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->update(['role_id' => $userRole['role']]);
 
         $employee->update($userData);
 

@@ -36,7 +36,8 @@ class TestResultsPerDepartmentController
      * @return array
      */
     private function compileTestsData($testName): array{
-        $usersLatestTest = User::where('company_id', session('company')->id)
+        $usersLatestTest = User::
+            whereRelation('companies', 'companies.id', 1)
             ->has('testCollections')
             ->with('testCollections', function($query) use($testName) {
                 $query->latest()->limit(1)

@@ -15,7 +15,7 @@ class TestResultsListController
 
     public function __construct()
     {
-        $this->employees = User::where('company_id', '=', session('company')->id)->get();
+        $this->employees = User::whereRelation('companies', 'companies.id', 1)->get();
     }
 
     public function __invoke(Request $request, $test){
@@ -31,8 +31,8 @@ class TestResultsListController
         
        
 
-        $usersList = User::query()
-            ->where('company_id', '=', session('company')->id)
+        $usersList = User::
+            whereRelation('companies', 'companies.id', 1)
             ->has('testCollections')
             ->when($queryStringName, function($query) use($queryStringName) {
                 $query->where('name', 'like', "%$queryStringName%");

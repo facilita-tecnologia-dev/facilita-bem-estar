@@ -13,8 +13,8 @@ class Helper
      * @return array
      */
     public function getUsersLatestCollections(){        
-        $usersLatestCollections = User::query()
-        ->where('company_id', '=', session('company')->id)
+        $usersLatestCollections = User::
+        whereRelation('companies', 'companies.id', 1)
         ->has('testCollections')
         ->with('testCollections', function($query){
             $query->with('tests')->orderBy('created_at', 'desc')->limit(1);

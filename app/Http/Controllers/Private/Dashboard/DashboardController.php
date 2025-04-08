@@ -49,7 +49,7 @@ class DashboardController
      */
     private function getCompiledResults(): array{
         $usersLatestCollections = User::
-        where('company_id', session('company')->id)
+        whereRelation('companies', 'companies.id', 1)
         ->has('testCollections')
         ->with('testCollections', function($query){
             $query->latest()->limit(1)
@@ -84,106 +84,6 @@ class DashboardController
         return $compiledResults;
     }
 
-    // private function compileTestResults(){
-    //     $userTestCollections = User::
-    //     where('company_id', session('company')->id)
-    //     ->has('testCollections')
-    //     ->with('testCollections', function($query){
-    //         $query->latest()->limit(1)
-    //         ->with('tests', function($q){
-    //             $q->with(['answers', 'questions']);
-    //         });
-    //     })
-    //     ->get();
-    //     // $factorAverages = User::query()
-    //     //     ->where('company_id', session('company')->id)
-    //     //     ->whereHas('testCollections')
-    //     //     ->join('test_collections', 'users.id',  '=', 'test_collections.user_id')
-    //     //     ->join('test_forms',            'test_collections.id', '=', 'test_forms.test_collection_id')
-    //     //     ->join('test_answers',          'test_forms.id',            '=', 'test_answers.test_form_id')
-    //     //     ->join('test_questions',        'test_answers.test_question_id', '=', 'test_questions.id')
-
-    //     //     // ✔ sub‑query escalar permitida
-    //     //     ->where('test_collections.id', '=', function ($query) {
-    //     //         $query->select('id')
-    //     //             ->from('test_collections')
-    //     //             ->whereColumn('test_collections.user_id', 'users.id')
-    //     //             ->latest()      // ORDER BY created_at DESC
-    //     //             ->limit(1);     // OK dentro de sub‑query escalar
-    //     //     })
-
-    //     //     ->select('test_questions.factor',
-    //     //             DB::raw('AVG(test_answers.value) as average_value'))
-    //     //     ->groupBy('test_questions.factor')
-    //     //     ->get();
-
-    //     // dd($factorAverages);
-
-    //     $answersPerFactor = [];
-
-    //     foreach ($userTestCollections as $user) {
-    //         foreach ($user->testCollections as $testCollection) {
-    //             foreach ($testCollection->tests as $testForm) {
-    //                 $questionAnswers = [];
-
-    //                 // Inicializa os fatores com arrays vazios
-    //                 foreach ($testForm->questions as $question) {
-    //                     $questionAnswers[$question->factor] = [];
-    //                 }
-
-    //                 // Agrupa as respostas por fator
-    //                 foreach ($testForm->answers as $answer) {
-    //                     $questionFactor = $answer->testQuestion->factor;
-    //                     $questionAnswers[$questionFactor][] = $answer;
-    //                 }
-
-    //                 // Armazena as respostas agrupadas
-    //                 $answersPerFactor[$testForm->test_name][] = $questionAnswers;
-    //             }
-    //         }
-    //     }
-
-    //     // Calcula as médias por item e coleta os valores para médias gerais
-    //     $averagesPerFactor = $answersPerFactor;
-    //     $factorTotals = [];
-
-    //     foreach ($averagesPerFactor as $testName => $test) {
-    //         foreach ($test as $index => $factors) {
-    //             foreach ($factors as $factorName => $factor) {
-    //                 $sum = 0;
-    //                 $count = count($factor);
-
-    //                 if ($count > 0) {
-    //                     foreach ($factor as $answer) {
-    //                         $sum += (int) $answer->value;
-    //                     }
-    //                     $average = $sum / $count;
-    //                 } else {
-    //                     $average = 0;
-    //                 }
-
-    //                 // Armazena a média no array temporário para cálculo geral
-    //                 $factorTotals[$testName][$factorName][] = $average;
-    //             }
-    //         }
-    //     }
-
-    //     $result = [];
-
-    //     foreach($factorTotals as $testName => $test){
-    //         foreach($test as $key => $factor){
-    //             $result[$testName][$key] = array_sum($factor) / count($factor);
-    //         }
-    //     }
-
-    //     // foreach($result as $testName => $test){
-    //     //     $result[$testName]['total'] = array_sum($test) / count($test);
-    //     // }
-
-    //     // dump($userTestCollections);
-    //     return $result;
-    // }
-
     /**
      * Retorna um array com 2 itens.
      * @return array [Total de usuários, usuários que realizaram os testes]
@@ -203,7 +103,7 @@ class DashboardController
         $countCollections = count($usersWithCollections);
 
         
-        $users = User::query()->where('company_id', '=', session('company')->id)->get()->toArray();
+        $users = User::query()->whereRelation('companies', 'companies.id', 1)->get()->toArray();
         
         $countUsers = count($users);
         
@@ -213,8 +113,8 @@ class DashboardController
    }
 
    private function getRisks(){
-        $usersLatestCollections = User::query()
-        ->where('company_id', '=', session('company')->id)
+        $usersLatestCollections = User::
+        whereRelation('companies', 'companies.id', 1)
         ->has('testCollections')
         ->with('testCollections', function($query){
             $query->with('risks', function($q){
@@ -223,6 +123,7 @@ class DashboardController
         })
         ->latest()
         ->get();
+
 
         $risksMap = [
             'Risco Baixo' => 1,
