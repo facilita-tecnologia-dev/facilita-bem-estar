@@ -15,8 +15,8 @@ class Helper
     public function getUsersLatestCollections(){        
         $usersLatestCollections = User::
         whereRelation('companies', 'companies.id', session('company')->id)
-        ->has('testCollections')
-        ->with('testCollections', function($query){
+        ->has('collections')
+        ->with('collections', function($query){
             $query->with('tests')->orderBy('created_at', 'desc')->limit(1);
         })
         ->get();

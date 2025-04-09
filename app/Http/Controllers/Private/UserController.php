@@ -104,7 +104,7 @@ class UserController
             'company_id' => session('company')->id
         ]);
 
-        return to_route('employee.index')->with('message', 'Perfil do colaborador criado com sucesso!');
+        return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
     }
 
     /**
@@ -224,7 +224,7 @@ class UserController
     {
         $employee->delete();
 
-        return to_route('employee.index');
+        return to_route('user.index');
     }
 
 

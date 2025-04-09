@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Gate::define('answer-test', function (User $user) {
-        //     return !$user->testCollections->count();
+        //     return !$user->collections->count();
         // });
     }
 }

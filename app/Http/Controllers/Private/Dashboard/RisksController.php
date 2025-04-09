@@ -34,8 +34,8 @@ class RisksController
     private function getRisks($onlyCritical = false){
         $usersLatestCollections = User::
         whereRelation('companies', 'companies.id', session('company')->id)
-        ->has('testCollections')
-        ->with('testCollections', function($query){
+        ->has('collections')
+        ->with('collections', function($query){
             $query->with('risks', function($q){
                 $q->with('risk', function($j){
                     $j->with('controlActions');
@@ -85,7 +85,7 @@ class RisksController
         $mappedRisks = [];
         
         foreach($usersLatestCollections as $user){
-            foreach($user->testCollections[0]->risks as $riskResult){
+            foreach($user->collections[0]->risks as $riskResult){
                 $test = $testRisksMap[$riskResult->risk->name];
                 $mappedRisks[$test][$riskResult->risk->name]['score'][] = $risksMap[$riskResult->score];
                 $mappedRisks[$test][$riskResult->risk->name]['control-actions'] = $riskResult->risk->controlActions;

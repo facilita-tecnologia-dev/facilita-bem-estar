@@ -38,8 +38,8 @@ class TestResultsPerDepartmentController
     private function compileTestsData($testName): array{
         $usersLatestTest = User::
             whereRelation('companies', 'companies.id', session('company')->id)
-            ->has('testCollections')
-            ->with('testCollections', function($query) use($testName) {
+            ->has('collections')
+            ->with('collections', function($query) use($testName) {
                 $query->latest()->limit(1)
                     ->with('tests', function($q) use($testName) {
                         $q->whereHas('testType', function($typeQuery) use($testName) {
@@ -53,8 +53,8 @@ class TestResultsPerDepartmentController
         $testStats = [];
         
         foreach($usersLatestTest as $user){    
-            $severityTitle = $user->testCollections[0]->tests[0]['severity_title'];
-            $severityColor = $user->testCollections[0]->tests[0]['severity_color'];
+            $severityTitle = $user->collections[0]->tests[0]['severity_title'];
+            $severityColor = $user->collections[0]->tests[0]['severity_color'];
             
             if(!isset($testStats[$user->department])){
                 $testStats[$user->department] = [];

@@ -38,7 +38,7 @@
                 <button data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
                     <i class="fa-solid fa-filter"></i>
                 </button>
-                <a href="{{ route('employee.create') }}" data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+                <a href="{{ route('user.create') }}" data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
                     <i class="fa-solid fa-plus"></i>
                 </a>
             </div>
@@ -71,7 +71,7 @@
                         @foreach ($employees as $employee)
                             <a
                                 data-role="tr"
-                                href="{{ route('employee.show', $employee) }}"
+                                href="{{ route('user.show', $employee) }}"
                                 class="
                                     px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] to-[#FFFFFF60] grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all
                                 ">

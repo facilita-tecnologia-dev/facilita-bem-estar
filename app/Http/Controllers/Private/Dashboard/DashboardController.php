@@ -8,6 +8,7 @@ use App\Models\TestAnswer;
 use App\Models\TestQuestion;
 use App\Models\TestType;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use PHPUnit\Event\Code\TestCollection;
@@ -24,6 +25,7 @@ class DashboardController
     }
 
     public function __invoke(){
+        dd(session('company')->users);
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
@@ -50,8 +52,8 @@ class DashboardController
     private function getCompiledResults(): array{
         $usersLatestCollections = User::
         whereRelation('companies', 'companies.id', session('company')->id)
-        ->has('testCollections')
-        ->with('testCollections', function($query){
+        ->has('collections')
+        ->with('collections', function($query){
             $query->latest()->limit(1)
             ->with('tests', function($q){
                 $q->with(['answers', 'questions', 'testType']);
@@ -62,9 +64,9 @@ class DashboardController
         $compiledResults = [];
         
         foreach($usersLatestCollections as $user){
-            if(count($user->testCollections) > 0){
+            if(count($user->collections) > 0){
                 
-                foreach($user->testCollections[0]->tests as $test){
+                foreach($user->collections[0]->tests as $test){
                     $testName = $test->testType->display_name;
                     $severity = $test->severity_title;
                    
@@ -94,7 +96,7 @@ class DashboardController
         $usersWithCollections = [];
 
         foreach($usersLatestCollections as $user){
-            if(count($user->testCollections) > 0){
+            if(count($user->collections) > 0){
                 $usersWithCollections[] = $user;
             }
             
@@ -115,8 +117,8 @@ class DashboardController
     private function getRisks(){
         $usersLatestCollections = User::
         whereRelation('companies', 'companies.id', session('company')->id)
-        ->has('testCollections')
-        ->with('testCollections', function($query){
+        ->has('collections')
+        ->with('collections', function($query){
             $query->with('risks', function($q){
                 $q->with('risk');
             })->with('tests');
@@ -164,7 +166,7 @@ class DashboardController
         $mappedRisks = [];
         
         foreach($usersLatestCollections as $user){
-            foreach($user->testCollections[0]->risks as $riskResult){
+            foreach($user->collections[0]->risks as $riskResult){
                 $test = $testRisksMap[$riskResult->risk->name];
                 $mappedRisks[$test][$riskResult->risk->name]['score'][] = $risksMap[$riskResult->score];
             }

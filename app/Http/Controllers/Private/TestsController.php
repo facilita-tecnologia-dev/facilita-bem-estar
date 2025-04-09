@@ -28,10 +28,10 @@ class TestsController
     }
 
     public function showChooseScreen(){
-        $userLatestCollection = User::where('id', auth()->user()->id)->with('testCollections')->first();
+        $userLatestCollection = User::where('id', auth()->user()->id)->with('collections')->first();
 
         return view('private.tests.choose-test', [
-            'hasCollection' => $userLatestCollection->testCollections->count() ? true : false,
+            'hasCollection' => $userLatestCollection->collections->count() ? true : false,
         ]);
     }
 

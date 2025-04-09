@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\Login\ExternalManagerLoginController;
 use App\Http\Controllers\Auth\Login\HealthWorkerLoginController;
 use App\Http\Controllers\Auth\Login\InternalManagerLoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\CompanyMetricsController;
+use App\Http\Controllers\Private\CompanyMetricsController;
 use App\Http\Controllers\Private\CompanyController;
 use App\Http\Controllers\Private\Dashboard\DashboardController;
 use App\Http\Controllers\Private\Dashboard\RisksController;
@@ -42,8 +42,8 @@ Route::middleware(AuthMiddleware::class)->group(function(){
     Route::post('/teste/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
 
     Route::resource('company', CompanyController::class);
-    // Route::get('/employee/create-first/{company}', [UserController::class, 'createFirstUser'])->name('employee.create-first');
-    Route::resource('employee', UserController::class);
+    // Route::get('/employee/create-first/{company}', [UserController::class, 'createFirstUser'])->name('user.create-first');
+    Route::resource('user', UserController::class);
 
     Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
     Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);

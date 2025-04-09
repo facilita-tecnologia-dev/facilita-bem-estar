@@ -28,7 +28,7 @@ class CompanyController
         ]);
 
         
-        return to_route('employee.create-first', $validatedData);
+        return to_route('user.create-first', $validatedData);
     }
 
     /**

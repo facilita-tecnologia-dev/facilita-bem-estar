@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
@@ -13,45 +15,78 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $guarded = [];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['name', 'age', 'cpf', 'department', 'occupation', 'admission', 'gender'];
 
-
-    public function companies()
-    {
+    /**
+     * Get the companies related to this user
+     * @return BelongsToMany relationship with the companies
+     */
+    public function companies(): BelongsToMany {
         return $this->belongsToMany(
-            Company::class,        // model relacionado
-            'company_users',       // tabela pivô
-            'user_id',             // FK local (opcional ‑ Laravel deduz)
-            'company_id'           // FK relacionada (opcional)
+            Company::class,
+            'company_users',
+            'user_id',
+            'company_id'
         )
-        ->withPivot('role_id')     // coluna extra da pivô
-        ->withTimestamps();        // se a tabela tiver created_at / updated_at
+        ->withPivot('role_id')
+        ->withTimestamps();
     }
 
-    public function roles()
-    {
+    /**
+     * Get the roles related to this user
+     * @return BelongsToMany relationship with the roles
+     */
+    private function roles(): BelongsToMany {
         return $this->belongsToMany(Role::class, 'company_users')
                     ->withPivot('company_id');
     }
 
-    public function roleInCompany($companyId)
-    {
+    /**
+     * Get the user role in this company
+     * @return Role
+     */
+    public function getRoleInThisCompany(): Role {
         return $this->roles()
-                    ->wherePivot('company_id', $companyId)
-                    ->first();  
+                    ->wherePivot('company_id', session('company')->id)
+                    ->first(); 
     }
 
-    public function isAdmin()
-    {
+    /**
+     * Return true if this user is a manager
+     * @return bool
+     */
+    public function isManager(): bool {
         return $this->roles()->where('name', 'Gestor')->exists();
     }
 
-    public function isUser()
+    /**
+     * Return true if this user is an employee
+     * @return bool
+     */
+    public function isEmployee(): bool
     {
         return $this->roles()->where('name', 'Colaborador')->exists();
     }
 
-    public function testCollections(){
-        return $this->hasMany(Collection::class);
+    /**
+     * Returns all test collections related to this user.
+     * @return HasMany
+     */
+    public function collections(): HasMany {
+        return $this->hasMany(UserCollection::class);
+    }
+
+    /**
+     * Returns the most recent test collection related to this user.
+     * @return HasOne
+     */
+    public function latestCollection()
+    {
+        return $this->hasOne(UserCollection::class)->latest();
     }
 }

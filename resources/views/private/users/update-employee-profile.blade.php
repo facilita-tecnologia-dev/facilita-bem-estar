@@ -17,7 +17,7 @@
             @endif
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
-                <x-form action="{{ route('employee.update', $employee) }}" id="form-update-company-profile" put class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
+                <x-form action="{{ route('user.update', $employee) }}" id="form-update-company-profile" put class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
                     <x-form.input-text name="name" label="Nome completo" value="{{ $employee->name }}" placeholder="Digite o nome completo do colaborador"/>
                     
                     <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $employee->cpf }}" placeholder="Digite o cpf do colaborador"/>
@@ -36,7 +36,7 @@
                 </x-form>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-action href="{{ route('employee.show', $employee) }}">Cancelar</x-action>
+                    <x-action href="{{ route('user.show', $employee) }}">Cancelar</x-action>
                     <x-action tag="button" form="form-update-company-profile">Salvar</x-action>
                 </div>
             </div>

@@ -18,10 +18,10 @@
                 </div>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-form action="{{ route('employee.destroy', $employee) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
+                    <x-form action="{{ route('user.destroy', $employee) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
                         <x-action tag="button">Excluir colaborador</x-action>
                     </x-form>
-                    <x-action href="{{ route('employee.edit', $employee) }}">Editar</x-action>
+                    <x-action href="{{ route('user.edit', $employee) }}">Editar</x-action>
                 </div>
             </div>
         </div>

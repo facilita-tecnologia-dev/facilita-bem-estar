@@ -40,7 +40,7 @@
         @can('view-manager-screens')
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Empresa</p>
-                <a href="{{ route('employee.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                <a href="{{ route('user.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-users"></i>
                     </div>

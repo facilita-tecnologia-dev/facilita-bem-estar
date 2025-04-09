@@ -33,7 +33,7 @@ class TestResultsListController
 
         $usersList = User::
             whereRelation('companies', 'companies.id', session('company')->id)
-            ->has('testCollections')
+            ->has('collections')
             ->when($queryStringName, function($query) use($queryStringName) {
                 $query->where('name', 'like', "%$queryStringName%");
             })
@@ -44,7 +44,7 @@ class TestResultsListController
                 $query->where('occupation', '=', "$queryStringOccupation");
             })
             ->select(['id', 'name', 'occupation', 'department'])
-            ->with('testCollections', function($query) use($test){
+            ->with('collections', function($query) use($test){
                 $query->latest()->with('tests', function($q) use($test){
                     $q->where('test_id', '=', $this->test->id)->select(['id', 'test_id', 'user_collection_id', 'severity_title', 'severity_color'])->get();
                 });
