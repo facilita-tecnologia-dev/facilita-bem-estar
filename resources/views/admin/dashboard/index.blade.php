@@ -32,7 +32,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="shadow-md rounded-md w-full bg-gray-100 relative sm:col-span-1 lg:col-span-2 xl:col-span-3 left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                <div class="shadow-md rounded-md w-full bg-white relative sm:col-span-1 lg:col-span-2 xl:col-span-3 left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                     <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
                         <p class="text-center font-semibold">Indicadores (%)</p>
                         <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-3">
