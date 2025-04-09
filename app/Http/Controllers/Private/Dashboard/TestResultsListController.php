@@ -56,7 +56,7 @@ class TestResultsListController
         $occupationsToFilter = $this->getOccupationsToFilter();
         // $severitiesToFilter = $this->getSeveritiesToFilter($test);
 
-        return view('admin.dashboard.test-results-list', [
+        return view('private.dashboard.test-results-list', [
             'testName' => $test,
             'usersList' => $usersList,
 

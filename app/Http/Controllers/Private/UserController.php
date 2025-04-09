@@ -46,7 +46,7 @@ class UserController
         $departmentsToFilter = $this->getDepartmentsToFilter();
         $occupationsToFilter = $this->getOccupationsToFilter();
 
-        return view('admin.employees-list', [
+        return view('private.users.employees-list', [
             'employees' => $employees,
 
             'departmentsToFilter' => $departmentsToFilter,
@@ -72,7 +72,7 @@ class UserController
     {
         $rolesToSelect = $this->getRolesToSelect();
 
-        return view('admin.create-employee-profile', [
+        return view('private.users.create-employee-profile', [
             'rolesToSelect' => $rolesToSelect,
         ]);
     }
@@ -160,7 +160,7 @@ class UserController
             $employeeInfo['Último teste realizado'] = $lastTestCollectionDate;
         }
 
-        return view('admin.employee-profile', [
+        return view('private.users.employee-profile', [
             'employee'     => $employee,
             'employeeInfo' => $employeeInfo,
             // 'testResults'  => $testResults,
@@ -180,7 +180,7 @@ class UserController
 
         $currentUserRole = DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->first()->role_id;
  
-        return view('admin.update-employee-profile', [
+        return view('private.users.update-employee-profile', [
             'employee' => $employee,
             'rolesToSelect' => $rolesToSelect,
             'currentUserRole' => $currentUserRole,

@@ -16,7 +16,7 @@ class CompanyMetricsController
     {
         $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get()->groupBy('metricType.key_name')->toArray();
 
-        return view('admin.company-metrics', [
+        return view('private.company.company-metrics', [
             'metrics' => $metrics,
         ]);
     }

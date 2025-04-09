@@ -35,7 +35,7 @@ class DashboardController
         $metrics = $this->getMetrics();
 
         
-        return view('admin.dashboard.index', [
+        return view('private.dashboard.index', [
             'generalResults' => $generalResults,
             'testsParticipation' => $testsParticipation,
             'risks' => $risks,

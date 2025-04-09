@@ -7,6 +7,6 @@ use Illuminate\Http\Request;
 class PresentationController
 {
     public function index(){
-        return view('presentation');
+        return view('public.presentation');
     }
 }

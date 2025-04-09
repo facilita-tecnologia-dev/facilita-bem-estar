@@ -15,7 +15,7 @@ class ImportUsersController
             abort(403, 'Acesso não autorizado');
         }
 
-        return view('admin.import-employees');
+        return view('private.users.import-employees');
     }
 
     public function importUsers(Request $request, Company $company){

@@ -25,7 +25,7 @@ class TestResultsPerDepartmentController
         
         $testData = $this->compileTestsData($testName);
        
-        return view('admin.dashboard.test-results-per-department', [
+        return view('private.dashboard.test-results-per-department', [
             'testName' => $testName,
             'testStats' => $testData,
         ]);

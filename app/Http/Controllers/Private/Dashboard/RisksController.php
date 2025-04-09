@@ -11,7 +11,7 @@ class RisksController
     public function __invoke(){
         $risks = $this->getRisks(true);
 
-        return view('admin.dashboard.risks', [
+        return view('private.dashboard.risks', [
             'risks' => $risks,
         ]);
     }

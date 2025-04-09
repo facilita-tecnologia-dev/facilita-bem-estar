@@ -42,7 +42,7 @@ class CompanyController
         
         $company = Company::where('id', '=', session('company')->id)->first();
 
-        return view('admin.company-profile', [
+        return view('private.company.company-profile', [
             'company' => $company,
         ]);
     }
@@ -58,7 +58,7 @@ class CompanyController
 
         $company = session('company');
 
-        return view('admin.update-company-profile', [
+        return view('private.company.update-company-profile', [
             'company' => $company,
         ]);
     }

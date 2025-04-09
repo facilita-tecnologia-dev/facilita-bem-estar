@@ -30,7 +30,7 @@ class TestsController
     public function showChooseScreen(){
         $userLatestCollection = User::where('id', auth()->user()->id)->with('testCollections')->first();
 
-        return view('choose-test', [
+        return view('private.tests.choose-test', [
             'hasCollection' => $userLatestCollection->testCollections->count() ? true : false,
         ]);
     }
@@ -52,7 +52,7 @@ class TestsController
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get();
         
-        return view('test', [
+        return view('private.tests.test', [
             'test' => $test,
             'testIndex' => $testIndex,
             'pendingAnswers' => $pendingAnswers ?? [],
