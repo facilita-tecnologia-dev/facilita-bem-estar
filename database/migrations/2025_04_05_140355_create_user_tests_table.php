@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Collection;
-use App\Models\TestType;
 use App\Models\UserCollection;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

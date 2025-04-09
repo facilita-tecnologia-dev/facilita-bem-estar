@@ -13,17 +13,17 @@ class CompanyMetric extends Model
 
     /**
      * Returns the company to which this company metric belongs.
-     * @return BelongsTo
      */
-    public function parentCompany(): BelongsTo {
+    public function parentCompany(): BelongsTo
+    {
         return $this->belongsTo(Company::class, 'company_id');
     }
 
     /**
      * Returns the base metric of this company metric.
-     * @return BelongsTo
      */
-    public function metricType(): BelongsTo {
+    public function metricType(): BelongsTo
+    {
         return $this->belongsTo(Metric::class, 'metric_id');
     }
 }

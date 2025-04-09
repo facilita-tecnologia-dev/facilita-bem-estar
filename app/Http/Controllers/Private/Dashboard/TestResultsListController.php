@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Private\Dashboard;
 
-use App\Models\TestForm;
 use App\Models\TestType;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 class TestResultsListController
 {
     protected $employees;
+
     protected $test;
 
     public function __construct()
@@ -18,7 +18,8 @@ class TestResultsListController
         $this->employees = User::whereRelation('companies', 'companies.id', session('company')->id)->get();
     }
 
-    public function __invoke(Request $request, $test){
+    public function __invoke(Request $request, $test)
+    {
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
@@ -28,24 +29,21 @@ class TestResultsListController
         $queryStringName = $request->name;
         $queryStringDepartment = $request->department;
         $queryStringOccupation = $request->occupation;
-        
-       
 
-        $usersList = User::
-            whereRelation('companies', 'companies.id', session('company')->id)
+        $usersList = User::whereRelation('companies', 'companies.id', session('company')->id)
             ->has('collections')
-            ->when($queryStringName, function($query) use($queryStringName) {
+            ->when($queryStringName, function ($query) use ($queryStringName) {
                 $query->where('name', 'like', "%$queryStringName%");
             })
-            ->when($queryStringDepartment, function($query) use($queryStringDepartment) {
+            ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
                 $query->where('department', '=', "$queryStringDepartment");
             })
-            ->when($queryStringOccupation, function($query) use($queryStringOccupation) {
+            ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
                 $query->where('occupation', '=', "$queryStringOccupation");
             })
             ->select(['id', 'name', 'occupation', 'department'])
-            ->with('collections', function($query) use($test){
-                $query->latest()->with('tests', function($q) use($test){
+            ->with('collections', function ($query) {
+                $query->latest()->with('tests', function ($q) {
                     $q->where('test_id', '=', $this->test->id)->select(['id', 'test_id', 'user_collection_id', 'severity_title', 'severity_color'])->get();
                 });
             })
@@ -69,20 +67,22 @@ class TestResultsListController
         ]);
     }
 
-    private function getDepartmentsToFilter(){
+    private function getDepartmentsToFilter()
+    {
         $departments = array_unique($this->employees->pluck('department')->toArray());
 
         return $departments;
     }
-    
-    private function getOccupationsToFilter(){
+
+    private function getOccupationsToFilter()
+    {
         $occupations = array_unique($this->employees->pluck('occupation')->toArray());
-        
+
         return $occupations;
     }
 
     // private function getSeveritiesToFilter($test){
-    //     // $severities = 
+    //     // $severities =
     //     dd($test)
     // }
 }

@@ -29,20 +29,18 @@ class UserController
         $queryStringDepartment = $request->department;
         $queryStringOccupation = $request->occupation;
 
-        $employees = User::
-        whereRelation('companies', 'companies.id', session('company')->id)
-        ->when($queryStringName, function($query) use($queryStringName){
-            return $query->where('name', 'like', "%$queryStringName%");
-        })
-        ->when($queryStringDepartment, function($query) use($queryStringDepartment){
-            return $query->where('department', '=', "$queryStringDepartment");
-        })
-        ->when($queryStringOccupation, function($query) use($queryStringOccupation){
-            return $query->where('occupation', '=', "$queryStringOccupation");
-        })
-        ->get();
+        $employees = User::whereRelation('companies', 'companies.id', session('company')->id)
+            ->when($queryStringName, function ($query) use ($queryStringName) {
+                return $query->where('name', 'like', "%$queryStringName%");
+            })
+            ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
+                return $query->where('department', '=', "$queryStringDepartment");
+            })
+            ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
+                return $query->where('occupation', '=', "$queryStringOccupation");
+            })
+            ->get();
 
-        
         $departmentsToFilter = $this->getDepartmentsToFilter();
         $occupationsToFilter = $this->getOccupationsToFilter();
 
@@ -58,8 +56,10 @@ class UserController
         ]);
     }
 
-    public function createFirstUser($companyToCreate){
+    public function createFirstUser($companyToCreate)
+    {
         dd($companyToCreate);
+
         return view('auth.register.user', [
             'companyToCreate' => $companyToCreate,
         ]);
@@ -88,20 +88,20 @@ class UserController
         $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
 
         $employee = User::create([
-            "name" => $userData['name'],
-            "cpf" => $userData['cpf'],
-            "age" => $userData['age'],
-            "gender" => $userData['gender'],
-            "department" => $userData['department'],
-            "occupation" => $userData['occupation'],
-            "admission" => $admissionDateFormated,
-            "company_id" => session('company')->id,
+            'name' => $userData['name'],
+            'cpf' => $userData['cpf'],
+            'age' => $userData['age'],
+            'gender' => $userData['gender'],
+            'department' => $userData['department'],
+            'occupation' => $userData['occupation'],
+            'admission' => $admissionDateFormated,
+            'company_id' => session('company')->id,
         ]);
 
         DB::table('company_users')->insert([
             'role_id' => $userRole['role'],
             'user_id' => $employee->id,
-            'company_id' => session('company')->id
+            'company_id' => session('company')->id,
         ]);
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
@@ -122,10 +122,9 @@ class UserController
             ->latest('created_at')
             ->first();
 
-        
         $lastTestCollectionDate = null;
         $testResults = null;
-            
+
         if ($lastTestCollection) {
             $collectionDateTime = Carbon::parse($lastTestCollection->created_at);
             $formattedDate = $collectionDateTime->format('d/m/Y');
@@ -133,11 +132,11 @@ class UserController
             $diff = Carbon::now()->startOfDay()->diff($collectionDateTime->startOfDay());
 
             if ($diff->y >= 1) {
-                $timeAgo = $diff->y . ' ano(s)';
+                $timeAgo = $diff->y.' ano(s)';
             } elseif ($diff->m >= 1) {
-                $timeAgo = $diff->m . ' mês(es)';
+                $timeAgo = $diff->m.' mês(es)';
             } else {
-                $timeAgo = $diff->d . ' dia(s)';
+                $timeAgo = $diff->d.' dia(s)';
             }
 
             $lastTestCollectionDate = "{$formattedDate} - {$timeAgo} atrás.";
@@ -146,14 +145,14 @@ class UserController
         $cpf = $this->getFormattedCPF($employee);
 
         $employeeInfo = [
-            'Nome'              => $employee->name,
-            'CPF'               => $cpf,
-            'Idade'             => $employee->age,
-            'Setor'             => $employee->department,
-            'Cargo'             => $employee->occupation,
-            'Sexo'              => $employee->gender,
-            'Data de Admissão'  => $employee->admission,
-            'Tempo de empresa'  => $admission,
+            'Nome' => $employee->name,
+            'CPF' => $cpf,
+            'Idade' => $employee->age,
+            'Setor' => $employee->department,
+            'Cargo' => $employee->occupation,
+            'Sexo' => $employee->gender,
+            'Data de Admissão' => $employee->admission,
+            'Tempo de empresa' => $admission,
         ];
 
         if ($lastTestCollectionDate) {
@@ -161,7 +160,7 @@ class UserController
         }
 
         return view('private.users.employee-profile', [
-            'employee'     => $employee,
+            'employee' => $employee,
             'employeeInfo' => $employeeInfo,
             // 'testResults'  => $testResults,
         ]);
@@ -175,11 +174,11 @@ class UserController
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
-        
+
         $rolesToSelect = $this->getRolesToSelect();
 
         $currentUserRole = DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->first()->role_id;
- 
+
         return view('private.users.update-employee-profile', [
             'employee' => $employee,
             'rolesToSelect' => $rolesToSelect,
@@ -193,24 +192,23 @@ class UserController
     public function update(Request $request, User $employee)
     {
         $validatedData = $request->validate([
-            "name" => ['required', 'max:70'],
-            "cpf" => ['required', 'max:70'],
-            "age" => ['required', 'max:70'],
-            "gender" => ['required', 'max:70'],
-            "department" => ['required', 'max:70'],
-            "occupation" => ['required', 'max:70'],
-            "role" => ['required', 'max:70'],
+            'name' => ['required', 'max:70'],
+            'cpf' => ['required', 'max:70'],
+            'age' => ['required', 'max:70'],
+            'gender' => ['required', 'max:70'],
+            'department' => ['required', 'max:70'],
+            'occupation' => ['required', 'max:70'],
+            'role' => ['required', 'max:70'],
         ]);
 
         $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation']);
         $userRole = $request->only('role');
-        
+
         DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->update(['role_id' => $userRole['role']]);
 
         $employee->update($userData);
 
-
-        if(Auth::user()->id == $employee->id){
+        if (Auth::user()->id == $employee->id) {
             session(['user' => $employee]);
         }
 
@@ -227,30 +225,33 @@ class UserController
         return to_route('user.index');
     }
 
-
-    private function getDepartmentsToFilter(){
+    private function getDepartmentsToFilter()
+    {
         $departments = array_unique($this->employees->pluck('department')->toArray());
 
         return $departments;
     }
-    
-    private function getOccupationsToFilter(){
+
+    private function getOccupationsToFilter()
+    {
         $occupations = array_unique($this->employees->pluck('occupation')->toArray());
-        
+
         return $occupations;
     }
 
-    private function getFormattedAdmissionDate($employee){
+    private function getFormattedAdmissionDate($employee)
+    {
         $admissionDate = Carbon::createFromFormat('d/m/Y', $employee->admission);
         $admissionDiff = Carbon::now()
-                            ->diff($admissionDate)
-                            ->format('%y anos, %m meses e %d dias.');
+            ->diff($admissionDate)
+            ->format('%y anos, %m meses e %d dias.');
 
         return $admissionDiff;
     }
 
-    private function getFormattedCPF($employee){
-        $cpfFormatted =  preg_replace(
+    private function getFormattedCPF($employee)
+    {
+        $cpfFormatted = preg_replace(
             '/(\d{3})(\d{3})(\d{3})(\d{2})/',
             '$1.$2.$3-$4',
             $employee->cpf
@@ -259,12 +260,13 @@ class UserController
         return $cpfFormatted;
     }
 
-    private function getRolesToSelect(){
+    private function getRolesToSelect()
+    {
         $roles = DB::table('roles')->orderBy('id', 'desc')->get()->toArray();
         $rolesFormatted = [];
 
-        foreach($roles as $role){
-            $rolesFormatted[] = ['option'=> $role->name, 'value' => $role->id];
+        foreach ($roles as $role) {
+            $rolesFormatted[] = ['option' => $role->name, 'value' => $role->id];
         }
 
         return $rolesFormatted;

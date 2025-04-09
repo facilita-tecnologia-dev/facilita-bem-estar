@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,28 +16,27 @@ class UserAnswer extends Model
      */
     protected $fillable = ['user_test_id', 'question_id', 'question_option_id'];
 
-
     /**
      * Returns the parent user test of this answer.
-     * @return BelongsTo
      */
-    public function parentTest(): BelongsTo {
+    public function parentTest(): BelongsTo
+    {
         return $this->belongsTo(UserTest::class, 'user_test_id');
     }
 
     /**
      * Returns the parent question this answer.
-     * @return BelongsTo
      */
-    public function parentQuestion(): BelongsTo {
+    public function parentQuestion(): BelongsTo
+    {
         return $this->belongsTo(Question::class, 'question_id');
     }
 
     /**
      * Returns the option related this answer.
-     * @return BelongsTo
      */
-    public function relatedOption(): BelongsTo {
+    public function relatedOption(): BelongsTo
+    {
         return $this->belongsTo(Option::class, 'question_option_id');
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,17 +19,17 @@ class Test extends Model
 
     /**
      * Returns the test collection to which this test belongs.
-     * @return BelongsTo
      */
-    public function parentCollection(): BelongsTo {
+    public function parentCollection(): BelongsTo
+    {
         return $this->belongsTo(Collection::class, 'collection_id');
     }
 
     /**
      * Returns the questions related to this test.
-     * @return HasMany
      */
-    public function questions(): HasMany {
+    public function questions(): HasMany
+    {
         return $this->hasMany(Question::class, 'test_id');
     }
 }

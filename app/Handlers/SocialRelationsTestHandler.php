@@ -7,7 +7,7 @@ class SocialRelationsTestHandler implements TestHandlerInterface
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
-        
+
         if ($totalPoints >= 15) {
             $severityTitle = 'Baixo Risco';
             $severityColor = 1;
@@ -21,25 +21,25 @@ class SocialRelationsTestHandler implements TestHandlerInterface
             $severityTitle = 'Risco Crítico';
             $severityColor = 5;
         }
-        
+
         return [
             'answers' => $answers,
             'total_points' => $totalPoints,
             'severity_title' => $severityTitle,
             'severity_color' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityColor)
+            'recommendations' => $this->getRecommendations($severityColor),
         ];
     }
-    
+
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
             1 => ['Relações interpessoais muito positivas'],
             3 => ['Algumas áreas necessitam de pequenos ajustes'],
             4 => ['Necessidade de intervenções urgentes'],
-            5 => ['Requer reestruturação imediata das dinâmicas sociais']
+            5 => ['Requer reestruturação imediata das dinâmicas sociais'],
         ];
-        
+
         return $recommendations[$severityColor] ?? [];
     }
 }

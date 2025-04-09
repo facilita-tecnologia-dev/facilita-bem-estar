@@ -21,19 +21,20 @@ class CompanyMetricsController
         ]);
     }
 
-    public function storeMetrics(Request $request){
+    public function storeMetrics(Request $request)
+    {
         $validatedData = $request->validate([
-            "turnover" => "nullable|between:0,100",
-            "absenteeism" => "nullable|between:0,100",
-            "extra-hours" => "nullable|between:0,100",
-            "accidents" => "nullable|between:0,100",
-            "absences" => "nullable|between:0,100",
+            'turnover' => 'nullable|between:0,100',
+            'absenteeism' => 'nullable|between:0,100',
+            'extra-hours' => 'nullable|between:0,100',
+            'accidents' => 'nullable|between:0,100',
+            'absences' => 'nullable|between:0,100',
         ]);
-        
-        DB::transaction(function() use($validatedData){
+
+        DB::transaction(function () use ($validatedData) {
             $metrics = Metric::all();
-            foreach($validatedData as $key => $inputMetric){
-                if($inputMetric == null){
+            foreach ($validatedData as $key => $inputMetric) {
+                if ($inputMetric == null) {
                     $inputMetric = 'null';
                 }
 
@@ -44,7 +45,7 @@ class CompanyMetricsController
                         'metric_id' => $metric->id,
                     ],
                     [
-                    'value' => $inputMetric,
+                        'value' => $inputMetric,
                     ]
                 );
             }

@@ -15,17 +15,17 @@ class UserRiskResult extends Model
 
     /**
      * Returns the risk to which this user risk result belongs.
-     * @return BelongsTo
      */
-    public function parentRisk(): BelongsTo{
+    public function parentRisk(): BelongsTo
+    {
         return $this->belongsTo(Risk::class);
     }
 
     /**
      * Returns the user collection to which this user risk result belongs.
-     * @return BelongsTo
      */
-    public function parentCollection(): BelongsTo{
+    public function parentCollection(): BelongsTo
+    {
         return $this->belongsTo(UserCollection::class);
     }
 }

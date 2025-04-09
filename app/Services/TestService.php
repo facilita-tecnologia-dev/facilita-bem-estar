@@ -1,11 +1,10 @@
-<?php 
+<?php
 
 namespace App\Services;
 
 use App\Handlers\TestHandlerFactory;
 use App\Models\PendingTestAnswer;
 use App\Models\TestType;
-use App\Repositories\TestRepository;
 use Illuminate\Support\Facades\Auth;
 
 class TestService
@@ -17,24 +16,24 @@ class TestService
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function processTest(array $data, TestType $testInfo){
-        $answersValues = array_map(function($value){
+    public function processTest(array $data, TestType $testInfo)
+    {
+        $answersValues = array_map(function ($value) {
             return (int) $value;
         }, $data);
 
-        
         $handler = $this->handlerFactory->getHandler($testInfo);
         $processedTest = $handler->process($answersValues, $testInfo);
-        session([$testInfo->key_name . '-result' => $processedTest]);
+        session([$testInfo->key_name.'-result' => $processedTest]);
 
         $pendingAnswers = [];
         $questions = $testInfo->questions->pluck('questionOptions', 'id')->all();
 
-        foreach($processedTest['answers'] as $questionId => $answer){
+        foreach ($processedTest['answers'] as $questionId => $answer) {
             $questionOptions = $questions[$questionId];
             $option = collect($questionOptions)->firstWhere('value', $answer);
 
-            if($option){
+            if ($option) {
                 $pendingAnswers[] = [
                     'value' => $answer,
                     'question_option_id' => $option->id,
@@ -42,17 +41,17 @@ class TestService
                     'test_id' => $testInfo->id,
                     'user_id' => Auth::user()->id,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             }
         }
 
-        if (!empty($pendingAnswers)) {
+        if (! empty($pendingAnswers)) {
             PendingTestAnswer::where('test_id', '=', $pendingAnswers[0]['test_id'])->delete();
 
             PendingTestAnswer::insert($pendingAnswers);
         }
-        
+
         return $processedTest;
     }
 }

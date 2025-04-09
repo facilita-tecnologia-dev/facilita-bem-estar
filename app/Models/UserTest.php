@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,25 +19,25 @@ class UserTest extends Model
 
     /**
      * Returns the parent test collection of this test.
-     * @return BelongsTo
      */
-    public function parentCollection(): BelongsTo {
+    public function parentCollection(): BelongsTo
+    {
         return $this->belongsTo(UserCollection::class, 'user_collection_id');
     }
 
     /**
      * Returns the base collection of this user test.
-     * @return BelongsTo
      */
-    public function testType(): BelongsTo {
+    public function test_type(): BelongsTo
+    {
         return $this->belongsTo(Test::class, 'test_id');
     }
 
     /**
      * Returns the responses for this test.
-     * @return HasMany
      */
-    public function answers(): HasMany {
+    public function answers(): HasMany
+    {
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 

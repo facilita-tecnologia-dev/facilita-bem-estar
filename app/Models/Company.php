@@ -19,19 +19,19 @@ class Company extends Model
 
     /**
      * Get the users related to this company
-     * @return BelongsToMany
      */
-    public function users(): BelongsToMany {
+    public function users(): BelongsToMany
+    {
         return $this->belongsToMany(User::class, 'company_users')
-                    ->withPivot('role_id')
-                    ->withTimestamps();
+            ->withPivot('role_id')
+            ->withTimestamps();
     }
 
     /**
      * Get the company metrics related to this company
-     * @return HasMany
      */
-    public function metrics(): HasMany{
+    public function metrics(): HasMany
+    {
         return $this->hasMany(CompanyMetric::class, 'company_id');
     }
 }

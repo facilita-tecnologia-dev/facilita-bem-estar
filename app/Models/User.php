@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -24,49 +23,52 @@ class User extends Authenticatable
 
     /**
      * Get the companies related to this user
+     *
      * @return BelongsToMany relationship with the companies
      */
-    public function companies(): BelongsToMany {
+    public function companies(): BelongsToMany
+    {
         return $this->belongsToMany(
             Company::class,
             'company_users',
             'user_id',
             'company_id'
         )
-        ->withPivot('role_id')
-        ->withTimestamps();
+            ->withPivot('role_id')
+            ->withTimestamps();
     }
 
     /**
      * Get the roles related to this user
+     *
      * @return BelongsToMany relationship with the roles
      */
-    private function roles(): BelongsToMany {
+    private function roles(): BelongsToMany
+    {
         return $this->belongsToMany(Role::class, 'company_users')
-                    ->withPivot('company_id');
+            ->withPivot('company_id');
     }
 
     /**
      * Get the user role in this company
-     * @return Role
      */
-    public function getRoleInThisCompany(): Role {
+    public function getRoleInThisCompany(): Role
+    {
         return $this->roles()
-                    ->wherePivot('company_id', session('company')->id)
-                    ->first(); 
+            ->wherePivot('company_id', session('company')->id)
+            ->first();
     }
 
     /**
      * Return true if this user is a manager
-     * @return bool
      */
-    public function isManager(): bool {
+    public function isManager(): bool
+    {
         return $this->roles()->where('name', 'Gestor')->exists();
     }
 
     /**
      * Return true if this user is an employee
-     * @return bool
      */
     public function isEmployee(): bool
     {
@@ -75,14 +77,15 @@ class User extends Authenticatable
 
     /**
      * Returns all test collections related to this user.
-     * @return HasMany
      */
-    public function collections(): HasMany {
+    public function collections(): HasMany
+    {
         return $this->hasMany(UserCollection::class);
     }
 
     /**
      * Returns the most recent test collection related to this user.
+     *
      * @return HasOne
      */
     public function latestCollection()

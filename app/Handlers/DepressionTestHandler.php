@@ -7,7 +7,7 @@ class DepressionTestHandler implements TestHandlerInterface
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
-        
+
         if ($totalPoints >= 20) {
             $severityTitle = 'Grave';
             $severityColor = 5;
@@ -24,19 +24,19 @@ class DepressionTestHandler implements TestHandlerInterface
             $severityTitle = 'Mínima';
             $severityColor = 1;
         }
-        
+
         // $suicidalThoughts = isset($answers[9]) && $answers[9] > 0;
-        
+
         return [
             'answers' => $answers,
             'total_points' => $totalPoints,
             'severity_title' => $severityTitle,
             // 'suicidal_risk' => $suicidalThoughts,
             'severity_color' => $severityColor,
-            'recommendations' => $this->getRecommendations($severityColor)
+            'recommendations' => $this->getRecommendations($severityColor),
         ];
     }
-    
+
     private function getRecommendations(string $severityColor): array
     {
 
@@ -45,15 +45,15 @@ class DepressionTestHandler implements TestHandlerInterface
             4 => ['Consultar um profissional logo'],
             3 => ['Consultar um profissional'],
             2 => ['Considerar conversar com um profissional'],
-            1 => ['Nenhuma medida recomendada']
+            1 => ['Nenhuma medida recomendada'],
         ];
-        
+
         $recommendations = $baseRecommendations[$severityColor] ?? [];
-        
+
         // if ($suicidalThoughts) {
         //     array_unshift($recommendations, 'Buscar ajuda imediata');
         // }
-        
+
         return $recommendations;
     }
 }

@@ -24,10 +24,9 @@ class CompanyController
     {
         $validatedData = $request->validate([
             'name' => 'required|string|min:4|max:255',
-            'cnpj' => 'required|size:14'
+            'cnpj' => 'required|size:14',
         ]);
 
-        
         return to_route('user.create-first', $validatedData);
     }
 
@@ -39,7 +38,7 @@ class CompanyController
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
-        
+
         $company = Company::where('id', '=', session('company')->id)->first();
 
         return view('private.company.company-profile', [

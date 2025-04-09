@@ -5,11 +5,10 @@ namespace App\Handlers;
 use App\Helpers\Helper;
 use App\Models\TestType;
 use App\Services\RiskEvaluatorService;
-use Illuminate\Support\Facades\DB;
 
 class ManagementStyleHandler implements TestHandlerInterface
 {
-    public function __construct(private RiskEvaluatorService $riskEvaluatorService){}
+    public function __construct(private RiskEvaluatorService $riskEvaluatorService) {}
 
     public function process(array $answers, $testInfo): array
     {
@@ -17,17 +16,17 @@ class ManagementStyleHandler implements TestHandlerInterface
         $average = $score / count($answers);
 
         $testType = TestType::where('id', $testInfo->id)->with('questions')->first();
-        
+
         $risks = Helper::getTestRisks($testType);
-        
+
         $risksList = [];
-        
-        foreach($risks as $risk){
+
+        foreach ($risks as $risk) {
             $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
             $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average);
             $risksList[$risk->name] = $evaluatedRisk;
-        }        
-        
+        }
+
         if ($average >= 3.5) {
             $severityTitle = 'Estilo gerencialista';
             $severityColor = 5;
@@ -38,7 +37,7 @@ class ManagementStyleHandler implements TestHandlerInterface
             $severityTitle = 'Estilo coletivista';
             $severityColor = 1;
         }
-        
+
         return [
             'answers' => $answers,
             'score' => $score,

@@ -14,11 +14,12 @@ class UsersImport implements ToModel, WithHeadingRow
 
     public function __construct(Company $company)
     {
-        $this->company = $company;  
+        $this->company = $company;
     }
+
     public function model(array $row)
     {
-        DB::transaction(function() use($row){
+        DB::transaction(function () use ($row) {
             $user = User::create([
                 'name' => $row['nome_completo'],
                 'age' => $row['idade'],
@@ -28,8 +29,8 @@ class UsersImport implements ToModel, WithHeadingRow
                 'admission' => $row['admissao'],
                 'gender' => $row['sexo'],
             ]);
-            
-            DB::table("company_users")->insert([
+
+            DB::table('company_users')->insert([
                 'user_id' => $user->id,
                 'company_id' => session('company')->id,
                 'role_id' => 2,

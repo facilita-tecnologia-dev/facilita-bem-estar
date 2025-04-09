@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -10,19 +9,19 @@ class RiskQuestionMap extends Model
 {
     protected $table = 'risk_question_map';
 
-  /**
+    /**
      * Returns the risk to which this user risk result belongs.
-     * @return BelongsTo
      */
-    public function parentRisk(): BelongsTo {
+    public function parentRisk(): BelongsTo
+    {
         return $this->belongsTo(Risk::class);
     }
 
     /**
      * Returns the question to which this risk question map belongs.
-     * @return BelongsTo
      */
-    public function parentQuestion(): BelongsTo {
+    public function parentQuestion(): BelongsTo
+    {
         return $this->belongsTo(Question::class, 'question_Id', 'id');
     }
 }

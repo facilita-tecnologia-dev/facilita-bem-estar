@@ -22,14 +22,14 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "required|max:255",
-            "cpf" => "required|max:255",
-            "age" => "required|",
-            "gender" => "required|max:255",
-            "department" => "required|max:255",
-            "occupation" => "required|max:255",
-            "admission" => "nullable|date",
-            "role" => "required"
+            'name' => 'required|max:255',
+            'cpf' => 'required|max:255',
+            'age' => 'required|',
+            'gender' => 'required|max:255',
+            'department' => 'required|max:255',
+            'occupation' => 'required|max:255',
+            'admission' => 'nullable|date',
+            'role' => 'required',
         ];
     }
 }

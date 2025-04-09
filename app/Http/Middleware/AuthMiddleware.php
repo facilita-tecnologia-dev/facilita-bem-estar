@@ -21,7 +21,6 @@ class AuthMiddleware
         // if (!Auth::user()) {
         //     return to_route('presentation');
         // }
-        
 
         return $next($request);
     }
