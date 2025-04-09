@@ -7,7 +7,7 @@
                 <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Riscos Psicossociais</h2>
             </div>
 
-            <div class="w-full flex gap-4">
+            <div class="w-full flex flex-col md:flex-row gap-4">
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
                     <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
                         <i class="fa-solid fa-circle-info text-lg"></i>
@@ -16,7 +16,7 @@
                 </div>
                 
                 <a href="{{ route('dashboard.risks.pdf') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
-                    Imprimir Inventário de Riscos
+                    Visualizar Inventário de Riscos
                 </a>
             </div>
     

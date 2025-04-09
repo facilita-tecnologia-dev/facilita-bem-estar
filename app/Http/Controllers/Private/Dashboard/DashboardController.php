@@ -189,7 +189,7 @@ class DashboardController
    }
 
    private function getMetrics(){
-        $metrics = CompanyMetric::where('company_id', session('company')->id)->where('value', '!=', 'null')->with('metricType')->get();
+        $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get();
 
         return $metrics;
    }

@@ -11,7 +11,7 @@
                     </div>
 
                     <x-form action="{{ route('auth.login.employee') }}" class="w-full flex flex-col gap-4 items-center" post>
-                        <x-form.input-text name="cpf" placeholder="CPF" />
+                        <x-form.input-text name="cpf" placeholder="CPF apenas números" />
                         {{-- <x-form.input-text type="password" name="password" placeholder="Senha" /> --}}
                         <x-action tag="button">Fazer login</x-action>
                     </x-form>

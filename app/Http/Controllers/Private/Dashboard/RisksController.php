@@ -28,7 +28,7 @@ class RisksController
             'companyLogo' => $companyLogo,
             'companyName' => $companyName,
         ])->setPaper('a4', 'portrait');
-        return $pdf->download('inventario_de_riscos.pdf');
+        return $pdf->stream('inventario_de_riscos.pdf');
     }
 
     private function getRisks($onlyCritical = false){

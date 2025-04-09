@@ -16,20 +16,20 @@
 </head>
 <body class="bg-gray-100">
     <img src="{{ asset('assets/top-gradient.png') }}" class="block absolute left-0 top-0 w-full h-[700px] object-cover" alt="">
-    <header class="relative max-w-[1440px] mx-auto flex justify-between items-center p-5">
+    <header class="relative max-w-[1440px] mx-auto flex flew-row justify-between items-center p-5">
 
         <a href="https://facilitatecnologia.com.br">
             <img src="{{ asset('assets/logo-facilita.svg') }}" class="h-11 sm:h-14">
         </a>
 
         <div class="flex items-center gap-2">
-            <a href="{{ route('auth.login.employee') }}" class="sm:text-base font-medium bg-gray-100 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+            <a href="{{ route('auth.login.employee') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
                 <i class="fa-solid fa-user"></i>
-                Colaborador
+                <span class="hidden sm:block">Colaborador</span>
             </a>
-            <a href="{{ route('auth.login.internal-manager') }}" class="sm:text-base font-medium bg-gray-100 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+            <a href="{{ route('auth.login.internal-manager') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
                 <i class="fa-solid fa-briefcase"></i>
-                Gestor interno
+                <span class="hidden sm:block">Gestor interno</span>
             </a>
             {{-- <a href="{{ route('company.create') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Registrar empresa</a> --}}
             {{-- <a href="{{ route('auth.login.external-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Externo</a>
