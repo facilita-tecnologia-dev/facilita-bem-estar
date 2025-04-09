@@ -28,7 +28,7 @@ class UserTest extends Model
     /**
      * Returns the base collection of this user test.
      */
-    public function test_type(): BelongsTo
+    public function testType(): BelongsTo
     {
         return $this->belongsTo(Test::class, 'test_id');
     }
@@ -41,15 +41,15 @@ class UserTest extends Model
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 
-    // public function questions()
-    // {
-    //     return $this->hasManyThrough(
-    //         TestQuestion::class,
-    //         TestType::class,
-    //         'id',           // Chave primária em TestType
-    //         'test_id', // Chave estrangeira em TestQuestion
-    //         'test_id', // Chave estrangeira em TestForm
-    //         'id'            // Chave primária em TestType
-    //     );
-    // }
+    public function questions()
+    {
+        return $this->hasManyThrough(
+            Question::class,
+            Test::class,
+            'id',           // Chave primária em TestType
+            'test_id', // Chave estrangeira em TestQuestion
+            'test_id', // Chave estrangeira em TestForm
+            'id'            // Chave primária em TestType
+        );
+    }
 }

@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class Isolamento implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): string
+    public function evaluateRisk($risk, $answers, $average): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -13,8 +13,8 @@ class Isolamento implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->questionMaps as $risk) {
-            $answer = $answers[$risk->question->id];
+        foreach ($risk->relatedQuestions as $risk) {
+            $answer = $answers[$risk->parentQuestion->id];
 
             if ($answer >= 3) {
                 $riskPoints++;
@@ -29,6 +29,9 @@ class Isolamento implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return [
+            'evaluatedRisk' => $evaluatedRisk,
+            'riskPoints' => $riskPoints,
+        ];
     }
 }

@@ -2,35 +2,80 @@
 
 namespace App\Helpers;
 
+use App\Models\Company;
 use App\Models\Risk;
-use App\Models\TestType;
-use App\Models\User;
+use App\Models\Test;
 
 class Helper
 {
     /**
-     * Retorna um array com a última coleção de testes de cada usuário.
-     *
-     * @return array
+     * Retorna um objeto Company com a última coleção de testes de cada usuário da empresa.
      */
-    public function getUsersLatestCollections()
+    public function getCompanyUsersCollections($justEssentials = null, $testName = null, $risks = null, $metrics = null, $tests = true, $queryStringName = null, $queryStringDepartment = null, $queryStringOccupation = null): Company
     {
-        $usersLatestCollections = User::whereRelation('companies', 'companies.id', session('company')->id)
-            ->has('collections')
-            ->with('collections', function ($query) {
-                $query->with('tests')->orderBy('created_at', 'desc')->limit(1);
+        $companyUsersCollections = Company::where('id', session('company')->id)
+            ->when($metrics, function ($q) {
+                $q->with('metrics.metricType');
             })
-            ->get();
+            ->with('users', function ($user) use ($justEssentials, $testName, $risks, $tests, $queryStringName, $queryStringDepartment, $queryStringOccupation) {
+                $user
+                    ->has('collections')
+                    ->when($queryStringName, function ($query) use ($queryStringName) {
+                        $query->where('name', 'like', "%$queryStringName%");
+                    })
+                    ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
+                        $query->where('department', '=', "$queryStringDepartment");
+                    })
+                    ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
+                        $query->where('occupation', '=', "$queryStringOccupation");
+                    })
+                    ->with('latestCollection', function ($latestCollection) use ($justEssentials, $testName, $risks, $tests) {
+                        $latestCollection
+                            ->when($risks, function ($q) {
+                                $q->with('risks', function ($risk) {
+                                    $risk->with('parentRisk', fn($i) => $i->with('relatedTest', 'controlActions'));
+                                });
+                            })
+                            ->when($tests, function ($q) use ($justEssentials, $testName) {
+                                $q->with('tests', function ($userTest) use ($justEssentials, $testName) {
+                                    $userTest
+                                        ->when($testName, function ($q) use ($testName) {
+                                            $q->whereHas('testType', function ($query) use ($testName) {
+                                                $query->where('display_name', $testName);
+                                            });
+                                        })
+                                        ->when($justEssentials, function ($q) {
+                                            $q->with(['testType']);
+                                        })
+                                        ->when(! $justEssentials, function ($q) {
+                                            $q->with(['answers', 'questions', 'testType']);
+                                        });
+                                });
+                            });
+                    });
+            })
+            ->first();
 
-        return $usersLatestCollections;
+        return $companyUsersCollections;
     }
 
-    public static function getTestRisks(TestType $testType)
+    public function getCompanyUsers($hasCollection = null)
     {
-        $risks = Risk::whereHas('questionMaps', function ($q) use ($testType) {
+        $company = Company::where('id', session('company')->id)
+            ->with('users', function ($q) use ($hasCollection) {
+                $q->when($hasCollection, fn ($i) => $i->has('latestCollection'));
+            })
+            ->first();
+
+        return $company;
+    }
+
+    public static function getTestRisks(Test $testType)
+    {
+        $risks = Risk::whereHas('relatedQuestions', function ($q) use ($testType) {
             $q->whereIn('question_id', $testType->questions->pluck('id'));
         })
-            ->with(['questionMaps' => function ($q) use ($testType) {
+            ->with(['relatedQuestions' => function ($q) use ($testType) {
                 $q->whereIn('question_id', $testType->questions->pluck('id'));
             }])
             ->get();

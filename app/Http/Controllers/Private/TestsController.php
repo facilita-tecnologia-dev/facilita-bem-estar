@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Private;
 
 use App\Models\PendingTestAnswer;
 use App\Models\Risk;
-use App\Models\TestForm;
-use App\Models\TestType;
+use App\Models\Test;
 use App\Models\User;
+use App\Models\UserTest;
 use App\Services\TestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +24,10 @@ class TestsController
 
     public function showChooseScreen()
     {
-        $userLatestCollection = User::where('id', auth()->user()->id)->with('collections')->first();
+        // $userLatestCollection = User::where('id', auth()->user()->id)->with('collections')->first();
 
         return view('private.tests.choose-test', [
-            'hasCollection' => $userLatestCollection->collections->count() ? true : false,
+            'hasCollection' => false,
         ]);
     }
 
@@ -37,10 +37,10 @@ class TestsController
         //     abort(403, 'Acesso não autorizado');
         // }
 
-        $test = TestType::query()
+        $test = Test::query()
             ->where('order', '=', $testIndex)
             ->with('questions', function ($query) {
-                $query->inRandomOrder()->with('questionOptions', function ($q) {
+                $query->inRandomOrder()->with('options', function ($q) {
                     $q->orderBy('value');
                 });
             }
@@ -58,9 +58,9 @@ class TestsController
 
     public function handleTestSubmit(Request $request, $testIndex)
     {
-        $testInfo = TestType::query()
+        $testInfo = Test::query()
             ->where('order', '=', $testIndex)
-            ->with('questions.questionOptions')
+            ->with('questions.options')
             ->first();
 
         $validationRules = $this->generateValidationRules($testInfo);
@@ -68,7 +68,7 @@ class TestsController
 
         $processedTest = $this->testService->processTest($validatedData, $testInfo);
 
-        $totalTests = TestType::max('order');
+        $totalTests = Test::max('order');
         if ($testIndex == $totalTests) {
             $testResults = $this->getTestResultsFromSession();
             $storedResults = $this->storeResultsOnDatabase($testResults);
@@ -121,13 +121,13 @@ class TestsController
                 'updated_at' => now(),
             ]);
 
-            $tests = TestType::with('questions.questionOptions')->get();
+            $tests = Test::with('questions.options')->get();
 
             foreach ($testResults as $key => $testResult) {
                 $testKeyName = str_replace('-result', '', $key);
 
                 $testType = $tests->where('key_name', $testKeyName)->firstOrFail();
-                $userTest = TestForm::create([
+                $userTest = UserTest::create([
                     'user_collection_id' => $newTestCollectionId,
                     'test_id' => $testType->id,
                     'score' => $testResult['score'],
@@ -137,7 +137,7 @@ class TestsController
 
                 foreach ($testResult['answers'] as $questionId => $answer) {
                     $question = $testType->questions->where('id', $questionId)->first();
-                    $option = $question->questionOptions->where('value', $answer)->first();
+                    $option = $question->options->where('value', $answer)->first();
 
                     DB::table('user_answers')->insert([
                         'question_option_id' => $option->id,
@@ -156,7 +156,8 @@ class TestsController
                     DB::table('user_risk_results')->insert([
                         'user_collection_id' => $newTestCollectionId,
                         'risk_id' => $risks[$key]->id,
-                        'score' => $risk,
+                        'score' => $risk['evaluatedRisk'],
+                        'points' => $risk['riskPoints'],
                     ]);
                 }
 

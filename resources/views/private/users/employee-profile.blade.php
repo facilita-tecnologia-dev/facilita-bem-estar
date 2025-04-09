@@ -4,12 +4,12 @@
         
         <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-start justify-start gap-6">
             <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">{{ $employeeInfo['Nome'] }}</h2>
+                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">{{ $userInfo['Nome'] }}</h2>
             </div>
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <div class="w-full grid gri-cols-1 md:grid-cols-2 gap-4">
-                    @foreach ($employeeInfo as $userInfoName => $userInfoData)
+                    @foreach ($userInfo as $userInfoName => $userInfoData)
                         <div class="">
                             <p class="font-semibold text-lg text-left">{{ $userInfoName }}:</p>
                             <p class="text-base text-left">{{ $userInfoData }}</p>
@@ -18,10 +18,10 @@
                 </div>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-form action="{{ route('user.destroy', $employee) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
+                    <x-form action="{{ route('user.destroy', $user) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
                         <x-action tag="button">Excluir colaborador</x-action>
                     </x-form>
-                    <x-action href="{{ route('user.edit', $employee) }}">Editar</x-action>
+                    <x-action href="{{ route('user.edit', $user) }}">Editar</x-action>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
 {{-- 
 <script>
 
-    const userInfo = @json($employee)    
+    const userInfo = @json($user)    
     const testResults = @json($testResults)    
   
 

@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class InjusticaPercebida implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): string
+    public function evaluateRisk($risk, $answers, $average): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -13,17 +13,17 @@ class InjusticaPercebida implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->questionMaps as $risk) {
-            if ($risk->question->statement == 'Os gestores desta organização se consideram insubstituíveis') {
-                $answer = $answers[$risk->question->id];
+        foreach ($risk->relatedQuestions as $risk) {
+            if ($risk->parentQuestion->statement == 'Os gestores desta organização se consideram insubstituíveis') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->question->statement == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
-                $answer = $answers[$risk->question->id];
+            if ($risk->parentQuestion->statement == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer <= 2) {
                     $riskPoints++;
@@ -39,6 +39,9 @@ class InjusticaPercebida implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return [
+            'evaluatedRisk' => $evaluatedRisk,
+            'riskPoints' => $riskPoints,
+        ];
     }
 }

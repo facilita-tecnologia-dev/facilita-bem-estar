@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers\Private\Dashboard;
 
-use App\Models\User;
+use App\Helpers\Helper;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class RisksController
 {
+    protected $companyRisks;
+
+    public function __construct(Helper $helper)
+    {
+        $this->companyRisks = $helper->getCompanyUsersCollections(risks: true, tests: false);
+    }
+
     public function __invoke()
     {
         $risks = $this->getRisks(true);
@@ -35,89 +42,43 @@ class RisksController
 
     private function getRisks($onlyCritical = false)
     {
-        $usersLatestCollections = User::whereRelation('companies', 'companies.id', session('company')->id)
-            ->has('collections')
-            ->with('collections', function ($query) {
-                $query->with('risks', function ($q) {
-                    $q->with('risk', function ($j) {
-                        $j->with('controlActions');
-                    });
-                })->with('tests');
-            })
-            ->latest()
-            ->get();
+        $testCompiled = [];
 
-        $risksMap = [
-            'Risco Baixo' => 1,
-            'Risco Médio' => 2,
-            'Risco Alto' => 3,
-        ];
+        foreach ($this->companyRisks->users as $user) {
+            foreach ($user->latestCollection->risks as $risk) {
+                $testDisplayName = $risk->parentRisk->relatedTest->display_name;
+                $riskDisplayName = $risk->parentRisk->name;
 
-        $testRisksMap = [
-            'Rigidez Organizacional' => 'Organização do Trabalho',
-            'Falta de Recursos' => 'Organização do Trabalho',
-            'Sobrecarga de Trabalho' => 'Organização do Trabalho',
-            'Imprevisibilidade' => 'Organização do Trabalho',
-            'Monotonia' => 'Organização do Trabalho',
-            'Conflito de Papéis' => 'Organização do Trabalho',
-
-            'Pressão Excessiva da Gestão' => 'Estilos de Gestão',
-            'Injustiça Percebida' => 'Estilos de Gestão',
-            'Falta de Suporte Gerencial' => 'Estilos de Gestão',
-            'Conflitos com a Gestão' => 'Estilos de Gestão',
-            'Falta de Reconhecimento' => 'Estilos de Gestão',
-            'Gestão Individualista' => 'Estilos de Gestão',
-
-            'Dificuldade de Concentração' => 'Indicadores de Adversidades',
-            'Irritabilidade' => 'Indicadores de Adversidades',
-            'Frustração ou Desmotivação' => 'Indicadores de Adversidades',
-            'Isolamento Social' => 'Indicadores de Adversidades',
-            'Ansiedade ou Estresse' => 'Indicadores de Adversidades',
-            'Esgotamento Emocional' => 'Indicadores de Adversidades',
-
-            'Deterioração da Vida Pessoal' => 'Distúrbios Relacionados ao Trabalho',
-            'Problemas Psicossomáticos' => 'Distúrbios Relacionados ao Trabalho',
-            'Distúrbios do Sono' => 'Distúrbios Relacionados ao Trabalho',
-            'Afastamentos Frequentes' => 'Distúrbios Relacionados ao Trabalho',
-            'Distúrbios Psicológicos' => 'Distúrbios Relacionados ao Trabalho',
-            'Distúrbios Físicos' => 'Distúrbios Relacionados ao Trabalho',
-        ];
-
-        $mappedRisks = [];
-
-        foreach ($usersLatestCollections as $user) {
-            foreach ($user->collections[0]->risks as $riskResult) {
-                $test = $testRisksMap[$riskResult->risk->name];
-                $mappedRisks[$test][$riskResult->risk->name]['score'][] = $risksMap[$riskResult->score];
-                $mappedRisks[$test][$riskResult->risk->name]['control-actions'] = $riskResult->risk->controlActions;
+                $testCompiled[$testDisplayName][$riskDisplayName]['score'][] = $risk->points;
+                $testCompiled[$testDisplayName][$riskDisplayName]['control-actions'] = $risk->parentRisk->controlActions;
             }
         }
 
-        foreach ($mappedRisks as $testName => $test) {
+        foreach ($testCompiled as $testName => $test) {
             foreach ($test as $riskName => $risk) {
                 $average = array_sum($risk['score']) / count($risk['score']);
 
                 if ($onlyCritical) {
                     if (ceil($average) != 3) {
-                        unset($mappedRisks[$testName][$riskName]);
+                        unset($testCompiled[$testName][$riskName]);
                     } else {
-                        $mappedRisks[$testName][$riskName]['score'] = ceil($average);
-                        $mappedRisks[$testName][$riskName]['risk'] = 'Risco Alto';
+                        $testCompiled[$testName][$riskName]['score'] = ceil($average);
+                        $testCompiled[$testName][$riskName]['risk'] = 'Risco Alto';
                     }
                 } else {
-                    $mappedRisks[$testName][$riskName]['score'] = ceil($average);
+                    $testCompiled[$testName][$riskName]['score'] = ceil($average);
 
                     if ($average > 2) {
-                        $mappedRisks[$testName][$riskName]['risk'] = 'Risco Alto';
+                        $testCompiled[$testName][$riskName]['risk'] = 'Risco Alto';
                     } elseif ($average > 1) {
-                        $mappedRisks[$testName][$riskName]['risk'] = 'Risco Médio';
+                        $testCompiled[$testName][$riskName]['risk'] = 'Risco Médio';
                     } else {
-                        $mappedRisks[$testName][$riskName]['risk'] = 'Risco Baixo';
+                        $testCompiled[$testName][$riskName]['risk'] = 'Risco Baixo';
                     }
                 }
             }
         }
 
-        return $mappedRisks;
+        return $testCompiled;
     }
 }

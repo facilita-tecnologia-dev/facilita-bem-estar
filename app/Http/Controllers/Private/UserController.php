@@ -110,15 +110,15 @@ class UserController
     /**
      * Display the specified resource.
      */
-    public function show(User $employee)
+    public function show(User $user)
     {
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
 
-        $admission = $this->getFormattedAdmissionDate($employee);
+        $admission = $this->getFormattedAdmissionDate($user);
 
-        $lastTestCollection = DB::table('user_collections')->where('user_id', $employee->id)
+        $lastTestCollection = DB::table('user_collections')->where('user_id', $user->id)
             ->latest('created_at')
             ->first();
 
@@ -142,26 +142,26 @@ class UserController
             $lastTestCollectionDate = "{$formattedDate} - {$timeAgo} atrás.";
         }
 
-        $cpf = $this->getFormattedCPF($employee);
+        $cpf = $this->getFormattedCPF($user);
 
-        $employeeInfo = [
-            'Nome' => $employee->name,
+        $userInfo = [
+            'Nome' => $user->name,
             'CPF' => $cpf,
-            'Idade' => $employee->age,
-            'Setor' => $employee->department,
-            'Cargo' => $employee->occupation,
-            'Sexo' => $employee->gender,
-            'Data de Admissão' => $employee->admission,
+            'Idade' => $user->age,
+            'Setor' => $user->department,
+            'Cargo' => $user->occupation,
+            'Sexo' => $user->gender,
+            'Data de Admissão' => $user->admission,
             'Tempo de empresa' => $admission,
         ];
 
         if ($lastTestCollectionDate) {
-            $employeeInfo['Último teste realizado'] = $lastTestCollectionDate;
+            $userInfo['Último teste realizado'] = $lastTestCollectionDate;
         }
 
         return view('private.users.employee-profile', [
-            'employee' => $employee,
-            'employeeInfo' => $employeeInfo,
+            'user' => $user,
+            'userInfo' => $userInfo,
             // 'testResults'  => $testResults,
         ]);
     }
@@ -169,7 +169,7 @@ class UserController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, User $employee)
+    public function edit(Request $request, User $user)
     {
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
@@ -177,10 +177,10 @@ class UserController
 
         $rolesToSelect = $this->getRolesToSelect();
 
-        $currentUserRole = DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->first()->role_id;
+        $currentUserRole = DB::table('company_users')->where('user_id', $user->id)->where('company_id', session('company')->id)->first()->role_id;
 
         return view('private.users.update-employee-profile', [
-            'employee' => $employee,
+            'user' => $user,
             'rolesToSelect' => $rolesToSelect,
             'currentUserRole' => $currentUserRole,
         ]);

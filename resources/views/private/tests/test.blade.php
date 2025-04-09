@@ -28,7 +28,7 @@
                                     </p>
                                 </div>
                                 
-                                @foreach ($question['question_options'] as $optionNumber => $option)
+                                @foreach ($question['options'] as $optionNumber => $option)
                                     <x-test.option 
                                         :option="$option" 
                                         questionNumber="{{ $question['id'] }}" 

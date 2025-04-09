@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class ConflitoPapeis implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): string
+    public function evaluateRisk($risk, $answers, $average): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -13,17 +13,17 @@ class ConflitoPapeis implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->questionMaps as $risk) {
-            if ($risk->question->statement == 'Há clareza na definição das tarefas') {
-                $answer = $answers[$risk->question->id];
+        foreach ($risk->relatedQuestions as $risk) {
+            if ($risk->parentQuestion->statement == 'Há clareza na definição das tarefas') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->question->statement == 'As orientações que me são passadas para realizar as tarefas são coerentes entre si') {
-                $answer = $answers[$risk->question->id];
+            if ($risk->parentQuestion->statement == 'As orientações que me são passadas para realizar as tarefas são coerentes entre si') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer <= 2) {
                     $riskPoints++;
@@ -39,6 +39,9 @@ class ConflitoPapeis implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return [
+            'evaluatedRisk' => $evaluatedRisk,
+            'riskPoints' => $riskPoints,
+        ];
     }
 }

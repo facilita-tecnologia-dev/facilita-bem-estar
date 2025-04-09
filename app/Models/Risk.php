@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Risk extends Model
@@ -25,5 +26,13 @@ class Risk extends Model
     public function controlActions(): HasMany
     {
         return $this->hasMany(ControlAction::class);
+    }
+
+    /**
+     * Returns the test related to this risk.
+     */
+    public function relatedTest(): BelongsTo
+    {
+        return $this->belongsTo(Test::class, 'test_id');
     }
 }

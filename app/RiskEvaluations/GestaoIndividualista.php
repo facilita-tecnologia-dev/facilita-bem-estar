@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class GestaoIndividualista implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): string
+    public function evaluateRisk($risk, $answers, $average): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -13,17 +13,17 @@ class GestaoIndividualista implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->questionMaps as $risk) {
-            if ($risk->question->statement == 'Aqui os gestores preferem trabalhar individualmente') {
-                $answer = $answers[$risk->question->id];
+        foreach ($risk->relatedQuestions as $risk) {
+            if ($risk->parentQuestion->statement == 'Aqui os gestores preferem trabalhar individualmente') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->question->statement == 'O trabalho coletivo é valorizado pelos gestores') {
-                $answer = $answers[$risk->question->id];
+            if ($risk->parentQuestion->statement == 'O trabalho coletivo é valorizado pelos gestores') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer <= 2) {
                     $riskPoints++;
@@ -39,6 +39,9 @@ class GestaoIndividualista implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return [
+            'evaluatedRisk' => $evaluatedRisk,
+            'riskPoints' => $riskPoints,
+        ];
     }
 }

@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
 
         Gate::define('view-manager-screens', function (User $user) {
-            return $user->isAdmin();
+            return $user->isManager();
         });
 
         // Gate::define('answer-test', function (User $user) {

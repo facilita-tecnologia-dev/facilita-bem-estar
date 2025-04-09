@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Collection;
 use App\Models\QuestionOption;
+use App\Models\Test;
 use App\Models\TestForm;
 use App\Models\TestQuestion;
-use App\Models\TestType;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -2492,7 +2492,7 @@ class DatabaseSeeder extends Seeder
         $testsValues = array_values($tests);
 
         foreach ($tests as $testType) {
-            $storedTestType = TestType::factory()->create([
+            $storedTestType = Test::factory()->create([
                 'key_name' => $testType['keyName'],
                 'display_name' => $testType['displayName'],
                 'number_of_questions' => $testType['numberOfQuestions'],

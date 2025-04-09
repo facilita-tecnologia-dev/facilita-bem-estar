@@ -3,7 +3,7 @@
 namespace App\Handlers;
 
 use App\Helpers\Helper;
-use App\Models\TestType;
+use App\Models\Test;
 use App\Services\RiskEvaluatorService;
 
 class ManagementStyleHandler implements TestHandlerInterface
@@ -15,7 +15,7 @@ class ManagementStyleHandler implements TestHandlerInterface
         $score = array_sum($answers);
         $average = $score / count($answers);
 
-        $testType = TestType::where('id', $testInfo->id)->with('questions')->first();
+        $testType = Test::where('id', $testInfo->id)->with('questions')->first();
 
         $risks = Helper::getTestRisks($testType);
 

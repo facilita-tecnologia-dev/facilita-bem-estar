@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Handlers\TestHandlerFactory;
 use App\Models\PendingTestAnswer;
-use App\Models\TestType;
+use App\Models\Test;
 use Illuminate\Support\Facades\Auth;
 
 class TestService
@@ -16,7 +16,7 @@ class TestService
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function processTest(array $data, TestType $testInfo)
+    public function processTest(array $data, Test $testInfo)
     {
         $answersValues = array_map(function ($value) {
             return (int) $value;
@@ -27,7 +27,7 @@ class TestService
         session([$testInfo->key_name.'-result' => $processedTest]);
 
         $pendingAnswers = [];
-        $questions = $testInfo->questions->pluck('questionOptions', 'id')->all();
+        $questions = $testInfo->questions->pluck('options', 'id')->all();
 
         foreach ($processedTest['answers'] as $questionId => $answer) {
             $questionOptions = $questions[$questionId];

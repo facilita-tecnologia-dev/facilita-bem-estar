@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class PressaoExcessiva implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): string
+    public function evaluateRisk($risk, $answers, $average): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -13,17 +13,17 @@ class PressaoExcessiva implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->questionMaps as $risk) {
-            if ($risk->question->statement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
-                $answer = $answers[$risk->question->id];
+        foreach ($risk->relatedQuestions as $risk) {
+            if ($risk->parentQuestion->statement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->question->statement == 'Há forte controle do trabalho') {
-                $answer = $answers[$risk->question->id];
+            if ($risk->parentQuestion->statement == 'Há forte controle do trabalho') {
+                $answer = $answers[$risk->parentQuestion->id];
 
                 if ($answer >= 4) {
                     $riskPoints++;
@@ -39,6 +39,9 @@ class PressaoExcessiva implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return [
+            'evaluatedRisk' => $evaluatedRisk,
+            'riskPoints' => $riskPoints,
+        ];
     }
 }

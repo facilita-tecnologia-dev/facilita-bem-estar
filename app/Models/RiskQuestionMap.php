@@ -14,7 +14,7 @@ class RiskQuestionMap extends Model
      */
     public function parentRisk(): BelongsTo
     {
-        return $this->belongsTo(Risk::class);
+        return $this->belongsTo(Risk::class, 'risk_id');
     }
 
     /**

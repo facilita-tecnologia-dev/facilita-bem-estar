@@ -2,14 +2,14 @@
 
 namespace App\Handlers;
 
-use App\Models\TestType;
+use App\Models\Test;
 use Illuminate\Contracts\Container\Container;
 
 class TestHandlerFactory
 {
     public function __construct(private Container $app) {}
 
-    public function getHandler(TestType $testInfo): TestHandlerInterface
+    public function getHandler(Test $testInfo): TestHandlerInterface
     {
         if (! $testInfo) {
             return $this->app->make(DefaultTestHandler::class);

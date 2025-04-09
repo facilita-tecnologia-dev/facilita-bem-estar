@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class Monotonia implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): string
+    public function evaluateRisk($risk, $answers, $average): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -13,9 +13,9 @@ class Monotonia implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->questionMaps as $risk) {
-            if ($risk->question->statement == 'As tarefas que executo em meu trabalho são variadas') {
-                $answer = $answers[$risk->question->id];
+        foreach ($risk->relatedQuestions as $risk) {
+            if ($risk->parentQuestion->statement == 'As tarefas que executo em meu trabalho são variadas') {
+                $answer = $answers[$risk->parentQuestion->id];
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
@@ -30,6 +30,9 @@ class Monotonia implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return [
+            'evaluatedRisk' => $evaluatedRisk,
+            'riskPoints' => $riskPoints,
+        ];
     }
 }

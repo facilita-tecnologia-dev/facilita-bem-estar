@@ -7,7 +7,7 @@
                 <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Dashboard</h2>
             </div>
     
-            @if($generalResults)
+            @if($dashboardResults)
                 <div class="w-full flex flex-col md:flex-row gap-4">
                     <div class="bg-gray-100 w-full px-6 py-2 rounded-md shadow-md">
                         <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
@@ -15,11 +15,9 @@
                             Se a adesão for inferior à 75% os resultados não devem ser considerados válidos.
                         </p>
                     </div>
-                    @if($risks)
-                        <a href="{{ route('dashboard.risks') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
-                            Visualizar Riscos
-                        </a>
-                    @endif
+                    <a href="{{ route('dashboard.risks') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+                        Visualizar Riscos
+                    </a>
                 </div>
             @endif
 
@@ -56,17 +54,17 @@
                     </div>
                 
            
-                @if($generalResults)
-                    @foreach ($generalResults as $testName => $testData)
+                @if($dashboardResults)
+                    @foreach ($dashboardResults as $testName => $testData)
                         <div class="shadow-md rounded-md w-full flex flex-col items-center bg-gray-100 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                             <a href="{{ route('dashboard.test-result-per-department', $testName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center">
                                 <p class="text-center font-semibold">{{ $testName }}</p>
                                 <div class="w-40 h-40 xl:w-44 xl:h-44" id="{{ $testName }}">
                                     
                                 </div>
-                                @if($risks)
+                                @if($testData['risks'])
                                     <div class="w-full space-y-2 px-4">
-                                        @foreach ($risks[$testName] as $riskName => $risk)
+                                        @foreach ($testData['risks'] as $riskName => $risk)
                                             <div class="w-full space-y-1">
                                                 <p class="text-xs">{{ $riskName }}</p>
                                                 <div data-role="risk-bar" data-value="{{ $risk['score'] }}" class="relative w-full h-6 border border-gray-800/50 rounded-md overflow-hidden">
@@ -96,7 +94,6 @@
     const metricBars = document.querySelectorAll('[data-role="metric-bar"]');
     metricBars.forEach((metric) => {
         const value = metric.dataset.value;
-        console.log(value);
         const bar = metric.querySelector('.bar');
 
         bar.style.width = value + "%";
@@ -127,7 +124,8 @@
 
     // Tests Participation
 
-    const testsParticipationChartData = @json($testsParticipation)   
+    const testsParticipationChartData = @json($testsParticipation);
+    // console.log(testsParticipationChartData);
 
     const testParticipationChartId = 'chart_test_participation';
 
@@ -140,8 +138,8 @@
 
 
     // Tests
-    const generalResults = @json($generalResults)    
-    const labels = Object.keys(generalResults)
+    const dashboardResults = @json($dashboardResults)    
+    const labels = Object.keys(dashboardResults)
 
     const testSeverityColors = {
         1: "#4CAF50",
@@ -151,13 +149,13 @@
         5: "#f55547",
     }
 
-    Object.values(generalResults).forEach((testType, index) => {
+    Object.values(dashboardResults).forEach((testType, index) => {
         const testChartId = `chart_${index}`;
         const testChartWrapper = document.getElementById(labels[index])
 
-        const testChartSeverities = Object.keys(testType)
+        const testChartSeverities = Object.keys(testType.severities)
         
-        const tests = Object.values(testType)
+        const tests = Object.values(testType.severities)
 
         const testChartBackgroundColors = tests.map(test => {
             severityKey = test.severity_color
@@ -212,7 +210,7 @@
                             label: function(context) {
                                 const value = context.parsed;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                
+                                console.log(context)
                                 if(dataType === 'number'){
                                     return ` ${value}/${total}`;
                                 } else{

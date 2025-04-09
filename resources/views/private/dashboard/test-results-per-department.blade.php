@@ -15,24 +15,24 @@
             </div>
     
             <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                @foreach ($testStats as $occupationName => $testSeverity)
-                    <a href="{{ route('dashboard.test-results-list', $testName)}}" class="bg-white/25 rounded-md px-4 py-5 shadow-md space-y-2">
+                @foreach ($resultsPerDepartment as $departmentName => $departmentData)
+                    <a href="{{ route('dashboard.test-results-list', $testName)}}" class="bg-white/25 rounded-md px-4 py-5 shadow-md space-y-2 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                         <div class="bg-gray-100 px-4 py-2 w-full rounded-md shadow-md">
-                            <span class="text-base font-semibold text-left">{{ $occupationName }}</span>
+                            <span class="text-base font-semibold text-left">{{ $departmentName }}</span>
                         </div>
 
-                        @foreach ($testSeverity['severities'] as $severityName => $testsQty )
+                        @foreach ($departmentData['severities'] as $severityName => $severityData )
                             <div 
                                 class="
                                     px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] flex items-center justify-between gap-2
-                                    {{ $testsQty['severity_color'] == "5" ? 'to-[#fc6f6f50]' : '' }}
-                                    {{ $testsQty['severity_color'] == "4" ? 'to-[#febc5350]' : '' }}
-                                    {{ $testsQty['severity_color'] == "3" ? 'to-[#faed5d50]' : '' }}
-                                    {{ $testsQty['severity_color'] == "2" ? 'to-[#8cf8c050]' : '' }}
-                                    {{ $testsQty['severity_color'] == "1" ? 'to-[#76fc7150]' : '' }}
+                                    {{ $severityData['severity_color'] == "5" ? 'to-[#fc6f6f50]' : '' }}
+                                    {{ $severityData['severity_color'] == "4" ? 'to-[#febc5350]' : '' }}
+                                    {{ $severityData['severity_color'] == "3" ? 'to-[#faed5d50]' : '' }}
+                                    {{ $severityData['severity_color'] == "2" ? 'to-[#8cf8c050]' : '' }}
+                                    {{ $severityData['severity_color'] == "1" ? 'to-[#76fc7150]' : '' }}
                                 ">
                                 <span class="truncate">{{ $severityName }}</span>
-                                <span>{{ round($testsQty['count'] / $testSeverity['total'] * 100) }}%</span>
+                                <span>{{ round($severityData['count'] / $departmentData['total'] * 100) }}%</span>
                             </div>
                         @endforeach
                     </a>
