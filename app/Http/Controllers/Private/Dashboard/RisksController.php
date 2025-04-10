@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Private\Dashboard;
 
 use App\Helpers\Helper;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class RisksController
 {
@@ -16,15 +17,17 @@ class RisksController
 
     public function __invoke()
     {
+        Gate::authorize('view-manager-screens');
+
         $risks = $this->getRisks(true);
 
-        return view('private.dashboard.risks', [
-            'risks' => $risks,
-        ]);
+        return view('private.dashboard.risks', compact('risks'));
     }
 
     public function generatePDF()
     {
+        Gate::authorize('view-manager-screens');
+        
         $risks = $this->getRisks();
         $company = session('company');
 

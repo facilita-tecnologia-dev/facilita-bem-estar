@@ -21,9 +21,7 @@ class TestResultsListController
 
     public function __invoke(Request $request, string $testName)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('view-manager-screens');
 
         $queryStringName = $request->name;
         $queryStringDepartment = $request->department;

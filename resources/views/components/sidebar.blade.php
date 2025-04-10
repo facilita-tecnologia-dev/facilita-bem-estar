@@ -3,19 +3,19 @@
 </div>
 
 <div id="sidebar" class="bg-gray-100 z-40 w-[280px] transition-all duration-200 md:w-[240px] shadow-lg h-screen flex flex-col pt-8 pb-12 absolute -left-full top-0 md:relative md:left-0">
-    <div class="flex items-center justify-between px-4 py-2">
+    <div class="flex items-center justify-center px-4 py-2">
         <img src="{{ asset(session('company')->logo) }}" alt="" class="h-10">
     </div>
 
     <div class="px-4 py-2">
         <div class="px-2 py-1.5 flex items-center gap-2 justify-start">
             <i class="fa-solid fa-user"></i>
-            {{ session('user')->name }}
+            {{ Auth::user()->name }}
         </div>
     </div>
 
     <div class="flex-1 px-4 py-8 flex flex-col gap-6">
-        @can('view-manager-screens')
+        @can('view-manager-screens', Auth::user())
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Dados</p>
                 <a href="{{ route('dashboard.charts') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
@@ -40,24 +40,30 @@
         @can('view-manager-screens')
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Empresa</p>
-                <a href="{{ route('user.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                    <div class="w-5 flex justify-center items-center">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    Colaboradores
-                </a>
-                <a href="{{ route('company.show', session('company')) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                    <div class="w-5 flex justify-center items-center">
-                        <i class="fa-solid fa-building"></i>
-                    </div>
-                    Empresa
-                </a>
-                <a href="{{ route('company-metrics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                    <div class="w-5 flex justify-center items-center">
-                        <i class="fa-solid fa-percent"></i>
-                    </div>
-                    Indicadores
-                </a>
+                @can('viewAny', Auth::user())
+                    <a href="{{ route('user.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                        <div class="w-5 flex justify-center items-center">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        Colaboradores
+                    </a>
+                @endcan
+                @can('view', session('company'))
+                    <a href="{{ route('company.show', session('company')) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                        <div class="w-5 flex justify-center items-center">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        Empresa
+                    </a>
+                @endcan
+                @can('update-metrics')
+                    <a href="{{ route('company-metrics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                        <div class="w-5 flex justify-center items-center">
+                            <i class="fa-solid fa-percent"></i>
+                        </div>
+                        Indicadores
+                    </a>
+                @endcan
             </div>
         @endcan
 

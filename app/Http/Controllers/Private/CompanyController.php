@@ -35,15 +35,10 @@ class CompanyController
      */
     public function show(string $id)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('view', session('company'));
+        $company = session('company');
 
-        $company = Company::where('id', '=', session('company')->id)->first();
-
-        return view('private.company.company-profile', [
-            'company' => $company,
-        ]);
+        return view('private.company.show', compact('company'));
     }
 
     /**
@@ -51,15 +46,10 @@ class CompanyController
      */
     public function edit(string $id)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
-
+        Gate::authorize('update', session('company'));
         $company = session('company');
 
-        return view('private.company.update-company-profile', [
-            'company' => $company,
-        ]);
+        return view('private.company.update', compact('company'));
     }
 
     /**
@@ -67,6 +57,8 @@ class CompanyController
      */
     public function update(Request $request)
     {
+        Gate::authorize('update', session('company'));
+
         $company = session('company');
 
         $validatedData = $request->validate([

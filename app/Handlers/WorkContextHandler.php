@@ -3,6 +3,7 @@
 namespace App\Handlers;
 
 use App\Helpers\Helper;
+use App\Models\CompanyMetric;
 use App\Models\Test;
 use App\Services\RiskEvaluatorService;
 
@@ -18,12 +19,13 @@ class WorkContextHandler implements TestHandlerInterface
         $testType = Test::where('id', $testInfo->id)->with('questions')->first();
 
         $risks = Helper::getTestRisks($testType);
+        $metrics = session('company')->metrics()->with('metricType');
 
         $risksList = [];
 
         foreach ($risks as $risk) {
             $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average, $metrics);
             $risksList[$risk->name] = $evaluatedRisk;
         }
 

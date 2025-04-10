@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class DanosFisicos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): array
+    public function evaluateRisk($risk, $answers, $average, $metrics): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -17,6 +17,16 @@ class DanosFisicos implements RiskEvaluatorInterface
             $answer = $answers[$risk->parentQuestion->id];
 
             if ($answer >= 4) {
+                $riskPoints++;
+            }
+        }
+
+        $accidents = $metrics->whereHas('metricType', function($query) {
+            $query->where('key_name', 'accidents');
+        })->first();
+
+        if($accidents && $accidents->value > 50){
+            if ($riskPoints <= 2) {
                 $riskPoints++;
             }
         }

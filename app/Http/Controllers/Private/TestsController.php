@@ -24,11 +24,7 @@ class TestsController
 
     public function showChooseScreen()
     {
-        // $userLatestCollection = User::where('id', auth()->user()->id)->with('collections')->first();
-
-        return view('private.tests.choose-test', [
-            'hasCollection' => false,
-        ]);
+        return view('private.tests.choose-test');
     }
 
     public function __invoke($testIndex = 1)
@@ -47,13 +43,9 @@ class TestsController
             )
             ->firstOrFail();
 
-        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get();
+        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
 
-        return view('private.tests.test', [
-            'test' => $test,
-            'testIndex' => $testIndex,
-            'pendingAnswers' => $pendingAnswers ?? [],
-        ]);
+        return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers'));
     }
 
     public function handleTestSubmit(Request $request, $testIndex)

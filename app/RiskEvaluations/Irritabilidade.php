@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class Irritabilidade implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): array
+    public function evaluateRisk($risk, $answers, $average, $metrics): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;

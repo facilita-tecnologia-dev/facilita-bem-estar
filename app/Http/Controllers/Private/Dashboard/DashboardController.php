@@ -16,19 +16,17 @@ class DashboardController
 
     public function __invoke()
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('view-manager-screens');
 
         $dashboardResults = $this->getCompiledResults();
         $testsParticipation = $this->getTestsParticipation();
         $metrics = $this->companyUsersCollections->metrics;
 
-        return view('private.dashboard.index', [
-            'dashboardResults' => $dashboardResults,
-            'testsParticipation' => $testsParticipation,
-            'metrics' => $metrics,
-        ]);
+        return view('private.dashboard.index', compact(
+            'dashboardResults',
+            'testsParticipation',
+            'metrics',
+        ));
     }
 
     /**

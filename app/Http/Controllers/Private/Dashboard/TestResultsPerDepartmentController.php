@@ -16,16 +16,14 @@ class TestResultsPerDepartmentController
 
     public function __invoke($testName)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('view-manager-screens');
 
         $resultsPerDepartment = $this->getCompiledResults($testName);
 
-        return view('private.dashboard.test-results-per-department', [
-            'testName' => $testName,
-            'resultsPerDepartment' => $resultsPerDepartment,
-        ]);
+        return view('private.dashboard.test-results-per-department', compact(
+            'testName',
+            'resultsPerDepartment',
+        ));
     }
 
     /**

@@ -12,24 +12,22 @@ use Illuminate\Support\Facades\Gate;
 
 class UserController
 {
-    protected $employees;
+    protected $users;
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('viewAny', Auth::user());
 
-        $this->employees = User::whereRelation('companies', 'companies.id', session('company')->id);
+        $this->users = User::whereRelation('companies', 'companies.id', session('company')->id);
 
         $queryStringName = $request->name;
         $queryStringDepartment = $request->department;
         $queryStringOccupation = $request->occupation;
 
-        $employees = User::whereRelation('companies', 'companies.id', session('company')->id)
+        $users = User::whereRelation('companies', 'companies.id', session('company')->id)
             ->when($queryStringName, function ($query) use ($queryStringName) {
                 return $query->where('name', 'like', "%$queryStringName%");
             })
@@ -44,25 +42,14 @@ class UserController
         $departmentsToFilter = $this->getDepartmentsToFilter();
         $occupationsToFilter = $this->getOccupationsToFilter();
 
-        return view('private.users.employees-list', [
-            'employees' => $employees,
-
-            'departmentsToFilter' => $departmentsToFilter,
-            'occupationsToFilter' => $occupationsToFilter,
-
-            'queryStringName' => $queryStringName,
-            'queryStringDepartment' => $queryStringDepartment,
-            'queryStringOccupation' => $queryStringOccupation,
-        ]);
-    }
-
-    public function createFirstUser($companyToCreate)
-    {
-        dd($companyToCreate);
-
-        return view('auth.register.user', [
-            'companyToCreate' => $companyToCreate,
-        ]);
+        return view('private.users.index', compact(
+            'users',
+            'departmentsToFilter',
+            'occupationsToFilter',
+            'queryStringName',
+            'queryStringDepartment',
+            'queryStringOccupation',
+        ));
     }
 
     /**
@@ -70,11 +57,11 @@ class UserController
      */
     public function create()
     {
+        Gate::authorize('create', Auth::user());
+
         $rolesToSelect = $this->getRolesToSelect();
 
-        return view('private.users.create-employee-profile', [
-            'rolesToSelect' => $rolesToSelect,
-        ]);
+        return view('private.users.create', compact('rolesToSelect'));
     }
 
     /**
@@ -82,6 +69,8 @@ class UserController
      */
     public function store(StoreUserRequest $request)
     {
+        Gate::authorize('create', Auth::user());
+
         $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation', 'admission']);
         $userRole = $request->only('role');
 
@@ -112,9 +101,7 @@ class UserController
      */
     public function show(User $user)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('view', Auth::user());
 
         $admission = $this->getFormattedAdmissionDate($user);
 
@@ -159,11 +146,7 @@ class UserController
             $userInfo['Último teste realizado'] = $lastTestCollectionDate;
         }
 
-        return view('private.users.employee-profile', [
-            'user' => $user,
-            'userInfo' => $userInfo,
-            // 'testResults'  => $testResults,
-        ]);
+        return view('private.users.show', compact('user', 'userInfo'));
     }
 
     /**
@@ -171,19 +154,17 @@ class UserController
      */
     public function edit(Request $request, User $user)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('update', Auth::user());
 
         $rolesToSelect = $this->getRolesToSelect();
 
-        $currentUserRole = DB::table('company_users')->where('user_id', $user->id)->where('company_id', session('company')->id)->first()->role_id;
+        $currentUserRole = $user->roles()->first();
 
-        return view('private.users.update-employee-profile', [
-            'user' => $user,
-            'rolesToSelect' => $rolesToSelect,
-            'currentUserRole' => $currentUserRole,
-        ]);
+        return view('private.users.update', compact(
+            'user',
+            'rolesToSelect',
+            'currentUserRole',
+        ));
     }
 
     /**
@@ -191,6 +172,8 @@ class UserController
      */
     public function update(Request $request, User $employee)
     {
+        Gate::authorize('update', Auth::user());
+
         $validatedData = $request->validate([
             'name' => ['required', 'max:70'],
             'cpf' => ['required', 'max:70'],
@@ -220,6 +203,8 @@ class UserController
      */
     public function destroy(User $employee)
     {
+        Gate::authorize('delete', Auth::user());
+
         $employee->delete();
 
         return to_route('user.index');
@@ -227,14 +212,14 @@ class UserController
 
     private function getDepartmentsToFilter()
     {
-        $departments = array_unique($this->employees->pluck('department')->toArray());
+        $departments = array_unique($this->users->pluck('department')->toArray());
 
         return $departments;
     }
 
     private function getOccupationsToFilter()
     {
-        $occupations = array_unique($this->employees->pluck('occupation')->toArray());
+        $occupations = array_unique($this->users->pluck('occupation')->toArray());
 
         return $occupations;
     }

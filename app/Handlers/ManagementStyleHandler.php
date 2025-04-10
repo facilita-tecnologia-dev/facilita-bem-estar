@@ -16,14 +16,14 @@ class ManagementStyleHandler implements TestHandlerInterface
         $average = $score / count($answers);
 
         $testType = Test::where('id', $testInfo->id)->with('questions')->first();
-
         $risks = Helper::getTestRisks($testType);
+        $metrics = session('company')->metrics()->with('metricType');
 
         $risksList = [];
 
         foreach ($risks as $risk) {
             $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average, $metrics);
             $risksList[$risk->name] = $evaluatedRisk;
         }
 

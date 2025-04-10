@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class PressaoExcessiva implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): array
+    public function evaluateRisk($risk, $answers, $average, $metrics): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -28,6 +28,16 @@ class PressaoExcessiva implements RiskEvaluatorInterface
                 if ($answer >= 4) {
                     $riskPoints++;
                 }
+            }
+        }
+
+        $extraHours = $metrics->whereHas('metricType', function($query) {
+            $query->where('key_name', 'extra-hours');
+        })->first();
+
+        if($extraHours && $extraHours->value > 50){
+            if ($riskPoints <= 2) {
+                $riskPoints++;
             }
         }
 

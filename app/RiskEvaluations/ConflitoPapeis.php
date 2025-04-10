@@ -4,12 +4,12 @@ namespace App\RiskEvaluations;
 
 class ConflitoPapeis implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average): array
+    public function evaluateRisk($risk, $answers, $average, $metrics): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
 
-        if ($average >= 3) {
+        if ($average <= 3) {
             $riskPoints++;
         }
 

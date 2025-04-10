@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Private;
 use App\Models\CompanyMetric;
 use App\Models\Metric;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class CompanyMetricsController
 {
@@ -14,15 +16,17 @@ class CompanyMetricsController
      */
     public function __invoke(Request $request)
     {
+        Gate::authorize('update-metrics');
+        
         $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get()->groupBy('metricType.key_name')->toArray();
 
-        return view('private.company.company-metrics', [
-            'metrics' => $metrics,
-        ]);
+        return view('private.company.company-metrics', compact('metrics'));
     }
 
     public function storeMetrics(Request $request)
     {
+        Gate::authorize('update-metrics');
+
         $validatedData = $request->validate([
             'turnover' => 'nullable|between:0,100',
             'absenteeism' => 'nullable|between:0,100',

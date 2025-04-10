@@ -23,35 +23,19 @@
                 {{-- </a> --}}
                 </div>
 
-                @if(!$hasCollection)
-                    <a 
-                        href="{{ route('test', 1) }}"
-                        style="
-                            background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
-                        " 
-                        class="overflow-hidden border border-white rounded-md py-6 lg:py-16 px-4 flex flex-col gap-2 items-center relative left-0 top-0 hover:left-1 hover:-top-1 transition-all"
-                    >
-                        <img src="{{ asset('assets/white-wave-2.svg') }}" alt="" class="absolute left-0 bottom-0 h-1/2 w-full object-cover object-top">
-                        <h2 class="text-2xl tracking-tight font-semibold text-center text-gray-800">Riscos Psicossociais</h2>
-                        <p class="text-base leading-relaxed text-center text-gray-800">
-                            Identifique quais fatores podem gerar estresse em sua rotina de trabalho e descubra formas de manter o equilíbrio.
-                        </p>
-                    </a>
-                @else
-                    <div
-                        href="{{ route('test', 1) }}"
-                        style="
-                            background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
-                        " 
-                        class="opacity-40 relative overflow-hidden transition border border-white rounded-md py-6 lg:py-16 px-4 flex flex-col gap-2 lg:gap-8 items-center"
-                    >
-                        <img src="{{ asset('assets/white-wave-2.svg') }}" alt="" class="absolute left-0 bottom-0 h-1/2 w-full object-cover object-top">
-                        <h2 class="text-2xl tracking-tight font-semibold text-center text-gray-800">Riscos Psicossociais</h2>
-                        <p class="text-base leading-relaxed text-center text-gray-800">
-                            Identifique quais fatores podem gerar estresse em sua rotina de trabalho e descubra formas de manter o equilíbrio.
-                        </p>
-                    </div>
-                @endif
+                <a 
+                    href="{{ route('test', 1) }}"
+                    style="
+                        background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
+                    " 
+                    class="overflow-hidden border border-white rounded-md py-6 lg:py-16 px-4 flex flex-col gap-2 items-center relative left-0 top-0 hover:left-1 hover:-top-1 transition-all"
+                >
+                    <img src="{{ asset('assets/white-wave-2.svg') }}" alt="" class="absolute left-0 bottom-0 h-1/2 w-full object-cover object-top">
+                    <h2 class="text-2xl tracking-tight font-semibold text-center text-gray-800">Riscos Psicossociais</h2>
+                    <p class="text-base leading-relaxed text-center text-gray-800">
+                        Identifique quais fatores podem gerar estresse em sua rotina de trabalho e descubra formas de manter o equilíbrio.
+                    </p>
+                </a>
 
                 <div
                 {{-- <a 
