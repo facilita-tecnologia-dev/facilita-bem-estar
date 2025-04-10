@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Private\CompanyController;
 use App\Http\Controllers\Private\CompanyMetricsController;
 use App\Http\Controllers\Private\Dashboard\DashboardController;
@@ -19,8 +20,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(GuestMiddleware::class)->group(function () {
     Route::get('/', [PresentationController::class, 'index'])->name('presentation');
 
+    Route::get('/register', RegisterController::class)->name('auth.register');
+    Route::post('/register/internal', [RegisterController::class, 'attemptInternalRegister'])->name('auth.register.internal');
+    Route::post('/register/external', [RegisterController::class, 'attemptExternalRegister'])->name('auth.register.external');
+
     Route::get('/login', LoginController::class)->name('auth.login');
-    Route::post('/login', [LoginController::class, 'attemptLogin']);
+    Route::post('/login/internal', [LoginController::class, 'attemptInternalLogin'])->name('auth.login.internal');
+    Route::post('/login/external', [LoginController::class, 'attemptExternalLogin'])->name('auth.login.external');
 });
 
 Route::middleware(AuthMiddleware::class)->group(function () {

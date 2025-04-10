@@ -22,7 +22,7 @@
                     
                     <x-form.input-text name="cpf" label="CPF apenas números" placeholder="Digite o cpf do usuário"/>
                     
-                    <x-form.input-text name="age" label="Idade" type="number" placeholder="Digite a idade do usuário"/>
+                    <x-form.input-text name="birth_date" label="Idade" type="number" placeholder="Digite a idade do usuário"/>
                     
                     <x-form.input-text name="gender" label="Sexo" placeholder="Digite o sexo do usuário"/>
                     

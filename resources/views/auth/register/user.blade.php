@@ -6,7 +6,7 @@
                     <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
 
                     <div class="flex flex-col gap-4 items-center">
-                        <h1 class="text-4xl md:text-5xl font-semibold text-center text-gray-800">Crie um usuário</h1>
+                        <h1 class="text-4xl md:text-xl font-semibold text-center text-gray-800">Crie um usuário</h1>
                         <x-text-content>Para registrar uma empresa, você precisa criar um usuário administrador.</x-text-content>
                     </div>
 

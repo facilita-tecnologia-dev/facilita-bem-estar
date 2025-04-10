@@ -75,7 +75,7 @@ class UserController
     {
         Gate::authorize('create', Auth::user());
 
-        $userData = $request->safe()->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation', 'admission']);
+        $userData = $request->safe()->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation', 'admission']);
         $userRole = $request->safe()->only('role');
 
         $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
@@ -83,12 +83,11 @@ class UserController
         $employee = User::create([
             'name' => $userData['name'],
             'cpf' => $userData['cpf'],
-            'age' => $userData['age'],
+            'birth_date' => $userData['birth_date'],
             'gender' => $userData['gender'],
             'department' => $userData['department'],
             'occupation' => $userData['occupation'],
             'admission' => $admissionDateFormated,
-            'company_id' => session('company')->id,
         ]);
 
         DB::table('company_users')->insert([
@@ -108,6 +107,7 @@ class UserController
         Gate::authorize('view', Auth::user());
 
         $admission = $this->getFormattedAdmissionDate($user);
+        $age = $this->getFormattedAge($user);
 
         $lastTestCollection = DB::table('user_collections')->where('user_id', $user->id)
             ->latest('created_at')
@@ -138,7 +138,7 @@ class UserController
         $userInfo = [
             'Nome' => $user->name,
             'CPF' => $cpf,
-            'Idade' => $user->age,
+            'Idade' => $age,
             'Setor' => $user->department,
             'Cargo' => $user->occupation,
             'Sexo' => $user->gender,
@@ -181,14 +181,14 @@ class UserController
         $validatedData = $request->validate([
             'name' => ['required', 'max:70'],
             'cpf' => ['required', 'max:70'],
-            'age' => ['required', 'max:70'],
+            'birth_date' => ['required', 'max:70'],
             'gender' => ['required', 'max:70'],
             'department' => ['required', 'max:70'],
             'occupation' => ['required', 'max:70'],
             'role' => ['required', 'max:70'],
         ]);
 
-        $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation']);
+        $userData = $request->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation']);
         $userRole = $request->only('role');
 
         DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->update(['role_id' => $userRole['role']]);
@@ -243,14 +243,24 @@ class UserController
         return $occupations;
     }
 
-    private function getFormattedAdmissionDate($employee)
+    private function getFormattedAdmissionDate($user)
     {
-        $admissionDate = Carbon::createFromFormat('d/m/Y', $employee->admission);
+        $admissionDate = Carbon::createFromFormat('Y-m-d', $user->admission);
         $admissionDiff = Carbon::now()
-            ->diff($admissionDate)
-            ->format('%y anos, %m meses e %d dias.');
+        ->diff($admissionDate)
+        ->format('%y anos, %m meses e %d dias.');
 
         return $admissionDiff;
+    }
+
+    private function getFormattedAge($user)
+    {
+        $birthDate = Carbon::createFromFormat('Y-m-d', $user->birth_date);
+        $age = Carbon::now()
+        ->diff($birthDate)
+        ->format('%y anos');
+
+        return $age;
     }
 
     private function getFormattedCPF($employee)

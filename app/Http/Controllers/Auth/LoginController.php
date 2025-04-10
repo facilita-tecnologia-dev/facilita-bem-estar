@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\LoginExternalRequest;
+use App\Http\Requests\LoginInternalRequest;
 use App\Http\Requests\LoginRequest;
 use App\Models\Company;
 use App\Models\User;
@@ -17,8 +19,25 @@ class LoginController
         return view('auth.login.index');
     }
 
-    public function attemptLogin(LoginRequest $request)
+    public function attemptInternalLogin(LoginInternalRequest $request)
     {
+        $user = User::where('cpf', $request->safe()->only('cpf'))->first();
+
+        if(!$user){
+            return back()->with('message', 'Usuário não encontrado.');
+        }
+        $userCompany = $user->companies()->first();
+
+        session(['company' => $userCompany]);
+
+        Auth::login($user);
+
+        return to_route('choose-test');
+    }
+
+    public function attemptExternalLogin(LoginExternalRequest $request)
+    {
+        dd($request->validated());
         $user = User::where('cpf', $request->safe()->only('cpf'))->first();
 
         if(!$user){

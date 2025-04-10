@@ -22,7 +22,7 @@
                     
                     <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" disabled />
                     
-                    <x-form.input-text name="age" label="Idade" value="{{ $user->age }}" placeholder="Digite a idade do colaborador"/>
+                    <x-form.input-text name="birth_date" label="Idade" value="{{ $user->birth_date }}" placeholder="Digite a idade do colaborador"/>
                     
                     <x-form.input-text name="gender" label="Sexo" value="{{ $user->gender }}" placeholder="Digite o sexo do colaborador"/>
                     

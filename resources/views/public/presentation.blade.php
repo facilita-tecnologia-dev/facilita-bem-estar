@@ -27,6 +27,10 @@
                 <i class="fa-solid fa-user"></i>
                 <span class="hidden sm:block">Login</span>
             </a>
+            <a href="{{ route('auth.register') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+                <i class="fa-solid fa-stethoscope"></i>
+                <span class="hidden sm:block">Registrar</span>
+            </a>
         </div>
 
     </header>
@@ -103,7 +107,7 @@
         <div class="w-full flex flex-col gap-8 md:gap-12 items-center">
             <div class="flex flex-col gap-2 items-center">
                 <x-heading>Método</x-heading>
-                <x-text-content>Plano de ação da pesquisa, será dividida de 5 tipos de intervenções:</x-text-content>
+                {{-- <x-text-content>Plano de ação da pesquisa, será dividida de 5 tipos de intervenções:</x-text-content> --}}
             </div>
             
             <div class="w-full flex flex-col gap-6 md:gap-8">
@@ -114,7 +118,7 @@
                     class="w-full rounded-md p-6 flex flex-col items-start gap-4"
                 >
                     <p class="text-xl md:text-2xl font-semibold text-left">1. Organização do trabalho</p>
-                    <ul class="list-disc pl-4">
+                    {{-- <ul class="list-disc pl-4">
                         <li>
                             <x-text-content alignment="left">Definição clara de funções de responsabilidades.</x-text-content>
                         </li>
@@ -124,7 +128,7 @@
                         <li>
                             <x-text-content alignment="left">Pausas e jornadas equilibradas.</x-text-content>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
                 <div
                     style="
@@ -133,7 +137,7 @@
                     class="w-full rounded-md p-6 flex flex-col items-start gap-4"
                 >
                     <p class="text-xl md:text-2xl font-semibold text-left">2. Desenvolvimento de lideranças</p>
-                    <ul class="list-disc pl-4">
+                    {{-- <ul class="list-disc pl-4">
                         <li>
                             <x-text-content alignment="left">Capacitação de gestores.</x-text-content>
                         </li>
@@ -143,7 +147,7 @@
                         <li>
                             <x-text-content alignment="left">Liderança participativa.</x-text-content>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
                 <div
                     style="
@@ -152,7 +156,7 @@
                     class="w-full rounded-md p-6 flex flex-col items-start gap-4"
                 >
                     <p class="text-xl md:text-2xl font-semibold text-left">3. Cultura organizacional</p>
-                    <ul class="list-disc pl-4">
+                    {{-- <ul class="list-disc pl-4">
                         <li>
                             <x-text-content alignment="left">Reconhecimento e valorização.</x-text-content>
                         </li>
@@ -162,7 +166,7 @@
                         <li>
                             <x-text-content alignment="left">Políticas contra assédio e violência.</x-text-content>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
                 <div
                     style="
@@ -171,11 +175,11 @@
                     class="w-full rounded-md p-6 flex flex-col items-start gap-4"
                 >
                     <p class="text-xl md:text-2xl font-semibold text-left">4. Bem-estar</p>
-                    <ul class="list-disc pl-4">
+                    {{-- <ul class="list-disc pl-4">
                         <li>
                             <x-text-content alignment="left">Adesão de atividades de bem estar.</x-text-content>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
                 <div
                     style="
@@ -184,11 +188,11 @@
                     class="w-full rounded-md p-6 flex flex-col items-start gap-4"
                 >
                     <p class="text-xl md:text-2xl font-semibold text-left">5. Psicológica</p>
-                    <ul class="list-disc pl-4">
+                    {{-- <ul class="list-disc pl-4">
                         <li>
                             <x-text-content alignment="left">Análise profissional</x-text-content>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
             </div>
         </div>

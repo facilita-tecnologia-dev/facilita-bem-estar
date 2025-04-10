@@ -62,7 +62,7 @@
                 <div class="w-full space-y-2" data-role="tests-list">
                     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 bg-gray-100 px-4 py-2 w-full rounded-md shadow-md">
                         <span data-role="th" onclick="reorderTable(event, 0)" class="text-base font-semibold text-left col-span-1 lg:col-span-2">Nome</span>
-                        <span data-role="th" onclick="reorderTable(event, 1)" class="hidden lg:block text-base font-semibold text-left">Idade</span>
+                        <span data-role="th" onclick="reorderTable(event, 1)" class="hidden lg:block text-base font-semibold text-left">D. Nascimento</span>
                         <span data-role="th" onclick="reorderTable(event, 2)" class="hidden lg:block text-base font-semibold text-left">Setor</span>
                         <span data-role="th" onclick="reorderTable(event, 3)" class="text-base font-semibold text-left">Cargo</span>
                     </div>
@@ -76,7 +76,7 @@
                                     px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] to-[#FFFFFF60] grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all
                                 ">
                                 <span data-role="td" class="col-span-1 lg:col-span-2 truncate">{{ $user->name }}</span>
-                                <span data-role="td" class="hidden lg:block">{{ $user->age }} anos</span>
+                                <span data-role="td" class="hidden lg:block">{{ $user->birth_date }}</span>
                                 <span data-role="td" class="hidden lg:block">{{ $user->department }}</span>
                                 <span data-role="td" class="truncate">{{ $user->occupation }}</span>
                             </a>

@@ -4,8 +4,9 @@ namespace App\Http\Requests;
 
 use App\Rules\validateCPF;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
-class LoginRequest extends FormRequest
+class LoginExternalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +25,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'cpf' => ['required', 'string', new validateCPF()],
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()]
         ];
     }
 }
