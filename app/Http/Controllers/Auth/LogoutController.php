@@ -15,6 +15,6 @@ class LogoutController
 
         $request->session()->regenerateToken();
 
-        return to_route('presentation');
+        return to_route('auth.login');
     }
 }

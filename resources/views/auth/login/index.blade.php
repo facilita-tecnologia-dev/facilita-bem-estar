@@ -1,17 +1,17 @@
 <x-layouts.app>
-    
-         <div class="flex h-full justify-end">
+
+        <div class="flex h-full justify-end">
             <div class="w-full max-w-[600px] bg-gray-100 flex justify-center items-center px-4">
                 <div class="w-full max-w-[400px] flex flex-col items-center gap-8">
                     <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
 
                     <div class="flex flex-col gap-4 items-center">
                         <h1 class="text-4xl md:text-5xl font-semibold text-center text-gray-800">Login</h1>
-                        <x-text-content>Faça login como gestor SESMT</x-text-content>
+                        <x-text-content>Faça login como colaborador de uma empresa</x-text-content>
                     </div>
 
-                    <x-form action="{{ route('auth.login.internal-manager') }}" class="w-full flex flex-col gap-4 items-center" post>
-                        <x-form.input-text name="cpf" placeholder="CPF" />
+                    <x-form action="{{ route('auth.login') }}" class="w-full flex flex-col gap-4 items-center" post>
+                        <x-form.input-text name="cpf" placeholder="CPF apenas números" />
                         {{-- <x-form.input-text type="password" name="password" placeholder="Senha" /> --}}
                         <x-action tag="button">Fazer login</x-action>
                     </x-form>

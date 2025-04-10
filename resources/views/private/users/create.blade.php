@@ -18,17 +18,17 @@
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <x-form action="{{ route('user.store') }}" id="form-update-company-profile" post class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
-                    <x-form.input-text name="name" label="Nome completo" placeholder="Digite o nome completo do colaborador"/>
+                    <x-form.input-text name="name" label="Nome completo" placeholder="Digite o nome completo do usuário"/>
                     
-                    <x-form.input-text name="cpf" label="CPF apenas números" placeholder="Digite o cpf do colaborador"/>
+                    <x-form.input-text name="cpf" label="CPF apenas números" placeholder="Digite o cpf do usuário"/>
                     
-                    <x-form.input-text name="age" label="Idade" type="number" placeholder="Digite a idade do colaborador"/>
+                    <x-form.input-text name="age" label="Idade" type="number" placeholder="Digite a idade do usuário"/>
                     
-                    <x-form.input-text name="gender" label="Sexo" placeholder="Digite o sexo do colaborador"/>
+                    <x-form.input-text name="gender" label="Sexo" placeholder="Digite o sexo do usuário"/>
                     
-                    <x-form.input-text name="department" label="Setor" placeholder="Digite o departamento do colaborador"/>
+                    <x-form.input-text name="department" label="Setor" placeholder="Digite o departamento do usuário"/>
                     
-                    <x-form.input-text name="occupation" label="Cargo" placeholder="Digite o cargo do colaborador"/>
+                    <x-form.input-text name="occupation" label="Cargo" placeholder="Digite o cargo do usuário"/>
 
                     <x-form.input-date name="admission" max="{{ date('Y-m-d') }}" label="Data de admissão"/>
 

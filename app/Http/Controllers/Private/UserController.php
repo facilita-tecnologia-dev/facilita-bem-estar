@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Private;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UserStoreRequest;
+use App\Imports\UsersImport;
+use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController
 {
@@ -67,12 +71,12 @@ class UserController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request)
+    public function store(UserStoreRequest $request)
     {
         Gate::authorize('create', Auth::user());
 
-        $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation', 'admission']);
-        $userRole = $request->only('role');
+        $userData = $request->safe()->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation', 'admission']);
+        $userRole = $request->safe()->only('role');
 
         $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
 
@@ -210,6 +214,21 @@ class UserController
         return to_route('user.index');
     }
 
+    public function showImport(){
+        if (Gate::denies('view-manager-screens')) {
+            abort(403, 'Acesso não autorizado');
+        }
+
+        return view('private.users.import');
+    }
+
+    public function import(Request $request, Company $company)
+    {
+        Excel::import(new UsersImport($company), $request->file('import_users')->store('temp'));
+        return back()->with('message', 'Usuários importados com sucesso');
+    }
+
+    
     private function getDepartmentsToFilter()
     {
         $departments = array_unique($this->users->pluck('department')->toArray());

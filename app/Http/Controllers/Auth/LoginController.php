@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Auth\Login;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\LoginRequest;
 use App\Models\Company;
 use App\Models\User;
+use App\Rules\validateCPF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,16 +14,12 @@ class LoginController
 {
     public function __invoke()
     {
-        return view('auth.login.employee');
+        return view('auth.login.index');
     }
 
-    public function attemptLogin(Request $request)
+    public function attemptLogin(LoginRequest $request)
     {
-        $validatedData = $request->validate([
-            'cpf' => ['required', 'size:11'],
-        ]);
-
-        $user = User::where('cpf', $validatedData['cpf'])->first();
+        $user = User::where('cpf', $request->safe()->only('cpf'))->first();
 
         if(!$user){
             return back()->with('message', 'Usuário não encontrado.');

@@ -20,7 +20,7 @@
                 <x-form action="{{ route('user.update', $user) }}" id="form-update-company-profile" put class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
                     <x-form.input-text name="name" label="Nome completo" value="{{ $user->name }}" placeholder="Digite o nome completo do colaborador"/>
                     
-                    <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" placeholder="Digite o cpf do colaborador"/>
+                    <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" disabled />
                     
                     <x-form.input-text name="age" label="Idade" value="{{ $user->age }}" placeholder="Digite a idade do colaborador"/>
                     
@@ -31,8 +31,7 @@
                     <x-form.input-text name="occupation" label="Cargo" value="{{ $user->occupation }}" placeholder="Digite o cargo do colaborador"/>
 
                     <x-form.select name="role" value="{{ $currentUserRole }}" label="Gestor/Colaborador" :options="$rolesToSelect" />
-                        
-
+                    
                 </x-form>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">

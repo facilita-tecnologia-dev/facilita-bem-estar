@@ -22,17 +22,13 @@ class TestsController
         $this->testService = $testService;
     }
 
-    public function showChooseScreen()
+    public function showChoose()
     {
         return view('private.tests.choose-test');
     }
 
     public function __invoke($testIndex = 1)
     {
-        // if (Gate::denies('answer-test')) {
-        //     abort(403, 'Acesso não autorizado');
-        // }
-
         $test = Test::query()
             ->where('order', '=', $testIndex)
             ->with('questions', function ($query) {

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\validateCPF;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends FormRequest
+class LoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +23,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:255',
-            'cpf' => 'required|max:255',
-            'age' => 'required|',
-            'gender' => 'required|max:255',
-            'department' => 'required|max:255',
-            'occupation' => 'required|max:255',
-            'admission' => 'nullable|date',
-            'role' => 'required',
+            'cpf' => ['required', 'string', new validateCPF()],
         ];
     }
 }

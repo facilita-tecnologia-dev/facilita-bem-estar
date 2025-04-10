@@ -32,7 +32,7 @@
                     </div>
                 @endif
 
-                <a href="{{ route('import-employees.show') }}" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+                <a href="{{ route('user.import') }}" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
                     <i class="fa-solid fa-upload"></i>
                 </a>
                 <button data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
@@ -68,17 +68,17 @@
                     </div>
 
                     <div class="space-y-2" data-role="tbody">
-                        @foreach ($employees as $employee)
+                        @foreach ($users as $user)
                             <a
                                 data-role="tr"
-                                href="{{ route('user.show', $employee) }}"
+                                href="{{ route('user.show', $user) }}"
                                 class="
                                     px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] to-[#FFFFFF60] grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all
                                 ">
-                                <span data-role="td" class="col-span-1 lg:col-span-2 truncate">{{ $employee->name }}</span>
-                                <span data-role="td" class="hidden lg:block">{{ $employee->age }} anos</span>
-                                <span data-role="td" class="hidden lg:block">{{ $employee->department }}</span>
-                                <span data-role="td" class="truncate">{{ $employee->occupation }}</span>
+                                <span data-role="td" class="col-span-1 lg:col-span-2 truncate">{{ $user->name }}</span>
+                                <span data-role="td" class="hidden lg:block">{{ $user->age }} anos</span>
+                                <span data-role="td" class="hidden lg:block">{{ $user->department }}</span>
+                                <span data-role="td" class="truncate">{{ $user->occupation }}</span>
                             </a>
                         @endforeach
                     </div>

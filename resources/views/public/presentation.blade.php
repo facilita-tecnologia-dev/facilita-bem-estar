@@ -23,17 +23,10 @@
         </a>
 
         <div class="flex items-center gap-2">
-            <a href="{{ route('auth.login.employee') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+            <a href="{{ route('auth.login') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
                 <i class="fa-solid fa-user"></i>
-                <span class="hidden sm:block">Colaborador</span>
+                <span class="hidden sm:block">Login</span>
             </a>
-            <a href="{{ route('auth.login.internal-manager') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-briefcase"></i>
-                <span class="hidden sm:block">Gestor interno</span>
-            </a>
-            {{-- <a href="{{ route('company.create') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Registrar empresa</a> --}}
-            {{-- <a href="{{ route('auth.login.external-manager') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Gestor Externo</a>
-            <a href="{{ route('auth.login.health-worker') }}" class="sm:text-base font-medium bg-fuchsia-600/60 text-gray-800 px-7 tracking-wider  py-1.5 rounded-md">Profissional de Saúde</a> --}}
         </div>
 
     </header>
@@ -41,7 +34,6 @@
     <x-section class="relative">
         <div class="flex flex-col gap-8 md:gap-12 items-center">
             <div class="flex flex-col gap-2 items-center">
-                {{-- <x-subtitle>Conheça o</x-subtitle> --}}
                 <x-heading tag="h1" >Facilita Saúde Mental</x-heading>
                 <x-text-content>seu parceiro que facilita a gestão da <span class="underline">saúde mental</span> e de <span class="underline">riscos psicossociais</span> no trabalho.</x-text-content>
             </div>
