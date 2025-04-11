@@ -37,16 +37,11 @@ class LoginController
 
     public function attemptExternalLogin(LoginExternalRequest $request)
     {
-        dd($request->validated());
         $user = User::where('cpf', $request->safe()->only('cpf'))->first();
 
         if(!$user){
             return back()->with('message', 'Usuário não encontrado.');
         }
-
-        $userCompany = $user->companies()->first();
-
-        session(['company' => $userCompany]);
 
         Auth::login($user);
 

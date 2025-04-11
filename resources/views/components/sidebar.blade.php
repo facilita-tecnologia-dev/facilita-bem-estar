@@ -3,9 +3,11 @@
 </div>
 
 <div id="sidebar" class="bg-gray-100 z-40 w-[280px] transition-all duration-200 md:w-[240px] shadow-lg h-screen flex flex-col pt-8 pb-12 absolute -left-full top-0 md:relative md:left-0">
-    <div class="flex items-center justify-center px-4 py-2">
-        <img src="{{ asset(session('company')->logo) }}" alt="" class="h-10">
-    </div>
+    @if(session('company'))
+        <div class="flex items-center justify-center px-4 py-2">
+            <img src="{{ asset(session('company')->logo) }}" alt="" class="h-10">
+        </div>
+    @endif
 
     <div class="px-4 py-2">
         <div class="px-2 py-1.5 flex items-center gap-2 justify-start">
@@ -27,15 +29,17 @@
             </div>
         @endcan
 
-        <div class="submenu space-y-3">
-            <p class="uppercase text-xs font-semibold px-2">Testes</p>
-            <a href="{{ route('choose-test') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-                <div class="w-5 flex justify-center items-center">
-                    <i class="fa-solid fa-question"></i>
-                </div>
-                Realizar testes
-            </a>
-        </div>
+        @can('answer-tests')
+            <div class="submenu space-y-3">
+                <p class="uppercase text-xs font-semibold px-2">Testes</p>
+                <a href="{{ route('choose-test') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-question"></i>
+                    </div>
+                    Realizar testes
+                </a>
+            </div>
+        @endcan
 
         @can('view-manager-screens')
             <div class="submenu space-y-3">

@@ -40,6 +40,14 @@ class AppServiceProvider extends ServiceProvider
             return Response::denyAsNotFound();
         });
 
+        Gate::define('answer-tests', function (User $user): Response {
+            if($user->hasRole('internal-manager') || $user->hasRole('employee')){
+                return Response::allow();
+            }
+
+            return Response::denyAsNotFound();
+        });
+
         Gate::define('update-metrics', function (User $user): Response {
             if($user->hasRole('internal-manager')){
                 return Response::allow();

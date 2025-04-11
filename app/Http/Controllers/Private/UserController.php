@@ -74,27 +74,29 @@ class UserController
     public function store(UserStoreRequest $request)
     {
         Gate::authorize('create', Auth::user());
+        
+        DB::transaction(function() use($request) {
+            $userData = $request->safe()->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation', 'admission']);
+            $userRole = $request->safe()->only('role');
+    
+            $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
 
-        $userData = $request->safe()->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation', 'admission']);
-        $userRole = $request->safe()->only('role');
+            $user = User::create([
+                'name' => $userData['name'],
+                'cpf' => $userData['cpf'],
+                'birth_date' => $userData['birth_date'],
+                'gender' => $userData['gender'],
+                'department' => $userData['department'],
+                'occupation' => $userData['occupation'],
+                'admission' => $admissionDateFormated,
+            ]);
 
-        $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
-
-        $employee = User::create([
-            'name' => $userData['name'],
-            'cpf' => $userData['cpf'],
-            'birth_date' => $userData['birth_date'],
-            'gender' => $userData['gender'],
-            'department' => $userData['department'],
-            'occupation' => $userData['occupation'],
-            'admission' => $admissionDateFormated,
-        ]);
-
-        DB::table('company_users')->insert([
-            'role_id' => $userRole['role'],
-            'user_id' => $employee->id,
-            'company_id' => session('company')->id,
-        ]);
+            DB::table('company_users')->insert([
+                'role_id' => $userRole['role'],
+                'user_id' => $user->id,
+                'company_id' => session('company')->id,
+            ]);
+        });
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
     }
