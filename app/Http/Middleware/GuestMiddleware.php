@@ -19,9 +19,9 @@ class GuestMiddleware
     {
 
         $user = Auth::user();
-
+        
         if ($user) {
-            $userRole = DB::table('company_users')->where('user_id', '=', $user->id)->where('company_id', session('company')->id)->first();
+            $userRole = $user->roles()->first();
 
             if ($userRole && $userRole->role_id == 1) {
                 return to_route('dashboard.charts');

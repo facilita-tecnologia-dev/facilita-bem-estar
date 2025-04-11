@@ -6,7 +6,7 @@ use App\Rules\validateCPF;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class RegisterExternalRequest extends FormRequest
+class RegisterInternalUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,6 @@ class RegisterExternalRequest extends FormRequest
         return [
             'name' => ['required', 'string','min:6', 'max:255'],
             'cpf' => ['required', 'string', 'unique:users', new validateCPF()],
-            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()]
         ];
     }
 }

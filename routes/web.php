@@ -21,8 +21,10 @@ Route::middleware(GuestMiddleware::class)->group(function () {
     Route::get('/', [PresentationController::class, 'index'])->name('presentation');
 
     Route::get('/register', RegisterController::class)->name('auth.register');
-    Route::post('/register/internal', [RegisterController::class, 'attemptInternalRegister'])->name('auth.register.internal');
-    Route::post('/register/external', [RegisterController::class, 'attemptExternalRegister'])->name('auth.register.external');
+    Route::post('/register/internal/user', [RegisterController::class, 'attemptInternalUserRegister'])->name('auth.register.internal.user');
+    Route::get('/register/internal/company', [RegisterController::class, 'showCompanyRegister'])->name('auth.register.internal.company');
+    Route::post('/register/internal/company', [RegisterController::class, 'attemptCompanyRegister']);
+    Route::post('/register/external/user', [RegisterController::class, 'attemptExternalRegister'])->name('auth.register.external');
 
     Route::get('/login', LoginController::class)->name('auth.login');
     Route::post('/login/internal', [LoginController::class, 'attemptInternalLogin'])->name('auth.login.internal');

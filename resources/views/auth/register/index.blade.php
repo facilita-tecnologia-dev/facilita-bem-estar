@@ -17,7 +17,14 @@
                         <button data-role="toggle-register-form" id="external" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Profissional de Saúde</button>
                     </div>
 
-                    <x-form action="{{ route('auth.register.external') }}" id="register-external" class="w-full flex flex-col gap-3 items-center" post>
+                    <x-form action="{{ route('auth.register.internal.user') }}" id="register-internal" class="w-full flex flex-col gap-3 items-center" post>
+                        <x-form.input-text name="name" placeholder="Digite o seu nome completo" />
+                        <x-form.input-text name="cpf" placeholder="Digite o CPF" />
+                        <x-action tag="button">Registrar</x-action>
+                    </x-form>
+
+                    {{-- External --}}
+                    <x-form action="{{ route('auth.register.external') }}" id="register-external" class="hidden w-full flex-col gap-3 items-center" post>
                         <x-form.input-text name="name" placeholder="Digite o seu nome completo" />
                         <x-form.input-text name="cpf" placeholder="Digite o CPF" />
                         <x-form.input-text type="password" name="password" placeholder="Digite a senha" />
@@ -41,12 +48,12 @@
 
             if(this.id == 'external'){
                 bgElement.classList.replace('left-1', 'left-[calc(50%+4px)]')
-                // document.querySelector('#login-internal').style.display = 'none';
-                // document.querySelector('#login-external').style.display = 'flex';
+                document.querySelector('#register-internal').style.display = 'none';
+                document.querySelector('#register-external').style.display = 'flex';
             } else{
                 bgElement.classList.replace('left-[calc(50%+4px)]', 'left-1')
-                // document.querySelector('#login-external').style.display = 'none';
-                // document.querySelector('#login-internal').style.display = 'flex';
+                document.querySelector('#register-external').style.display = 'none';
+                document.querySelector('#register-internal').style.display = 'flex';
             }
         });
     });

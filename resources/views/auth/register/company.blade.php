@@ -10,26 +10,11 @@
                         <x-text-content>Registre sua empresa no Facilita Saúde Mental</x-text-content>
                     </div>
 
-                    <x-form action="{{ route('company.store') }}" class="w-full flex flex-col gap-3 items-center" post>
-                        <x-form.input-text name="name" placeholder="Razão Social" label="Razão Social" />
-                        <x-form.input-text name="cnpj" placeholder="CNPJ apenas números" label="CNPJ apenas números" />
-                        {{-- <x-form.input-text name="cpf" placeholder="Digite o CPF" label="CPF apenas números (Conta administrador)" />
-                        <x-form.input-text name="password" placeholder="Digite a senha" label="Senha (Conta administrador)" /> --}}
-                        {{-- <x-form.input-text type="password" name="password" placeholder="Senha" /> --}}
+                    <x-form action="{{ route('auth.register.internal.company') }}" class="w-full flex flex-col gap-3 items-center" post>
+                        <x-form.input-text name="name" placeholder="Razão Social" />
+                        <x-form.input-text name="cnpj" placeholder="CNPJ apenas números" />
                         <x-action tag="button">Registrar</x-action>
                     </x-form>
-
-                    {{-- <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">
-                        <div class="w-full flex items-center gap-4">
-                            <div class="flex-1 h-[1px] bg-gray-800"></div>
-                            <span class="text-base font-semibold text-gray-800 leading-tight">ou</span>
-                            <div class="flex-1 h-[1px] bg-gray-800"></div>
-                        </div>
-                        <x-action width="full">
-                            <i class="fa-brands fa-google"></i> 
-                            Fazer login com Google
-                        </x-action>
-                    </div> --}}
 
                     <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>
                 </div>
