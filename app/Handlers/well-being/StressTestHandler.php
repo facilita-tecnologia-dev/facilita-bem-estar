@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\WellBeing;
+use App\Handlers\TestHandlerInterface;
 
-class PressureForResultsTestHandler implements TestHandlerInterface
+class StressTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
-        if ($totalPoints >= 33) {
-            $severityTitle = 'Pressão Crítica';
+        if ($totalPoints >= 27) {
+            $severityTitle = 'Alto Estresse';
             $severityColor = 5;
-        } elseif ($totalPoints >= 25) {
-            $severityTitle = 'Alta Pressão';
-            $severityColor = 4;
-        } elseif ($totalPoints >= 17) {
-            $severityTitle = 'Pressão Moderada';
+        } elseif ($totalPoints >= 14) {
+            $severityTitle = 'Estresse Moderado';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Baixa Pressão';
+            $severityTitle = 'Baixo Estresse';
             $severityColor = 1;
         }
 
@@ -34,10 +32,9 @@ class PressureForResultsTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Buscar suporte da gestão'],
-            4 => ['Propor discussões sobre cultura organizacional'],
-            3 => ['Manter atenção nas metas e resultados previstos'],
-            1 => ['Manter práticas existentes'],
+            5 => ['Indica possível necessidade de intervenção ou estratégias de gestão de estresse'],
+            3 => ['Indica algumas dificuldades no manejo de situações estressantes'],
+            1 => ['Sugere boa capacidade de gerenciamento de situações estressantes'],
         ];
 
         return $recommendations[$severityColor] ?? [];

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\PsychosocialRisks;
+use App\Handlers\TestHandlerInterface;
 
 use App\Helpers\Helper;
 use App\Models\Test;
 use App\Services\RiskEvaluatorService;
 
-class WorkProblemsHandler implements TestHandlerInterface
+class WorkExperienceHandler implements TestHandlerInterface
 {
     public function __construct(private RiskEvaluatorService $riskEvaluatorService) {}
 

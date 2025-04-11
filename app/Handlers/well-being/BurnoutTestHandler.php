@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\WellBeing;
+use App\Handlers\TestHandlerInterface;
 
-class EmotionalDemandsTestHandler implements TestHandlerInterface
+class BurnoutTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
-        if ($totalPoints >= 33) {
-            $severityTitle = 'Alta exigência emocional';
+        if ($totalPoints >= 27) {
+            $severityTitle = 'Zona de Risco';
             $severityColor = 5;
-        } elseif ($totalPoints >= 21) {
-            $severityTitle = 'Média exigência emocional';
+        } elseif ($totalPoints >= 14) {
+            $severityTitle = 'Zona de Alerta';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Baixa exigência emocional';
+            $severityTitle = 'Zona de Bem-estar';
             $severityColor = 1;
         }
 
@@ -31,9 +32,9 @@ class EmotionalDemandsTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Grande necessidade de controle e supressão emocional'],
-            3 => ['Necessidade intermediária de regulação emocional'],
-            1 => ['Baixa necessidade de controle emocional'],
+            5 => ['Necessidade urgente de intervenção'],
+            3 => ['Recomenda-se atenção e estratégias de prevenção'],
+            1 => ['Recursos pessoais bem gerenciados'],
         ];
 
         return $recommendations[$severityColor] ?? [];

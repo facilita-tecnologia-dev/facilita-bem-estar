@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\WellBeing;
+use App\Handlers\TestHandlerInterface;
 
-class SocialRelationsTestHandler implements TestHandlerInterface
+class AnxietyTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
         if ($totalPoints >= 15) {
-            $severityTitle = 'Baixo Risco';
-            $severityColor = 1;
+            $severityTitle = 'Grave';
+            $severityColor = 5;
         } elseif ($totalPoints >= 10) {
-            $severityTitle = 'Risco Moderado';
+            $severityTitle = 'Moderada';
             $severityColor = 3;
         } elseif ($totalPoints >= 5) {
-            $severityTitle = 'Alto Risco';
-            $severityColor = 4;
+            $severityTitle = 'Leve';
+            $severityColor = 2;
         } else {
-            $severityTitle = 'Risco Crítico';
-            $severityColor = 5;
+            $severityTitle = 'Mínima';
+            $severityColor = 1;
         }
 
         return [
@@ -34,10 +35,10 @@ class SocialRelationsTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            1 => ['Relações interpessoais muito positivas'],
-            3 => ['Algumas áreas necessitam de pequenos ajustes'],
-            4 => ['Necessidade de intervenções urgentes'],
-            5 => ['Requer reestruturação imediata das dinâmicas sociais'],
+            5 => ['Grave'],
+            3 => ['Moderada'],
+            2 => ['Leve'],
+            1 => ['Mínima'],
         ];
 
         return $recommendations[$severityColor] ?? [];

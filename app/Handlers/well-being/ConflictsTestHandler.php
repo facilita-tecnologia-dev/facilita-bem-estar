@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\WellBeing;
+use App\Handlers\TestHandlerInterface;
 
-class BurnoutTestHandler implements TestHandlerInterface
+class ConflictsTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
-        if ($totalPoints >= 27) {
-            $severityTitle = 'Zona de Risco';
+        if ($totalPoints >= 33) {
+            $severityTitle = 'Alto Nível de Conflitos';
             $severityColor = 5;
-        } elseif ($totalPoints >= 14) {
-            $severityTitle = 'Zona de Alerta';
+        } elseif ($totalPoints >= 21) {
+            $severityTitle = 'Conflitos Moderados';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Zona de Bem-estar';
+            $severityTitle = 'Baixo Nível de Conflitos';
             $severityColor = 1;
         }
 
@@ -31,9 +32,9 @@ class BurnoutTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Necessidade urgente de intervenção'],
-            3 => ['Recomenda-se atenção e estratégias de prevenção'],
-            1 => ['Recursos pessoais bem gerenciados'],
+            5 => ['Treinamento em comunicação não-violenta'],
+            3 => ['Considere a reestruturação das dinâmicas de equipe'],
+            1 => ['Ambiente de trabalho relativamente harmonioso'],
         ];
 
         return $recommendations[$severityColor] ?? [];

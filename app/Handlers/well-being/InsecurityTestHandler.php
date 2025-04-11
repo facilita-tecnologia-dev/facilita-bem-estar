@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\WellBeing;
+use App\Handlers\TestHandlerInterface;
 
-class ConflictsTestHandler implements TestHandlerInterface
+class InsecurityTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
         if ($totalPoints >= 33) {
-            $severityTitle = 'Alto Nível de Conflitos';
+            $severityTitle = 'Alta Insegurança';
             $severityColor = 5;
         } elseif ($totalPoints >= 21) {
-            $severityTitle = 'Conflitos Moderados';
+            $severityTitle = 'Insegurança Moderada';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Baixo Nível de Conflitos';
+            $severityTitle = 'Baixa Insegurança';
             $severityColor = 1;
         }
 
@@ -31,9 +32,9 @@ class ConflictsTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Treinamento em comunicação não-violenta'],
-            3 => ['Considere a reestruturação das dinâmicas de equipe'],
-            1 => ['Ambiente de trabalho relativamente harmonioso'],
+            5 => ['Nível alto de insegurança'],
+            3 => ['Nível médio de insegurança'],
+            1 => ['Nível baixo de insegurança'],
         ];
 
         return $recommendations[$severityColor] ?? [];

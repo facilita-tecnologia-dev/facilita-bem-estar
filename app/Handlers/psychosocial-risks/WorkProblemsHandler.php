@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\PsychosocialRisks;
+use App\Handlers\TestHandlerInterface;
 
 use App\Helpers\Helper;
-use App\Models\CompanyMetric;
 use App\Models\Test;
 use App\Services\RiskEvaluatorService;
 
-class WorkContextHandler implements TestHandlerInterface
+class WorkProblemsHandler implements TestHandlerInterface
 {
     public function __construct(private RiskEvaluatorService $riskEvaluatorService) {}
 
@@ -17,7 +17,6 @@ class WorkContextHandler implements TestHandlerInterface
         $average = $score / count($answers);
 
         $testType = Test::where('id', $testInfo->id)->with('questions')->first();
-
         $risks = Helper::getTestRisks($testType);
         $metrics = session('company')->metrics()->with('metricType');
 
@@ -30,14 +29,14 @@ class WorkContextHandler implements TestHandlerInterface
         }
 
         if ($average >= 3.7) {
-            $severityTitle = 'Risco Baixo';
-            $severityColor = 1;
+            $severityTitle = 'Risco Alto';
+            $severityColor = 5;
         } elseif ($average >= 2.3) {
             $severityTitle = 'Risco Médio';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Risco Alto';
-            $severityColor = 5;
+            $severityTitle = 'Risco Baixo';
+            $severityColor = 1;
         }
 
         return [

@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Handlers;
+namespace App\Handlers\WellBeing;
+use App\Handlers\TestHandlerInterface;
 
 class DepressionTestHandler implements TestHandlerInterface
 {
