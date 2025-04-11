@@ -18,26 +18,41 @@ class InternalManagerLoginController
         $validatedData = $request->validate([
             'cpf' => ['required', 'size:11']
         ]);
-
+        
         $user = User::query()->where('cpf', '=', $validatedData['cpf'])->first();
         
         $userRole = '';
         if($user){
             $userRole = DB::table('company_users')->where('role_id', '=', 1)->where('user_id', '=', $user->id)->get();
         }
-
-    
+        
+        
         if(!$user || !($userRole)){
             return back()->with('errorMessage', 'O usuário não existe ou não é um administrador.');
         }
         
         
-        $company = Company::query()->where('id', '=', $user->companies[0]->id)->first();
-
-        session(['company' => $company]);
         session(['user' => $user]);
-        
-        Auth::login($user);
+
+        if(count($user->companies) > 1){
+            return to_route('auth.login.choose-company');
+        } else{
+            $company = $user->companies->first();
+            session(['company' => $company]);
+            Auth::login($user);
+        }
+
+        return to_route('dashboard.charts');
+    }
+
+    public function showChooseCompanyScreen(){
+        return view('auth.login.choose-company');
+    }
+
+    public function loginWithChoosedCompany(Request $request){
+        $company = session('user')->companies->where('id', $request->company_id)->first();
+        session(['company' => $company]);
+        Auth::login(session('user'));
 
         return to_route('dashboard.charts');
     }

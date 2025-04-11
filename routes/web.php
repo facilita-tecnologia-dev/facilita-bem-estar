@@ -29,6 +29,9 @@ Route::middleware(GuestMiddleware::class)->group(function(){
     Route::get('/login/gestor-interno', InternalManagerLoginController::class)->name('auth.login.internal-manager');
     Route::post('/login/gestor-interno', [InternalManagerLoginController::class, 'attemptLogin']);
 
+    Route::get('/login/gestor-interno/escolha-empresa', [InternalManagerLoginController::class, 'showChooseCompanyScreen'])->name('auth.login.choose-company');
+    Route::post('/login/gestor-interno/escolha-empresa', [InternalManagerLoginController::class, 'loginWithChoosedCompany']);
+
     // Route::get('/login/gestor-externo', ExternalManagerLoginController::class)->name('auth.login.external-manager');
     
     // Route::get('/login/profissional-saude', HealthWorkerLoginController::class)->name('auth.login.health-worker');

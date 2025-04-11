@@ -43,12 +43,12 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->roles()->where('name', 'Gestor')->exists();
+        return $this->roles()->where('name', 'internal-manager')->exists();
     }
 
     public function isUser()
     {
-        return $this->roles()->where('name', 'Colaborador')->exists();
+        return $this->roles()->where('name', 'employee')->exists();
     }
 
     public function testCollections(){
