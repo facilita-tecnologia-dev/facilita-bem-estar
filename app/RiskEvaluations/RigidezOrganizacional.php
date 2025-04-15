@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class RigidezOrganizacional implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics): array
+    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -14,16 +14,17 @@ class RigidezOrganizacional implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $risk) {
-            if ($risk->parentQuestion->statement == 'Tenho autonomia para realizar as tarefas como julgo melhor') {
-                $answer = $answers[$risk->parentQuestion->id];
+            $answer = $answers[$risk->question_Id];
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+
+            if ($parentQuestion->statement == 'Tenho autonomia para realizar as tarefas como julgo melhor') {
 
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->parentQuestion->statement == 'Tenho liberdade para opinar sobre o meu trabalho') {
-                $answer = $answers[$risk->parentQuestion->id];
+            if ($parentQuestion->statement == 'Tenho liberdade para opinar sobre o meu trabalho') {
 
                 if ($answer <= 2) {
                     $riskPoints++;
@@ -31,11 +32,11 @@ class RigidezOrganizacional implements RiskEvaluatorInterface
             }
         }
 
-        $extraHours = $metrics->whereHas('metricType', function($query) {
-            $query->where('key_name', 'extra-hours');
+        $extraHours = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
         })->first();
 
-        if($extraHours && $extraHours->value > 50){
+        if ($extraHours && $extraHours->value > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }
@@ -50,7 +51,7 @@ class RigidezOrganizacional implements RiskEvaluatorInterface
         }
 
         return [
-            'evaluatedRisk' => $evaluatedRisk,
+
             'riskPoints' => $riskPoints,
         ];
     }

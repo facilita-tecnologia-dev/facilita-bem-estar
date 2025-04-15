@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class PressaoExcessiva implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics): array
+    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -14,16 +14,16 @@ class PressaoExcessiva implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $risk) {
-            if ($risk->parentQuestion->statement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
-                $answer = $answers[$risk->parentQuestion->id];
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+            $answer = $answers[$risk->question_Id];
 
+            if ($parentQuestion->statement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
                 if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->parentQuestion->statement == 'Há forte controle do trabalho') {
-                $answer = $answers[$risk->parentQuestion->id];
+            if ($parentQuestion->statement == 'Há forte controle do trabalho') {
 
                 if ($answer >= 4) {
                     $riskPoints++;
@@ -31,11 +31,11 @@ class PressaoExcessiva implements RiskEvaluatorInterface
             }
         }
 
-        $extraHours = $metrics->whereHas('metricType', function($query) {
-            $query->where('key_name', 'extra-hours');
+        $extraHours = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
         })->first();
 
-        if($extraHours && $extraHours->value > 50){
+        if ($extraHours && $extraHours->value > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }
@@ -50,7 +50,7 @@ class PressaoExcessiva implements RiskEvaluatorInterface
         }
 
         return [
-            'evaluatedRisk' => $evaluatedRisk,
+
             'riskPoints' => $riskPoints,
         ];
     }

@@ -4,9 +4,8 @@ namespace App\RiskEvaluations;
 
 class Imprevisibilidade implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics): array
+    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
     {
-        $evaluatedRisk = '';
         $riskPoints = 0;
 
         if ($average <= 3) {
@@ -14,33 +13,23 @@ class Imprevisibilidade implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $risk) {
-            if ($risk->parentQuestion->statement == 'Há clareza na definição das tarefas') {
-                $answer = $answers[$risk->parentQuestion->id];
+            $answer = $answers[$risk->question_Id];
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
 
+            if ($parentQuestion->statement == 'Há clareza na definição das tarefas') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->parentQuestion->statement == 'As informações de que preciso para executar minhas tarefas são claras') {
-                $answer = $answers[$risk->parentQuestion->id];
-
+            if ($parentQuestion->statement == 'As informações de que preciso para executar minhas tarefas são claras') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
-        }
-
-        if ($riskPoints > 2) {
-            $evaluatedRisk = 'Risco Alto';
-        } elseif ($riskPoints > 1) {
-            $evaluatedRisk = 'Risco Médio';
-        } else {
-            $evaluatedRisk = 'Risco Baixo';
         }
 
         return [
-            'evaluatedRisk' => $evaluatedRisk,
             'riskPoints' => $riskPoints,
         ];
     }

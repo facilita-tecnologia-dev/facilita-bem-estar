@@ -1,30 +1,24 @@
 <?php
 
 namespace App\Handlers\PsychosocialRisks;
-use App\Handlers\TestHandlerInterface;
 
-use App\Helpers\Helper;
 use App\Models\Test;
 use App\Services\RiskEvaluatorService;
 
-class WorkProblemsHandler implements TestHandlerInterface
+class WorkProblemsHandler
 {
     public function __construct(private RiskEvaluatorService $riskEvaluatorService) {}
 
-    public function process(array $answers, $testInfo): array
+    public function process(Test $test, array $answers, $questions, $metrics, $risks): array
     {
         $score = array_sum($answers);
         $average = $score / count($answers);
-
-        $testType = Test::where('id', $testInfo->id)->with('questions')->first();
-        $risks = Helper::getTestRisks($testType);
-        $metrics = session('company')->metrics()->with('metricType');
 
         $risksList = [];
 
         foreach ($risks as $risk) {
             $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average, $metrics);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average, $metrics, $questions);
             $risksList[$risk->name] = $evaluatedRisk;
         }
 
@@ -40,9 +34,6 @@ class WorkProblemsHandler implements TestHandlerInterface
         }
 
         return [
-            'answers' => $answers,
-            'score' => $score,
-            'average' => number_format($average, 2),
             'severity_title' => $severityTitle,
             'severity_color' => $severityColor,
             'risks' => $risksList,

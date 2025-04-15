@@ -32,4 +32,9 @@ class Test extends Model
     {
         return $this->hasMany(Question::class, 'test_id');
     }
+
+    public function risks()
+    {
+        return $this->hasMany(Risk::class);
+    }
 }

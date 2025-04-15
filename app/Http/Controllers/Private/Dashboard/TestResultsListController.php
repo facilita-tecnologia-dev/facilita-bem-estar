@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Private\Dashboard;
 
 use App\Helpers\Helper;
 use App\Models\Company;
+use App\Services\TestService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class TestResultsListController
 {
-    protected $company;
+    protected $testService;
 
-    protected $helper;
+    protected $companyUserCollections;
 
-    public function __construct(Helper $helper)
+    public function __construct(TestService $testService)
     {
-        $this->helper = $helper;
-        $this->company = $this->helper->getCompanyUsers(hasCollection: true);
+        $this->testService = $testService;
+        // $this->helper = $helper;
+        // $this->company = $this->helper->getCompanyUsers(hasCollection: true);
     }
 
     public function __invoke(Request $request, string $testName)
@@ -27,34 +29,89 @@ class TestResultsListController
         $queryStringDepartment = $request->department;
         $queryStringOccupation = $request->occupation;
 
-        $departmentsToFilter = $this->getDepartmentsToFilter();
-        $occupationsToFilter = $this->getOccupationsToFilter();
+        $this->companyUserCollections = $this->pageQuery($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation);
 
-        $usersList = $this->getCompiledResults($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation);
+        // $departmentsToFilter = $this->getDepartmentsToFilter();
+        // $occupationsToFilter = $this->getOccupationsToFilter();
+
+        $usersList = $this->getCompiledTestsData();
 
         return view('private.dashboard.test-results-list', compact(
             'testName',
             'usersList',
-            'departmentsToFilter',
-            'occupationsToFilter',
+            // 'departmentsToFilter',
+            // 'occupationsToFilter',
             'queryStringName',
             'queryStringDepartment',
             'queryStringOccupation'
         ));
     }
 
+    private function pageQuery($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation)
+    {
+        $companyUserCollections = Company::where('id', session('company')->id)
+            ->with('metrics.metricType')
+            ->with('users', function ($user) use ($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation) {
+                $user
+                    ->has('collections')
+                    ->when($queryStringName, function ($query) use ($queryStringName) {
+                        $query->where('name', 'like', "%$queryStringName%");
+                    })
+                    ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
+                        $query->where('department', '=', "$queryStringDepartment");
+                    })
+                    ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
+                        $query->where('occupation', '=', "$queryStringOccupation");
+                    })
+                    ->with('latestCollections', function ($latestCollection) use ($testName) {
+                        $latestCollection
+                            ->whereHas('tests', function ($q) use ($testName) {
+                                $q->whereHas('testType', function ($subQuery) use ($testName) {
+                                    $subQuery->where('display_name', $testName);
+                                });
+                            })
+                            ->with('collectionType')
+                            ->with('tests', function ($userTest) use ($testName) {
+                                $userTest
+                                    ->whereHas('testType', function ($q) use ($testName) {
+                                        $q->where('display_name', $testName);
+                                    })
+                                    ->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
+                            })->limit(1);
+                    });
+            })
+            ->first();
+
+        return $companyUserCollections;
+    }
+
     /**
      * Retorna um objeto Company com os usuarios e seus testes.
      */
-    private function getCompiledResults(string $testName, ?string $queryStringName, ?string $queryStringDepartment, ?string $queryStringOccupation): Company
+    private function getCompiledTestsData()
     {
-        $testCompiled = $this->helper->getCompanyUsersCollections(
-            justEssentials: true,
-            testName: $testName,
-            queryStringName: $queryStringName,
-            queryStringDepartment: $queryStringDepartment,
-            queryStringOccupation: $queryStringOccupation
-        );
+        $testCompiled = [];
+
+        foreach ($this->companyUserCollections->users as $user) {
+            $userTest = $user->latestCollections[0]->tests[0];
+
+            $testCompiled[$user->name]['user'] = $user;
+
+            $answers = [];
+
+            foreach ($userTest->answers as $answer) {
+                $question = $userTest->questions->where('id', $answer->question_id)->first();
+                $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
+                $answers[$question->id] = $relatedOption->value;
+            }
+
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+
+            if (! isset($testCompiled[$user->name]['severity'])) {
+                $testCompiled[$user->name]['severity']['severity_title'] = $evaluatedTest['severity_title'];
+                $testCompiled[$user->name]['severity']['severity_color'] = $evaluatedTest['severity_color'];
+            }
+        }
 
         return $testCompiled;
     }
@@ -62,20 +119,20 @@ class TestResultsListController
     /**
      * Retorna um array com os setores para filtrar.
      */
-    private function getDepartmentsToFilter(): array
-    {
-        $departments = array_unique($this->company->users->pluck('department')->toArray());
+    // private function getDepartmentsToFilter(): array
+    // {
+    //     $departments = array_unique($this->company->users->pluck('department')->toArray());
 
-        return $departments;
-    }
+    //     return $departments;
+    // }
 
-    /**
-     * Retorna um array com os cargos para filtrar.
-     */
-    private function getOccupationsToFilter(): array
-    {
-        $occupations = array_unique($this->company->users->pluck('occupation')->toArray());
+    // /**
+    //  * Retorna um array com os cargos para filtrar.
+    //  */
+    // private function getOccupationsToFilter(): array
+    // {
+    //     $occupations = array_unique($this->company->users->pluck('occupation')->toArray());
 
-        return $occupations;
-    }
+    //     return $occupations;
+    // }
 }

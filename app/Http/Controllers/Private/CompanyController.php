@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Private;
 
-use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;

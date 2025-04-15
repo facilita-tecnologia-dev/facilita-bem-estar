@@ -50,8 +50,8 @@ class User extends Authenticatable
             ->withPivot('company_id');
     }
 
-
-    public function hasRole(string $role) : bool {
+    public function hasRole(string $role): bool
+    {
         return $this->roles->contains('name', $role);
     }
 
@@ -81,8 +81,11 @@ class User extends Authenticatable
      *
      * @return HasOne
      */
-    public function latestCollection()
+    public function latestCollections()
     {
-        return $this->hasOne(UserCollection::class)->latest();
+        return $this->hasMany(UserCollection::class)
+            ->whereIn('collection_id', [1, 2])
+            ->limit(2)
+            ->orderBy('created_at', 'desc');
     }
 }

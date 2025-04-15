@@ -4,7 +4,7 @@ namespace App\RiskEvaluations;
 
 class Sobrecarga implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics): array
+    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -14,18 +14,18 @@ class Sobrecarga implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $risk) {
-            $answer = $answers[$risk->parentQuestion->id];
+            $answer = $answers[$risk->question_Id];
 
             if ($answer <= 2) {
                 $riskPoints++;
             }
         }
 
-        $extraHours = $metrics->whereHas('metricType', function($query) {
-            $query->where('key_name', 'extra-hours');
+        $extraHours = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
         })->first();
 
-        if($extraHours && $extraHours->value > 50){
+        if ($extraHours && $extraHours->value > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }
@@ -40,7 +40,7 @@ class Sobrecarga implements RiskEvaluatorInterface
         }
 
         return [
-            'evaluatedRisk' => $evaluatedRisk,
+
             'riskPoints' => $riskPoints,
         ];
     }

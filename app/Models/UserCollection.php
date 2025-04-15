@@ -40,12 +40,4 @@ class UserCollection extends Model
     {
         return $this->hasMany(UserTest::class, 'user_collection_id');
     }
-
-    /**
-     * Returns the risks identified for this collection based on the tests.
-     */
-    public function risks(): HasMany
-    {
-        return $this->hasMany(UserRiskResult::class, 'user_collection_id');
-    }
 }

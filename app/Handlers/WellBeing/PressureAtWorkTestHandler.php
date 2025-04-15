@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Handlers\WellBeing;
+
 use App\Handlers\TestHandlerInterface;
 
-class PressureForResultsTestHandler implements TestHandlerInterface
+class PressureAtWorkTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
-        if ($totalPoints >= 33) {
-            $severityTitle = 'Pressão Crítica';
-            $severityColor = 5;
-        } elseif ($totalPoints >= 25) {
+        if ($totalPoints >= 29) {
             $severityTitle = 'Alta Pressão';
-            $severityColor = 4;
+            $severityColor = 5;
         } elseif ($totalPoints >= 17) {
             $severityTitle = 'Pressão Moderada';
             $severityColor = 3;
@@ -35,10 +33,9 @@ class PressureForResultsTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Buscar suporte da gestão'],
-            4 => ['Propor discussões sobre cultura organizacional'],
-            3 => ['Manter atenção nas metas e resultados previstos'],
-            1 => ['Manter práticas existentes'],
+            5 => ['Buscar suporte organizacional'],
+            3 => ['Implementar gestão de tempo'],
+            1 => ['Implementar gestão de tempo'],
         ];
 
         return $recommendations[$severityColor] ?? [];

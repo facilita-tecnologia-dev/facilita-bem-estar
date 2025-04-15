@@ -24,8 +24,8 @@ class LoginExternalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cpf' => ['required', 'string', new validateCPF()],
-            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()]
+            'cpf' => ['required', 'string', new validateCPF],
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()],
         ];
     }
 }

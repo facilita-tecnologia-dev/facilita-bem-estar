@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers\Private\Dashboard;
 
-use App\Helpers\Helper;
+use App\Models\Company;
+use App\Services\TestService;
 use Illuminate\Support\Facades\Gate;
 
 class TestResultsPerDepartmentController
 {
-    protected $helper;
+    protected $testService;
 
-    public function __construct(Helper $helper)
+    protected $companyUserCollections;
+
+    public function __construct(TestService $testService)
     {
-        $this->helper = $helper;
+        $this->testService = $testService;
     }
 
     public function __invoke($testName)
     {
         Gate::authorize('view-manager-screens');
 
-        $resultsPerDepartment = $this->getCompiledResults($testName);
+        $this->companyUserCollections = $this->pageQuery($testName);
+
+        $resultsPerDepartment = $this->getCompiledTestsData();
 
         return view('private.dashboard.test-results-per-department', compact(
             'testName',
@@ -26,44 +31,70 @@ class TestResultsPerDepartmentController
         ));
     }
 
+    private function pageQuery($testName)
+    {
+        $companyUserCollections = Company::where('id', session('company')->id)
+            ->with('metrics.metricType')
+            ->with('users', function ($user) use ($testName) {
+                $user
+                    ->has('collections')
+                    ->with('latestCollections', function ($latestCollection) use ($testName) {
+                        $latestCollection
+                            ->whereHas('tests', function ($q) use ($testName) {
+                                $q->whereHas('testType', function ($subQuery) use ($testName) {
+                                    $subQuery->where('display_name', $testName);
+                                });
+                            })
+                            ->with('collectionType')
+                            ->with('tests', function ($userTest) use ($testName) {
+                                $userTest
+                                    ->whereHas('testType', function ($q) use ($testName) {
+                                        $q->where('display_name', $testName);
+                                    })
+                                    ->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
+                            })->limit(1);
+                    });
+            })
+            ->first();
+
+        return $companyUserCollections;
+    }
+
     /**
      * Compila os dados dividindo-os por setor para enviar para a view
      */
-    private function getCompiledResults(string $testName): array
+    private function getCompiledTestsData()
     {
-        $test = $this->helper->getCompanyUsersCollections(justEssentials: true, testName: $testName);
+        $testCompiled = [];
 
-        $testsCompiled = [];
+        foreach ($this->companyUserCollections->users as $user) {
+            $userTest = $user->latestCollections[0]->tests[0];
+            $userDepartment = $user->department;
 
-        foreach ($test->users as $user) {
-            if (! isset($testsCompiled[$user->department]['total'])) {
-                $testsCompiled[$user->department]['total'] = 0;
+            if (! isset($testCompiled[$userDepartment]['total'])) {
+                $testCompiled[$userDepartment]['total'] = 0;
             }
 
-            foreach ($user->latestCollection->tests as $userTest) {
-                $testSeverityTitle = $userTest->severity_title;
-                $testSeverityColor = $userTest->severity_color;
+            $testCompiled[$userDepartment]['total']++;
 
-                if (! isset($testsCompiled[$user->department]['severities'][$testSeverityTitle]['count'])) {
-                    $testsCompiled[$user->department]['severities'][$testSeverityTitle]['count'] = 0;
-                }
+            $answers = [];
 
-                if (! isset($testsCompiled[$user->department]['severities'][$testSeverityTitle]['severity_color'])) {
-                    $testsCompiled[$user->department]['severities'][$testSeverityTitle]['severity_color'] = '';
-                }
-
-                $testsCompiled[$user->department]['total'] += 1;
-                $testsCompiled[$user->department]['severities'][$testSeverityTitle]['count'] += 1;
-                $testsCompiled[$user->department]['severities'][$testSeverityTitle]['severity_color'] = (int) $testSeverityColor;
+            foreach ($userTest->answers as $answer) {
+                $question = $userTest->questions->where('id', $answer->question_id)->first();
+                $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
+                $answers[$question->id] = $relatedOption->value;
             }
+
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+
+            if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
+                $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;
+                $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_color'] = $evaluatedTest['severity_color'];
+            }
+
+            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count']++;
         }
 
-        foreach ($testsCompiled as $department) {
-            usort($department['severities'], function ($a, $b) {
-                return $b['severity_color'] <=> $a['severity_color'];
-            });
-        }
-
-        return $testsCompiled;
+        return $testCompiled;
     }
 }

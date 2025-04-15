@@ -2,6 +2,13 @@
 
 namespace App\Handlers;
 
+use App\Handlers\OrganizationalClimate\WorkCommunicationAndInformationHandler;
+use App\Handlers\OrganizationalClimate\WorkConditionsHandler;
+use App\Handlers\OrganizationalClimate\WorkDevelopmentCarrerAndRecognitionHandler;
+use App\Handlers\OrganizationalClimate\WorkEngagementAndPrideHandler;
+use App\Handlers\OrganizationalClimate\WorkLeadershipAndManagementHandler;
+use App\Handlers\OrganizationalClimate\WorkMotivationValuesAndPurposesHandler;
+use App\Handlers\OrganizationalClimate\WorkSocialRelationsHandler;
 use App\Handlers\PsychosocialRisks\ManagementStyleHandler;
 use App\Handlers\PsychosocialRisks\WorkContextHandler;
 use App\Handlers\PsychosocialRisks\WorkExperienceHandler;
@@ -24,7 +31,7 @@ class TestHandlerFactory
 {
     public function __construct(private Container $app) {}
 
-    public function getHandler(Test $testInfo): TestHandlerInterface
+    public function getHandler(Test $testInfo)
     {
         if (! $testInfo) {
             return $this->app->make(DefaultTestHandler::class);
@@ -49,7 +56,16 @@ class TestHandlerFactory
             'autonomy' => $this->app->make(AutonomyTestHandler::class),
             'burnout' => $this->app->make(BurnoutTestHandler::class),
             'stress' => $this->app->make(StressTestHandler::class),
-            
+
+            // organizational-climate
+            'work-conditions' => $this->app->make(WorkConditionsHandler::class),
+            'work-social-relations' => $this->app->make(WorkSocialRelationsHandler::class),
+            'work-leadership-and-management' => $this->app->make(WorkLeadershipAndManagementHandler::class),
+            'motivation-values-and-purposes' => $this->app->make(WorkMotivationValuesAndPurposesHandler::class),
+            'development-carreer-recognition' => $this->app->make(WorkDevelopmentCarrerAndRecognitionHandler::class),
+            'communication-and-information' => $this->app->make(WorkCommunicationAndInformationHandler::class),
+            'engagement-and-pride' => $this->app->make(WorkEngagementAndPrideHandler::class),
+
             default => $this->app->make(DefaultTestHandler::class),
         };
     }

@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\Private\Dashboard;
 
-use App\Helpers\Helper;
+use App\Models\Company;
+use App\Services\TestService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Gate;
 
 class RisksController
 {
-    protected $companyRisks;
+    protected $testService;
 
-    public function __construct(Helper $helper)
+    protected $companyUserCollections;
+
+    public function __construct(TestService $testService)
     {
-        $this->companyRisks = $helper->getCompanyUsersCollections(risks: true, tests: false);
+        $this->testService = $testService;
+        $this->companyUserCollections = $this->pageQuery();
     }
 
     public function __invoke()
@@ -27,7 +31,7 @@ class RisksController
     public function generatePDF()
     {
         Gate::authorize('view-manager-screens');
-        
+
         $risks = $this->getRisks();
         $company = session('company');
 
@@ -43,21 +47,60 @@ class RisksController
         return $pdf->stream('inventario_de_riscos.pdf');
     }
 
+    private function pageQuery()
+    {
+        $companyUserCollections = Company::where('id', session('company')->id)
+            ->with('metrics.metricType')
+            ->with('users', function ($user) {
+                $user
+                    ->has('collections')
+                    ->with('latestCollections', function ($latestCollection) {
+                        $latestCollection
+                            ->with('collectionType')
+                            ->with('tests', function ($userTest) {
+                                $userTest
+                                    ->with(['answers', 'questions.options'])
+                                    ->with('testType.risks', fn ($i) => $i->with(['relatedQuestions', 'controlActions']));
+                            });
+                    });
+            })
+            ->first();
+
+        return $companyUserCollections;
+    }
+
     private function getRisks($onlyCritical = false)
     {
         $testCompiled = [];
+        foreach ($this->companyUserCollections->users as $user) {
+            dd($user);
 
-        foreach ($this->companyRisks->users as $user) {
-            foreach ($user->latestCollection->risks as $risk) {
-                $testDisplayName = $risk->parentRisk->relatedTest->display_name;
-                $riskDisplayName = $risk->parentRisk->name;
+            foreach ($collection->tests as $userTest) {
+                $testDisplayName = $userTest->testType->display_name;
 
-                $testCompiled[$testDisplayName][$riskDisplayName]['score'][] = $risk->points;
-                $testCompiled[$testDisplayName][$riskDisplayName]['control-actions'] = $risk->parentRisk->controlActions;
+                $answers = [];
+
+                dd($userTest);
+
+                foreach ($userTest->answers as $answer) {
+                    $question = $userTest->questions->where('id', $answer->question_id)->first();
+                    $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
+                    $answers[$question->id] = $relatedOption->value;
+                }
+
+                $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+
+                if (isset($evaluatedTest['risks'])) {
+                    foreach ($evaluatedTest['risks'] as $riskName => $risk) {
+                        $testCompiled[$testDisplayName][$riskName]['score'][] = $risk['riskPoints'];
+                    }
+                }
+
             }
         }
 
         foreach ($testCompiled as $testName => $test) {
+
             foreach ($test as $riskName => $risk) {
                 $average = array_sum($risk['score']) / count($risk['score']);
 
@@ -71,6 +114,7 @@ class RisksController
                 } else {
                     $testCompiled[$testName][$riskName]['score'] = ceil($average);
 
+                    $testCompiled[$testName][$riskName]['control-actions'] = 'Risco Alto';
                     if ($average > 2) {
                         $testCompiled[$testName][$riskName]['risk'] = 'Risco Alto';
                     } elseif ($average > 1) {

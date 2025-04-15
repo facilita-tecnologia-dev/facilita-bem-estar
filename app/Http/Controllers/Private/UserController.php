@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Private;
 
-use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Imports\UsersImport;
 use App\Models\Company;
@@ -74,11 +73,11 @@ class UserController
     public function store(UserStoreRequest $request)
     {
         Gate::authorize('create', Auth::user());
-        
-        DB::transaction(function() use($request) {
+
+        DB::transaction(function () use ($request) {
             $userData = $request->safe()->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation', 'admission']);
             $userRole = $request->safe()->only('role');
-    
+
             $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
 
             $user = User::create([
@@ -216,7 +215,8 @@ class UserController
         return to_route('user.index');
     }
 
-    public function showImport(){
+    public function showImport()
+    {
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
@@ -227,10 +227,10 @@ class UserController
     public function import(Request $request, Company $company)
     {
         Excel::import(new UsersImport($company), $request->file('import_users')->store('temp'));
+
         return back()->with('message', 'Usuários importados com sucesso');
     }
 
-    
     private function getDepartmentsToFilter()
     {
         $departments = array_unique($this->users->pluck('department')->toArray());
@@ -249,8 +249,8 @@ class UserController
     {
         $admissionDate = Carbon::createFromFormat('Y-m-d', $user->admission);
         $admissionDiff = Carbon::now()
-        ->diff($admissionDate)
-        ->format('%y anos, %m meses e %d dias.');
+            ->diff($admissionDate)
+            ->format('%y anos, %m meses e %d dias.');
 
         return $admissionDiff;
     }
@@ -259,8 +259,8 @@ class UserController
     {
         $birthDate = Carbon::createFromFormat('Y-m-d', $user->birth_date);
         $age = Carbon::now()
-        ->diff($birthDate)
-        ->format('%y anos');
+            ->diff($birthDate)
+            ->format('%y anos');
 
         return $age;
     }

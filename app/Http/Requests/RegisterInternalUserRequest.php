@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Rules\validateCPF;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class RegisterInternalUserRequest extends FormRequest
 {
@@ -24,8 +23,8 @@ class RegisterInternalUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string','min:6', 'max:255'],
-            'cpf' => ['required', 'string', 'unique:users', new validateCPF()],
+            'name' => ['required', 'string', 'min:6', 'max:255'],
+            'cpf' => ['required', 'string', 'unique:users', new validateCPF],
         ];
     }
 }

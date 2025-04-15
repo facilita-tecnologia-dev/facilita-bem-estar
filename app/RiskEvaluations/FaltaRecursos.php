@@ -4,9 +4,8 @@ namespace App\RiskEvaluations;
 
 class FaltaRecursos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics): array
+    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
     {
-        $evaluatedRisk = '';
         $riskPoints = 0;
 
         if ($average <= 3) {
@@ -14,33 +13,22 @@ class FaltaRecursos implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $risk) {
-            if ($risk->parentQuestion->statement == 'Os recursos de trabalho são em número suficiente para a realização das tarefas') {
-                $answer = $answers[$risk->parentQuestion->id];
-
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+            $answer = $answers[$risk->question_Id];
+            if ($parentQuestion->statement == 'Os recursos de trabalho são em número suficiente para a realização das tarefas') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
 
-            if ($risk->parentQuestion->statement == 'Os equipamentos são adequados para a realização das tarefas') {
-                $answer = $answers[$risk->parentQuestion->id];
-
+            if ($parentQuestion->statement == 'Os equipamentos são adequados para a realização das tarefas') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
-        }
-
-        if ($riskPoints > 2) {
-            $evaluatedRisk = 'Risco Alto';
-        } elseif ($riskPoints > 1) {
-            $evaluatedRisk = 'Risco Médio';
-        } else {
-            $evaluatedRisk = 'Risco Baixo';
         }
 
         return [
-            'evaluatedRisk' => $evaluatedRisk,
             'riskPoints' => $riskPoints,
         ];
     }

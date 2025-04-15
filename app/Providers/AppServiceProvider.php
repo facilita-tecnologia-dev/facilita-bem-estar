@@ -3,15 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Company;
-use App\Models\CompanyMetric;
 use App\Models\User;
-use App\Policies\CompanyMetricPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
 
         Gate::define('view-manager-screens', function (User $user): Response {
-            if($user->hasRole('internal-manager')){
+            if ($user->hasRole('internal-manager')) {
                 return Response::allow();
             }
 
@@ -41,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('answer-tests', function (User $user): Response {
-            if($user->hasRole('internal-manager') || $user->hasRole('employee')){
+            if ($user->hasRole('internal-manager') || $user->hasRole('employee')) {
                 return Response::allow();
             }
 
@@ -49,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('update-metrics', function (User $user): Response {
-            if($user->hasRole('internal-manager')){
+            if ($user->hasRole('internal-manager')) {
                 return Response::allow();
             }
 

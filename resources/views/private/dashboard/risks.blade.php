@@ -41,11 +41,11 @@
                                             </div>
                                             <p class="px-3 font-semibold">Medidas de Controle e Prevenção</p>
                                             <ul class="grid grid-cols-1 px-4 gap-y-3 gap-x-4 list-disc pl-5">
-                                                @foreach ($risk['control-actions'] as $action)
+                                                {{-- @foreach ($risk['control-actions'] as $action)
                                                     <li class="text-sm w-full rounded-md">
                                                         {{ $action->content }}
                                                     </li>
-                                                @endforeach
+                                                @endforeach --}}
                                             </ul>
                                         </div>
                                     {{-- @endif  --}}

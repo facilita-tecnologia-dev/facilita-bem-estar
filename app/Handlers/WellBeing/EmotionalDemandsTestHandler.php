@@ -1,22 +1,23 @@
 <?php
 
 namespace App\Handlers\WellBeing;
+
 use App\Handlers\TestHandlerInterface;
 
-class PressureAtWorkTestHandler implements TestHandlerInterface
+class EmotionalDemandsTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
-        if ($totalPoints >= 29) {
-            $severityTitle = 'Alta Pressão';
+        if ($totalPoints >= 33) {
+            $severityTitle = 'Alta exigência emocional';
             $severityColor = 5;
-        } elseif ($totalPoints >= 17) {
-            $severityTitle = 'Pressão Moderada';
+        } elseif ($totalPoints >= 21) {
+            $severityTitle = 'Média exigência emocional';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Baixa Pressão';
+            $severityTitle = 'Baixa exigência emocional';
             $severityColor = 1;
         }
 
@@ -32,9 +33,9 @@ class PressureAtWorkTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Buscar suporte organizacional'],
-            3 => ['Implementar gestão de tempo'],
-            1 => ['Implementar gestão de tempo'],
+            5 => ['Grande necessidade de controle e supressão emocional'],
+            3 => ['Necessidade intermediária de regulação emocional'],
+            1 => ['Baixa necessidade de controle emocional'],
         ];
 
         return $recommendations[$severityColor] ?? [];

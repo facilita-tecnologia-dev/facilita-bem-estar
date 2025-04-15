@@ -45,7 +45,7 @@
                     </x-form>
                 </div>
                 <div class="w-full flex items-center justify-between">
-                    <x-action href="{{ route('test', $testIndex - 1) }}" variant="secondary">
+                    <x-action href="{{ route('test', $testIndex == 1 ? $testIndex : $testIndex - 1) }}" variant="secondary">
                         Voltar
                     </x-action>
                     <x-action form="test-form" tag="button" variant="secondary">

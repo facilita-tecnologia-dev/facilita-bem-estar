@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterExternalRequest;
-use App\Http\Requests\RegisterInternalRequest;
 use App\Http\Requests\RegisterInternalUserRequest;
 use App\Models\Company;
 use App\Models\User;
@@ -20,9 +19,10 @@ class RegisterController
         return view('auth.register.index');
     }
 
-    public function attemptInternalUserRegister(RegisterInternalUserRequest $request){
-        
-        $user = new User();
+    public function attemptInternalUserRegister(RegisterInternalUserRequest $request)
+    {
+
+        $user = new User;
         $user->name = $request->validated('name');
         $user->cpf = $request->validated('cpf');
 
@@ -31,15 +31,17 @@ class RegisterController
         return to_route('auth.register.internal.company');
     }
 
-    public function showCompanyRegister(){
+    public function showCompanyRegister()
+    {
         return view('auth.register.company');
     }
 
-    public function attemptCompanyRegister(RegisterCompanyRequest $request){
-        DB::transaction(function() use($request) {
+    public function attemptCompanyRegister(RegisterCompanyRequest $request)
+    {
+        DB::transaction(function () use ($request) {
             $company = Company::create([
                 'name' => $request->validated('name'),
-                'cnpj' => $request->validated('cnpj')
+                'cnpj' => $request->validated('cnpj'),
             ]);
 
             $user = User::create([
@@ -59,12 +61,13 @@ class RegisterController
         });
     }
 
-    public function attemptExternalRegister(RegisterExternalRequest $request){
-        DB::transaction(function() use($request){
+    public function attemptExternalRegister(RegisterExternalRequest $request)
+    {
+        DB::transaction(function () use ($request) {
             $user = User::create([
-                'name' => $request->validated('name'), 
-                'cpf' => $request->validated('cpf'), 
-                'password' => Hash::make($request->validated('password')), 
+                'name' => $request->validated('name'),
+                'cpf' => $request->validated('cpf'),
+                'password' => Hash::make($request->validated('password')),
             ]);
 
             DB::table('company_users')->insert([
@@ -75,7 +78,7 @@ class RegisterController
 
             Auth::login($user);
         });
-        
+
         return to_route('choose-test');
     }
 }

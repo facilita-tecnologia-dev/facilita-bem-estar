@@ -23,7 +23,7 @@ class LoginInternalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cpf' => ['required', 'string', new validateCPF()],
+            'cpf' => ['required', 'string', new validateCPF],
         ];
     }
 }

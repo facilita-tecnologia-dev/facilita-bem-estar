@@ -9,7 +9,6 @@ use App\Http\Controllers\Private\Dashboard\DashboardController;
 use App\Http\Controllers\Private\Dashboard\RisksController;
 use App\Http\Controllers\Private\Dashboard\TestResultsListController;
 use App\Http\Controllers\Private\Dashboard\TestResultsPerDepartmentController;
-use App\Http\Controllers\Private\ImportUsersController;
 use App\Http\Controllers\Private\TestsController;
 use App\Http\Controllers\Private\UserController;
 use App\Http\Controllers\Public\PresentationController;
@@ -45,12 +44,12 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
     Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
 
-    Route::prefix('dashboard')->group(function(){
+    Route::prefix('dashboard')->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard.charts');
-        Route::get('/{test}', TestResultsPerDepartmentController::class)->name('dashboard.test-result-per-department');
-        Route::get('/{test}/list', TestResultsListController::class)->name('dashboard.test-results-list');
         Route::get('/risks', RisksController::class)->name('dashboard.risks');
         Route::get('/risks/inventory', [RisksController::class, 'generatePDF'])->name('dashboard.risks.pdf');
+        Route::get('/{test}', TestResultsPerDepartmentController::class)->name('dashboard.test-result-per-department');
+        Route::get('/{test}/list', TestResultsListController::class)->name('dashboard.test-results-list');
     });
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');

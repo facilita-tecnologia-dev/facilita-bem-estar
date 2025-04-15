@@ -23,14 +23,14 @@ class UserStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'       => 'required|string|min:2|max:255',
-            'cpf'        => ['required', 'unique:users', 'string', new validateCPF()],
-            'age'        => 'required|integer|min:18|max:120',
-            'gender'     => 'required|string|in:masculino,feminino',
+            'name' => 'required|string|min:2|max:255',
+            'cpf' => ['required', 'unique:users', 'string', new validateCPF],
+            'age' => 'required|integer|min:18|max:120',
+            'gender' => 'required|string',
             'department' => 'required|string|max:255',
             'occupation' => 'required|string|max:255',
-            'admission'  => 'required|date',
-            'role'       => 'required|string|in:internal-manager,employee',
+            'admission' => 'required|date',
+            'role' => 'required|string|in:internal-manager,employee',
         ];
     }
 }

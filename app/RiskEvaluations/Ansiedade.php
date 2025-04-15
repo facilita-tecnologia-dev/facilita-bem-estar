@@ -4,9 +4,8 @@ namespace App\RiskEvaluations;
 
 class Ansiedade implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics): array
+    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
     {
-        $evaluatedRisk = '';
         $riskPoints = 0;
 
         if ($average >= 3.5) {
@@ -14,33 +13,25 @@ class Ansiedade implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $risk) {
-            $answer = $answers[$risk->parentQuestion->id];
+            $answer = $answers[$risk->question_Id];
 
             if ($answer >= 4) {
                 $riskPoints++;
             }
         }
 
-        $turnover = $metrics->whereHas('metricType', function($query) {
-            $query->where('key_name', 'turnover');
+        $turnover = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'turnover';
         })->first();
 
-        if($turnover && $turnover->value > 50){
+        if ($turnover && $turnover->value > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }
         }
 
-        if ($riskPoints > 2) {
-            $evaluatedRisk = 'Risco Alto';
-        } elseif ($riskPoints > 1) {
-            $evaluatedRisk = 'Risco Médio';
-        } else {
-            $evaluatedRisk = 'Risco Baixo';
-        }
-
         return [
-            'evaluatedRisk' => $evaluatedRisk,
+
             'riskPoints' => $riskPoints,
         ];
     }

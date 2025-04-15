@@ -16,6 +16,7 @@
     
             <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @foreach ($resultsPerDepartment as $departmentName => $departmentData)
+                        
                     <a href="{{ route('dashboard.test-results-list', $testName)}}" class="bg-white/25 rounded-md px-4 py-5 shadow-md space-y-2 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                         <div class="bg-gray-100 px-4 py-2 w-full rounded-md shadow-md">
                             <span class="text-base font-semibold text-left">{{ $departmentName }}</span>

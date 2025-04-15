@@ -10,10 +10,9 @@ class validateCNPJ implements ValidationRule
     /**
      * Executa a validação do CNPJ.
      *
-     * @param  string  $attribute Nome do atributo que está sendo validado.
-     * @param  mixed   $value     Valor informado para o CNPJ.
-     * @param  \Closure  $fail   Função callback para reportar a falha na validação.
-     * @return void
+     * @param  string  $attribute  Nome do atributo que está sendo validado.
+     * @param  mixed  $value  Valor informado para o CNPJ.
+     * @param  \Closure  $fail  Função callback para reportar a falha na validação.
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -21,11 +20,13 @@ class validateCNPJ implements ValidationRule
 
         if (strlen($cnpj) !== 14) {
             $fail('O CNPJ informado é inválido.');
+
             return;
         }
 
         if (preg_match('/^(.)\1*$/', $cnpj)) {
             $fail('O CNPJ informado é inválido.');
+
             return;
         }
 
@@ -35,6 +36,7 @@ class validateCNPJ implements ValidationRule
                 $sum += $cnpjPart[$index] * $weight;
             }
             $remainder = $sum % 11;
+
             return ($remainder < 2) ? 0 : 11 - $remainder;
         };
 
@@ -43,6 +45,7 @@ class validateCNPJ implements ValidationRule
 
         if ((int) $cnpj[12] !== $firstDigit) {
             $fail('O CNPJ informado é inválido.');
+
             return;
         }
 
@@ -51,6 +54,7 @@ class validateCNPJ implements ValidationRule
 
         if ((int) $cnpj[13] !== $secondDigit) {
             $fail('O CNPJ informado é inválido.');
+
             return;
         }
     }

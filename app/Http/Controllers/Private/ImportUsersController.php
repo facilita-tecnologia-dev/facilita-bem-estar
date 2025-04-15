@@ -22,6 +22,7 @@ class ImportUsersController
     public function importUsers(Request $request, Company $company)
     {
         Excel::import(new UsersImport($company), $request->file('import_employees')->store('temp'));
+
         return back()->with('message', 'Usuários importados com sucesso');
     }
 }

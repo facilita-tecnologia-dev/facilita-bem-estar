@@ -1,22 +1,23 @@
 <?php
 
 namespace App\Handlers\WellBeing;
+
 use App\Handlers\TestHandlerInterface;
 
-class EmotionalDemandsTestHandler implements TestHandlerInterface
+class InsecurityTestHandler implements TestHandlerInterface
 {
     public function process(array $answers): array
     {
         $totalPoints = array_sum($answers);
 
         if ($totalPoints >= 33) {
-            $severityTitle = 'Alta exigência emocional';
+            $severityTitle = 'Alta Insegurança';
             $severityColor = 5;
         } elseif ($totalPoints >= 21) {
-            $severityTitle = 'Média exigência emocional';
+            $severityTitle = 'Insegurança Moderada';
             $severityColor = 3;
         } else {
-            $severityTitle = 'Baixa exigência emocional';
+            $severityTitle = 'Baixa Insegurança';
             $severityColor = 1;
         }
 
@@ -32,9 +33,9 @@ class EmotionalDemandsTestHandler implements TestHandlerInterface
     private function getRecommendations(string $severityColor): array
     {
         $recommendations = [
-            5 => ['Grande necessidade de controle e supressão emocional'],
-            3 => ['Necessidade intermediária de regulação emocional'],
-            1 => ['Baixa necessidade de controle emocional'],
+            5 => ['Nível alto de insegurança'],
+            3 => ['Nível médio de insegurança'],
+            1 => ['Nível baixo de insegurança'],
         ];
 
         return $recommendations[$severityColor] ?? [];

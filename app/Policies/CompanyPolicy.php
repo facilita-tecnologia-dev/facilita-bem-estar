@@ -13,7 +13,7 @@ class CompanyPolicy
      */
     public function viewAny(User $user): Response
     {
-        if($user->hasRole('internal-manager')){
+        if ($user->hasRole('internal-manager')) {
             return Response::allow();
         }
 
@@ -25,7 +25,7 @@ class CompanyPolicy
      */
     public function view(User $user, Company $company): Response
     {
-        if($user->hasRole('internal-manager')){
+        if ($user->hasRole('internal-manager')) {
             return Response::allow();
         }
 
@@ -37,7 +37,7 @@ class CompanyPolicy
      */
     public function create(User $user): Response
     {
-        if($user->hasRole('internal-manager')){
+        if ($user->hasRole('internal-manager')) {
             return Response::allow();
         }
 
@@ -49,7 +49,7 @@ class CompanyPolicy
      */
     public function update(User $user, Company $company): Response
     {
-          if($user->hasRole('internal-manager')){
+        if ($user->hasRole('internal-manager')) {
             return Response::allow();
         }
 
@@ -61,7 +61,7 @@ class CompanyPolicy
      */
     public function delete(User $user, Company $company): Response
     {
-        if($user->hasRole('internal-manager')){
+        if ($user->hasRole('internal-manager')) {
             return Response::allow();
         }
 

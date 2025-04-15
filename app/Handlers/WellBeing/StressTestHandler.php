@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Handlers\WellBeing;
+
 use App\Handlers\TestHandlerInterface;
 
 class StressTestHandler implements TestHandlerInterface
