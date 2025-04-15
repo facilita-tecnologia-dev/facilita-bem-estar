@@ -71,9 +71,6 @@ class DashboardController
                         $answers[$question->id] = $relatedOption->value;
                     }
 
-                    if (! isset($testCompiled[$collectionName][$testDisplayName]['answers'])) {
-                        $testCompiled[$collectionName][$testDisplayName]['answers'] = $answers;
-                    }
 
                     $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
 
@@ -98,7 +95,8 @@ class DashboardController
 
                     if ($collection->collectionType->key_name == 'organizational-climate') {
                         foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
-                            $testCompiled[$collectionName][$testDisplayName]['processed_answers'][$questionNumber][] = $answer;
+                            $testCompiled[$collectionName][$testDisplayName]['Geral']['answers'][$questionNumber][] = $answer;
+                            $testCompiled[$collectionName][$testDisplayName][$user->department]['answers'][$questionNumber][] = $answer;
                         }
                     }
                 }
@@ -123,16 +121,12 @@ class DashboardController
         }
 
         foreach ($testCompiled['organizational-climate'] as $testName => $test) {
-            if (isset($test['processed_answers'])) {
-                foreach ($test['processed_answers'] as $questionNumber => $answers) {
+            foreach($test as $categoryName => $category){
+                foreach ($category['answers'] as $questionNumber => $answers) {
                     $count = count($answers);
                     $sum = array_sum($answers);
-                    $testCompiled['organizational-climate'][$testName]['processed_answers'][$questionNumber] = $sum / ($count * 100);
+                    $testCompiled['organizational-climate'][$testName][$categoryName]['total_average'] = $sum / $count;
                 }
-
-                $processedAnswers = $testCompiled['organizational-climate'][$testName]['processed_answers'];
-
-                $testCompiled['organizational-climate'][$testName]['total_average'] = array_sum($processedAnswers) / count($processedAnswers);
             }
         }
 
