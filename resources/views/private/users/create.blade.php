@@ -22,15 +22,15 @@
                     
                     <x-form.input-text name="cpf" label="CPF apenas números" placeholder="Digite o cpf do usuário"/>
                     
-                    <x-form.input-text name="birth_date" label="Idade" type="number" placeholder="Digite a idade do usuário"/>
-                    
-                    <x-form.input-text name="gender" label="Sexo" placeholder="Digite o sexo do usuário"/>
+                    <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" label="Data de nascimento"/>
+
+                    <x-form.select name="gender" label="Sexo" :options="$gendersToSelect" />
                     
                     <x-form.input-text name="department" label="Setor" placeholder="Digite o departamento do usuário"/>
                     
                     <x-form.input-text name="occupation" label="Cargo" placeholder="Digite o cargo do usuário"/>
 
-                    <x-form.input-date name="admission" max="{{ date('Y-m-d') }}" label="Data de admissão"/>
+                    <x-form.input-date name="admission" max="{{ Carbon\Carbon::now()->toDateString() }}" label="Data de admissão"/>
 
                     <x-form.select name="role" label="Gestor/Colaborador" :options="$rolesToSelect" />
                         

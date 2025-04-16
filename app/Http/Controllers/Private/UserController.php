@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Private;
 
+use App\Enums\GenderEnum;
+use App\Enums\InternalUserRoleEnum;
 use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Imports\UsersImport;
 use App\Models\Company;
 use App\Models\User;
@@ -42,8 +45,9 @@ class UserController
             })
             ->get();
 
-        $departmentsToFilter = $this->getDepartmentsToFilter();
-        $occupationsToFilter = $this->getOccupationsToFilter();
+        
+        $departmentsToFilter = session('company')->users()->whereNotNull('department')->distinct()->pluck('department');
+        $occupationsToFilter = session('company')->users()->whereNotNull('occupation')->distinct()->pluck('occupation');
 
         return view('private.users.index', compact(
             'users',
@@ -62,9 +66,10 @@ class UserController
     {
         Gate::authorize('create', Auth::user());
 
-        $rolesToSelect = $this->getRolesToSelect();
+        $gendersToSelect = array_map(fn(GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $rolesToSelect = array_map(fn(InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());     
 
-        return view('private.users.create', compact('rolesToSelect'));
+        return view('private.users.create', compact('rolesToSelect', 'gendersToSelect'));
     }
 
     /**
@@ -75,25 +80,15 @@ class UserController
         Gate::authorize('create', Auth::user());
 
         DB::transaction(function () use ($request) {
-            $userData = $request->safe()->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation', 'admission']);
+            $userData = $request->safe()->except('role');
             $userRole = $request->safe()->only('role');
+            
+            $userRoleID = $userRole['role'] === InternalUserRoleEnum::INTERNAL_MANAGER->value ? 1 : 2;
+            
+            $user = User::create($userData);
 
-            $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
-
-            $user = User::create([
-                'name' => $userData['name'],
-                'cpf' => $userData['cpf'],
-                'birth_date' => $userData['birth_date'],
-                'gender' => $userData['gender'],
-                'department' => $userData['department'],
-                'occupation' => $userData['occupation'],
-                'admission' => $admissionDateFormated,
-            ]);
-
-            DB::table('company_users')->insert([
-                'role_id' => $userRole['role'],
-                'user_id' => $user->id,
-                'company_id' => session('company')->id,
+            $user->companies()->sync([
+                session('company')->id => ['role_id' => $userRoleID]
             ]);
         });
 
@@ -106,99 +101,63 @@ class UserController
     public function show(User $user)
     {
         Gate::authorize('view', Auth::user());
+        
+        $admission = Carbon::parse($user->admission);
 
-        $admission = $this->getFormattedAdmissionDate($user);
-        $age = $this->getFormattedAge($user);
-
-        $lastTestCollection = DB::table('user_collections')->where('user_id', $user->id)
-            ->latest('created_at')
-            ->first();
-
-        $lastTestCollectionDate = null;
-        $testResults = null;
-
-        if ($lastTestCollection) {
-            $collectionDateTime = Carbon::parse($lastTestCollection->created_at);
-            $formattedDate = $collectionDateTime->format('d/m/Y');
-
-            $diff = Carbon::now()->startOfDay()->diff($collectionDateTime->startOfDay());
-
-            if ($diff->y >= 1) {
-                $timeAgo = $diff->y.' ano(s)';
-            } elseif ($diff->m >= 1) {
-                $timeAgo = $diff->m.' mês(es)';
-            } else {
-                $timeAgo = $diff->d.' dia(s)';
-            }
-
-            $lastTestCollectionDate = "{$formattedDate} - {$timeAgo} atrás.";
+        if(count($user->latestCollections)){
+            $latestCollectionDate = $user->latestCollections[0]->created_at->diffForHumans();
+        } else{
+            $latestCollectionDate = 'Nunca';
         }
 
-        $cpf = $this->getFormattedCPF($user);
-
-        $userInfo = [
-            'Nome' => $user->name,
-            'CPF' => $cpf,
-            'Idade' => $age,
-            'Setor' => $user->department,
-            'Cargo' => $user->occupation,
-            'Sexo' => $user->gender,
-            'Data de Admissão' => $user->admission,
-            'Tempo de empresa' => $admission,
-        ];
-
-        if ($lastTestCollectionDate) {
-            $userInfo['Último teste realizado'] = $lastTestCollectionDate;
-        }
-
-        return view('private.users.show', compact('user', 'userInfo'));
+        return view('private.users.show', compact('user', 'admission', 'latestCollectionDate'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, User $user)
+    public function edit(User $user)
     {
         Gate::authorize('update', Auth::user());
 
-        $rolesToSelect = $this->getRolesToSelect();
+        $gendersToSelect = array_map(fn(GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $rolesToSelect = array_map(fn(InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());     
 
-        $currentUserRole = $user->roles()->first();
+        $roleInThisCompany = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
+        $userRole = $roleInThisCompany === 1 ? InternalUserRoleEnum::INTERNAL_MANAGER->value : InternalUserRoleEnum::EMPLOYEE->value;
 
         return view('private.users.update', compact(
             'user',
             'rolesToSelect',
-            'currentUserRole',
+            'gendersToSelect',
+            'userRole',
         ));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $employee)
+    public function update(UserUpdateRequest $request, User $user)
     {
         Gate::authorize('update', Auth::user());
+        
+        DB::transaction(function() use($request, $user) {
+            $userData = $request->safe()->except('role');
+            $userRole = $request->safe()->only('role');
+            
+            $userRoleID = $userRole['role'] === 'Gestor Interno' ? 1 : 2;
+            
+            $user->update($userData);
+            
+            $user->companies()->sync([
+                session('company')->id => ['role_id' => $userRoleID]
+            ]);
 
-        $validatedData = $request->validate([
-            'name' => ['required', 'max:70'],
-            'cpf' => ['required', 'max:70'],
-            'birth_date' => ['required', 'max:70'],
-            'gender' => ['required', 'max:70'],
-            'department' => ['required', 'max:70'],
-            'occupation' => ['required', 'max:70'],
-            'role' => ['required', 'max:70'],
-        ]);
-
-        $userData = $request->only(['name', 'cpf', 'birth_date', 'gender', 'department', 'occupation']);
-        $userRole = $request->only('role');
-
-        DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->update(['role_id' => $userRole['role']]);
-
-        $employee->update($userData);
-
-        if (Auth::user()->id == $employee->id) {
-            session(['user' => $employee]);
-        }
+            if (Auth::user()->id == $user->id) {
+                session(['user' => $user]);
+                Auth::setUser($user->fresh());
+            }
+        });
 
         return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
     }
@@ -217,74 +176,17 @@ class UserController
 
     public function showImport()
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('create', Auth::user());
 
         return view('private.users.import');
     }
 
     public function import(Request $request, Company $company)
     {
+        Gate::authorize('create', Auth::user());
+
         Excel::import(new UsersImport($company), $request->file('import_users')->store('temp'));
 
         return back()->with('message', 'Usuários importados com sucesso');
-    }
-
-    private function getDepartmentsToFilter()
-    {
-        $departments = array_unique($this->users->pluck('department')->toArray());
-
-        return $departments;
-    }
-
-    private function getOccupationsToFilter()
-    {
-        $occupations = array_unique($this->users->pluck('occupation')->toArray());
-
-        return $occupations;
-    }
-
-    private function getFormattedAdmissionDate($user)
-    {
-        $admissionDate = Carbon::createFromFormat('Y-m-d', $user->admission);
-        $admissionDiff = Carbon::now()
-            ->diff($admissionDate)
-            ->format('%y anos, %m meses e %d dias.');
-
-        return $admissionDiff;
-    }
-
-    private function getFormattedAge($user)
-    {
-        $birthDate = Carbon::createFromFormat('Y-m-d', $user->birth_date);
-        $age = Carbon::now()
-            ->diff($birthDate)
-            ->format('%y anos');
-
-        return $age;
-    }
-
-    private function getFormattedCPF($employee)
-    {
-        $cpfFormatted = preg_replace(
-            '/(\d{3})(\d{3})(\d{3})(\d{2})/',
-            '$1.$2.$3-$4',
-            $employee->cpf
-        );
-
-        return $cpfFormatted;
-    }
-
-    private function getRolesToSelect()
-    {
-        $roles = DB::table('roles')->orderBy('id', 'desc')->get()->toArray();
-        $rolesFormatted = [];
-
-        foreach ($roles as $role) {
-            $rolesFormatted[] = ['option' => $role->name, 'value' => $role->id];
-        }
-
-        return $rolesFormatted;
     }
 }

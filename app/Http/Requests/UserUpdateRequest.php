@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-class UserStoreRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:2|max:255',
-            'cpf' => ['required', 'unique:users', 'string', new validateCPF],
+            'cpf' => ['required', 'string', new validateCPF],
             'birth_date' => ['required', 'date', Rule::date()->beforeOrEqual(today()->subYear(16)), Rule::date()->after(today()->subCenturies(1))],
             'gender' => ['required', 'string', Rule::enum(GenderEnum::class)],
             'department' => 'required|string|max:255',

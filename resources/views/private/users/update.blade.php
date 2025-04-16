@@ -18,7 +18,7 @@
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <x-form action="{{ route('user.update', $user) }}" id="form-update-company-profile" put class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
-                    <x-form.input-text name="name" label="Nome completo" value="{{ $user->name }}" placeholder="Digite o nome completo do colaborador"/>
+                    {{-- <x-form.input-text name="name" label="Nome completo" value="{{ $user->name }}" placeholder="Digite o nome completo do colaborador"/>
                     
                     <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" disabled />
                     
@@ -30,7 +30,25 @@
                     
                     <x-form.input-text name="occupation" label="Cargo" value="{{ $user->occupation }}" placeholder="Digite o cargo do colaborador"/>
 
-                    <x-form.select name="role" value="{{ $currentUserRole }}" label="Gestor/Colaborador" :options="$rolesToSelect" />
+                    <x-form.select name="role" value="{{ $currentUserRole }}" label="Gestor/Colaborador" :options="$rolesToSelect" /> --}}
+                    
+                    {{--  --}}
+
+                    <x-form.input-text name="name" label="Nome completo" value="{{ $user->name }}" placeholder="Digite o nome completo do usuário"/>
+                    
+                    <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" readonly/>
+                    
+                    <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" value="{{ $user->birth_date }}" label="Data de nascimento"/>
+
+                    <x-form.select name="gender" label="Sexo" :options="$gendersToSelect" value="{{ $user->gender }}" />
+                    
+                    <x-form.input-text name="department" label="Setor" placeholder="Digite o departamento do usuário" value="{{ $user->department }}"/>
+                    
+                    <x-form.input-text name="occupation" label="Cargo" placeholder="Digite o cargo do usuário" value="{{ $user->occupation }}"/>
+
+                    <x-form.input-date name="admission" max="{{ Carbon\Carbon::now()->toDateString() }}" label="Data de admissão" value="{{ $user->admission }}" />
+
+                    <x-form.select name="role" label="Gestor/Colaborador" :options="$rolesToSelect" value="{{ $userRole }}" />
                     
                 </x-form>
 

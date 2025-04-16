@@ -36,10 +36,10 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::post('/test/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
 
     Route::resource('company', CompanyController::class);
-    Route::resource('user', UserController::class);
 
     Route::get('/user/import', [UserController::class, 'showImport'])->name('user.import');
     Route::post('/user/import', [UserController::class, 'import']);
+    Route::resource('user', UserController::class);
 
     Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
     Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);

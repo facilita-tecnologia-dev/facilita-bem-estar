@@ -35,7 +35,8 @@ class User extends Authenticatable
             'user_id',
             'company_id'
         )
-            ->withTimestamps();
+        ->withPivot('role_id')
+        ->withTimestamps();
     }
 
     /**

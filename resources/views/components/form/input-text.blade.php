@@ -6,6 +6,7 @@
     'value' => null,
     'label' => null,
     'disabled' => null,
+    'readonly' => null,
     
     'icon' => null,
 ])
@@ -31,8 +32,9 @@
             name="{{ $name }}"
             id="{{ $id ? $id : $name }}"
             placeholder="{{ $placeholder }}"
-            value="{{ $value }}"
+            value="{{ old($name, $value) }}"
             {{ $disabled ? 'disabled' : '' }}
+            {{ $readonly ? 'readonly' : '' }}
         >
 
         @if($icon && $icon === '%')

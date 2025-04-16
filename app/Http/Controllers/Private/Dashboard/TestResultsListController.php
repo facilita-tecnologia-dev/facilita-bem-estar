@@ -29,8 +29,8 @@ class TestResultsListController
 
         $this->companyUserCollections = $this->pageQuery($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation);
 
-        $departmentsToFilter = $this->getDepartmentsToFilter();
-        $occupationsToFilter = $this->getOccupationsToFilter();
+        $departmentsToFilter = session('company')->users()->whereNotNull('department')->distinct()->pluck('department');
+        $occupationsToFilter = session('company')->users()->whereNotNull('occupation')->distinct()->pluck('occupation');
 
         $usersList = $this->getCompiledTestsData();
 
@@ -97,25 +97,5 @@ class TestResultsListController
         }
 
         return $testCompiled;
-    }
-
-    /**
-     * Retorna um array com os setores para filtrar.
-     */
-    private function getDepartmentsToFilter(): Collection
-    {
-        $departments = session('company')->users()->whereNotNull('department')->distinct()->pluck('department');
-
-        return $departments;
-    }
-
-    /**
-     * Retorna um array com os cargos para filtrar.
-     */
-    private function getOccupationsToFilter(): Collection
-    {
-        $occupations = session('company')->users()->whereNotNull('occupation')->distinct()->pluck('occupation');
-
-        return $occupations;
     }
 }

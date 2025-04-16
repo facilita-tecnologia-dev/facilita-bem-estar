@@ -4,17 +4,47 @@
         
         <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-start justify-start gap-6">
             <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">{{ $userInfo['Nome'] }}</h2>
+                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">{{ $user->name }}</h2>
             </div>
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <div class="w-full grid gri-cols-1 md:grid-cols-2 gap-4">
-                    @foreach ($userInfo as $userInfoName => $userInfoData)
-                        <div class="">
-                            <p class="font-semibold text-lg text-left">{{ $userInfoName }}:</p>
-                            <p class="text-base text-left">{{ $userInfoData }}</p>
-                        </div>
-                    @endforeach
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Nome:</p>
+                        <p class="text-base text-left">{{ $user->name ?? 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">CPF:</p>
+                        <p class="text-base text-left">{{ $user->cpf ?? 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Idade:</p>
+                        <p class="text-base text-left">{{ $user->birth_date ? Carbon\Carbon::create($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Sexo:</p>
+                        <p class="text-base text-left">{{ $user->gender ?? 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Setor:</p>
+                        <p class="text-base text-left">{{ $user->department ?? 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Função:</p>
+                        <p class="text-base text-left">{{ $user->occupation ?? 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Data de admissão:</p>
+                        <p class="text-base text-left">{{ $admission ? $admission->format('d/m/Y') : 'Não cadastrado'}}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Tempo de empresa:</p>
+                        <p class="text-base text-left">{{ $admission ? $admission->diffForHumans() : 'Não cadastrado'}}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-lg text-left">Último teste realizado:</p>
+                        <p class="text-base text-left">{{ $latestCollectionDate ?? 'Nunca' }}</p>
+                    </div>
                 </div>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
@@ -31,9 +61,9 @@
 </x-layouts.app>
 
 
-
+{{-- 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script> --}}
 {{-- 
 <script>
 
