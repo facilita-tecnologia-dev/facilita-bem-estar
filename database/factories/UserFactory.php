@@ -2,6 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\DepartmentEnum;
+use App\Enums\DepartmentEnumGenderEnum;
+use App\Enums\GenderEnum;
+use App\Models\Company;
+use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,14 +27,27 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $faker = FakerFactory::create('pt_BR');
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'age' => fake()->numberBetween(18, 60),
-            'occupation' => fake()->word(),
-            'gender' => fake()->word(),
-            'remember_token' => Str::random(10),
+            'name' => $faker->name(),
+            'cpf' => $faker->unique()->cpf(),
+            'birth_date' => $faker->date(),
+            'gender' => $faker->randomElement(GenderEnum::cases())->value,
+            'department' => $faker->randomElement(DepartmentEnum::cases())->value,
+            'occupation' => $faker->word(),
+            'admission' => $faker->date(),
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function ($user) {
+            $company = Company::first();
+            $user->companies()->attach($company->id, [
+                'role_id' => rand(1, 2),
+            ]);
+        });
     }
 
     /**

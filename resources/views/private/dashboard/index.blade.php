@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div id="organizational-climate-tab" data-role="collection-tab" class="hidden">
+            <div id="organizational-climate-tab" data-role="collection-tab" class="hidden w-full">
                 <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 ">
                     {{-- <div class="shadow-md rounded-md w-full bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                         <div class="w-full h-full p-5 flex flex-col justify-start gap-4 items-center">
@@ -120,10 +120,10 @@
                             </div>
                         </div>
                     </div> --}}
-                    <div class="shadow-md rounded-md w-full flex flex-col items-center bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                    <div class="shadow-md rounded-md w-full col-span-2 flex flex-col items-center bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                         <a href="" class="w-full p-6 flex flex-col justify-start gap-5 items-center">
                             <p class="text-center font-semibold">Índice Geral de Satisfação por Teste</p>
-                            <div class="w-full" id="general-bars">
+                            <div class="w-full max-h-64" id="general-bars">
                                 
                             </div>
                         </a>

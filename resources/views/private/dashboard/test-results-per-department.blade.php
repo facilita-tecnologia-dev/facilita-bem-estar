@@ -26,11 +26,11 @@
                             <div 
                                 class="
                                     px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] flex items-center justify-between gap-2
-                                    {{ $severityData['severity_color'] == "5" ? 'to-[#fc6f6f50]' : '' }}
-                                    {{ $severityData['severity_color'] == "4" ? 'to-[#febc5350]' : '' }}
-                                    {{ $severityData['severity_color'] == "3" ? 'to-[#faed5d50]' : '' }}
-                                    {{ $severityData['severity_color'] == "2" ? 'to-[#8cf8c050]' : '' }}
-                                    {{ $severityData['severity_color'] == "1" ? 'to-[#76fc7150]' : '' }}
+                                    {{ $severityData['severity_color'] == App\Enums\SeverityEnum::CRITICO->value ? 'to-[#fc6f6f50]' : '' }}
+                                    {{ $severityData['severity_color'] == App\Enums\SeverityEnum::ALTO->value ? 'to-[#febc5350]' : '' }}
+                                    {{ $severityData['severity_color'] == App\Enums\SeverityEnum::MEDIO->value ? 'to-[#faed5d50]' : '' }}
+                                    {{ $severityData['severity_color'] == App\Enums\SeverityEnum::BAIXO->value ? 'to-[#8cf8c050]' : '' }}
+                                    {{ $severityData['severity_color'] == App\Enums\SeverityEnum::MINIMO->value ? 'to-[#76fc7150]' : '' }}
                                 ">
                                 <span class="truncate">{{ $severityName }}</span>
                                 <span>{{ round($severityData['count'] / $departmentData['total'] * 100) }}%</span>

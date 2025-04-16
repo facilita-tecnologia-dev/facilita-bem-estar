@@ -81,6 +81,7 @@ class TestResultsPerDepartmentController
             $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count']++;
         }
 
+        // dd($testCompiled);
         return $testCompiled;
     }
 }

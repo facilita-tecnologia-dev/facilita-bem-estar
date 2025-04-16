@@ -49,13 +49,13 @@ riskBars.forEach((risk)=>{
     bar.style.backgroundColor = getColor(value);
 })
 
+const activeCharts = [];
+
 renderDashboardCharts();
 
 function renderDashboardCharts(){
     renderTestParticipacionChart();
     renderPsychosocialCharts();
-    renderOrganizationalCharts();
-    renderGeneralOrganizationBars();
 }
 
 function renderTestParticipacionChart(){
@@ -100,12 +100,12 @@ function renderOrganizationalCharts(){
             labels.push(category)
         })
 
-
+        
         const chartId = `chart_i_${index}`;
         const wrapper = document.getElementById(key[index])
-        colors = [chartDefaultColors.PRIMARY, chartDefaultColors.SECONDARY]
+        wrapper.style.height = Object.keys(testType).length * 60 + "px";
+        colors = generateHSLAColors(Object.keys(testType).length)
         
-
         createBarChart(wrapper, chartId, labels, data, colors, "Índice de Satisfação (%)", 'horizontal');
     });
 }
@@ -113,7 +113,7 @@ function renderOrganizationalCharts(){
 function renderGeneralOrganizationBars(){
     const chartId = 'test_participation_chart';
     const wrapper = document.getElementById('general-bars')
-    const colors = [chartDefaultColors.PRIMARY, chartDefaultColors.SECONDARY]
+    const colors = generateHSLAColors(Object.keys(dashboardResults['organizational-climate']).length)
     let data = [];
     let labels = [];
 
@@ -142,6 +142,8 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, title = "
     const container = wrapper;
     container.appendChild(chart);
 
+    let delayed;
+
     new Chart(chart, {
         type: 'bar',
         data: {
@@ -158,10 +160,11 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, title = "
         options: {
             responsive: true,
             indexAxis: orientation == 'horizontal' ? 'y' : 'x',
+            maintainAspectRatio: false,
             plugins: {
                 datalabels: {
                     formatter: function(value) {
-                        return value + '%';
+                        return value.toFixed() + '%';
                     },
                 },
                 tooltip: {
@@ -202,9 +205,23 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, title = "
                     min: 0,
                     max: 100
                 }
-            }
+            },
+            animation: {
+                onComplete: () => {
+                    delayed = true;
+                },
+                delay: (context) => {
+                    let delay = 0;
+                    if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                    delay = context.dataIndex * 100 + context.datasetIndex * 100;
+                    }
+                    return delay;
+                },
+            },
         }
     });
+
+    activeCharts.push(chart);
 }
 
 function createDoughnutChart(wrapper, chartId, labels = [], data, colors, labelType){
@@ -285,6 +302,8 @@ function createDoughnutChart(wrapper, chartId, labels = [], data, colors, labelT
             }
         }
     });
+
+    activeCharts.push(chart);
 }
 
 function toggleCollectionTab(button){
@@ -294,11 +313,23 @@ function toggleCollectionTab(button){
         bgElement.classList.replace('left-1', 'left-[calc(50%+4px)]')
         document.querySelector('#psychosocial-risks-tab').style.display = 'none';
         document.querySelector('#organizational-climate-tab').style.display = 'contents';
+        removeActiveCharts();
+        renderOrganizationalCharts();
+        renderGeneralOrganizationBars();
     } else{
         bgElement.classList.replace('left-[calc(50%+4px)]', 'left-1')
         document.querySelector('#organizational-climate-tab').style.display = 'none';
         document.querySelector('#psychosocial-risks-tab').style.display = 'contents';
+        removeActiveCharts();
+        renderTestParticipacionChart();
+        renderPsychosocialCharts();
     }
+}
+
+function removeActiveCharts(){
+    activeCharts.forEach((chart) => {
+        chart.remove();
+    })
 }
 
 function getColor(value) {
@@ -309,4 +340,11 @@ function getColor(value) {
     } else{
         return `#f5554775`
     }
+}
+
+function generateHSLAColors(count, saturation = 60, lightness = 85, alpha = 0.8) {
+  return Array.from({ length: count }, (_, i) => {
+    const hue = Math.round((360 * i) / count);
+    return `hsla(${hue},${saturation}%,${lightness}%,${alpha})`;
+  });
 }

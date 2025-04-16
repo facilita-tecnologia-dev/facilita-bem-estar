@@ -30,7 +30,9 @@ function formatCPF(cpf) {
 }
 
 const cpfInput = document.querySelector('[name="cpf"]');
+if(cpfInput){
 
-cpfInput.addEventListener('input', function(e) {
-    e.target.value = formatCPF(e.target.value);
-});
+    cpfInput.addEventListener('input', function(e) {
+        e.target.value = formatCPF(e.target.value);
+    });
+}
