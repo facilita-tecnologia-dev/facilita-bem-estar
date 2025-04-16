@@ -50,18 +50,15 @@ class RisksController
     private function pageQuery()
     {
         $companyUserCollections = Company::where('id', session('company')->id)
-            ->with('metrics.metricType')
+            ->with('metrics')
             ->with('users', function ($user) {
                 $user
                     ->has('collections')
                     ->with('latestCollections', function ($latestCollection) {
                         $latestCollection
-                            ->with('collectionType')
-                            ->with('tests', function ($userTest) {
-                                $userTest
-                                    ->with(['answers', 'questions.options'])
-                                    ->with('testType.risks', fn ($i) => $i->with(['relatedQuestions', 'controlActions']));
-                            });
+                            ->where('collection_id', 1)
+                            ->with('tests')
+                            ->limit(1);
                     });
             })
             ->first();
@@ -73,17 +70,13 @@ class RisksController
     {
         $testCompiled = [];
         foreach ($this->companyUserCollections->users as $user) {
-            dd($user);
-
-            foreach ($collection->tests as $userTest) {
+            foreach ($user->latestCollections[0]->tests as $userTest) {
                 $testDisplayName = $userTest->testType->display_name;
 
                 $answers = [];
 
-                dd($userTest);
-
                 foreach ($userTest->answers as $answer) {
-                    $question = $userTest->questions->where('id', $answer->question_id)->first();
+                    $question = $userTest->testType->questions->where('id', $answer->question_id)->first();
                     $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
                     $answers[$question->id] = $relatedOption->value;
                 }
@@ -93,14 +86,13 @@ class RisksController
                 if (isset($evaluatedTest['risks'])) {
                     foreach ($evaluatedTest['risks'] as $riskName => $risk) {
                         $testCompiled[$testDisplayName][$riskName]['score'][] = $risk['riskPoints'];
+                        $testCompiled[$testDisplayName][$riskName]['controlActions'] = $risk['controlActions'];
                     }
                 }
-
             }
         }
 
         foreach ($testCompiled as $testName => $test) {
-
             foreach ($test as $riskName => $risk) {
                 $average = array_sum($risk['score']) / count($risk['score']);
 
@@ -126,6 +118,7 @@ class RisksController
             }
         }
 
+        // dd($testCompiled);
         return $testCompiled;
     }
 }

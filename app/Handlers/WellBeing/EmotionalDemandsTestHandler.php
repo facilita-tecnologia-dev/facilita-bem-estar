@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class EmotionalDemandsTestHandler implements TestHandlerInterface
@@ -12,13 +13,13 @@ class EmotionalDemandsTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 33) {
             $severityTitle = 'Alta exigência emocional';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($totalPoints >= 21) {
             $severityTitle = 'Média exigência emocional';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Baixa exigência emocional';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

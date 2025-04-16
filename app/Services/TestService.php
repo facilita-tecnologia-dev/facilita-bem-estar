@@ -22,49 +22,49 @@ class TestService
     /**
      * Retorna um objeto Company com a última coleção de testes de cada usuário da empresa.
      */
-    public function getTests($justEssentials = null, $testName = null, $risks = null, $metrics = null, $tests = true, $queryStringName = null, $queryStringDepartment = null, $queryStringOccupation = null): Company
-    {
-        $companyUsersCollections = Company::where('id', session('company')->id)
-            ->when($metrics, function ($q) {
-                $q->with('metrics.metricType');
-            })
-            ->with('users', function ($user) use ($justEssentials, $testName, $tests, $queryStringName, $queryStringDepartment, $queryStringOccupation) {
-                $user
-                    ->has('collections')
-                    ->when($queryStringName, function ($query) use ($queryStringName) {
-                        $query->where('name', 'like', "%$queryStringName%");
-                    })
-                    ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
-                        $query->where('department', '=', "$queryStringDepartment");
-                    })
-                    ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
-                        $query->where('occupation', '=', "$queryStringOccupation");
-                    })
-                    ->with('latestCollections', function ($latestCollection) use ($justEssentials, $testName, $tests) {
-                        $latestCollection
-                            ->with('collectionType')
-                            ->when($tests, function ($q) use ($justEssentials, $testName) {
-                                $q->with('tests', function ($userTest) use ($justEssentials, $testName) {
-                                    $userTest
-                                        ->when($testName, function ($q) use ($testName) {
-                                            $q->whereHas('testType', function ($query) use ($testName) {
-                                                $query->where('display_name', $testName);
-                                            });
-                                        })
-                                        ->when($justEssentials, function ($q) {
-                                            $q->with(['testType.risks.relatedQuestions']);
-                                        })
-                                        ->when(! $justEssentials, function ($q) {
-                                            $q->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
-                                        });
-                                });
-                            });
-                    });
-            })
-            ->first();
+    // public function getTests($justEssentials = null, $testName = null, $risks = null, $metrics = null, $tests = true, $queryStringName = null, $queryStringDepartment = null, $queryStringOccupation = null): Company
+    // {
+    //     $companyUsersCollections = Company::where('id', session('company')->id)
+    //         ->when($metrics, function ($q) {
+    //             $q->with('metrics.metricType');
+    //         })
+    //         ->with('users', function ($user) use ($justEssentials, $testName, $tests, $queryStringName, $queryStringDepartment, $queryStringOccupation) {
+    //             $user
+    //                 ->has('collections')
+    //                 ->when($queryStringName, function ($query) use ($queryStringName) {
+    //                     $query->where('name', 'like', "%$queryStringName%");
+    //                 })
+    //                 ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
+    //                     $query->where('department', '=', "$queryStringDepartment");
+    //                 })
+    //                 ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
+    //                     $query->where('occupation', '=', "$queryStringOccupation");
+    //                 })
+    //                 ->with('latestCollections', function ($latestCollection) use ($justEssentials, $testName, $tests) {
+    //                     $latestCollection
+    //                         ->with('collectionType')
+    //                         ->when($tests, function ($q) use ($justEssentials, $testName) {
+    //                             $q->with('tests', function ($userTest) use ($justEssentials, $testName) {
+    //                                 $userTest
+    //                                     ->when($testName, function ($q) use ($testName) {
+    //                                         $q->whereHas('testType', function ($query) use ($testName) {
+    //                                             $query->where('display_name', $testName);
+    //                                         });
+    //                                     })
+    //                                     ->when($justEssentials, function ($q) {
+    //                                         $q->with(['testType.risks.relatedQuestions']);
+    //                                     })
+    //                                     ->when(! $justEssentials, function ($q) {
+    //                                         $q->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
+    //                                     });
+    //                             });
+    //                         });
+    //                 });
+    //         })
+    //         ->first();
 
-        return $companyUsersCollections;
-    }
+    //     return $companyUsersCollections;
+    // }
 
     public function process(array $answers, Test $test)
     {
@@ -103,10 +103,10 @@ class TestService
         return true;
     }
 
-    public function evaluateTest($userTest, $answers, $metrics)
+    public function evaluateTest($userTest, $metrics)
     {
         $handler = $this->handlerFactory->getHandler($userTest->testType);
-        $evaluatedTest = $handler->process($userTest->testType, $answers, $userTest->questions, $metrics, $userTest->testType->risks);
+        $evaluatedTest = $handler->process($userTest, $metrics);
 
         return $evaluatedTest;
     }

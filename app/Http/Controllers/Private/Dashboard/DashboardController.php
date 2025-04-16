@@ -36,16 +36,12 @@ class DashboardController
     private function pageQuery()
     {
         $companyUserCollections = Company::where('id', session('company')->id)
-            ->with('metrics.metricType')
+            ->with('metrics')
             ->with('users', function ($user) {
                 $user
                     ->has('collections')
                     ->with('latestCollections', function ($latestCollection) {
-                        $latestCollection
-                            ->with('collectionType')
-                            ->with('tests', function ($userTest) {
-                                $userTest->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
-                            });
+                        $latestCollection->with('tests');
                     });
             })
             ->first();
@@ -63,18 +59,10 @@ class DashboardController
                     $collectionName = $collection->collectionType->key_name;
                     $testDisplayName = $userTest->testType->display_name;
 
-                    $answers = [];
-
-                    foreach ($userTest->answers as $answer) {
-                        $question = $userTest->questions->where('id', $answer->question_id)->first();
-                        $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
-                        $answers[$question->id] = $relatedOption->value;
-                    }
-
-
-                    $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+                    $evaluatedTest = $this->testService->evaluateTest($userTest, $this->companyUserCollections->metrics);
 
                     if ($collection->collectionType->key_name == 'psychosocial-risks') {
+
                         if (! isset($testCompiled[$collectionName][$testDisplayName]['severities'])) {
                             if (! isset($testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']])) {
                                 $testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']] = [
@@ -121,7 +109,7 @@ class DashboardController
         }
 
         foreach ($testCompiled['organizational-climate'] as $testName => $test) {
-            foreach($test as $categoryName => $category){
+            foreach ($test as $categoryName => $category) {
                 foreach ($category['answers'] as $questionNumber => $answers) {
                     $count = count($answers);
                     $sum = array_sum($answers);

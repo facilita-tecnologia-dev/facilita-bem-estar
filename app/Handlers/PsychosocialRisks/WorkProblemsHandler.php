@@ -2,35 +2,45 @@
 
 namespace App\Handlers\PsychosocialRisks;
 
-use App\Models\Test;
+use App\Enums\SeverityEnum;
+use App\Models\UserTest;
 use App\Services\RiskEvaluatorService;
+use Illuminate\Support\Collection;
 
 class WorkProblemsHandler
 {
     public function __construct(private RiskEvaluatorService $riskEvaluatorService) {}
 
-    public function process(Test $test, array $answers, $questions, $metrics, $risks): array
+    public function process(UserTest $userTest, Collection $metrics): array
     {
-        $score = array_sum($answers);
-        $average = $score / count($answers);
+        $answersToArray = [];
+
+        foreach ($userTest->answers as $answer) {
+            $question = $userTest->testType->questions->where('id', $answer->question_id)->first();
+            $answersToArray[$question->id] = $answer->relatedOption->value;
+        }
+
+        $score = array_sum($answersToArray);
+        $average = $score / count($answersToArray);
 
         $risksList = [];
 
-        foreach ($risks as $risk) {
+        foreach ($userTest->testType->risks as $risk) {
             $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $answers, $average, $metrics, $questions);
-            $risksList[$risk->name] = $evaluatedRisk;
+            $evaluatedRisk = $handler->evaluateRisk($risk, $answersToArray, $average, $metrics, $userTest->testType->questions);
+            $risksList[$risk->name]['riskPoints'] = $evaluatedRisk;
+            $risksList[$risk->name]['controlActions'] = $risk->controlActions;
         }
 
         if ($average >= 3.7) {
             $severityTitle = 'Risco Alto';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($average >= 2.3) {
             $severityTitle = 'Risco Médio';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Risco Baixo';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class BurnoutTestHandler implements TestHandlerInterface
@@ -12,13 +13,13 @@ class BurnoutTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 27) {
             $severityTitle = 'Zona de Risco';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($totalPoints >= 14) {
             $severityTitle = 'Zona de Alerta';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Zona de Bem-estar';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

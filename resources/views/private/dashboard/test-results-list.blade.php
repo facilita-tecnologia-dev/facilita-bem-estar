@@ -44,8 +44,14 @@
                     <x-form class="w-full flex flex-col gap-4 items-center">
                         <x-form.input-text icon="search" name="name" placeholder="Nome do colaborador" />
 
-                        {{-- <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" defaultValue />
-                        <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" defaultValue /> --}}
+                        @if(count($departmentsToFilter) > 0)
+                            <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" defaultValue />
+                        @endif
+
+                        @if(count($occupationsToFilter) > 0)
+                            <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" defaultValue />
+                        @endif
+                        
                         {{-- <x-form.select name="severity" placeholder="Severidade" :options="['1', '2', '3', '4']" /> --}}
 
                         <x-action tag="button">Filtrar</x-action>
@@ -63,7 +69,7 @@
                     </div>
 
                     <div class="space-y-2" data-role="tbody">
-                        @foreach ($usersList as $user)
+                        @forelse ($usersList as $user)
                             <a
                                 data-role="tr"
                                 href="{{ route('user.show', $user['user']->id) }}"
@@ -76,11 +82,25 @@
                                     {{ $user['severity']['severity_color'] == 1 ? 'to-[#76fc7150]' : '' }}
                                 ">
                                 <span data-role="td" class="col-span-1 lg:col-span-2 truncate">{{ $user['user']->name }}</span>
-                                <span data-role="td" class="hidden lg:block">{{ $user['user']->department }}</span>
-                                <span data-role="td" class="hidden sm:block">{{ $user['user']->occupation }}</span>
+                                <span data-role="td" class="hidden lg:block">
+                                    @if(count($departmentsToFilter) > 0)
+                                        {{ $user['user']->department }}
+                                    @else
+                                        <i>(Vazio)</i>
+                                    @endif
+                                </span>
+                                <span data-role="td" class="hidden sm:block">
+                                    @if(count($occupationsToFilter) > 0)
+                                        {{ $user['user']->occupation }}
+                                    @else
+                                        <i>(Vazio)</i>
+                                    @endif
+                                </span>
                                 <span data-value="{{ $user['severity']['severity_color'] }}" data-role="td" class="truncate">{{ $user['severity']['severity_title'] }}</span>
                             </a>
-                        @endforeach
+                        @empty
+                            <p class="w-full text-center mt-6">Não há testes cadastrados.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>

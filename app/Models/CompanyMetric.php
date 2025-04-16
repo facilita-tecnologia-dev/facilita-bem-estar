@@ -11,6 +11,8 @@ class CompanyMetric extends Model
 
     protected $table = 'company_metrics';
 
+    protected $with = ['metricType'];
+
     /**
      * Returns the company to which this company metric belongs.
      */

@@ -2,9 +2,12 @@
 
 namespace App\RiskEvaluations;
 
+use App\Models\Risk;
+use Illuminate\Support\Collection;
+
 class PressaoExcessiva implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
     {
         $evaluatedRisk = '';
         $riskPoints = 0;
@@ -49,9 +52,6 @@ class PressaoExcessiva implements RiskEvaluatorInterface
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return [
-
-            'riskPoints' => $riskPoints,
-        ];
+        return $riskPoints;
     }
 }

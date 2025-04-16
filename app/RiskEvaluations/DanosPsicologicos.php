@@ -2,9 +2,12 @@
 
 namespace App\RiskEvaluations;
 
+use App\Models\Risk;
+use Illuminate\Support\Collection;
+
 class DanosPsicologicos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk($risk, $answers, $average, $metrics, $questions): array
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
     {
         $riskPoints = 0;
 
@@ -29,8 +32,6 @@ class DanosPsicologicos implements RiskEvaluatorInterface
             }
         }
 
-        return [
-            'riskPoints' => $riskPoints,
-        ];
+        return $riskPoints;
     }
 }

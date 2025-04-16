@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class StressTestHandler implements TestHandlerInterface
@@ -12,13 +13,13 @@ class StressTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 27) {
             $severityTitle = 'Alto Estresse';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($totalPoints >= 14) {
             $severityTitle = 'Estresse Moderado';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Baixo Estresse';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

@@ -17,6 +17,8 @@ class UserTest extends Model
      */
     protected $fillable = ['user_collection_id', 'test_id', 'score', 'severity_title', 'severity_color'];
 
+    protected $with = ['testType', 'answers'];
+
     /**
      * Returns the parent test collection of this test.
      */
@@ -41,15 +43,15 @@ class UserTest extends Model
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 
-    public function questions()
-    {
-        return $this->hasManyThrough(
-            Question::class,
-            Test::class,
-            'id',           // Chave primária em TestType
-            'test_id', // Chave estrangeira em TestQuestion
-            'test_id', // Chave estrangeira em TestForm
-            'id'            // Chave primária em TestType
-        );
-    }
+    // public function questions()
+    // {
+    //     return $this->hasManyThrough(
+    //         Question::class,
+    //         Test::class,
+    //         'id',           // Chave primária em TestType
+    //         'test_id', // Chave estrangeira em TestQuestion
+    //         'test_id', // Chave estrangeira em TestForm
+    //         'id'            // Chave primária em TestType
+    //     );
+    // }
 }

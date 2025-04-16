@@ -9,6 +9,8 @@ class UserAnswer extends Model
 {
     protected $table = 'user_answers';
 
+    protected $with = ['relatedOption'];
+
     /**
      * The attributes that are mass assignable.
      *

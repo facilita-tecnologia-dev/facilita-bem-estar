@@ -17,6 +17,8 @@ class Test extends Model
      */
     protected $fillable = ['key_name', 'display_name', 'statement', 'reference', 'number_of_questions', 'handler_type', 'order'];
 
+    protected $with = ['questions', 'risks'];
+
     /**
      * Returns the test collection to which this test belongs.
      */

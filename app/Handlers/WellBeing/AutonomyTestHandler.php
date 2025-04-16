@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class AutonomyTestHandler implements TestHandlerInterface
@@ -12,13 +13,13 @@ class AutonomyTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 29) {
             $severityTitle = 'Alta Autonomia';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Autonomia Moderada';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Baixa Autonomia';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         }
 
         return [

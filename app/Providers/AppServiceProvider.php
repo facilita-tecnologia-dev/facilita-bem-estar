@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
         Model::unguard();
 
         Gate::define('view-manager-screens', function (User $user): Response {

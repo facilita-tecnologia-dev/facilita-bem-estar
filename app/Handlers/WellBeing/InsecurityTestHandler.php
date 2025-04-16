@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class InsecurityTestHandler implements TestHandlerInterface
@@ -12,13 +13,13 @@ class InsecurityTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 33) {
             $severityTitle = 'Alta Insegurança';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($totalPoints >= 21) {
             $severityTitle = 'Insegurança Moderada';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Baixa Insegurança';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

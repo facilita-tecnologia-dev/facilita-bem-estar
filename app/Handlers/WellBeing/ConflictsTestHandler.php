@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class ConflictsTestHandler implements TestHandlerInterface
@@ -12,13 +13,13 @@ class ConflictsTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 33) {
             $severityTitle = 'Alto Nível de Conflitos';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($totalPoints >= 21) {
             $severityTitle = 'Conflitos Moderados';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } else {
             $severityTitle = 'Baixo Nível de Conflitos';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

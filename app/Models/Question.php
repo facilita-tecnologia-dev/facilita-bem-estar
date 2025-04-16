@@ -10,6 +10,8 @@ class Question extends Model
 {
     protected $table = 'questions';
 
+    protected $with = ['options'];
+
     /**
      * The attributes that are mass assignable.
      *

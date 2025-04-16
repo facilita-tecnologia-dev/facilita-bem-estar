@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Private\Dashboard;
 
-use App\Helpers\Helper;
 use App\Models\Company;
 use App\Services\TestService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 class TestResultsListController
@@ -17,8 +17,6 @@ class TestResultsListController
     public function __construct(TestService $testService)
     {
         $this->testService = $testService;
-        // $this->helper = $helper;
-        // $this->company = $this->helper->getCompanyUsers(hasCollection: true);
     }
 
     public function __invoke(Request $request, string $testName)
@@ -31,16 +29,16 @@ class TestResultsListController
 
         $this->companyUserCollections = $this->pageQuery($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation);
 
-        // $departmentsToFilter = $this->getDepartmentsToFilter();
-        // $occupationsToFilter = $this->getOccupationsToFilter();
+        $departmentsToFilter = $this->getDepartmentsToFilter();
+        $occupationsToFilter = $this->getOccupationsToFilter();
 
         $usersList = $this->getCompiledTestsData();
 
         return view('private.dashboard.test-results-list', compact(
             'testName',
             'usersList',
-            // 'departmentsToFilter',
-            // 'occupationsToFilter',
+            'departmentsToFilter',
+            'occupationsToFilter',
             'queryStringName',
             'queryStringDepartment',
             'queryStringOccupation'
@@ -50,7 +48,7 @@ class TestResultsListController
     private function pageQuery($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation)
     {
         $companyUserCollections = Company::where('id', session('company')->id)
-            ->with('metrics.metricType')
+            ->with('metrics')
             ->with('users', function ($user) use ($testName, $queryStringName, $queryStringDepartment, $queryStringOccupation) {
                 $user
                     ->has('collections')
@@ -65,19 +63,12 @@ class TestResultsListController
                     })
                     ->with('latestCollections', function ($latestCollection) use ($testName) {
                         $latestCollection
-                            ->whereHas('tests', function ($q) use ($testName) {
-                                $q->whereHas('testType', function ($subQuery) use ($testName) {
-                                    $subQuery->where('display_name', $testName);
+                            ->whereHas('tests', function ($test) use ($testName) {
+                                $test->whereHas('testType', function ($testType) use ($testName) {
+                                    $testType->where('display_name', $testName);
                                 });
                             })
-                            ->with('collectionType')
-                            ->with('tests', function ($userTest) use ($testName) {
-                                $userTest
-                                    ->whereHas('testType', function ($q) use ($testName) {
-                                        $q->where('display_name', $testName);
-                                    })
-                                    ->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
-                            })->limit(1);
+                            ->with('tests')->limit(1);
                     });
             })
             ->first();
@@ -97,15 +88,7 @@ class TestResultsListController
 
             $testCompiled[$user->name]['user'] = $user;
 
-            $answers = [];
-
-            foreach ($userTest->answers as $answer) {
-                $question = $userTest->questions->where('id', $answer->question_id)->first();
-                $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
-                $answers[$question->id] = $relatedOption->value;
-            }
-
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $this->companyUserCollections->metrics);
 
             if (! isset($testCompiled[$user->name]['severity'])) {
                 $testCompiled[$user->name]['severity']['severity_title'] = $evaluatedTest['severity_title'];
@@ -119,20 +102,20 @@ class TestResultsListController
     /**
      * Retorna um array com os setores para filtrar.
      */
-    // private function getDepartmentsToFilter(): array
-    // {
-    //     $departments = array_unique($this->company->users->pluck('department')->toArray());
+    private function getDepartmentsToFilter(): Collection
+    {
+        $departments = session('company')->users()->whereNotNull('department')->distinct()->pluck('department');
 
-    //     return $departments;
-    // }
+        return $departments;
+    }
 
-    // /**
-    //  * Retorna um array com os cargos para filtrar.
-    //  */
-    // private function getOccupationsToFilter(): array
-    // {
-    //     $occupations = array_unique($this->company->users->pluck('occupation')->toArray());
+    /**
+     * Retorna um array com os cargos para filtrar.
+     */
+    private function getOccupationsToFilter(): Collection
+    {
+        $occupations = session('company')->users()->whereNotNull('occupation')->distinct()->pluck('occupation');
 
-    //     return $occupations;
-    // }
+        return $occupations;
+    }
 }

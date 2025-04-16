@@ -5,14 +5,6 @@ const chartDefaultColors = Object.freeze({
   SECONDARY: '#BBDEFB80',
 });
 
-const severityMap = Object.freeze({
-    1: 'MINIMO',
-    2: 'BAIXO',
-    3: 'MEDIO',
-    4: 'ALTO',
-    5: 'CRITICO',
-});
-
 const severityColors = Object.freeze({
     MINIMO: "#4CAF5080",
     BAIXO: "#a9f5ac80",
@@ -85,12 +77,11 @@ function renderPsychosocialCharts(){
         const chartId = `chart_${index}`;
         const wrapper = document.getElementById(keys[index])
         const colors = Object.values(testType.severities).map(test => {
-            return test.severity_color in severityMap
-            ? severityColors[severityMap[test.severity_color]]
-            : chartDefaultColors.PRIMARY;
+            return severityColors[test.severity_color]
         });
+
         const labels = Object.keys(testType.severities)
-        
+
         createDoughnutChart(wrapper, chartId, labels, data, colors, chartLabelTypes.DETAILED_PERCENT);
     });   
 }

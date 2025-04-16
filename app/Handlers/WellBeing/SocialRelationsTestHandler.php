@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class SocialRelationsTestHandler implements TestHandlerInterface
@@ -12,16 +13,16 @@ class SocialRelationsTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 15) {
             $severityTitle = 'Baixo Risco';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Risco Moderado';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } elseif ($totalPoints >= 5) {
             $severityTitle = 'Alto Risco';
-            $severityColor = 4;
+            $severityColor = SeverityEnum::ALTO->value;
         } else {
             $severityTitle = 'Risco Crítico';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         }
 
         return [

@@ -2,6 +2,7 @@
 
 namespace App\Handlers\WellBeing;
 
+use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
 
 class AnxietyTestHandler implements TestHandlerInterface
@@ -12,16 +13,16 @@ class AnxietyTestHandler implements TestHandlerInterface
 
         if ($totalPoints >= 15) {
             $severityTitle = 'Grave';
-            $severityColor = 5;
+            $severityColor = SeverityEnum::CRITICO->value;
         } elseif ($totalPoints >= 10) {
             $severityTitle = 'Moderada';
-            $severityColor = 3;
+            $severityColor = SeverityEnum::MEDIO->value;
         } elseif ($totalPoints >= 5) {
             $severityTitle = 'Leve';
-            $severityColor = 2;
+            $severityColor = SeverityEnum::BAIXO->value;
         } else {
             $severityTitle = 'Mínima';
-            $severityColor = 1;
+            $severityColor = SeverityEnum::MINIMO->value;
         }
 
         return [

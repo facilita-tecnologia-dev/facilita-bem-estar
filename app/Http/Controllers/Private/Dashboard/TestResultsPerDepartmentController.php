@@ -34,7 +34,7 @@ class TestResultsPerDepartmentController
     private function pageQuery($testName)
     {
         $companyUserCollections = Company::where('id', session('company')->id)
-            ->with('metrics.metricType')
+            ->with('metrics')
             ->with('users', function ($user) use ($testName) {
                 $user
                     ->has('collections')
@@ -45,14 +45,8 @@ class TestResultsPerDepartmentController
                                     $subQuery->where('display_name', $testName);
                                 });
                             })
-                            ->with('collectionType')
-                            ->with('tests', function ($userTest) use ($testName) {
-                                $userTest
-                                    ->whereHas('testType', function ($q) use ($testName) {
-                                        $q->where('display_name', $testName);
-                                    })
-                                    ->with(['answers', 'questions.options', 'testType.risks.relatedQuestions']);
-                            })->limit(1);
+                            ->with('tests')
+                            ->limit(1);
                     });
             })
             ->first();
@@ -77,15 +71,7 @@ class TestResultsPerDepartmentController
 
             $testCompiled[$userDepartment]['total']++;
 
-            $answers = [];
-
-            foreach ($userTest->answers as $answer) {
-                $question = $userTest->questions->where('id', $answer->question_id)->first();
-                $relatedOption = $question->options->where('id', $answer->question_option_id)->first();
-                $answers[$question->id] = $relatedOption->value;
-            }
-
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $this->companyUserCollections->metrics);
 
             if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
                 $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;

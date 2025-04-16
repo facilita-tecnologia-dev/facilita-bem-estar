@@ -35,7 +35,6 @@ class User extends Authenticatable
             'user_id',
             'company_id'
         )
-            ->withPivot('role_id')
             ->withTimestamps();
     }
 
@@ -53,19 +52,6 @@ class User extends Authenticatable
     public function hasRole(string $role): bool
     {
         return $this->roles->contains('name', $role);
-    }
-
-    public function isManager(): bool
-    {
-        return $this->roles()->where('name', 'internal-manager')->exists();
-    }
-
-    /**
-     * Return true if this user is an employee
-     */
-    public function isEmployee(): bool
-    {
-        return $this->roles()->where('name', 'employee')->exists();
     }
 
     /**
