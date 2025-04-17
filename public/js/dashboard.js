@@ -30,24 +30,44 @@ toggleCollectionTabTriggers.forEach(button => {
 });
 
 // Metric Bars
-const metricBars = document.querySelectorAll('[data-role="metric-bar"]');
-metricBars.forEach((metric) => {
-    const value = metric.dataset.value;
-    const bar = metric.querySelector('.bar');
-    bar.style.width = value + "%";
-    bar.style.backgroundColor = chartDefaultColors.PRIMARY;
-});
+function renderMetricBars(){
+    const metricBars = document.querySelectorAll('[data-role="metric-bar"]');
+    metricBars.forEach((metric) => {
+        const value = metric.dataset.value;
+        const bar = metric.querySelector('.bar');
+        bar.style.width = value + "%";
+        bar.style.backgroundColor = chartDefaultColors.PRIMARY;
+    });
+}
+
+function removeMetricBars(){
+    const metricBars = document.querySelectorAll('[data-role="metric-bar"]');
+    metricBars.forEach((metric) => {
+        const bar = metric.querySelector('.bar');
+        bar.style.width = "0%";
+    });
+}
 
 // Risk Bars
-const riskBars = document.querySelectorAll('[data-role="risk-bar"]');
-riskBars.forEach((risk)=>{
-    const value = risk.dataset.value;
-    const bar = risk.querySelector('.bar');
-    const barWidth = (value / 3) * 100; 
-    
-    bar.style.width = barWidth.toFixed() + "%";
-    bar.style.backgroundColor = getColor(value);
-})
+function renderPsychosocialRiskBars(){
+    const riskBars = document.querySelectorAll('[data-role="risk-bar"]');
+    riskBars.forEach((risk)=>{
+        const value = risk.dataset.value;
+        const bar = risk.querySelector('.bar');
+        const barWidth = (value / 3) * 100; 
+        
+        bar.style.backgroundColor = getColor(value);
+        bar.style.width = barWidth.toFixed() + "%";
+    })
+}
+
+function removePsychosocialRiskBars(){
+    const riskBars = document.querySelectorAll('[data-role="risk-bar"]');
+    riskBars.forEach((risk)=>{
+        const bar = risk.querySelector('.bar');
+        bar.style.width = "0%";
+    })
+}
 
 const activeCharts = [];
 
@@ -56,6 +76,8 @@ renderDashboardCharts();
 function renderDashboardCharts(){
     renderTestParticipacionChart();
     renderPsychosocialCharts();
+    renderPsychosocialRiskBars()
+    renderMetricBars();
 }
 
 function renderTestParticipacionChart(){
@@ -207,6 +229,7 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, title = "
                 }
             },
             animation: {
+                duration: 1000,
                 onComplete: () => {
                     delayed = true;
                 },
@@ -309,27 +332,56 @@ function createDoughnutChart(wrapper, chartId, labels = [], data, colors, labelT
 function toggleCollectionTab(button){
     const bgElement = button.parentElement.querySelector('[data-role="toggle-bg"]');
 
-    if(button.id == 'organizational-climate'){
-        bgElement.classList.replace('left-1', 'left-[calc(50%+4px)]')
-        document.querySelector('#psychosocial-risks-tab').style.display = 'none';
-        document.querySelector('#organizational-climate-tab').style.display = 'contents';
-        removeActiveCharts();
-        renderOrganizationalCharts();
-        renderGeneralOrganizationBars();
-    } else{
-        bgElement.classList.replace('left-[calc(50%+4px)]', 'left-1')
-        document.querySelector('#organizational-climate-tab').style.display = 'none';
-        document.querySelector('#psychosocial-risks-tab').style.display = 'contents';
-        removeActiveCharts();
-        renderTestParticipacionChart();
-        renderPsychosocialCharts();
+    if(button.id == 'psychosocial-risks'){
+        bgElement.style.left = '4px';
+        renderPsychosocialTab();
+    } else if(button.id == 'organizational-climate'){
+        bgElement.style.left = 'calc(33% + 4px)';
+        renderOrganizationalTab();
+    } else {
+        bgElement.style.left = 'calc(66% + 4px)';
+        renderCompanyDemographicsTab();
     }
+}
+
+function renderCompanyDemographicsTab(){
+    clearTabs();
+    document.querySelector('#company-demographic-metrics-tab').style.display = 'contents';
+}
+
+function renderOrganizationalTab(){
+    clearTabs();
+    document.querySelector('#organizational-climate-tab').style.display = 'contents';
+    removeActiveCharts();
+    renderOrganizationalCharts();
+    renderGeneralOrganizationBars();
+}
+
+function renderPsychosocialTab(){
+    clearTabs();
+    document.querySelector('#psychosocial-risks-tab').style.display = 'contents';
+    removeActiveCharts();
+    renderTestParticipacionChart();
+    renderPsychosocialCharts();
+    renderPsychosocialRiskBars();
+    renderMetricBars();
+}
+
+function clearTabs(){
+    const tabs = document.querySelectorAll('[data-role="collection-tab"]');
+    
+    tabs.forEach((tab)=> {
+        tab.style.display = 'none'
+    })
 }
 
 function removeActiveCharts(){
     activeCharts.forEach((chart) => {
         chart.remove();
     })
+
+    removePsychosocialRiskBars();
+    removeMetricBars();
 }
 
 function getColor(value) {

@@ -29,9 +29,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
 
-        $this->app->singleton(\Faker\Generator::class, function ($app) {
-            return \Faker\Factory::create('pt_BR');
-        });
+
 
         Gate::define('view-manager-screens', function (User $user): Response {
             if ($user->hasRole('internal-manager')) {

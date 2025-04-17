@@ -62,25 +62,19 @@ class DashboardController
                     $evaluatedTest = $this->testService->evaluateTest($userTest, $this->companyUserCollections->metrics);
 
                     if ($collection->collectionType->key_name == 'psychosocial-risks') {
-
-                        // if (! isset($testCompiled[$collectionName][$testDisplayName]['severities'])) {
-                            if (! isset($testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']])) {
-                                $testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']] = [
-                                    'count' => 0,
-                                    'severity_color' => $evaluatedTest['severity_color'],
-                                ];
-                            }
-                        // }
+                        if (! isset($testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']])) {
+                            $testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']] = [
+                                'count' => 0,
+                                'severity_color' => $evaluatedTest['severity_color'],
+                            ];
+                        }
 
                         if (isset($evaluatedTest['risks'])) {
                             foreach ($evaluatedTest['risks'] as $riskName => $risk) {
                                 $testCompiled[$collectionName][$testDisplayName]['risks'][$riskName]['score'][] = $risk['riskPoints'];
                             }
                         }
-                        // dump($testCompiled);
-                        // if($evaluatedTest['severity_title'] == 'Estilo coletivista'){
-                        //     dd($evaluatedTest);
-                        // }
+
                         $testCompiled[$collectionName][$testDisplayName]['severities'][$evaluatedTest['severity_title']]['count'] += 1;
                     }
 
