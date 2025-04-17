@@ -24,7 +24,7 @@
                 </div>
 
                 <a 
-                    href="{{ route('test', 1) }}"
+                    href="{{ route('test', $collections->where('key_name', 'psychosocial-risks')->first()) }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 
@@ -37,21 +37,19 @@
                     </p>
                 </a>
 
-                <div
-                {{-- <a 
-                    href="{{ route('test') }}" --}}
+                <a 
+                    href="{{ route('test', $collections->where('key_name', 'organizational-climate')->first()) }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 
-                    class="opacity-40 overflow-hidden border border-white rounded-md py-6 lg:py-16 px-4 flex flex-col gap-2 items-center transition relative"
+                    class="overflow-hidden border border-white rounded-md py-6 lg:py-16 px-4 flex flex-col gap-2 items-center relative left-0 top-0 hover:left-1 hover:-top-1 transition-all"
                 >
                     <img src="{{ asset('assets/white-wave-3.svg') }}" alt="" class="absolute left-0 bottom-0 h-1/2 w-full object-cover object-top">
                     <h2 class="text-2xl tracking-tight font-semibold text-center text-gray-800">Clima organizacional</h2>
                     <p class="text-base leading-relaxed text-center text-gray-800">
                         Entenda como você percebe a cultura e práticas da empresa, contribuindo ativamente para um ambiente mais saudável e produtivo.
                     </p>
-                {{-- </a> --}}
-                </div>
+                </a>
 
             </div>
         </div>

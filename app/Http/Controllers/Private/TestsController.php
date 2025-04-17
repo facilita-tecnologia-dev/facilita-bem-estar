@@ -23,33 +23,40 @@ class TestsController
 
     public function showChoose()
     {
-        return view('private.tests.choose-test');
+        $collections = Collection::all();
+
+        return view('private.tests.choose-test', compact('collections'));
     }
 
-    public function __invoke($testIndex = 1)
+    public function __invoke(Collection $collection, $testIndex = 1)
     {
+        
         $test = Test::query()
-            ->where('order', '=', $testIndex)
+            ->where('collection_id', $collection->id)
+            ->where('order', $testIndex)
             ->with('questions', function ($query) {
-                $query->inRandomOrder()->with('options', function ($q) {
-                    $q->orderBy('value');
-                });
-            }
+                    $query->inRandomOrder()->with('options', function ($q) {
+                        $q->orderBy('value');
+                    });
+                }
             )
-            ->firstOrFail();
+            ->first();
+
+            dump(session()->all());
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
 
-        return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers'));
+        return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
 
-    public function handleTestSubmit(Request $request, $testIndex)
+    public function handleTestSubmit(Request $request, Collection $collection, $testIndex)
     {
-
         $test = Test::query()
+            ->where('collection_id', $collection->id)
             ->where('order', '=', $testIndex)
             ->with('questions.options')
             ->first();
+            
 
         $validationRules = $this->generateValidationRules($test);
         $validatedData = $request->validate($validationRules);
@@ -58,7 +65,7 @@ class TestsController
 
         $totalTests = Test::max('order');
         if ($testIndex == $totalTests) {
-            $testAnswers = $this->getTestAnswersFromSession();
+            $testAnswers = $this->getTestAnswersFromSession($collection);
             $storedAnswers = $this->storeResultsOnDatabase($testAnswers);
 
             if (! $storedAnswers) {
@@ -70,7 +77,7 @@ class TestsController
             return to_route('choose-test');
         }
 
-        return to_route('test', $testIndex + 1);
+        return to_route('test', [$collection, $testIndex + 1]);
     }
 
     private function generateValidationRules($testInfo): array
@@ -86,11 +93,11 @@ class TestsController
         return $validationRules;
     }
 
-    private function getTestAnswersFromSession(): array
+    private function getTestAnswersFromSession(Collection $collection): array
     {
         $testAnswers = collect(session()->all())
-            ->filter(function ($_, $key) {
-                return str_ends_with($key, '|result');
+            ->filter(function ($_, $key) use($collection) {
+                return str_ends_with($key, '|result') && str_contains($key, $collection->key_name);
             })
             ->toArray();
 

@@ -32,8 +32,8 @@ Route::middleware(GuestMiddleware::class)->group(function () {
 
 Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/choose-test', [TestsController::class, 'showChoose'])->name('choose-test');
-    Route::get('/test/{test?}', TestsController::class)->name('test');
-    Route::post('/test/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
+    Route::get('/collection/{collection}/test/{test?}', TestsController::class)->name('test');
+    Route::post('/collection/{collection}/test/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
 
     Route::resource('company', CompanyController::class);
 

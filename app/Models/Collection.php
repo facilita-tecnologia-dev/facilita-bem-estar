@@ -16,6 +16,11 @@ class Collection extends Model
      */
     protected $fillable = ['name', 'description'];
 
+    public function getRouteKeyName()
+    {
+        return 'key_name';
+    }
+
     /**
      * Returns the test collections of users that have this collection as their base.
      */
