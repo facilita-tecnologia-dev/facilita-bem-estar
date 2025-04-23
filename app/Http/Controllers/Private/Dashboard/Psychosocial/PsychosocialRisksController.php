@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Private\Dashboard;
+namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
-use App\Models\Company;
 use App\Services\TestService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Gate;
 
-class RisksController
+class PsychosocialRisksController
 {
     protected $testService;
 
@@ -25,7 +24,7 @@ class RisksController
 
         $risks = $this->getRisks(true);
 
-        return view('private.dashboard.risks', compact('risks'));
+        return view('private.dashboard.psychosocial.risks', compact('risks'));
     }
 
     public function generatePDF()
@@ -49,30 +48,24 @@ class RisksController
 
     private function pageQuery()
     {
-        $companyUserCollections = Company::where('id', session('company')->id)
-            ->with('metrics')
-            ->with('users', function ($user) {
-                $user
-                    ->has('collections')
-                    ->with('latestCollections', function ($latestCollection) {
-                        $latestCollection
-                            ->where('collection_id', 1)
-                            ->with('tests')
-                            ->limit(1);
-                    });
-            })
-            ->first();
+        $companyUserCollections = session('company')
+            ->users()
+            ->has('collections')
+            ->select('users.id', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
+            ->withLatestPsychosocialCollection()
+            ->get();
 
         return $companyUserCollections;
     }
 
     private function getRisks($onlyCritical = false)
     {
-        $testCompiled = [];
-        foreach ($this->companyUserCollections->users as $user) {
-            foreach ($user->latestCollections[0]->tests as $userTest) {
-                $testDisplayName = $userTest->testType->display_name;
+        $metrics = session('company')->metrics;
 
+        $testCompiled = [];
+        foreach ($this->companyUserCollections as $user) {
+            foreach ($user->latestPsychosocialCollection->tests as $userTest) {
+                $testDisplayName = $userTest->testType->display_name;
                 $answers = [];
 
                 foreach ($userTest->answers as $answer) {
@@ -81,7 +74,7 @@ class RisksController
                     $answers[$question->id] = $relatedOption->value;
                 }
 
-                $evaluatedTest = $this->testService->evaluateTest($userTest, $answers, $this->companyUserCollections->metrics);
+                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
 
                 if (isset($evaluatedTest['risks'])) {
                     foreach ($evaluatedTest['risks'] as $riskName => $risk) {

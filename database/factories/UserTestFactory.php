@@ -23,7 +23,7 @@ class UserTestFactory extends Factory
             'test_id' => fake()->uuid(),
             'score' => fake()->numberBetween(10, 120),
             'severity_title' => 1,
-            'severity_color' => 1
+            'severity_color' => 1,
         ];
     }
 }

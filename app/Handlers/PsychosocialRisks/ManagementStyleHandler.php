@@ -17,7 +17,7 @@ class ManagementStyleHandler
 
         foreach ($userTest->answers as $answer) {
             $question = $userTest->testType->questions->where('id', $answer->question_id)->first();
-            $answersToArray[$question->id] = $answer->relatedOption->value;
+            $answersToArray[$question->id] = $answer->related_option_value;
         }
 
         $score = array_sum($answersToArray);
@@ -35,17 +35,21 @@ class ManagementStyleHandler
         if ($average >= 3.5) {
             $severityTitle = 'Estilo gerencialista';
             $severityColor = SeverityEnum::CRITICO->value;
+            $severityKey = 5;
         } elseif ($average >= 2.5) {
             $severityTitle = 'Equilíbrio';
             $severityColor = SeverityEnum::MEDIO->value;
+            $severityKey = 3;
         } else {
             $severityTitle = 'Estilo coletivista';
             $severityColor = SeverityEnum::MINIMO->value;
+            $severityKey = 1;
         }
 
         return [
             'severity_title' => $severityTitle,
             'severity_color' => $severityColor,
+            'severity_key' => $severityKey,
             'risks' => $risksList,
         ];
     }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,8 +37,8 @@ class User extends Authenticatable
             'user_id',
             'company_id'
         )
-        ->withPivot('role_id')
-        ->withTimestamps();
+            ->withPivot('role_id')
+            ->withTimestamps();
     }
 
     /**
@@ -74,5 +76,46 @@ class User extends Authenticatable
             ->whereIn('collection_id', [1, 2])
             ->limit(2)
             ->orderBy('created_at', 'desc');
+    }
+
+    public function latestPsychosocialCollection()
+    {
+        return $this->hasOne(UserCollection::class)
+            ->where('collection_id', 1)
+            ->latest();
+        // ->latestOfMany('created_at');
+    }
+
+    // Retorna a última coleção com collection_id = 2
+    public function latestOrganizationalClimateCollection()
+    {
+        return $this->hasOne(UserCollection::class)
+            ->where('collection_id', 2)
+            ->latest();
+        // ->latestOfMany('created_at');
+    }
+
+    public function scopeWithLatestOrganizationalClimateCollection($query, $only = null)
+    {
+        $query->with([
+            'latestOrganizationalClimateCollection' => function ($q) use ($only) {
+                $q->withCollectionTypeName('organizational-climate')->withTests($only);
+            },
+        ]);
+    }
+
+    public function scopeWithLatestPsychosocialCollection($query, $only = null, $year = null)
+    {
+        $query->with([
+            'latestPsychosocialCollection' => function ($q) use ($only, $year) {
+                $q->whereBetween('created_at', [Carbon::create($year, 1, 1)->startOfDay(), Carbon::create($year, 12, 31)->endOfDay()])->withCollectionTypeName('psychosocial-risks')->withTests($only);
+            },
+        ]);
+    }
+
+    public function scopeHasAttribute($query, $attribute, $operator, $value){
+        $query->when($value, function ($query) use ($attribute, $operator, $value) {
+            $query->where($attribute, $operator, $value);
+        });
     }
 }

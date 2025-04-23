@@ -1,8 +1,8 @@
-<div data-role="sidebar-mobile-button" class="md:hidden fixed left-3 top-3 cursor-pointer h-10 w-10 shadow-md rounded-full bg-gray-100 flex items-center justify-center">
+<div data-role="sidebar-mobile-button" class="fixed z-20 left-8 top-2 cursor-pointer h-10 w-10 shadow-md rounded-full bg-gray-100 flex items-center justify-center">
     <i class="fa-solid fa-bars text-gray-800"></i>
 </div>
 
-<div id="sidebar" class="bg-gray-100 z-40 w-[280px] transition-all duration-200 md:w-[240px] shadow-lg h-screen flex flex-col pt-8 pb-12 absolute -left-full top-0 md:relative md:left-0">
+<div id="sidebar" class="bg-gray-100 z-40 w-[280px] overflow-auto transition-all duration-200  shadow-lg h-screen flex flex-col pt-8 pb-12 absolute -left-full top-0">
     <div class="flex items-center justify-center px-4 py-2">
         @if(session('company')->logo)
             <img src="{{ asset(session('company')->logo) }}" alt="" class="h-10">
@@ -15,11 +15,33 @@
         @can('view-manager-screens', Auth::user())
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Dados</p>
-                <a href="{{ route('dashboard.charts') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+
+                <a 
+                    href="{{ route('dashboard.psychosocial') }}" 
+                    class="{{ Route::currentRouteName() == 'dashboard.psychosocial' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                >
                     <div class="w-5 flex justify-center items-center">
-                        <i class="fa-solid fa-chart-line"></i>
+                        <i class="fa-solid fa-brain"></i>
                     </div>
-                    Dashboard
+                    Riscos Psicossociais
+                </a>
+                <a 
+                    href="{{ route('dashboard.organizational-climate') }}" 
+                    class="{{ Route::currentRouteName() == 'dashboard.organizational-climate' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                >
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    Clima Organizacional
+                </a>
+                <a 
+                    href="{{ route('dashboard.demographics') }}" 
+                    class="{{ Route::currentRouteName() == 'dashboard.demographics' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                >
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    Demografia
                 </a>
             </div>
         @endcan
@@ -27,7 +49,10 @@
         @can('answer-tests')
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Testes</p>
-                <a href="{{ route('choose-test') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                <a 
+                    href="{{ route('choose-test') }}" 
+                    class="{{ Route::currentRouteName() == 'choose-test' || Route::currentRouteName() == 'test' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                >
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-question"></i>
                     </div>
@@ -40,7 +65,10 @@
             <div class="submenu space-y-3">
                 <p class="uppercase text-xs font-semibold px-2">Empresa</p>
                 @can('viewAny', Auth::user())
-                    <a href="{{ route('user.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <a 
+                        href="{{ route('user.index') }}" 
+                        class="{{ Route::currentRouteName() == 'user.index' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                    >
                         <div class="w-5 flex justify-center items-center">
                             <i class="fa-solid fa-users"></i>
                         </div>
@@ -48,7 +76,10 @@
                     </a>
                 @endcan
                 @can('view', session('company'))
-                    <a href="{{ route('company.show', session('company')) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <a 
+                        href="{{ route('company.show', session('company')) }}" 
+                        class="{{ Route::currentRouteName() == 'company.show' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                    >
                         <div class="w-5 flex justify-center items-center">
                             <i class="fa-solid fa-building"></i>
                         </div>
@@ -56,7 +87,10 @@
                     </a>
                 @endcan
                 @can('update-metrics')
-                    <a href="{{ route('company-metrics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <a 
+                        href="{{ route('company-metrics') }}" 
+                        class="{{ Route::currentRouteName() == 'company-metrics' ? 'bg-gray-200' : ''}} px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition"
+                    >
                         <div class="w-5 flex justify-center items-center">
                             <i class="fa-solid fa-percent"></i>
                         </div>

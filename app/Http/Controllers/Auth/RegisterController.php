@@ -57,7 +57,7 @@ class RegisterController
 
             Auth::login($user);
 
-            return to_route('dashboard.charts');
+            return to_route('dashboard.psychosocial');
         });
     }
 

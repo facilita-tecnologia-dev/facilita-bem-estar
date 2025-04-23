@@ -27,7 +27,7 @@ class LoginController
 
         Auth::login($user);
 
-        return to_route('test', 1);
+        return to_route('choose-test');
     }
 
     public function attemptExternalLogin(LoginExternalRequest $request)

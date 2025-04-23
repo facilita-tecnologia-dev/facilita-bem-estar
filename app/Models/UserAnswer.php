@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserAnswer extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'user_answers';
 
-    protected $with = ['relatedOption'];
+    // protected $with = ['relatedOption'];
 
     /**
      * The attributes that are mass assignable.
@@ -43,5 +43,13 @@ class UserAnswer extends Model
     public function relatedOption(): BelongsTo
     {
         return $this->belongsTo(Option::class, 'question_option_id');
+    }
+
+    public function scopeWithRelatedOptionValue($query)
+    {
+        $query->addSelect(['related_option_value' => Option::select('value')
+            ->whereColumn('id', 'user_answers.question_option_id')
+            ->take(1),
+        ]);
     }
 }

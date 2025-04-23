@@ -30,19 +30,19 @@ class TestsController
 
     public function __invoke(Collection $collection, $testIndex = 1)
     {
-        
+
         $test = Test::query()
             ->where('collection_id', $collection->id)
             ->where('order', $testIndex)
             ->with('questions', function ($query) {
-                    $query->inRandomOrder()->with('options', function ($q) {
-                        $q->orderBy('value');
-                    });
-                }
+                $query->inRandomOrder()->with('options', function ($q) {
+                    $q->orderBy('value');
+                });
+            }
             )
             ->first();
 
-            dump(session()->all());
+        // dump(session()->all());
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
 
@@ -56,7 +56,6 @@ class TestsController
             ->where('order', '=', $testIndex)
             ->with('questions.options')
             ->first();
-            
 
         $validationRules = $this->generateValidationRules($test);
         $validatedData = $request->validate($validationRules);
@@ -96,7 +95,7 @@ class TestsController
     private function getTestAnswersFromSession(Collection $collection): array
     {
         $testAnswers = collect(session()->all())
-            ->filter(function ($_, $key) use($collection) {
+            ->filter(function ($_, $key) use ($collection) {
                 return str_ends_with($key, '|result') && str_contains($key, $collection->key_name);
             })
             ->toArray();

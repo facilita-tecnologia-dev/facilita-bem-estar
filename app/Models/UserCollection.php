@@ -20,7 +20,7 @@ class UserCollection extends Model
      */
     protected $fillable = ['user_id', 'collection_id'];
 
-    protected $with = ['collectionType'];
+    // protected $with = ['collectionType'];
 
     /**
      * Returns the user who owns this collection.
@@ -44,5 +44,27 @@ class UserCollection extends Model
     public function tests(): HasMany
     {
         return $this->hasMany(UserTest::class, 'user_collection_id');
+    }
+
+    public function scopeWithCollectionTypeName($query, $collection)
+    {
+        $query->addSelect(['collection_type_name' => Collection::select('key_name')
+            ->where('key_name', $collection)
+            ->take(1),
+        ]);
+    }
+
+    public function scopeWithTests($query, $only = null)
+    {
+        $query->with([
+            'tests' => function ($q) use ($only) {
+                $q->select('id', 'user_collection_id', 'test_id')
+                    ->only($only)
+                    ->withTestType()
+                // ->withAnswersSum()
+                // ->withAnswersCount()
+                    ->withAnswers();
+            },
+        ]);
     }
 }

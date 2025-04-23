@@ -23,7 +23,7 @@ class GuestMiddleware
             $userRole = $user->roles()->first();
 
             if ($userRole && $userRole->role_id == 1) {
-                return to_route('dashboard.charts');
+                return to_route('dashboard.psychosocial');
             }
 
             if ($userRole && $userRole->role_id == 2) {

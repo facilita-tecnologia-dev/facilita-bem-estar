@@ -1,8 +1,8 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-0">
+    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
         <x-sidebar />
         
-        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-start justify-start gap-6">
+        <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
             <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
                 <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Importar</h2>
             </div>

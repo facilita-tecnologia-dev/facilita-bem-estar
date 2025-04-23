@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-0">
+    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
         <x-sidebar />
         
         <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center justify-start gap-6">

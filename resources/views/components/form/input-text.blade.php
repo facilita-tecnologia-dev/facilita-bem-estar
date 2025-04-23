@@ -27,6 +27,10 @@
             <i class="fa-solid fa-magnifying-glass text-gray-800"></i>
         @endif
 
+        @if($icon && $icon === 'id')
+            <i class="fa-solid fa-id-card text-gray-800"></i>
+        @endif
+
         <input type="{{ $type }}"
             class="w-full h-[43px] focus:outline-0 bg-transparent"
             name="{{ $name }}"

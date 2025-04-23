@@ -29,33 +29,21 @@ class UserController
 
         $this->users = User::whereRelation('companies', 'companies.id', session('company')->id);
 
-        $queryStringName = $request->name;
-        $queryStringDepartment = $request->department;
-        $queryStringOccupation = $request->occupation;
-
-        $users = User::whereRelation('companies', 'companies.id', session('company')->id)
-            ->when($queryStringName, function ($query) use ($queryStringName) {
-                return $query->where('name', 'like', "%$queryStringName%");
-            })
-            ->when($queryStringDepartment, function ($query) use ($queryStringDepartment) {
-                return $query->where('department', '=', "$queryStringDepartment");
-            })
-            ->when($queryStringOccupation, function ($query) use ($queryStringOccupation) {
-                return $query->where('occupation', '=', "$queryStringOccupation");
-            })
+        $users = session('company')
+            ->users()
+            ->hasAttribute('name', 'like', "%$request->name%")
+            ->hasAttribute('cpf', 'like', "%$request->cpf%")
+            ->hasAttribute('gender', '=', $request->gender)
+            ->hasAttribute('department', '=', $request->department)
+            ->hasAttribute('occupation', '=', $request->occupation)
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->get();
-
-        
-        $departmentsToFilter = session('company')->users()->whereNotNull('department')->distinct()->pluck('department');
-        $occupationsToFilter = session('company')->users()->whereNotNull('occupation')->distinct()->pluck('occupation');
+  
+        $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
 
         return view('private.users.index', compact(
             'users',
-            'departmentsToFilter',
-            'occupationsToFilter',
-            'queryStringName',
-            'queryStringDepartment',
-            'queryStringOccupation',
+            'filtersApplied'
         ));
     }
 
@@ -66,8 +54,8 @@ class UserController
     {
         Gate::authorize('create', Auth::user());
 
-        $gendersToSelect = array_map(fn(GenderEnum $gender) => $gender->value, GenderEnum::cases());
-        $rolesToSelect = array_map(fn(InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());     
+        $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $rolesToSelect = array_map(fn (InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());
 
         return view('private.users.create', compact('rolesToSelect', 'gendersToSelect'));
     }
@@ -82,13 +70,13 @@ class UserController
         DB::transaction(function () use ($request) {
             $userData = $request->safe()->except('role');
             $userRole = $request->safe()->only('role');
-            
+
             $userRoleID = $userRole['role'] === InternalUserRoleEnum::INTERNAL_MANAGER->value ? 1 : 2;
-            
+
             $user = User::create($userData);
 
             $user->companies()->sync([
-                session('company')->id => ['role_id' => $userRoleID]
+                session('company')->id => ['role_id' => $userRoleID],
             ]);
         });
 
@@ -101,16 +89,22 @@ class UserController
     public function show(User $user)
     {
         Gate::authorize('view', Auth::user());
-        
+
         $admission = Carbon::parse($user->admission);
 
-        if(count($user->latestCollections)){
-            $latestCollectionDate = $user->latestCollections[0]->created_at->diffForHumans();
-        } else{
-            $latestCollectionDate = 'Nunca';
+        if ($user->latestOrganizationalClimateCollection) {
+            $latestOrganizationalClimateCollectionDate = $user->latestOrganizationalClimateCollection->created_at->diffForHumans();
+        } else {
+            $latestOrganizationalClimateCollectionDate = 'Nunca';
         }
 
-        return view('private.users.show', compact('user', 'admission', 'latestCollectionDate'));
+        if ($user->latestPsychosocialCollection) {
+            $latestPsychosocialCollectionDate = $user->latestPsychosocialCollection->created_at->diffForHumans();
+        } else {
+            $latestPsychosocialCollectionDate = 'Nunca';
+        }
+
+        return view('private.users.show', compact('user', 'admission', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
     }
 
     /**
@@ -120,8 +114,8 @@ class UserController
     {
         Gate::authorize('update', Auth::user());
 
-        $gendersToSelect = array_map(fn(GenderEnum $gender) => $gender->value, GenderEnum::cases());
-        $rolesToSelect = array_map(fn(InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());     
+        $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $rolesToSelect = array_map(fn (InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());
 
         $roleInThisCompany = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
         $userRole = $roleInThisCompany === 1 ? InternalUserRoleEnum::INTERNAL_MANAGER->value : InternalUserRoleEnum::EMPLOYEE->value;
@@ -140,17 +134,17 @@ class UserController
     public function update(UserUpdateRequest $request, User $user)
     {
         Gate::authorize('update', Auth::user());
-        
-        DB::transaction(function() use($request, $user) {
+
+        DB::transaction(function () use ($request, $user) {
             $userData = $request->safe()->except('role');
             $userRole = $request->safe()->only('role');
-            
+
             $userRoleID = $userRole['role'] === 'Gestor Interno' ? 1 : 2;
-            
+
             $user->update($userData);
-            
+
             $user->companies()->sync([
-                session('company')->id => ['role_id' => $userRoleID]
+                session('company')->id => ['role_id' => $userRoleID],
             ]);
 
             if (Auth::user()->id == $user->id) {

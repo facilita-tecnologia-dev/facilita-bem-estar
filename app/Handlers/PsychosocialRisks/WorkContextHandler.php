@@ -17,7 +17,7 @@ class WorkContextHandler
 
         foreach ($userTest->answers as $answer) {
             $question = $userTest->testType->questions->where('id', $answer->question_id)->first();
-            $answersToArray[$question->id] = $answer->relatedOption->value;
+            $answersToArray[$question->id] = $answer->related_option_value;
         }
 
         $score = array_sum($answersToArray);
@@ -35,17 +35,21 @@ class WorkContextHandler
         if ($average >= 3.7) {
             $severityTitle = 'Risco Baixo';
             $severityColor = SeverityEnum::MINIMO->value;
+            $severityKey = 1;
         } elseif ($average >= 2.3) {
             $severityTitle = 'Risco Médio';
             $severityColor = SeverityEnum::MEDIO->value;
+            $severityKey = 3;
         } else {
             $severityTitle = 'Risco Alto';
             $severityColor = SeverityEnum::CRITICO->value;
+            $severityKey = 5;
         }
 
         return [
             'severity_title' => $severityTitle,
             'severity_color' => $severityColor,
+            'severity_key' => $severityKey,
             'risks' => $risksList,
         ];
     }

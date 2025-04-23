@@ -14,8 +14,9 @@ class validateCPF implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $value)) {
+        if (! preg_match('/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', $value)) {
             $fail('O CPF deve estar no formato 000.000.000-00.');
+
             return;
         }
 
@@ -23,11 +24,13 @@ class validateCPF implements ValidationRule
 
         if (strlen($cpf) !== 11) {
             $fail('O CPF informado é inválido.');
+
             return;
         }
 
         if (preg_match('/(\d)\1{10}/', $cpf)) {
             $fail('O CPF informado é inválido.');
+
             return;
         }
 
@@ -39,6 +42,7 @@ class validateCPF implements ValidationRule
             $d = ((10 * $sum) % 11) % 10;
             if ($cpf[$t] != $d) {
                 $fail('O CPF informado é inválido.');
+
                 return;
             }
         }

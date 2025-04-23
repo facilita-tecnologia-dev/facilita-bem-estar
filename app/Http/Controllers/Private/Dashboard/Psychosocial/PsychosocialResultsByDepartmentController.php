@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Private\Dashboard;
+namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
-use App\Models\Company;
 use App\Services\TestService;
 use Illuminate\Support\Facades\Gate;
 
-class TestResultsPerDepartmentController
+class PsychosocialResultsByDepartmentController
 {
     protected $testService;
 
@@ -25,7 +24,7 @@ class TestResultsPerDepartmentController
 
         $resultsPerDepartment = $this->getCompiledTestsData();
 
-        return view('private.dashboard.test-results-per-department', compact(
+        return view('private.dashboard.psychosocial.test-results-per-department', compact(
             'testName',
             'resultsPerDepartment',
         ));
@@ -33,23 +32,12 @@ class TestResultsPerDepartmentController
 
     private function pageQuery($testName)
     {
-        $companyUserCollections = Company::where('id', session('company')->id)
-            ->with('metrics')
-            ->with('users', function ($user) use ($testName) {
-                $user
-                    ->has('collections')
-                    ->with('latestCollections', function ($latestCollection) use ($testName) {
-                        $latestCollection
-                            ->whereHas('tests', function ($q) use ($testName) {
-                                $q->whereHas('testType', function ($subQuery) use ($testName) {
-                                    $subQuery->where('display_name', $testName);
-                                });
-                            })
-                            ->with('tests')
-                            ->limit(1);
-                    });
-            })
-            ->first();
+        $companyUserCollections = session('company')
+            ->users()
+            ->has('collections')
+            ->select('users.id', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
+            ->withLatestPsychosocialCollection(only: $testName)
+            ->get();
 
         return $companyUserCollections;
     }
@@ -59,10 +47,12 @@ class TestResultsPerDepartmentController
      */
     private function getCompiledTestsData()
     {
+        $metrics = session('company')->metrics;
+
         $testCompiled = [];
 
-        foreach ($this->companyUserCollections->users as $user) {
-            $userTest = $user->latestCollections[0]->tests[0];
+        foreach ($this->companyUserCollections as $user) {
+            $userTest = $user->latestPsychosocialCollection->tests[0];
             $userDepartment = $user->department;
 
             if (! isset($testCompiled[$userDepartment]['total'])) {
@@ -71,17 +61,21 @@ class TestResultsPerDepartmentController
 
             $testCompiled[$userDepartment]['total']++;
 
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $this->companyUserCollections->metrics);
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
 
             if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
                 $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;
                 $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_color'] = $evaluatedTest['severity_color'];
+                $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_key'] = $evaluatedTest['severity_key'];
             }
+
+            uasort($testCompiled[$userDepartment]['severities'], function ($a, $b) {
+                return $b['severity_key'] <=> $a['severity_key'];
+            });
 
             $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count']++;
         }
 
-        // dd($testCompiled);
         return $testCompiled;
     }
 }

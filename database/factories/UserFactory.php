@@ -3,12 +3,10 @@
 namespace Database\Factories;
 
 use App\Enums\DepartmentEnum;
-use App\Enums\DepartmentEnumGenderEnum;
 use App\Enums\GenderEnum;
 use App\Models\Company;
 use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -32,11 +30,11 @@ class UserFactory extends Factory
         return [
             'name' => $faker->name(),
             'cpf' => $faker->unique()->cpf(),
-            'birth_date' => $faker->date(),
+            'birth_date' => $faker->date($format = 'Y-m-d', $max = '2007-01-01', $min = '1930-01-01'),
             'gender' => $faker->randomElement(GenderEnum::cases())->value,
             'department' => $faker->randomElement(DepartmentEnum::cases())->value,
             'occupation' => $faker->word(),
-            'admission' => $faker->date(),
+            'admission' => $faker->date($format = 'Y-m-d', $max = 'now', $min = '1930-01-01'),
         ];
     }
 

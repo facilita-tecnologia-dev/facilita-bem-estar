@@ -29,8 +29,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
 
-
-
         Gate::define('view-manager-screens', function (User $user): Response {
             if ($user->hasRole('internal-manager')) {
                 return Response::allow();

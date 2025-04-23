@@ -1,8 +1,8 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-0">
+    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
         <x-sidebar />
         
-        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-start justify-start gap-6">
+        <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
             <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
                 <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">{{ $testName }}</h2>
             </div>
@@ -17,47 +17,18 @@
             </div>
 
             <div class="w-full flex items-end sm:items-center gap-4 flex-col sm:flex-row justify-end">
-                @if($queryStringName || $queryStringDepartment || $queryStringOccupation)
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">Você filtrou por:</span>
-                        @if($queryStringName)
-                            <span class="px-3 py-1 rounded-md bg-gray-100/50 text-sm">Nome: {{ $queryStringName }}</span>
-                        @endif
-                        @if($queryStringDepartment)
-                            <span class="px-3 py-1 rounded-md bg-gray-100/50 text-sm">Setor: {{ $queryStringDepartment }}</span>
-                        @endif
-                        @if($queryStringOccupation)
-                            <span class="px-3 py-1 rounded-md bg-gray-100/50 text-sm">Cargo: {{ $queryStringOccupation }}</span>
-                        @endif
-                    </div>
-                @endif
+                <x-filters-info-bar
+                    :countFiltered="true"
+                    :filtersApplied="$filtersApplied"
+                    :filteredUsers="$filteredUsers"
+                />
 
-                <button data-role="filter-modal-trigger" class="bg-gray-100 w-10 h-10 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
-                    <i class="fa-solid fa-filter"></i>
-                </button>
+                <x-filters-trigger
+                    class="w-10 h-10"
+                    :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation']" 
+                />
             </div>
 
-            <div data-role="filter-modal" class="hidden z-50 left-0 top-0 fixed w-screen h-screen bg-gray-800/30 px-4 items-center justify-center">
-                <div class="w-full max-w-[360px] bg-gray-100 py-8 px-4 rounded-md flex flex-col items-center gap-8">
-                    <h2 class="text-center text-3xl font-semibold text-gray-800">Filtros</h2>
-
-                    <x-form class="w-full flex flex-col gap-4 items-center">
-                        <x-form.input-text icon="search" name="name" placeholder="Nome do colaborador" />
-
-                        @if(count($departmentsToFilter) > 0)
-                            <x-form.select name="department" placeholder="Setor" :options="$departmentsToFilter" defaultValue />
-                        @endif
-
-                        @if(count($occupationsToFilter) > 0)
-                            <x-form.select name="occupation" placeholder="Cargo" :options="$occupationsToFilter" defaultValue />
-                        @endif
-                        
-                        {{-- <x-form.select name="severity" placeholder="Severidade" :options="['1', '2', '3', '4']" /> --}}
-
-                        <x-action tag="button">Filtrar</x-action>
-                    </x-form>
-                </div>
-            </div>
     
             <div class="w-full flex flex-col gap-4 items-end">
                 <div class="w-full space-y-2" data-role="tests-list">
@@ -83,20 +54,21 @@
                                 ">
                                 <span data-role="td" class="col-span-1 lg:col-span-2 truncate">{{ $user['user']->name }}</span>
                                 <span data-role="td" class="hidden lg:block">
-                                    @if(count($departmentsToFilter) > 0)
+                                    @if($user['user']->department)
                                         {{ $user['user']->department }}
                                     @else
                                         <i>(Vazio)</i>
                                     @endif
                                 </span>
                                 <span data-role="td" class="hidden sm:block">
-                                    @if(count($occupationsToFilter) > 0)
+                                    @if($user['user']->occupation)
                                         {{ $user['user']->occupation }}
                                     @else
                                         <i>(Vazio)</i>
                                     @endif
                                 </span>
-                                <span data-value="{{ $user['severity']['severity_color'] }}" data-role="td" class="truncate">{{ $user['severity']['severity_title'] }}</span>
+                                
+                                <span data-value="{{ $user['severity']['severity_key'] }}" data-role="td" class="truncate">{{ $user['severity']['severity_title'] }}</span>
                             </a>
                         @empty
                             <p class="w-full text-center mt-6">Não há testes cadastrados.</p>

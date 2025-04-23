@@ -2,11 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Collection;
-use App\Models\QuestionOption;
 use App\Models\Test;
-use App\Models\TestForm;
-use App\Models\TestQuestion;
 use App\Models\User;
 use App\Models\UserAnswer;
 use App\Models\UserCollection;
@@ -47,7 +43,7 @@ class DatabaseSeeder extends Seeder
 
         $users = User::factory(50)->create();
 
-        $users->each(function($user) use($testTypes) {
+        $users->each(function ($user) use ($testTypes) {
             $userCollection1 = UserCollection::factory()->create([
                 'user_id' => $user->id,
                 'collection_id' => 1,
@@ -61,17 +57,17 @@ class DatabaseSeeder extends Seeder
             $collection1Tests = $testTypes->where('collection_id', 1);
             $collection2Tests = $testTypes->where('collection_id', 2);
 
-           $collection1Tests->each(function ($test) use ($userCollection1) {
+            $collection1Tests->each(function ($test) use ($userCollection1) {
                 $userTest = UserTest::factory()->create([
                     'user_collection_id' => $userCollection1->id,
                     'test_id' => $test->id,
                 ]);
 
-                $userTest->testType->questions->each(function($question) use ($userTest) {
+                $userTest->testType->questions->each(function ($question) use ($userTest) {
                     UserAnswer::factory()->create([
                         'user_test_id' => $userTest->id,
                         'question_id' => $question->id,
-                        'question_option_id' => $question->options[rand(0,4)]->id,
+                        'question_option_id' => $question->options[rand(0, 4)]->id,
                     ]);
                 });
             });
@@ -82,16 +78,17 @@ class DatabaseSeeder extends Seeder
                     'test_id' => $test->id,
                 ]);
 
-                $userTest->testType->questions->each(function($question) use ($userTest) {
+                $userTest->testType->questions->each(function ($question) use ($userTest) {
                     UserAnswer::factory()->create([
                         'user_test_id' => $userTest->id,
                         'question_id' => $question->id,
-                        'question_option_id' => $question->options[rand(0,4)]->id,
+                        'question_option_id' => $question->options[rand(0, 4)]->id,
                     ]);
                 });
             });
-            
-            
+
         });
+
+        User::factory(10)->create();
     }
 }

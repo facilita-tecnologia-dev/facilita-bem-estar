@@ -10,7 +10,7 @@ class Risk extends Model
 {
     protected $table = 'risks';
 
-    protected $with = ['relatedQuestions', 'controlActions'];
+    protected $with = ['relatedQuestions:id,risk_id,question_Id', 'controlActions:id,risk_id,content'];
 
     /**
      * Returns the questions related to this risk.

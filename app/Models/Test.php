@@ -17,7 +17,7 @@ class Test extends Model
      */
     protected $fillable = ['key_name', 'display_name', 'statement', 'reference', 'number_of_questions', 'handler_type', 'order'];
 
-    protected $with = ['questions', 'risks'];
+    // protected $with = ['questions', 'risks'];
 
     /**
      * Returns the test collection to which this test belongs.
@@ -38,5 +38,15 @@ class Test extends Model
     public function risks()
     {
         return $this->hasMany(Risk::class);
+    }
+
+    public function scopeWithQuestions($query)
+    {
+        $query->with('questions:id,test_id,statement');
+    }
+
+    public function scopeWithRisks($query)
+    {
+        $query->with('risks');
     }
 }

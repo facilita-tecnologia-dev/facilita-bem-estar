@@ -14,7 +14,7 @@ class WorkLeadershipAndManagementHandler
 
         foreach ($userTest->answers as $answer) {
             $question = $userTest->testType->questions->where('id', $answer->question_id)->first();
-            $processedAnswers[$question->id] = Helper::multiplyAnswer($answer->relatedOption->value);
+            $processedAnswers[$question->id] = Helper::multiplyAnswer($answer->related_option_value);
         }
 
         return [
