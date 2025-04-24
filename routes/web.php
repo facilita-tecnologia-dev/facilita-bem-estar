@@ -14,6 +14,7 @@ use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialResultsListC
 use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialRisksController;
 use App\Http\Controllers\Private\TestsController;
 use App\Http\Controllers\Private\UserController;
+use App\Http\Controllers\Private\UserFeedbackController;
 use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
@@ -37,6 +38,9 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/choose-test', [TestsController::class, 'showChoose'])->name('choose-test');
     Route::get('/collection/{collection}/test/{test?}', TestsController::class)->name('test');
     Route::post('/collection/{collection}/test/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
+    Route::get('/feedback', [UserFeedbackController::class, 'create'])->name('feedbacks.create');
+    Route::post('/feedback', [UserFeedbackController::class, 'store']);
+    Route::view('/thanks', 'private.tests.thanks')->name('test.thanks');
 
     Route::resource('company', CompanyController::class);
 
@@ -48,16 +52,19 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
 
     Route::prefix('dashboard')->group(function () {
-        Route::get('demographics/', DemographicsMainController::class)->name('dashboard.demographics');
+        Route::get('demographics', DemographicsMainController::class)->name('dashboard.demographics');
 
         Route::get('organizational', OrganizationalMainController::class)->name('dashboard.organizational-climate');
-        Route::get('organizational/answers', OrganizationalAnswersController::class)->name('dashboard.organizational-climate.answers');
+        Route::get('organizational/answers', OrganizationalAnswersController::class)->name('dashboard.organizational-climate.by-answers');
 
         Route::get('psychosocial', PsychosocialMainController::class)->name('dashboard.psychosocial');
-        Route::get('psychosocial/risks', PsychosocialRisksController::class)->name('dashboard.psychosocial-risks');
-        Route::get('psychosocial/risks/inventory', [PsychosocialRisksController::class, 'generatePDF'])->name('dashboard.psychosocial-risks.pdf');
-        Route::get('psychosocial/{test}', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial-results-by-department');
-        Route::get('psychosocial/{test}/list', PsychosocialResultsListController::class)->name('dashboard.psychosocial-results-list');
+        Route::get('psychosocial/risks', PsychosocialRisksController::class)->name('dashboard.psychosocial.risks');
+        Route::get('psychosocial/risks/inventory', [PsychosocialRisksController::class, 'generatePDF'])->name('dashboard.psychosocial.risks.pdf');
+        Route::get('psychosocial/{test}', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
+        Route::get('psychosocial/{test}/list', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
+
+        Route::get('feedbacks', [UserFeedbackController::class, 'index'])->name('feedbacks.index');
+        Route::get('feedbacks/{feedback}', [UserFeedbackController::class, 'show'])->name('feedbacks.show');
     });
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');

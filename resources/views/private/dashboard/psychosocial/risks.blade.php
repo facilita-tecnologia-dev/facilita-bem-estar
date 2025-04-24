@@ -1,6 +1,6 @@
 <x-layouts.app>
     <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
-        <x-sidebar />
+        <x-structure.sidebar />
         
         <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
             <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
@@ -14,10 +14,14 @@
                         Resultado detalhado da avaliação de riscos psicossociais que necessitam intervenção.
                     </p>
                 </div>
-                
-                <a href="{{ route('dashboard.psychosocial-risks.pdf') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+
+                <x-action href="{{ route('dashboard.psychosocial.risks.pdf') }}">
                     Visualizar Inventário de Riscos
-                </a>
+                </x-action>
+                
+                {{-- <a href="{{ route('dashboard.psychosocial.risks.pdf') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+                    Visualizar Inventário de Riscos
+                </a> --}}
             </div>
     
             <div class="w-full space-y-8">

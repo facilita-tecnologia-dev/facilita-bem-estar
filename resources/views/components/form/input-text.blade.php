@@ -21,7 +21,7 @@
         </label>
     @endif
 
-    <div {{ $attributes->merge(['class' => 'relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500']) }}>
+    <div class="relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
     
         @if($icon && $icon === 'search')
             <i class="fa-solid fa-magnifying-glass text-gray-800"></i>
@@ -37,6 +37,7 @@
             id="{{ $id ? $id : $name }}"
             placeholder="{{ $placeholder }}"
             value="{{ old($name, $value) }}"
+            {{ $attributes }}
             {{ $disabled ? 'disabled' : '' }}
             {{ $readonly ? 'readonly' : '' }}
         >

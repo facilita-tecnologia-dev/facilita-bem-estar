@@ -1,10 +1,10 @@
 <x-layouts.app>
-    <x-page-container>
+    <x-structure.page-container>
         
-        <x-sidebar />
+        <x-structure.sidebar />
         
-        <x-main-content-container>        
-            <x-page-title title="Riscos Psicossociais" />
+        <x-structure.main-content-container>        
+            <x-structure.page-title title="Riscos Psicossociais" />
 
             <div class="w-full flex flex-col md:flex-row gap-2">
                 <div class="bg-gray-100/60 px-6 py-2 rounded-md shadow-md flex-1">
@@ -19,10 +19,10 @@
                     </p>
                 </div>
                 
-                <a href="{{ route('dashboard.psychosocial-risks') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100/60 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+                <x-action href="{{ route('dashboard.psychosocial.risks') }}">
                     Visualizar Riscos
-                </a>
-
+                </x-action>
+                
                 <x-filters-trigger
                     :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'year']" 
                 />
@@ -37,7 +37,7 @@
             <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @if($psychosocialRiskResults)
                     @foreach ($psychosocialRiskResults as $testName => $testData)
-                        <a href="{{ route('dashboard.psychosocial-results-by-department', $testName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center shadow-md rounded-md bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                        <a href="{{ route('dashboard.psychosocial.by-department', $testName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center shadow-md rounded-md bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
                             <p class="text-center font-semibold truncate">{{ $testName }}</p>
                             <x-charts.doughnut :id="$testName"/>
                             
@@ -80,8 +80,8 @@
                 @endif
             @endif
             
-        </x-main-content-container>
-    </x-page-container>
+        </x-structure.main-content-container>
+    </x-structure.page-container>
 </x-layouts.app>
 
 <script src="{{ asset('js/global.js') }}"></script>

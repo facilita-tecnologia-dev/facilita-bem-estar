@@ -20,7 +20,7 @@
                     <x-form action="{{ route('auth.register.internal.user') }}" id="register-internal" class="w-full flex flex-col gap-3 items-center" post>
                         <x-form.input-text name="name" placeholder="Digite o seu nome completo" />
                         <x-form.input-text name="cpf" placeholder="Digite o CPF" />
-                        <x-action tag="button">Registrar</x-action>
+                        <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
                     {{-- External --}}
@@ -29,7 +29,7 @@
                         <x-form.input-text name="cpf" placeholder="Digite o CPF" />
                         <x-form.input-text type="password" name="password" placeholder="Digite a senha" />
                         <x-form.input-text type="password" name="password_confirmation" placeholder="Confirme a sua senha" />
-                        <x-action tag="button">Registrar</x-action>
+                        <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
                     <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>

@@ -3,15 +3,15 @@
     'filtersApplied' => [],
 ])
 
-<button data-role="filter-modal-trigger" {{ $attributes->merge(['class' => 'bg-gray-100/50 aspect-square h-full rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition']) }}>
+<x-action tag="button" data-role="filter-modal-trigger">
     <i class="fa-solid fa-filter"></i>
-</button>
+</x-action>
 
 <div data-role="filter-modal" class="hidden z-50 left-0 top-0 fixed w-screen h-screen bg-gray-800/30 px-4 items-center justify-center">
     <div class="w-full max-w-[720px] bg-gray-100 py-8 px-4 rounded-md flex flex-col items-center gap-6">
         <h2 class="text-center text-3xl font-semibold text-gray-800">Filtros</h2>
 
-        <x-form id="filter-form" class="w-full grid grid-cols-2 gap-2 items-center">
+        <x-form id="filter-form" class="w-full grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
             @if(in_array('name', $modalFilters))
                 <x-form.input-text icon="search" name="name" label="Nome" placeholder="Nome do colaborador" value="{{ $filtersApplied['name'] ?? null }}" />
             @endif
@@ -58,11 +58,11 @@
                     ];
                 @endphp
                 @if(count($yearsTofilter) > 0)
-                    <x-form.select name="year" placeholder="Ano de realização do teste" label="Ano de realização do teste" value="{{ $filters['year'] ?? null }}"  :options="$yearsTofilter" defaultValue />
+                    <x-form.select name="year" placeholder="Ano de realização do teste" label="Ano de realização do teste" value="{{ $filtersApplied['year'] ?? null }}"  :options="$yearsTofilter" />
                 @endif
             @endif
         </x-form>
 
-        <x-action tag="button" form="filter-form">Filtrar</x-action>
+        <x-action form="filter-form" type="submit" variant="secondary" tag="button">Filtrar resultados</x-action>
     </div>
 </div>

@@ -1,11 +1,9 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
-        <x-sidebar />
+    <x-structure.page-container>
+        <x-structure.sidebar />
         
-        <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
-            <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Colaborador | Editar</h2>
-            </div>
+        <x-structure.main-content-container>    
+            <x-structure.page-title title="Colaborador | Editar" />
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -18,21 +16,6 @@
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <x-form action="{{ route('user.update', $user) }}" id="form-update-company-profile" put class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
-                    {{-- <x-form.input-text name="name" label="Nome completo" value="{{ $user->name }}" placeholder="Digite o nome completo do colaborador"/>
-                    
-                    <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" disabled />
-                    
-                    <x-form.input-text name="birth_date" label="Idade" value="{{ $user->birth_date }}" placeholder="Digite a idade do colaborador"/>
-                    
-                    <x-form.input-text name="gender" label="Sexo" value="{{ $user->gender }}" placeholder="Digite o sexo do colaborador"/>
-                    
-                    <x-form.input-text name="department" label="Setor" value="{{ $user->department }}" placeholder="Digite o departamento do colaborador"/>
-                    
-                    <x-form.input-text name="occupation" label="Cargo" value="{{ $user->occupation }}" placeholder="Digite o cargo do colaborador"/>
-
-                    <x-form.select name="role" value="{{ $currentUserRole }}" label="Gestor/Colaborador" :options="$rolesToSelect" /> --}}
-                    
-                    {{--  --}}
 
                     <x-form.input-text name="name" label="Nome completo" value="{{ $user->name }}" placeholder="Digite o nome completo do usuário"/>
                     
@@ -53,12 +36,12 @@
                 </x-form>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-action href="{{ route('user.show', $user) }}">Cancelar</x-action>
-                    <x-action tag="button" form="form-update-company-profile">Salvar</x-action>
+                    <x-action href="{{ route('user.show', $user) }}" variant="secondary">Cancelar</x-action>
+                    <x-action tag="button" type="submit" form="form-update-company-profile" variant="secondary">Salvar</x-action>
                 </div>
             </div>
-        </div>
-    </div>
+        </x-structure.main-content-container>    
+    </x-structure.page-container>
 
     <script src="{{ asset('js/global.js') }}"></script>
 </x-layouts.app>

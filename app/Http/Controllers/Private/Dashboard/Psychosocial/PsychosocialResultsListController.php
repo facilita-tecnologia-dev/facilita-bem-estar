@@ -36,7 +36,7 @@ class PsychosocialResultsListController
 
         $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
 
-        return view('private.dashboard.psychosocial.test-results-list', [
+        return view('private.dashboard.psychosocial.list', [
             'testName' => $testName,
             'usersList' => $usersList,
             'filtersApplied' => $filtersApplied,

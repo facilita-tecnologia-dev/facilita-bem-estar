@@ -7,7 +7,7 @@
 
                     <div class="flex flex-col gap-4 items-center">
                         <h1 class="text-4xl md:text-xl font-semibold text-center text-gray-800">Crie um usuário</h1>
-                        <x-text-content>Para registrar uma empresa, você precisa criar um usuário administrador.</x-text-content>
+                        <x-structure.text-content>Para registrar uma empresa, você precisa criar um usuário administrador.</x-structure.text-content>
                     </div>
 
                     <x-form action="{{ route('company.store') }}" class="w-full flex flex-col gap-3 items-center" post>
@@ -18,7 +18,7 @@
                         <x-form.input-text name="cpf" placeholder="Digite o CPF" label="CPF apenas números (Conta administrador)" />
                         <x-form.input-text name="password" placeholder="Digite a senha" label="Senha (Conta administrador)" />
                         {{-- <x-form.input-text type="password" name="password" placeholder="Senha" /> --}}
-                        <x-action tag="button">Registrar</x-action>
+                        <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
                     {{-- <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">

@@ -1,6 +1,6 @@
 <x-layouts.app>
 
-        <div class="flex h-full justify-end">
+        <div class="flex h-full justify-center">
             <div class="w-full max-w-[600px] bg-gray-100 flex justify-center items-center px-4">
                 <div class="w-full max-w-[400px] flex flex-col items-center gap-8">
 
@@ -8,27 +8,27 @@
                         <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
                         <div class="flex flex-col gap-2 items-center">
                             <h1 class="text-3xl md:text-4xl font-semibold text-center text-gray-800">Login</h1>
-                            <p class="text-base text-center text-gray-800">Faça login como gestor ou colaborador de uma empresa</p>
+                            <p class="text-base text-center text-gray-800">Faça login para responder à pesquisa.</p>
                         </div>
                     </div>
 
-                    <div class="relative w-fit bg-gray-200 rounded p-1 shadow-inner grid grid-cols-2 gap-2">
+                    {{-- <div class="relative w-fit bg-gray-200 rounded p-1 shadow-inner grid grid-cols-2 gap-2">
                         <div data-role="toggle-bg" class="absolute w-[calc(50%-8px)] h-9 bg-gray-100 rounded-md left-1 top-1 transition-all"></div>
                         <button data-role="toggle-login-form" id="internal" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Gestor/Colaborador</button>
                         <button data-role="toggle-login-form" id="external" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Profissional de Saúde</button>
-                    </div>
+                    </div> --}}
 
                     <x-form action="{{ route('auth.login.internal') }}" id="login-internal" class="w-full flex flex-col gap-4 items-center" post>
                         <x-form.input-text name="cpf" placeholder="CPF apenas números" />
-                        <x-action tag="button">Fazer login</x-action>
+                        <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
                     </x-form>
 
                     {{-- External --}}
-                    <x-form action="{{ route('auth.login.external') }}" id="login-external" class="hidden w-full flex-col gap-4 items-center" post>
+                    {{-- <x-form action="{{ route('auth.login.external') }}" id="login-external" class="hidden w-full flex-col gap-4 items-center" post>
                         <x-form.input-text name="cpf" placeholder="CPF apenas números" />
                         <x-form.input-text type="password" name="password" placeholder="Senha" />
-                        <x-action tag="button">Fazer login</x-action>
-                    </x-form>
+                        <x-action tag="button" type="submit">Fazer login</x-action>
+                    </x-form> --}}
 
                     {{-- <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">
                         <div class="w-full flex items-center gap-4">
@@ -42,13 +42,13 @@
                         </x-action>
                     </div> --}}
 
-                    <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>
+                    {{-- <x-action href="{{ route('presentation') }}" variant="secondary">Voltar para a Home</x-action> --}}
                 </div>
             </div>
         </div>
 
 </x-layouts.app>
-
+{{-- 
 <script>
     const toggleLoginFormButtons = document.querySelectorAll('[data-role="toggle-login-form"]');
 
@@ -67,4 +67,4 @@
             }
         });
     });
-</script>
+</script> --}}

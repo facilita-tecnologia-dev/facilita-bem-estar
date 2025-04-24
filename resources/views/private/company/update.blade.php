@@ -1,11 +1,9 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
-        <x-sidebar />
+    <x-structure.page-container>
+        <x-structure.sidebar />
         
-        <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
-            <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Empresa | Editar</h2>
-            </div>
+        <x-structure.main-content-container>  
+            <x-structure.page-title title="Empresa | Editar" />
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -32,12 +30,12 @@
                 </x-form>
 
                 <div class="w-full flex flex-col md:flex-row justify-between gap-2">
-                    <x-action href="{{ route('company.show', session('company')) }}">Cancelar</x-action>
-                    <x-action tag="button" form="form-update-company-profile">Salvar</x-action>
+                    <x-action href="{{ route('company.show', session('company')) }}" variant="secondary">Cancelar</x-action>
+                    <x-action tag="button" type="submit" form="form-update-company-profile" variant="secondary">Salvar</x-action>
                 </div>
             </div>
-        </div>
-    </div>
+        </x-structure.main-content-container>  
+    </x-structure.page-container>
 
     <script src="{{ asset('js/global.js') }}"></script>
 </x-layouts.app>

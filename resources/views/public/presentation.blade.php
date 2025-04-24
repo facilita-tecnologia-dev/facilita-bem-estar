@@ -28,24 +28,24 @@
                 <span class="hidden sm:block">Login</span>
             </a>
             <a href="{{ route('auth.register') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-stethoscope"></i>
+                <i class="fa-solid fa-right-to-bracket"></i>
                 <span class="hidden sm:block">Registrar</span>
             </a>
         </div>
 
     </header>
 
-    <x-section class="relative">
+    <x-structure.section class="relative">
         <div class="flex flex-col gap-8 md:gap-12 items-center">
             <div class="flex flex-col gap-2 items-center">
-                <x-heading tag="h1" >Facilita Saúde Mental</x-heading>
-                <x-text-content>seu parceiro que facilita a gestão da <span class="underline">saúde mental</span> e de <span class="underline">riscos psicossociais</span> no trabalho.</x-text-content>
+                <x-structure.heading tag="h1" >Facilita Saúde Mental</x-structure.heading>
+                <x-structure.text-content>seu parceiro que facilita a gestão da <span class="underline">saúde mental</span> e de <span class="underline">riscos psicossociais</span> no trabalho.</x-structure.text-content>
             </div>
             <img src="{{ asset('assets/mockup-saude-mental.png') }}" class="w-full max-w-[470px] h-fit object-contain" alt="">
         </div>
-    </x-section>
+    </x-structure.section>
 
-    <x-section class="relative w-full max-w-[900px] mx-auto">
+    <x-structure.section class="relative w-full max-w-[900px] mx-auto">
         <div class="w-full flex gap-8 lg:gap-12 items-center flex-col-reverse lg:flex-row lg:justify-between">
             <img src="{{ asset('assets/double-semi-circles.svg') }}" class="w-full max-w-[320px] lg:w-2/5 object-contain" alt="">
 
@@ -58,20 +58,20 @@
                 </div>
                 <ul class="list-disc pl-4">
                     <li>
-                        <x-text-content alignment="left" >Saúde Mental no Trabalho.</x-text-content>
+                        <x-structure.text-content alignment="left" >Saúde Mental no Trabalho.</x-structure.text-content>
                     </li>
                     <li>
-                        <x-text-content alignment="left" >Riscos Psicossociais.</x-text-content>
+                        <x-structure.text-content alignment="left" >Riscos Psicossociais.</x-structure.text-content>
                     </li>
                     <li>
-                        <x-text-content alignment="left" >Clima organizacional.</x-text-content>
+                        <x-structure.text-content alignment="left" >Clima organizacional.</x-structure.text-content>
                     </li>
                 </ul>
             </div>
         </div>
-    </x-section>
+    </x-structure.section>
 
-    <x-section class="relative w-full max-w-[900px] mx-auto">
+    <x-structure.section class="relative w-full max-w-[900px] mx-auto">
         <div class="w-full flex gap-8 lg:gap-12 items-center flex-col-reverse lg:flex-row-reverse lg:justify-between">
             <img src="{{ asset('assets/horizontal-semi-circle.svg') }}" class="w-full max-w-[320px] lg:w-2/5 object-contain" alt="">
 
@@ -84,30 +84,30 @@
                 </div>
                 <ul class="list-disc pl-4">
                     <li>
-                        <x-text-content alignment="left" >Riscos relacionados à organização do trabalho.</x-text-content>
+                        <x-structure.text-content alignment="left" >Riscos relacionados à organização do trabalho.</x-structure.text-content>
                     </li>
                     <li>
-                        <x-text-content alignment="left" >Riscos associados às relações interpessoais.</x-text-content>
+                        <x-structure.text-content alignment="left" >Riscos associados às relações interpessoais.</x-structure.text-content>
                     </li>
                     <li>
-                        <x-text-content alignment="left" >Riscos relacionados às condições de emprego.</x-text-content>
+                        <x-structure.text-content alignment="left" >Riscos relacionados às condições de emprego.</x-structure.text-content>
                     </li>
                     <li>
-                        <x-text-content alignment="left" >Riscos relacionados à conteúdo e significado do trabalho.</x-text-content>
+                        <x-structure.text-content alignment="left" >Riscos relacionados à conteúdo e significado do trabalho.</x-structure.text-content>
                     </li>
                     <li>
-                        <x-text-content alignment="left" >Riscos de equilíbrio entre vida pessoal e profissional.</x-text-content>
+                        <x-structure.text-content alignment="left" >Riscos de equilíbrio entre vida pessoal e profissional.</x-structure.text-content>
                     </li>
                 </ul>
             </div>
         </div>
-    </x-section>
+    </x-structure.section>
 
-    <x-section class="w-full max-w-[1180px] mx-auto">
+    <x-structure.section class="w-full max-w-[1180px] mx-auto">
         <div class="w-full flex flex-col gap-8 md:gap-12 items-center">
             <div class="flex flex-col gap-2 items-center">
-                <x-heading>Método</x-heading>
-                {{-- <x-text-content>Plano de ação da pesquisa, será dividida de 5 tipos de intervenções:</x-text-content> --}}
+                <x-structure.heading>Método</x-structure.heading>
+                {{-- <x-structure.text-content>Plano de ação da pesquisa, será dividida de 5 tipos de intervenções:</x-structure.text-content> --}}
             </div>
             
             <div class="w-full flex flex-col gap-6 md:gap-8">
@@ -120,13 +120,13 @@
                     <p class="text-xl md:text-2xl font-semibold text-left">1. Organização do trabalho</p>
                     {{-- <ul class="list-disc pl-4">
                         <li>
-                            <x-text-content alignment="left">Definição clara de funções de responsabilidades.</x-text-content>
+                            <x-structure.text-content alignment="left">Definição clara de funções de responsabilidades.</x-structure.text-content>
                         </li>
                         <li>
-                            <x-text-content alignment="left">Flexibilidade.</x-text-content>
+                            <x-structure.text-content alignment="left">Flexibilidade.</x-structure.text-content>
                         </li>
                         <li>
-                            <x-text-content alignment="left">Pausas e jornadas equilibradas.</x-text-content>
+                            <x-structure.text-content alignment="left">Pausas e jornadas equilibradas.</x-structure.text-content>
                         </li>
                     </ul> --}}
                 </div>
@@ -139,13 +139,13 @@
                     <p class="text-xl md:text-2xl font-semibold text-left">2. Desenvolvimento de lideranças</p>
                     {{-- <ul class="list-disc pl-4">
                         <li>
-                            <x-text-content alignment="left">Capacitação de gestores.</x-text-content>
+                            <x-structure.text-content alignment="left">Capacitação de gestores.</x-structure.text-content>
                         </li>
                         <li>
-                            <x-text-content alignment="left">Comunicação.</x-text-content>
+                            <x-structure.text-content alignment="left">Comunicação.</x-structure.text-content>
                         </li>
                         <li>
-                            <x-text-content alignment="left">Liderança participativa.</x-text-content>
+                            <x-structure.text-content alignment="left">Liderança participativa.</x-structure.text-content>
                         </li>
                     </ul> --}}
                 </div>
@@ -158,13 +158,13 @@
                     <p class="text-xl md:text-2xl font-semibold text-left">3. Cultura organizacional</p>
                     {{-- <ul class="list-disc pl-4">
                         <li>
-                            <x-text-content alignment="left">Reconhecimento e valorização.</x-text-content>
+                            <x-structure.text-content alignment="left">Reconhecimento e valorização.</x-structure.text-content>
                         </li>
                         <li>
-                            <x-text-content alignment="left">Ambiente respeitoso e seguro.</x-text-content>
+                            <x-structure.text-content alignment="left">Ambiente respeitoso e seguro.</x-structure.text-content>
                         </li>
                         <li>
-                            <x-text-content alignment="left">Políticas contra assédio e violência.</x-text-content>
+                            <x-structure.text-content alignment="left">Políticas contra assédio e violência.</x-structure.text-content>
                         </li>
                     </ul> --}}
                 </div>
@@ -177,7 +177,7 @@
                     <p class="text-xl md:text-2xl font-semibold text-left">4. Bem-estar</p>
                     {{-- <ul class="list-disc pl-4">
                         <li>
-                            <x-text-content alignment="left">Adesão de atividades de bem estar.</x-text-content>
+                            <x-structure.text-content alignment="left">Adesão de atividades de bem estar.</x-structure.text-content>
                         </li>
                     </ul> --}}
                 </div>
@@ -190,23 +190,23 @@
                     <p class="text-xl md:text-2xl font-semibold text-left">5. Psicológica</p>
                     {{-- <ul class="list-disc pl-4">
                         <li>
-                            <x-text-content alignment="left">Análise profissional</x-text-content>
+                            <x-structure.text-content alignment="left">Análise profissional</x-structure.text-content>
                         </li>
                     </ul> --}}
                 </div>
             </div>
         </div>
-    </x-section>
+    </x-structure.section>
 
-    <x-section
+    <x-structure.section
         style="
             background: linear-gradient(135deg, #CCB0F830 0%, #E8C6E030 50%, #DDCBE130 100%);
         "
         class="w-full rounded-t-3xl">
         <div class="w-full flex flex-col gap-8 md:gap-12 items-center">
             <div class="flex flex-col gap-2 items-center">
-                <x-heading>Mais ferramentas</x-heading>
-                <x-text-content>que vão ajudar você a promover a saúde mental e gerenciar riscos psicossociais no trabalho.</x-text-content>
+                <x-structure.heading>Mais ferramentas</x-structure.heading>
+                <x-structure.text-content>que vão ajudar você a promover a saúde mental e gerenciar riscos psicossociais no trabalho.</x-structure.text-content>
             </div>
 
             <div class="flex flex-col items-center gap-4">
@@ -224,10 +224,10 @@
             </div>
 
             <div class="mt-4">
-                <x-text-content>© 2025 Facilita Tecnologia. Todos os direitos reservados.</x-text-content>
+                <x-structure.text-content>© 2025 Facilita Tecnologia. Todos os direitos reservados.</x-structure.text-content>
             </div>
         </div>
-    </x-section>
+    </x-structure.section>
 
     {{-- <footer class="flex items-center justify-center px-4 py-12 sm:py-14">
         <p class="text-base text-gray-800 font-regular text-center">© 2025 Facilita Tecnologia. Todos os direitos reservados.</p>

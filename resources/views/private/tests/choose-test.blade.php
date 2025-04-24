@@ -1,11 +1,10 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
-        <x-sidebar />
+    <x-structure.page-container>
+        <x-structure.sidebar />
         
-        <div class="flex-1 overflow-auto p-4 md:p-8 flex flex-col items-center justify-start gap-6">
-            <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-4xl text-gray-800 font-semibold text-left">Escolha o teste</h2>
-            </div>
+        <x-structure.main-content-container>
+            <x-structure.page-title title="Escolha o teste" class="m-auto" />
+
             <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
                 <div
                 {{-- <a 
@@ -52,8 +51,8 @@
                 </a>
 
             </div>
-        </div>
-    </div>
+        </x-structure.main-content-container>
+    </x-structure.page-container>
 
     <script src="{{ asset('js/global.js') }}"></script>
 </x-layouts.app>

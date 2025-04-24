@@ -34,14 +34,17 @@ class CompanyMetricsController
             'absences' => 'nullable|between:0,100',
         ]);
 
+        
         DB::transaction(function () use ($validatedData) {
             $metrics = Metric::all();
             foreach ($validatedData as $key => $inputMetric) {
+                
                 if ($inputMetric == null) {
                     $inputMetric = 'null';
                 }
 
                 $metric = $metrics->where('key_name', $key)->first();
+
                 CompanyMetric::updateOrInsert(
                     [
                         'company_id' => session('company')->id,

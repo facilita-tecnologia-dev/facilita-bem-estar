@@ -24,7 +24,7 @@ class PsychosocialResultsByDepartmentController
 
         $resultsPerDepartment = $this->getCompiledTestsData();
 
-        return view('private.dashboard.psychosocial.test-results-per-department', compact(
+        return view('private.dashboard.psychosocial.by-department', compact(
             'testName',
             'resultsPerDepartment',
         ));

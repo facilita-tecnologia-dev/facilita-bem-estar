@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
 use App\Services\TestService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -46,11 +47,13 @@ class OrganizationalMainController
         ]);
     }
 
-    private function pageQuery($filteredName = null, $filteredCPF = null, $filteredDepartment = null, $filteredOccupation = null, $filteredGender = null)
+    private function pageQuery($filteredName = null, $filteredCPF = null, $filteredDepartment = null, $filteredOccupation = null, $filteredGender = null, $filteredYear = null)
     {
         $pageData = session('company')
             ->users()
-            ->has('collections')
+            ->whereHas('latestOrganizationalClimateCollection', function($query) use($filteredYear) {
+                $query->whereYear('created_at', $filteredYear ?? Carbon::now()->year);
+            })
             ->hasAttribute('name', 'like', "%$filteredName%")
             ->hasAttribute('cpf', 'like', "%$filteredCPF%")
             ->hasAttribute('gender', '=', $filteredGender)

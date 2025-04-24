@@ -1,9 +1,9 @@
 <x-layouts.app>
-    <x-page-container>
-        <x-sidebar />
+    <x-structure.page-container>
+        <x-structure.sidebar />
         
-        <x-main-content-container>
-            <x-page-title title="Índices Demográficos" />
+        <x-structure.main-content-container>
+            <x-structure.page-title title="Índices Demográficos" />
             
             <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 ">
                 <x-charts.bar-vertical id="company-metrics" title="Indicadores da empresa (%)" class="md:col-span-2" />
@@ -12,8 +12,8 @@
                     <x-charts.bar-vertical :id="$demographicName" :title="$demographicName" />
                 @endforeach
             </div>
-        </x-main-content-container>
-    </x-page-container>
+        </x-structure.main-content-container>
+    </x-structure.page-container>
 </x-layouts.app>
 
 

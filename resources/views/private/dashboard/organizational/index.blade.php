@@ -1,10 +1,10 @@
 <x-layouts.app>
-    <x-page-container>
+    <x-structure.page-container>
         
-        <x-sidebar />
+        <x-structure.sidebar />
         
-        <x-main-content-container>
-            <x-page-title title="Clima Organizacional" />
+        <x-structure.main-content-container>
+            <x-structure.page-title title="Clima Organizacional" />
 
             <div class="w-full flex md:flex-row items-start justify-end gap-2">
                 <x-filters-info-bar
@@ -25,7 +25,7 @@
                     <x-charts.bar-vertical id="general-bars" title="Índice Geral de Satisfação por Teste" class="md:col-span-2" />
                 
                     @foreach ($organizationalClimateResults as $testName => $testData)
-                        <x-charts.bar-horizontal tag="a" :href="route('dashboard.organizational-climate.answers', ['test' => $testName])" :id="$testName" :title="$testName" />
+                        <x-charts.bar-horizontal tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" />
                     @endforeach
                 @endif
             </div>
@@ -57,8 +57,8 @@
                 @endif
             @endif
         
-        </x-main-content-container>
-    </x-page-container>
+        </x-structure.main-content-container>
+    </x-structure.page-container>
 
 </x-layouts.app>
 

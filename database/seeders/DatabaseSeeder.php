@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\Test;
 use App\Models\User;
 use App\Models\UserAnswer;
 use App\Models\UserCollection;
+use App\Models\UserFeedback;
 use App\Models\UserTest;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -86,6 +88,11 @@ class DatabaseSeeder extends Seeder
                     ]);
                 });
             });
+
+            UserFeedback::factory()->count(rand(0,2))->create([
+                'user_id' => $user->id,
+                'company_id' => Company::first()->id,
+            ]);
 
         });
 

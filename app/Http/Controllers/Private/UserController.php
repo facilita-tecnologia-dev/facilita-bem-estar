@@ -36,6 +36,8 @@ class UserController
             ->hasAttribute('gender', '=', $request->gender)
             ->hasAttribute('department', '=', $request->department)
             ->hasAttribute('occupation', '=', $request->occupation)
+            ->with('latestPsychosocialCollection:id,user_id,created_at')
+            ->with('latestOrganizationalClimateCollection:id,user_id,created_at')
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->get();
   

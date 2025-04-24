@@ -32,8 +32,8 @@
             @endif
         </div>
 
-        <a href="{{ route(Route::currentRouteName(), request()->route()->parameters()) }}" class="bg-gray-100/50 w-10 h-10 aspect-square rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
+        <x-action href="{{ route(Route::currentRouteName(), request()->route()->parameters()) }}">
             <i class="fa-solid fa-filter-circle-xmark"></i>
-        </a>
+        </x-action>
     </div>
 @endif

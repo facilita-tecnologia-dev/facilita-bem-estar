@@ -30,6 +30,7 @@ class DemographicsMainController
         $companyMetrics = $this->getCompanyMetrics();
         $demographics = $this->getCompanyDemographics();
 
+
         return view('private.dashboard.demographics.index', [
             'companyMetrics' => $companyMetrics,
             'demographics' => $demographics,
@@ -48,7 +49,7 @@ class DemographicsMainController
 
     private function getCompanyMetrics()
     {
-        $metrics = session('company')->metrics->groupBy('metricType.display_name');
+        $metrics = session('company')->metrics()->get()->groupBy('metricType.display_name');
 
         $metricsCompiled = [];
 

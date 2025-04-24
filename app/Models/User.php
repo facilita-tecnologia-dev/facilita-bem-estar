@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -57,6 +58,11 @@ class User extends Authenticatable
         return $this->roles->contains('name', $role);
     }
 
+    public function feedbacks(): HasMany
+    {
+        return $this->hasMany(UserFeedback::class);
+    }
+
     /**
      * Returns all test collections related to this user.
      */
@@ -83,16 +89,31 @@ class User extends Authenticatable
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 1)
             ->latest();
-        // ->latestOfMany('created_at');
     }
 
-    // Retorna a última coleção com collection_id = 2
     public function latestOrganizationalClimateCollection()
     {
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 2)
             ->latest();
-        // ->latestOfMany('created_at');
+    }
+
+    public function hasAnsweredPsychosocialCollection() : bool
+    {
+        if($this->latestPsychosocialCollection){
+            return $this->latestPsychosocialCollection->created_at->year == Carbon::now()->year;
+        }
+
+        return false;
+    }
+
+    public function hasAnsweredOrganizationalCollection() : bool
+    {
+        if($this->latestOrganizationalClimateCollection){
+            return $this->latestOrganizationalClimateCollection->created_at->year == Carbon::now()->year;
+        }
+
+        return false;
     }
 
     public function scopeWithLatestOrganizationalClimateCollection($query, $only = null)
@@ -113,7 +134,8 @@ class User extends Authenticatable
         ]);
     }
 
-    public function scopeHasAttribute($query, $attribute, $operator, $value){
+    public function scopeHasAttribute($query, $attribute, $operator, $value)
+    {
         $query->when($value, function ($query) use ($attribute, $operator, $value) {
             $query->where($attribute, $operator, $value);
         });

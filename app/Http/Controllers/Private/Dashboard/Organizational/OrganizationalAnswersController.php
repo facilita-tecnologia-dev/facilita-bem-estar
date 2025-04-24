@@ -26,7 +26,7 @@ class OrganizationalAnswersController
 
         $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
         
-        return view('private.dashboard.organizational.answers-division', compact(
+        return view('private.dashboard.organizational.by-answers', compact(
             'organizationalClimateResults',
             'filtersApplied'
         ));

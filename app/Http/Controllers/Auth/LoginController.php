@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\LoginExternalRequest;
 use App\Http\Requests\LoginInternalRequest;
+use App\Models\Collection;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,8 +27,12 @@ class LoginController
         session(['company' => $userCompany]);
 
         Auth::login($user);
-
-        return to_route('choose-test');
+        
+        if(session('company')->id == 2){
+            return to_route('test', Collection::where('key_name', 'organizational-climate')->first());
+        }
+        
+        return to_route('test', Collection::where('key_name', 'psychosocial-risks')->first());
     }
 
     public function attemptExternalLogin(LoginExternalRequest $request)

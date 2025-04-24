@@ -36,13 +36,12 @@ class TestsController
             ->where('order', $testIndex)
             ->with('questions', function ($query) {
                 $query->inRandomOrder()->with('options', function ($q) {
-                    $q->orderBy('value');
+                    $q->orderBy('value', 'desc');
                 });
             }
             )
             ->first();
 
-        // dump(session()->all());
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
 
@@ -62,7 +61,8 @@ class TestsController
 
         $this->testService->process($validatedData, $test);
 
-        $totalTests = Test::max('order');
+        $totalTests = Test::where('collection_id', $collection->id)->max('order');
+        
         if ($testIndex == $totalTests) {
             $testAnswers = $this->getTestAnswersFromSession($collection);
             $storedAnswers = $this->storeResultsOnDatabase($testAnswers);
@@ -73,7 +73,11 @@ class TestsController
 
             $request->session()->forget(array_keys($testAnswers));
 
-            return to_route('choose-test');
+            if($collection->key_name == 'organizational-climate'){
+                return to_route('feedbacks.create');
+            }
+
+            return to_route('test.thanks');
         }
 
         return to_route('test', [$collection, $testIndex + 1]);

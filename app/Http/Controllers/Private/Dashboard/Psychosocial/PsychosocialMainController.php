@@ -46,11 +46,13 @@ class PsychosocialMainController
         ]);
     }
 
-    private function pageQuery($filteredName = null, $filteredCPF = null, $filteredDepartment = null, $filteredOccupation = null, $filteredGender = null, $filteredYear = null/*filteredAdmissionPeriod */)
-    {
+    private function pageQuery($filteredName = null, $filteredCPF = null, $filteredDepartment = null, $filteredOccupation = null, $filteredGender = null, $filteredYear = null)
+    {   
         $pageData = session('company')
             ->users()
-            ->has('collections')
+            ->whereHas('latestPsychosocialCollection', function($query) use($filteredYear) {
+                $query->whereYear('created_at', $filteredYear ?? Carbon::now()->year);
+            })
             ->hasAttribute('name', 'like', "%$filteredName%")
             ->hasAttribute('cpf', 'like', "%$filteredCPF%")
             ->hasAttribute('gender', '=', $filteredGender)
@@ -117,20 +119,21 @@ class PsychosocialMainController
 
     private function getPsychosocialTestsParticipation()
     {
-        $usersByDepartment = $this->pageData->filter(function ($user) {
+        $usersWithCollection = $this->pageData->filter(function ($user) {
             return $user->has('latestPsychosocialCollection');
         });
 
         $companyUsersByDepartment = session('company')->users->groupBy('department');
-
+        
         $psychosocialTestsParticipation = [];
-
+        
         $psychosocialTestsParticipation['Geral'] = [
-            'Participação' => ($usersByDepartment->count() / session('company')->users->count()) * 100,
+            'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
         ];
-
-        foreach ($usersByDepartment->groupBy('department') as $departmentName => $department) {
+        
+        foreach ($usersWithCollection->groupBy('department') as $departmentName => $department) {
             $countDepartmentUsers = $companyUsersByDepartment[$departmentName]->count();
+
             $departmentParticipation = [
                 'Participação' => ($department->count() / $countDepartmentUsers) * 100,
             ];
