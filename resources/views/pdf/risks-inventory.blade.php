@@ -96,7 +96,7 @@
                                             Manter controle e monitoramento
                                         </li>
                                     @else
-                                        @foreach ($risk['control-actions'] as $action)
+                                        @foreach ($risk['controlActions'] as $action)
                                             <li class="text-sm w-full rounded-md">
                                                 {{ $action->content }}
                                             </li>

@@ -1,6 +1,4 @@
-<div data-role="table"
-    {{ $attributes->merge(['class' => 'border border-gray-300 rounded-md overflow-hidden shadow-sm']) }}
->
+<div data-role="table" {{ $attributes->merge(['class' => 'w-full flex flex-col gap-1']) }}>
     {{ $slot }}
 </div>
 

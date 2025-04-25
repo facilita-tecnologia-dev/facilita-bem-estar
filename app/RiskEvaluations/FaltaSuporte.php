@@ -3,39 +3,25 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class FaltaSuporte implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
-        $evaluatedRisk = '';
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $riskPoints = 0;
 
-        if($average >= 3){
+        if ($average >= 3) {
             $riskPoints++;
         }
 
-        foreach($risk->questionMaps as $risk){
-            $answer = $answers[$risk->question->id];
-            
-            if($answer <= 2){
+        foreach ($risk->relatedQuestions as $risk) {
+            $answer = $answers[$risk->question_Id];
+            if ($answer <= 2) {
                 $riskPoints++;
             }
         }
 
-        if($riskPoints > 2){
-            $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
-            $evaluatedRisk = 'Risco Médio';
-        }   else{
-            $evaluatedRisk = 'Risco Baixo';
-        }
-
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

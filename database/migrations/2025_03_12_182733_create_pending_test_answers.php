@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\QuestionOption;
-use App\Models\TestQuestion;
-use App\Models\TestType;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,7 +15,7 @@ return new class extends Migration
         Schema::create('pending_test_answers', function (Blueprint $table) {
             $table->id();
             $table->string('value');
-            $table->foreignIdFor(QuestionOption::class);
+            $table->foreignId('question_option_id')->constrained();
             $table->foreignIdFor(User::class);
             $table->foreignId('question_id')->unique()->constrained();
             $table->foreignId('test_id');

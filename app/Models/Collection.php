@@ -2,25 +2,38 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Collection extends Model
 {
-    /** @use HasFactory<\Database\Factories\TestCollectionFactory> */
-    use HasFactory;
+    protected $table = 'collections';
 
-    protected $table = 'user_collections';
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['name', 'description'];
 
-    public function user(){
-        return $this->belongsTo(User::class, 'user_id');
+    public function getRouteKeyName()
+    {
+        return 'key_name';
     }
 
-    public function tests(){
-        return $this->hasMany(TestForm::class, 'user_collection_id');
+    /**
+     * Returns the test collections of users that have this collection as their base.
+     */
+    public function userCollections(): HasMany
+    {
+        return $this->hasMany(UserCollection::class, 'collection_id');
     }
 
-    public function risks(){
-        return $this->hasMany(UserRiskResult::class, 'user_collection_id');
+    /**
+     * Returns the tests related to this collection.
+     */
+    public function tests(): HasMany
+    {
+        return $this->hasMany(Test::class, 'collection_id');
     }
 }

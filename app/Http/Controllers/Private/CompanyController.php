@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Private;
 
-use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -24,11 +23,10 @@ class CompanyController
     {
         $validatedData = $request->validate([
             'name' => 'required|string|min:4|max:255',
-            'cnpj' => 'required|size:14'
+            'cnpj' => 'required|size:14',
         ]);
 
-        
-        return to_route('employee.create-first', $validatedData);
+        return to_route('user.create-first', $validatedData);
     }
 
     /**
@@ -36,15 +34,10 @@ class CompanyController
      */
     public function show(string $id)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
-        
-        $company = Company::where('id', '=', session('company')->id)->first();
+        Gate::authorize('view', session('company'));
+        $company = session('company');
 
-        return view('admin.company-profile', [
-            'company' => $company,
-        ]);
+        return view('private.company.show', compact('company'));
     }
 
     /**
@@ -52,15 +45,10 @@ class CompanyController
      */
     public function edit(string $id)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
-
+        Gate::authorize('update', session('company'));
         $company = session('company');
 
-        return view('admin.update-company-profile', [
-            'company' => $company,
-        ]);
+        return view('private.company.update', compact('company'));
     }
 
     /**
@@ -68,6 +56,8 @@ class CompanyController
      */
     public function update(Request $request)
     {
+        Gate::authorize('update', session('company'));
+
         $company = session('company');
 
         $validatedData = $request->validate([

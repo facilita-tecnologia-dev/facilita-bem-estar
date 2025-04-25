@@ -2,67 +2,51 @@
 
 namespace App\Http\Controllers\Private;
 
-use App\Http\Requests\StoreUserRequest;
+use App\Enums\GenderEnum;
+use App\Enums\InternalUserRoleEnum;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Imports\UsersImport;
+use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController
 {
-    protected $employees;
+    protected $users;
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
+        Gate::authorize('viewAny', Auth::user());
 
-        $this->employees = User::whereRelation('companies', 'companies.id', session('company')->id);
+        $this->users = User::whereRelation('companies', 'companies.id', session('company')->id);
 
-        $queryStringName = $request->name;
-        $queryStringDepartment = $request->department;
-        $queryStringOccupation = $request->occupation;
+        $users = session('company')
+            ->users()
+            ->hasAttribute('name', 'like', "%$request->name%")
+            ->hasAttribute('cpf', 'like', "%$request->cpf%")
+            ->hasAttribute('gender', '=', $request->gender)
+            ->hasAttribute('department', '=', $request->department)
+            ->hasAttribute('occupation', '=', $request->occupation)
+            ->with('latestPsychosocialCollection:id,user_id,created_at')
+            ->with('latestOrganizationalClimateCollection:id,user_id,created_at')
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
+            ->get();
 
-        $employees = User::
-        whereRelation('companies', 'companies.id', session('company')->id)
-        ->when($queryStringName, function($query) use($queryStringName){
-            return $query->where('name', 'like', "%$queryStringName%");
-        })
-        ->when($queryStringDepartment, function($query) use($queryStringDepartment){
-            return $query->where('department', '=', "$queryStringDepartment");
-        })
-        ->when($queryStringOccupation, function($query) use($queryStringOccupation){
-            return $query->where('occupation', '=', "$queryStringOccupation");
-        })
-        ->get();
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
-        
-        $departmentsToFilter = $this->getDepartmentsToFilter();
-        $occupationsToFilter = $this->getOccupationsToFilter();
-
-        return view('admin.employees-list', [
-            'employees' => $employees,
-
-            'departmentsToFilter' => $departmentsToFilter,
-            'occupationsToFilter' => $occupationsToFilter,
-
-            'queryStringName' => $queryStringName,
-            'queryStringDepartment' => $queryStringDepartment,
-            'queryStringOccupation' => $queryStringOccupation,
-        ]);
-    }
-
-    public function createFirstUser($companyToCreate){
-        dd($companyToCreate);
-        return view('auth.register.user', [
-            'companyToCreate' => $companyToCreate,
-        ]);
+        return view('private.users.index', compact(
+            'users',
+            'filtersApplied'
+        ));
     }
 
     /**
@@ -70,149 +54,106 @@ class UserController
      */
     public function create()
     {
-        $rolesToSelect = $this->getRolesToSelect();
+        Gate::authorize('create', Auth::user());
 
-        return view('admin.create-employee-profile', [
-            'rolesToSelect' => $rolesToSelect,
-        ]);
+        $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $rolesToSelect = array_map(fn (InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());
+
+        return view('private.users.create', compact('rolesToSelect', 'gendersToSelect'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request)
+    public function store(UserStoreRequest $request)
     {
-        $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation', 'admission']);
-        $userRole = $request->only('role');
+        Gate::authorize('create', Auth::user());
 
-        $admissionDateFormated = Carbon::parse($userData['admission'])->format('d/m/Y');
+        DB::transaction(function () use ($request) {
+            $userData = $request->safe()->except('role');
+            $userRole = $request->safe()->only('role');
 
-        $employee = User::create([
-            "name" => $userData['name'],
-            "cpf" => $userData['cpf'],
-            "age" => $userData['age'],
-            "gender" => $userData['gender'],
-            "department" => $userData['department'],
-            "occupation" => $userData['occupation'],
-            "admission" => $admissionDateFormated,
-            "company_id" => session('company')->id,
-        ]);
+            $userRoleID = $userRole['role'] === InternalUserRoleEnum::INTERNAL_MANAGER->value ? 1 : 2;
 
-        DB::table('company_users')->insert([
-            'role_id' => $userRole['role'],
-            'user_id' => $employee->id,
-            'company_id' => session('company')->id
-        ]);
+            $user = User::create($userData);
 
-        return to_route('employee.index')->with('message', 'Perfil do colaborador criado com sucesso!');
+            $user->companies()->sync([
+                session('company')->id => ['role_id' => $userRoleID],
+            ]);
+        });
+
+        return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $employee)
+    public function show(User $user)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
+        Gate::authorize('view', Auth::user());
+
+        $admission = Carbon::parse($user->admission);
+
+        if ($user->latestOrganizationalClimateCollection) {
+            $latestOrganizationalClimateCollectionDate = $user->latestOrganizationalClimateCollection->created_at->diffForHumans();
+        } else {
+            $latestOrganizationalClimateCollectionDate = 'Nunca';
         }
 
-        $admission = $this->getFormattedAdmissionDate($employee);
-
-        $lastTestCollection = DB::table('user_collections')->where('user_id', $employee->id)
-            ->latest('created_at')
-            ->first();
-
-        
-        $lastTestCollectionDate = null;
-        $testResults = null;
-            
-        if ($lastTestCollection) {
-            $collectionDateTime = Carbon::parse($lastTestCollection->created_at);
-            $formattedDate = $collectionDateTime->format('d/m/Y');
-
-            $diff = Carbon::now()->startOfDay()->diff($collectionDateTime->startOfDay());
-
-            if ($diff->y >= 1) {
-                $timeAgo = $diff->y . ' ano(s)';
-            } elseif ($diff->m >= 1) {
-                $timeAgo = $diff->m . ' mês(es)';
-            } else {
-                $timeAgo = $diff->d . ' dia(s)';
-            }
-
-            $lastTestCollectionDate = "{$formattedDate} - {$timeAgo} atrás.";
+        if ($user->latestPsychosocialCollection) {
+            $latestPsychosocialCollectionDate = $user->latestPsychosocialCollection->created_at->diffForHumans();
+        } else {
+            $latestPsychosocialCollectionDate = 'Nunca';
         }
 
-        $cpf = $this->getFormattedCPF($employee);
-
-        $employeeInfo = [
-            'Nome'              => $employee->name,
-            'CPF'               => $cpf,
-            'Idade'             => $employee->age,
-            'Setor'             => $employee->department,
-            'Cargo'             => $employee->occupation,
-            'Sexo'              => $employee->gender,
-            'Data de Admissão'  => $employee->admission,
-            'Tempo de empresa'  => $admission,
-        ];
-
-        if ($lastTestCollectionDate) {
-            $employeeInfo['Último teste realizado'] = $lastTestCollectionDate;
-        }
-
-        return view('admin.employee-profile', [
-            'employee'     => $employee,
-            'employeeInfo' => $employeeInfo,
-            // 'testResults'  => $testResults,
-        ]);
+        return view('private.users.show', compact('user', 'admission', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, User $employee)
+    public function edit(User $user)
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
-        
-        $rolesToSelect = $this->getRolesToSelect();
+        Gate::authorize('update', Auth::user());
 
-        $currentUserRole = DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->first()->role_id;
- 
-        return view('admin.update-employee-profile', [
-            'employee' => $employee,
-            'rolesToSelect' => $rolesToSelect,
-            'currentUserRole' => $currentUserRole,
-        ]);
+        $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $rolesToSelect = array_map(fn (InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());
+
+        $roleInThisCompany = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
+        $userRole = $roleInThisCompany === 1 ? InternalUserRoleEnum::INTERNAL_MANAGER->value : InternalUserRoleEnum::EMPLOYEE->value;
+
+        return view('private.users.update', compact(
+            'user',
+            'rolesToSelect',
+            'gendersToSelect',
+            'userRole',
+        ));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $employee)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        $validatedData = $request->validate([
-            "name" => ['required', 'max:70'],
-            "cpf" => ['required', 'max:70'],
-            "age" => ['required', 'max:70'],
-            "gender" => ['required', 'max:70'],
-            "department" => ['required', 'max:70'],
-            "occupation" => ['required', 'max:70'],
-            "role" => ['required', 'max:70'],
-        ]);
+        Gate::authorize('update', Auth::user());
 
-        $userData = $request->only(['name', 'cpf', 'age', 'gender', 'department', 'occupation']);
-        $userRole = $request->only('role');
-        
-        DB::table('company_users')->where('user_id', '=', $employee->id)->where('company_id', session('company')->id)->update(['role_id' => $userRole['role']]);
+        DB::transaction(function () use ($request, $user) {
+            $userData = $request->safe()->except('role');
+            $userRole = $request->safe()->only('role');
 
-        $employee->update($userData);
+            $userRoleID = $userRole['role'] === 'Gestor Interno' ? 1 : 2;
 
+            $user->update($userData);
 
-        if(Auth::user()->id == $employee->id){
-            session(['user' => $employee]);
-        }
+            $user->companies()->sync([
+                session('company')->id => ['role_id' => $userRoleID],
+            ]);
+
+            if (Auth::user()->id == $user->id) {
+                session(['user' => $user]);
+                Auth::setUser($user->fresh());
+            }
+        });
 
         return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
     }
@@ -222,51 +163,26 @@ class UserController
      */
     public function destroy(User $employee)
     {
+        Gate::authorize('delete', Auth::user());
+
         $employee->delete();
 
-        return to_route('employee.index');
+        return to_route('user.index');
     }
 
+    public function showImport()
+    {
+        Gate::authorize('create', Auth::user());
 
-    private function getDepartmentsToFilter(){
-        $departments = array_unique($this->employees->pluck('department')->toArray());
-
-        return $departments;
-    }
-    
-    private function getOccupationsToFilter(){
-        $occupations = array_unique($this->employees->pluck('occupation')->toArray());
-        
-        return $occupations;
+        return view('private.users.import');
     }
 
-    private function getFormattedAdmissionDate($employee){
-        $admissionDate = Carbon::createFromFormat('d/m/Y', $employee->admission);
-        $admissionDiff = Carbon::now()
-                            ->diff($admissionDate)
-                            ->format('%y anos, %m meses e %d dias.');
+    public function import(Request $request, Company $company)
+    {
+        Gate::authorize('create', Auth::user());
 
-        return $admissionDiff;
-    }
+        Excel::import(new UsersImport($company), $request->file('import_users')->store('temp'));
 
-    private function getFormattedCPF($employee){
-        $cpfFormatted =  preg_replace(
-            '/(\d{3})(\d{3})(\d{3})(\d{2})/',
-            '$1.$2.$3-$4',
-            $employee->cpf
-        );
-
-        return $cpfFormatted;
-    }
-
-    private function getRolesToSelect(){
-        $roles = DB::table('roles')->orderBy('id', 'desc')->get()->toArray();
-        $rolesFormatted = [];
-
-        foreach($roles as $role){
-            $rolesFormatted[] = ['option'=> $role->name, 'value' => $role->id];
-        }
-
-        return $rolesFormatted;
+        return back()->with('message', 'Usuários importados com sucesso');
     }
 }

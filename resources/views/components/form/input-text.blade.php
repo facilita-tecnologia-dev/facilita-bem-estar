@@ -6,6 +6,7 @@
     'value' => null,
     'label' => null,
     'disabled' => null,
+    'readonly' => null,
     
     'icon' => null,
 ])
@@ -20,10 +21,14 @@
         </label>
     @endif
 
-    <div {{ $attributes->merge(['class' => 'relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500']) }}>
+    <div class="relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
     
         @if($icon && $icon === 'search')
             <i class="fa-solid fa-magnifying-glass text-gray-800"></i>
+        @endif
+
+        @if($icon && $icon === 'id')
+            <i class="fa-solid fa-id-card text-gray-800"></i>
         @endif
 
         <input type="{{ $type }}"
@@ -31,8 +36,10 @@
             name="{{ $name }}"
             id="{{ $id ? $id : $name }}"
             placeholder="{{ $placeholder }}"
-            value="{{ $value }}"
+            value="{{ old($name, $value) }}"
+            {{ $attributes }}
             {{ $disabled ? 'disabled' : '' }}
+            {{ $readonly ? 'readonly' : '' }}
         >
 
         @if($icon && $icon === '%')

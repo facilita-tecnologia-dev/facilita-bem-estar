@@ -3,39 +3,36 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class Ansiedade implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
-        $evaluatedRisk = '';
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $riskPoints = 0;
 
-        if($average >= 3.5){
+        if ($average >= 3.5) {
             $riskPoints++;
         }
 
-        foreach($risk->questionMaps as $risk){
-            $answer = $answers[$risk->question->id];
-            
-            if($answer >= 4){
+        foreach ($risk->relatedQuestions as $risk) {
+            $answer = $answers[$risk->question_Id];
+
+            if ($answer >= 4) {
                 $riskPoints++;
             }
         }
 
-        if($riskPoints > 2){
-            $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
-            $evaluatedRisk = 'Risco Médio';
-        }   else{
-            $evaluatedRisk = 'Risco Baixo';
+        $turnover = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'turnover';
+        })->first();
+
+        if ($turnover && $turnover->value > 50) {
+            if ($riskPoints <= 2) {
+                $riskPoints++;
+            }
         }
 
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

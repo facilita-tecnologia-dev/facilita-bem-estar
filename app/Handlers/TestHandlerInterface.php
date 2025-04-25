@@ -2,13 +2,13 @@
 
 namespace App\Handlers;
 
+use App\Models\Test;
+
 interface TestHandlerInterface
 {
     /**
-     *
-     *
-     * @param array $answers Test Answers
+     * @param  array  $answers  Test Answers
      * @return array Test Result
      */
-    public function process(array $answers, $testInfo): array;
+    public function process(Test $testInfo, array $answers, $questions): array;
 }
