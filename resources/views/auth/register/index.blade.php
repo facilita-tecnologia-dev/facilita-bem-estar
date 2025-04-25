@@ -39,6 +39,8 @@
 
 </x-layouts.app>
 
+<script src="{{ asset('js/global.js') }}"></script>
+
 <script>
     const toggleLoginFormButtons = document.querySelectorAll('[data-role="toggle-register-form"]');
 
