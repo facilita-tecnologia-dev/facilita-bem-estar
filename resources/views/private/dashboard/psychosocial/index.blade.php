@@ -24,7 +24,20 @@
                 </x-action>
                 
                 <x-filters-trigger
-                    :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'year']" 
+                    :filtersApplied="$filtersApplied"
+                    :modalFilters="[
+                        'name', 
+                        'cpf', 
+                        'gender', 
+                        'department', 
+                        'occupation', 
+                        'work_shift', 
+                        'marital_status', 
+                        'education_level', 
+                        'age_range', 
+                        'admission_range', 
+                        'year'
+                    ]" 
                 />
             </div>
 

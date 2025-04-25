@@ -15,21 +15,21 @@ class UserFeedbackController
     public function index(Request $request)
     {
         $userFeedbacks = session('company')
-                ->users()
-                ->whereHas('feedbacks', function($query) use($request) {
-                    $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
-                })
-                ->select('users.id', 'name')
-                ->hasAttribute('name', 'like', "%$request->name%")
-                ->hasAttribute('cpf', 'like', "%$request->cpf%")
-                ->hasAttribute('gender', '=', $request->gender)
-                ->hasAttribute('department', '=', $request->department)
-                ->hasAttribute('occupation', '=', $request->occupation)
-                ->with('feedbacks')
-                ->get();
+            ->users()
+            ->whereHas('feedbacks', function ($query) use ($request) {
+                $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
+            })
+            ->select('users.id', 'name')
+            ->hasAttribute('name', 'like', "%$request->name%")
+            ->hasAttribute('cpf', 'like', "%$request->cpf%")
+            ->hasAttribute('gender', '=', $request->gender)
+            ->hasAttribute('department', '=', $request->department)
+            ->hasAttribute('occupation', '=', $request->occupation)
+            ->with('feedbacks')
+            ->get();
 
-        $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
-        
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+
         return view('private.dashboard.feedbacks.index', [
             'userFeedbacks' => $userFeedbacks,
             'filtersApplied' => $filtersApplied,
@@ -51,17 +51,17 @@ class UserFeedbackController
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'feedback' => 'nullable|string|min:12'
+            'feedback' => 'nullable|string|min:12',
         ]);
 
-        if($validatedData['feedback'] == null){
+        if ($validatedData['feedback'] == null) {
             return to_route('choose-test');
         }
 
         UserFeedback::create([
             'company_id' => session('company')->id,
             'user_id' => Auth::user()->id,
-            'content' => $validatedData['feedback']
+            'content' => $validatedData['feedback'],
         ]);
 
         return to_route('choose-test');
@@ -73,7 +73,7 @@ class UserFeedbackController
     public function show(UserFeedback $feedback)
     {
         $parentUser = $feedback->parentUser;
-        $otherFeedbacksFromSameUser = $parentUser->feedbacks->reject(fn($item) => $item->id == $feedback->id);
+        $otherFeedbacksFromSameUser = $parentUser->feedbacks->reject(fn ($item) => $item->id == $feedback->id);
 
         return view('private.dashboard.feedbacks.show', compact('feedback', 'parentUser', 'otherFeedbacksFromSameUser'));
     }

@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
                 });
             });
 
-            UserFeedback::factory()->count(rand(0,2))->create([
+            UserFeedback::factory()->count(rand(0, 2))->create([
                 'user_id' => $user->id,
                 'company_id' => Company::first()->id,
             ]);

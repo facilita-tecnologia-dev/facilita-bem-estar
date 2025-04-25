@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 class OrganizationalAnswersController
 {
     protected $testService;
+
     protected $pageData;
 
     public function __construct(TestService $testService)
@@ -24,8 +25,8 @@ class OrganizationalAnswersController
 
         $organizationalClimateResults = $this->getCompiledPageData();
 
-        $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
-        
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+
         return view('private.dashboard.organizational.by-answers', compact(
             'organizationalClimateResults',
             'filtersApplied'
@@ -58,7 +59,7 @@ class OrganizationalAnswersController
                 $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
 
                 $questions = $userTest->testType->questions->keyBy('id');
-  
+
                 foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
                     $testCompiled[$testDisplayName][$questions[$questionNumber]->statement]['Geral']['answers'][] = $answer;
                     $testCompiled[$testDisplayName][$questions[$questionNumber]->statement][$user->department]['answers'][] = $answer;
@@ -67,19 +68,18 @@ class OrganizationalAnswersController
         }
 
         foreach ($testCompiled as $testName => $test) {
-            foreach($test as $questionStatement => $question)
-            foreach ($question as $departmentName => $departmentAnswers) {
-                $count = count($departmentAnswers['answers']);
-                $sum = array_sum($departmentAnswers['answers']);
-                $testCompiled[$testName][$questionStatement][$departmentName]['total_average'] = $sum / $count;
-                unset($testCompiled[$testName][$questionStatement][$departmentName]['answers']);
+            foreach ($test as $questionStatement => $question) {
+                foreach ($question as $departmentName => $departmentAnswers) {
+                    $count = count($departmentAnswers['answers']);
+                    $sum = array_sum($departmentAnswers['answers']);
+                    $testCompiled[$testName][$questionStatement][$departmentName]['total_average'] = $sum / $count;
+                    unset($testCompiled[$testName][$questionStatement][$departmentName]['answers']);
+                }
             }
         }
 
         krsort($testCompiled);
-        
+
         return $testCompiled;
     }
-
-
 }

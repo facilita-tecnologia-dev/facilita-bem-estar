@@ -31,7 +31,7 @@ function renderDemographics(){
         const labels = Object.keys(demographic)
         const colors = generateHSLAColors(data.length);
 
-        createBarChart(wrapper, chartId, labels, data, colors);
+        createBarChart(wrapper, chartId, labels, data, colors, 'horizontal');
     });   
 }
 

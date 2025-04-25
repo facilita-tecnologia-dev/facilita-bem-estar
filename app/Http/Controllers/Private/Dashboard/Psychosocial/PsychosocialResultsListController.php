@@ -31,10 +31,9 @@ class PsychosocialResultsListController
             $request->gender,
         );
 
-
         $usersList = $this->getCompiledPageData();
 
-        $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.dashboard.psychosocial.list', [
             'testName' => $testName,

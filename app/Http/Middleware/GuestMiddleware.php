@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Collection;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,20 +15,26 @@ class GuestMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-
         $user = Auth::user();
 
-        if ($user) {
+        if (Auth::check() && session('company')) {
             $userRole = $user->roles()->first();
+            if ($userRole && $userRole->id == 1) {
+                if (session('company')->id !== 2) {
+                    return to_route('dashboard.psychosocial');
+                }
 
-            if ($userRole && $userRole->role_id == 1) {
-                return to_route('dashboard.psychosocial');
+                return to_route('dashboard.organizational-climate');
             }
 
-            if ($userRole && $userRole->role_id == 2) {
-                return to_route('choose-test');
+            if ($userRole && $userRole->id == 2) {
+                if (session('company')->id !== 2) {
+                    return to_route('test', Collection::where('key_name', 'psychosocial-risks')->first());
+                }
+
+                return to_route('test', Collection::where('key_name', 'organizational-climate')->first());
             }
         }
 

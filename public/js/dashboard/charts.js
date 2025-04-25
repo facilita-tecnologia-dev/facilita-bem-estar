@@ -25,6 +25,7 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, orientati
     const chart = document.createElement('canvas');
     chart.classList = 'w-full';
     chart.id = chartId;
+    chart.style.height = 40 * data.length + 'px';
 
 
     if(!wrapper){
@@ -100,7 +101,8 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, orientati
                     max: 100,
                     ticks: {
                         callback: function(value, index, ticks) {
-                            const matches = this.getLabelForValue(value).match(/\(([^)]+)\)/g);
+                            const label = String(this.getLabelForValue(value));
+                            const matches = label.match(/\(([^)]+)\)/g);
                             const sigla = matches ? matches.map(item => item.slice(1, -1)) : [];
                             if(matches){
                                 return sigla[0];

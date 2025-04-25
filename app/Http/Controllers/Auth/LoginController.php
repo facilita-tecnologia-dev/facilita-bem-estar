@@ -15,24 +15,39 @@ class LoginController
         return view('auth.login.index');
     }
 
-    public function attemptInternalLogin(LoginInternalRequest $request)
+    public function attemptInternalLogin(LoginInternalRequest $request, $company = null)
     {
         $user = User::where('cpf', $request->safe()->only('cpf'))->first();
 
         if (! $user) {
             return back()->with('message', 'Usuário não encontrado.');
         }
-        $userCompany = $user->companies()->first();
+
+        Auth::login($user);
+
+        $userCompanies = $user->companies;
+
+        if (count($user->companies) > 1) {
+            return redirect()->route('auth.login.show-companies');
+        }
+
+        $userCompany = $userCompanies->first();
 
         session(['company' => $userCompany]);
 
-        Auth::login($user);
-        
-        if(session('company')->id == 2){
-            return to_route('test', Collection::where('key_name', 'organizational-climate')->first());
+        if (session('company')->id == 2) {
+            if ($user->hasRole('internal-manager')) {
+                return redirect()->route('dashboard.organizational-climate');
+            }
+
+            return redirect()->route('test', Collection::where('key_name', 'organizational-climate')->first());
         }
-        
-        return to_route('test', Collection::where('key_name', 'psychosocial-risks')->first());
+
+        if ($user->hasRole('internal-manager')) {
+            return redirect()->route('dashboard.psychosocial');
+        }
+
+        return redirect()->route('test', Collection::where('key_name', 'psychosocial-risks')->first());
     }
 
     public function attemptExternalLogin(LoginExternalRequest $request)

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ChooseCompanyToLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -30,7 +31,11 @@ Route::middleware(GuestMiddleware::class)->group(function () {
     Route::post('/register/external/user', [RegisterController::class, 'attemptExternalRegister'])->name('auth.register.external');
 
     Route::get('/login', LoginController::class)->name('auth.login');
-    Route::post('/login/internal', [LoginController::class, 'attemptInternalLogin'])->name('auth.login.internal');
+    Route::post('/login/internal/', [LoginController::class, 'attemptInternalLogin'])->name('auth.login.internal');
+
+    Route::get('/login/internal/companies', ChooseCompanyToLoginController::class)->name('auth.login.show-companies');
+    Route::post('/login/internal/companies/{company?}', [ChooseCompanyToLoginController::class, 'attemptInternalLoginWithCompany'])->name('auth.login.internal.with-company');
+
     Route::post('/login/external', [LoginController::class, 'attemptExternalLogin'])->name('auth.login.external');
 });
 

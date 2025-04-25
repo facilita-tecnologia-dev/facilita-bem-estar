@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 class DemographicsMainController
 {
     protected $testService;
+
     protected $pageData;
 
     public function __construct(TestService $testService)
@@ -29,7 +30,6 @@ class DemographicsMainController
 
         $companyMetrics = $this->getCompanyMetrics();
         $demographics = $this->getCompanyDemographics();
-
 
         return view('private.dashboard.demographics.index', [
             'companyMetrics' => $companyMetrics,
@@ -71,7 +71,6 @@ class DemographicsMainController
         $usersByGenderCount = $users->groupBy('gender')->map(function ($group) {
             return ($group->count() / session('company')->users->count()) * 100;
         });
-     
 
         $usersByAdmissionPeriod = $users->groupBy(function ($user) {
             $years = Carbon::parse($user->admission)->diffInYears(Carbon::now());
@@ -83,12 +82,12 @@ class DemographicsMainController
                 $years > 10 => 'Mais de 10 anos',
                 default => 'Outro'
             };
-        })->map(function ($group){
+        })->map(function ($group) {
             return ($group->count() / session('company')->users->count()) * 100;
         });
 
         $usersByAgeGroup = $users->groupBy(function ($user) {
-            $age = Carbon::parse($user->admission)->age;
+            $age = Carbon::parse($user->birth_date)->age;
 
             return match (true) {
                 $age <= 25 => '18-25 anos',
@@ -97,14 +96,14 @@ class DemographicsMainController
                 $age > 45 => 'Mais de 45 anos',
                 default => 'Outro'
             };
-        })->map(function ($group){
+        })->map(function ($group) {
             return ($group->count() / session('company')->users->count()) * 100;
         });
 
-        $demographicsCompiled['Por departamento'] = $usersByDepartmentCount;
         $demographicsCompiled['Por sexo'] = $usersByGenderCount;
         $demographicsCompiled['Por período de admissão'] = $usersByAdmissionPeriod;
         $demographicsCompiled['Por faixa etária'] = $usersByAgeGroup;
+        $demographicsCompiled['Por departamento'] = $usersByDepartmentCount;
 
         return $demographicsCompiled;
     }

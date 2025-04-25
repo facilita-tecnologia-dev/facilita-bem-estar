@@ -17,7 +17,7 @@ class UserFeedbackFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => fake()->numberBetween(0,100),
+            'user_id' => fake()->numberBetween(0, 100),
             'content' => fake()->text(300),
         ];
     }

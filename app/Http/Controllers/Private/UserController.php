@@ -40,8 +40,8 @@ class UserController
             ->with('latestOrganizationalClimateCollection:id,user_id,created_at')
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->get();
-  
-        $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
+
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.users.index', compact(
             'users',

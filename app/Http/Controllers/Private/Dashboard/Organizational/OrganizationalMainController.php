@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
+use App\Enums\AdmissionRangeEnum;
+use App\Enums\AgeRangeEnum;
 use App\Services\TestService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 class OrganizationalMainController
 {
     protected $testService;
+
     protected $pageData;
 
     public function __construct(TestService $testService)
@@ -21,20 +24,27 @@ class OrganizationalMainController
     {
         Gate::authorize('view-manager-screens');
 
+        $ageRange = $request->age_range ? AgeRangeEnum::from($request->age_range)->name : null;
+        $admissionRange = $request->admission_range ? AdmissionRangeEnum::from($request->admission_range)->name : null;
+
         $this->pageData = $this->pageQuery(
             $request->name,
             $request->cpf,
             $request->department,
             $request->occupation,
             $request->gender,
+            $request->work_shift,
+            $request->marital_status,
+            $request->education_level,
             $request->year,
+            $ageRange,
+            $admissionRange,
         );
 
-        $filtersApplied = array_filter($request->query(), fn($queryParam) => $queryParam != null);
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         $organizationalClimateResults = $this->getCompiledPageData($filtersApplied);
         $organizationalTestsParticipation = $this->getOrganizationalTestsParticipation();
-
 
         $pendingTestUsers = session('company')->users->diff($this->pageData);
 
@@ -43,15 +53,25 @@ class OrganizationalMainController
             'organizationalTestsParticipation' => $organizationalTestsParticipation,
             'filtersApplied' => $filtersApplied,
             'filteredUsers' => count($this->pageData) > 0 ? $this->pageData : null,
-            'pendingTestUsers' => !$filtersApplied ? $pendingTestUsers : null,
+            'pendingTestUsers' => ! $filtersApplied ? $pendingTestUsers : null,
         ]);
     }
 
-    private function pageQuery($filteredName = null, $filteredCPF = null, $filteredDepartment = null, $filteredOccupation = null, $filteredGender = null, $filteredYear = null)
-    {
+    private function pageQuery(
+        $filteredName = null,
+        $filteredCPF = null, $filteredDepartment = null,
+        $filteredOccupation = null,
+        $filteredGender = null,
+        $filteredWorkShift = null,
+        $filteredMaritalStatus = null,
+        $filteredEducationLevel = null,
+        $filteredYear = null,
+        $filteredAgeRange = null,
+        $filteredAdmissionRange = null,
+    ) {
         $pageData = session('company')
             ->users()
-            ->whereHas('latestOrganizationalClimateCollection', function($query) use($filteredYear) {
+            ->whereHas('latestOrganizationalClimateCollection', function ($query) use ($filteredYear) {
                 $query->whereYear('created_at', $filteredYear ?? Carbon::now()->year);
             })
             ->hasAttribute('name', 'like', "%$filteredName%")
@@ -59,8 +79,13 @@ class OrganizationalMainController
             ->hasAttribute('gender', '=', $filteredGender)
             ->hasAttribute('department', '=', $filteredDepartment)
             ->hasAttribute('occupation', '=', $filteredOccupation)
+            ->hasAttribute('work_shift', '=', $filteredWorkShift)
+            ->hasAttribute('marital_status', '=', $filteredMaritalStatus)
+            ->hasAttribute('education_level', '=', $filteredEducationLevel)
+            ->hasAgeRange($filteredAgeRange)
+            ->hasAdmissionRange($filteredAdmissionRange)
             ->select('users.id', 'users.name', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
-            ->withLatestOrganizationalClimateCollection()
+            ->withLatestOrganizationalClimateCollection(year: $filteredYear)
             ->get();
 
         return $pageData;
@@ -80,7 +105,7 @@ class OrganizationalMainController
                 $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
 
                 foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
-                    if(!array_key_exists('department', $filtersApplied) && !array_key_exists('occupation', $filtersApplied)){
+                    if (! array_key_exists('department', $filtersApplied) && ! array_key_exists('occupation', $filtersApplied)) {
                         $testCompiled[$testDisplayName]['Geral']['answers'][$questionNumber][] = $answer;
                     }
                     $testCompiled[$testDisplayName][$user->department]['answers'][$questionNumber][] = $answer;
@@ -97,9 +122,9 @@ class OrganizationalMainController
                 }
             }
         }
-      
+
         krsort($testCompiled);
-        
+
         return $testCompiled;
     }
 

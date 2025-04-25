@@ -34,11 +34,10 @@ class CompanyMetricsController
             'absences' => 'nullable|between:0,100',
         ]);
 
-        
         DB::transaction(function () use ($validatedData) {
             $metrics = Metric::all();
             foreach ($validatedData as $key => $inputMetric) {
-                
+
                 if ($inputMetric == null) {
                     $inputMetric = 'null';
                 }
