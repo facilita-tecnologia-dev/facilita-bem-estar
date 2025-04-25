@@ -35,8 +35,8 @@
                     }
                 @endphp
              
-                <option value="{{ $optionValue }}" {{ $value == $optionValue ? 'selected' : '' }}>{{ $optionText }}</option>
-    
+                <option value="{{ $optionValue }}" {{ old($name) == $optionValue || $value == $optionValue ? 'selected' : '' }}>{{ $optionText }}</option>
+                
             @endforeach
         </select>
     
@@ -44,4 +44,8 @@
             <i class="fa-solid fa-chevron-down"></i>
         </div>
     </div>
+
+    @error($name)
+        <x-form.error-span text="{{ $message }}" />
+    @enderror
 </div>

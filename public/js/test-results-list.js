@@ -2,7 +2,7 @@ const tableHeaders = Array.from(document.querySelectorAll('[data-role="th"]'));
 let direcao = [true, true, true, true, true];
 
 function reorderTable(event, column) {
-    let tabela = document.querySelector('[data-role="tests-list"]');
+    let tabela = document.querySelector('[data-role="table"]');
     let body = tabela.querySelector('[data-role="tbody"]');
     let rows = Array.from(body.querySelectorAll('[data-role="tr"]'));
 

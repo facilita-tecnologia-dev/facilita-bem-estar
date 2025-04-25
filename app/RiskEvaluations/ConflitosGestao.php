@@ -3,49 +3,41 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class ConflitosGestao implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
-        $evaluatedRisk = '';
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $riskPoints = 0;
 
-        if($average >= 3.5){
+        if ($average >= 3.5) {
             $riskPoints++;
         }
-
-        foreach($risk->questionMaps as $risk){
-            if($risk->question->statement == 'Em meu trabalho, incentiva-se a idolatria dos chefes'){
-                $answer = $answers[$risk->question->id];
-                
-                if($answer >= 4){
+        foreach ($risk->relatedQuestions as $risk) {
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+            $answer = $answers[$risk->question_Id];
+            if ($parentQuestion->statement == 'Em meu trabalho, incentiva-se a idolatria dos chefes') {
+                if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
-            
-            if($risk->question->statement == 'Os gestores se preocupam com o bem estar dos trabalhadores'){
-                $answer = $answers[$risk->question->id];
 
-                if($answer <= 2){
+            if ($parentQuestion->statement == 'Os gestores se preocupam com o bem estar dos trabalhadores') {
+                if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
         }
 
-        if($riskPoints > 2){
+        if ($riskPoints > 2) {
             $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
+        } elseif ($riskPoints > 1) {
             $evaluatedRisk = 'Risco Médio';
-        }   else{
+        } else {
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

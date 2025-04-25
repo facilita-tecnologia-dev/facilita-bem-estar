@@ -3,40 +3,39 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class Monotonia implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
-        $evaluatedRisk = '';
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $riskPoints = 0;
 
-        if($average >= 2.5){
-            $riskPoints++;
+        if ($average <= 2.5) {
+            $riskPoints += 1.5;
         }
 
-        foreach($risk->questionMaps as $risk){
-            if($risk->question->statement == 'As tarefas que executo em meu trabalho são variadas'){
-                $answer = $answers[$risk->question->id];
-                if($answer <= 2){
-                    $riskPoints++;
+        foreach ($risk->relatedQuestions as $risk) {
+            $answer = $answers[$risk->question_Id];
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+
+            if ($parentQuestion->statement == 'As tarefas que executo em meu trabalho são variadas') {
+                if ($answer <= 2) {
+                    $riskPoints += 1.5;
                 }
             }
         }
 
-        if($riskPoints > 1){
-            $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 0){
-            $evaluatedRisk = 'Risco Médio';
-        }   else{
-            $evaluatedRisk = 'Risco Baixo';
+        $turnover = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'turnover';
+        })->first();
+
+        if ($turnover && $turnover->value < 20) {
+            if ($riskPoints <= 2) {
+                $riskPoints++;
+            }
         }
 
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

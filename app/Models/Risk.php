@@ -2,19 +2,39 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Risk extends Model
 {
     protected $table = 'risks';
 
-    public function questionMaps()
+    protected $with = ['relatedQuestions:id,risk_id,question_Id', 'controlActions:id,risk_id,content'];
+
+    /**
+     * Returns the questions related to this risk.
+     *
+     * @return HasMany
+     */
+    public function relatedQuestions()
     {
         return $this->hasMany(RiskQuestionMap::class, 'risk_id');
     }
 
-    public function controlActions(){
+    /**
+     * Returns the control actions related to this risk.
+     */
+    public function controlActions(): HasMany
+    {
         return $this->hasMany(ControlAction::class);
+    }
+
+    /**
+     * Returns the test related to this risk.
+     */
+    public function relatedTest(): BelongsTo
+    {
+        return $this->belongsTo(Test::class, 'test_id');
     }
 }

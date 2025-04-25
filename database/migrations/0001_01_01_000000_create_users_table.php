@@ -15,14 +15,21 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('age');
-            $table->string('cpf')->unique()->default(0);
-            $table->string('department')->nullable();
-            $table->string('occupation');
-            $table->string('admission')->nullable();
-            $table->string('gender');
+            $table->string('cpf')->unique();
+            $table->date('birth_date')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('photo')->nullable();
+            $table->string('password')->nullable();
             $table->string('email')->unique()->nullable();
-            $table->foreignIdFor(Company::class);
+            $table->string('department')->nullable();
+            $table->string('occupation')->nullable();
+            $table->date('admission')->nullable();
+            $table->unsignedTinyInteger('years_of_experience')->nullable();
+            $table->smallInteger('appointment_price')->nullable();
+            $table->smallInteger('appointment_duration')->nullable();
+            $table->string('resume')->nullable();
+            $table->text('description')->nullable();
+            // $table->foreignIdFor(Company::class);
             $table->rememberToken();
             $table->timestamps();
         });

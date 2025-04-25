@@ -3,49 +3,55 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class PressaoExcessiva implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $evaluatedRisk = '';
         $riskPoints = 0;
 
-        if($average >= 3.5){
+        if ($average >= 3.5) {
             $riskPoints++;
         }
 
-        foreach($risk->questionMaps as $risk){
-            if($risk->question->statement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção'){
-                $answer = $answers[$risk->question->id];
-                
-                if($answer >= 4){
+        foreach ($risk->relatedQuestions as $risk) {
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+            $answer = $answers[$risk->question_Id];
+
+            if ($parentQuestion->statement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
+                if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
-            
-            if($risk->question->statement == 'Há forte controle do trabalho'){
-                $answer = $answers[$risk->question->id];
 
-                if($answer >= 4){
+            if ($parentQuestion->statement == 'Há forte controle do trabalho') {
+
+                if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
         }
 
-        if($riskPoints > 2){
+        $extraHours = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
+        })->first();
+
+        if ($extraHours && $extraHours->value > 50) {
+            if ($riskPoints <= 2) {
+                $riskPoints++;
+            }
+        }
+
+        if ($riskPoints > 2) {
             $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
+        } elseif ($riskPoints > 1) {
             $evaluatedRisk = 'Risco Médio';
-        }   else{
+        } else {
             $evaluatedRisk = 'Risco Baixo';
         }
 
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

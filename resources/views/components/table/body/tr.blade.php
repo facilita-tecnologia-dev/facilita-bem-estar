@@ -1,24 +1,18 @@
 @props([
-    'flex' => null,
-    'noBorder' => null,
-    'anchor' => null,
+    'tag' => null,
     'href' => null,
 ])
 
 @php
-    $tag = $anchor ? 'a' : 'div';
+    $tag = $tag == 'a' ? 'a' : 'div';
 @endphp
 
 <{{ $tag }}
-    @if($anchor && $href) href="{{ $href }}" @endif
-    data-role="tr" {{ $attributes }} 
-    @class([
-        'flex justify-between items-center' => $flex,
-        'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6' => !$flex,
-        'border-b border-zinc-200' => !$noBorder,
-        'border-b-0' => $noBorder,
-        'hover:bg-gray-200 transition' => $anchor
-    ])
+    data-role="tr"
+    @if($tag == 'a' && $href)
+        href="{{ $href }}" 
+    @endif
+    {{ $attributes->merge(['class' => 'px-4 py-2 w-full rounded-md shadow-md bg-gradient-to-b from-[#FFFFFF25] relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all']) }} 
     >
     {{ $slot }}
 </{{ $tag }}>

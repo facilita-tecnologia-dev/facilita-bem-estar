@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,11 +16,10 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-
-        // if (!Auth::user()) {
-        //     return to_route('presentation');
-        // }
-        
+        // dd(session()->all());
+        if (! Auth::check()) {
+            return to_route('auth.login');
+        }
 
         return $next($request);
     }

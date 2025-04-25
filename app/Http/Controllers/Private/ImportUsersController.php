@@ -10,18 +10,19 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ImportUsersController
 {
-    public function __invoke(){
+    public function __invoke()
+    {
         if (Gate::denies('view-manager-screens')) {
             abort(403, 'Acesso não autorizado');
         }
 
-        return view('admin.import-employees');
+        return view('private.users.import');
     }
 
-    public function importUsers(Request $request, Company $company){
-        // dd($request->file('import_employees'), $company);
+    public function importUsers(Request $request, Company $company)
+    {
         Excel::import(new UsersImport($company), $request->file('import_employees')->store('temp'));
-        
+
         return back()->with('message', 'Usuários importados com sucesso');
     }
 }

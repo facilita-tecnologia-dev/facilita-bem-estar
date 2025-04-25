@@ -3,49 +3,46 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class GestaoIndividualista implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $evaluatedRisk = '';
         $riskPoints = 0;
 
-        if($average >= 3.5){
+        if ($average >= 3.5) {
             $riskPoints++;
         }
 
-        foreach($risk->questionMaps as $risk){
-            if($risk->question->statement == 'Aqui os gestores preferem trabalhar individualmente'){
-                $answer = $answers[$risk->question->id];
-                
-                if($answer >= 4){
+        foreach ($risk->relatedQuestions as $risk) {
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+            $answer = $answers[$risk->question_Id];
+
+            if ($parentQuestion->statement == 'Aqui os gestores preferem trabalhar individualmente') {
+                if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
-            
-            if($risk->question->statement == 'O trabalho coletivo é valorizado pelos gestores'){
-                $answer = $answers[$risk->question->id];
 
-                if($answer <= 2){
+            if ($parentQuestion->statement == 'O trabalho coletivo é valorizado pelos gestores') {
+                if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
         }
 
-        if($riskPoints > 2){
-            $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
-            $evaluatedRisk = 'Risco Médio';
-        }   else{
-            $evaluatedRisk = 'Risco Baixo';
+        $extraHours = $metrics->filter(function ($companyMetric) {
+            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
+        })->first();
+
+        if ($extraHours && $extraHours->value > 50) {
+            if ($riskPoints <= 2) {
+                $riskPoints++;
+            }
         }
 
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

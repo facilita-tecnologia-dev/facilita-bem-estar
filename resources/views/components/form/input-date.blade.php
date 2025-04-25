@@ -27,7 +27,7 @@
                 {{ $attributes->merge(['class' => 'w-full h-[43px] focus:outline-0 bg-transparent']) }}
                 name="{{ $name }}"
                 id="{{ $id ? $id : $name }}"
-                value="{{ $value }}"
+                value="{{ old($name, $value) }}"
                 {{ $disabled ? 'disabled' : '' }}
             >
         </div>

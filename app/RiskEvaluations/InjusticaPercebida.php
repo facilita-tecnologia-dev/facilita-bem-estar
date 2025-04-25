@@ -3,49 +3,35 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class InjusticaPercebida implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
-        $evaluatedRisk = '';
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $riskPoints = 0;
 
-        if($average >= 3){
+        if ($average >= 3) {
             $riskPoints++;
         }
 
-        foreach($risk->questionMaps as $risk){
-            if($risk->question->statement == 'Os gestores desta organização se consideram insubstituíveis'){
-                $answer = $answers[$risk->question->id];
-                
-                if($answer >= 4){
+        foreach ($risk->relatedQuestions as $risk) {
+            $answer = $answers[$risk->question_Id];
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+
+            if ($parentQuestion->statement == 'Os gestores desta organização se consideram insubstituíveis') {
+                if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
-            
-            if($risk->question->statement == 'Existem oportunidades semelhante de ascensão para todas as pessoas'){
-                $answer = $answers[$risk->question->id];
 
-                if($answer <= 2){
+            if ($parentQuestion->statement == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
+                if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
         }
 
-        if($riskPoints > 2){
-            $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
-            $evaluatedRisk = 'Risco Médio';
-        }   else{
-            $evaluatedRisk = 'Risco Baixo';
-        }
-
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

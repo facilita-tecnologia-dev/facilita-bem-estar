@@ -3,49 +3,35 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
-use App\Models\TestType;
-use App\RiskEvaluations\RiskEvaluatorInterface;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class Imprevisibilidade implements RiskEvaluatorInterface
-{ 
-
-    public function evaluateRisk($risk, $answers, $average): string
-    {;
-        $evaluatedRisk = '';
+{
+    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    {
         $riskPoints = 0;
 
-        if($average >= 3){
+        if ($average <= 3) {
             $riskPoints++;
         }
 
-        foreach($risk->questionMaps as $risk){
-            if($risk->question->statement == 'Há clareza na definição das tarefas'){
-                $answer = $answers[$risk->question->id];
-                
-                if($answer <= 2){
+        foreach ($risk->relatedQuestions as $risk) {
+            $answer = $answers[$risk->question_Id];
+            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+
+            if ($parentQuestion->statement == 'Há clareza na definição das tarefas') {
+                if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
-            
-            if($risk->question->statement == 'As informações de que preciso para executar minhas tarefas são claras'){
-                $answer = $answers[$risk->question->id];
 
-                if($answer <= 2){
+            if ($parentQuestion->statement == 'As informações de que preciso para executar minhas tarefas são claras') {
+                if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
         }
 
-        if($riskPoints > 2){
-            $evaluatedRisk = 'Risco Alto';
-        } else if($riskPoints > 1){
-            $evaluatedRisk = 'Risco Médio';
-        }   else{
-            $evaluatedRisk = 'Risco Baixo';
-        }
-
-        return $evaluatedRisk;
+        return $riskPoints;
     }
-
 }

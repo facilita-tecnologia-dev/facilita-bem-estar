@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('user_collections', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class);
-            $table->foreignId('collection_id')->constrained();
+            $table->foreignIdFor(Collection::class);
             $table->timestamps();
         });
     }

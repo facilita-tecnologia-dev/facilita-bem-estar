@@ -1,61 +1,76 @@
 <?php
 
-use App\Http\Controllers\Auth\Login\EmployeeLoginController;
-use App\Http\Controllers\Auth\Login\ExternalManagerLoginController;
-use App\Http\Controllers\Auth\Login\HealthWorkerLoginController;
-use App\Http\Controllers\Auth\Login\InternalManagerLoginController;
+use App\Http\Controllers\Auth\ChooseCompanyToLoginController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\CompanyMetricsController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Private\CompanyController;
-use App\Http\Controllers\Private\Dashboard\DashboardController;
-use App\Http\Controllers\Private\Dashboard\RisksController;
-use App\Http\Controllers\Private\Dashboard\TestResultsListController;
-use App\Http\Controllers\Private\Dashboard\TestResultsPerDepartmentController;
-use App\Http\Controllers\Private\ImportUsersController;
+use App\Http\Controllers\Private\CompanyMetricsController;
+use App\Http\Controllers\Private\Dashboard\Demographics\DemographicsMainController;
+use App\Http\Controllers\Private\Dashboard\Organizational\OrganizationalAnswersController;
+use App\Http\Controllers\Private\Dashboard\Organizational\OrganizationalMainController;
+use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialMainController;
+use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialResultsByDepartmentController;
+use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialResultsListController;
+use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialRisksController;
 use App\Http\Controllers\Private\TestsController;
 use App\Http\Controllers\Private\UserController;
+use App\Http\Controllers\Private\UserFeedbackController;
 use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
 
-
-Route::middleware(GuestMiddleware::class)->group(function(){
+Route::middleware(GuestMiddleware::class)->group(function () {
     Route::get('/', [PresentationController::class, 'index'])->name('presentation');
 
-    Route::get('/login/colaborador', EmployeeLoginController::class)->name('auth.login.employee');
-    Route::post('/login/colaborador', [EmployeeLoginController::class, 'attemptLogin']);
+    Route::get('/register', RegisterController::class)->name('auth.register');
+    Route::post('/register/internal/user', [RegisterController::class, 'attemptInternalUserRegister'])->name('auth.register.internal.user');
+    Route::get('/register/internal/company', [RegisterController::class, 'showCompanyRegister'])->name('auth.register.internal.company');
+    Route::post('/register/internal/company', [RegisterController::class, 'attemptCompanyRegister']);
+    Route::post('/register/external/user', [RegisterController::class, 'attemptExternalRegister'])->name('auth.register.external');
 
-    Route::get('/login/gestor-interno', InternalManagerLoginController::class)->name('auth.login.internal-manager');
-    Route::post('/login/gestor-interno', [InternalManagerLoginController::class, 'attemptLogin']);
+    Route::get('/login', LoginController::class)->name('auth.login');
+    Route::post('/login/internal/', [LoginController::class, 'attemptInternalLogin'])->name('auth.login.internal');
 
-    // Route::get('/login/gestor-externo', ExternalManagerLoginController::class)->name('auth.login.external-manager');
-    
-    // Route::get('/login/profissional-saude', HealthWorkerLoginController::class)->name('auth.login.health-worker');
+    Route::get('/login/internal/companies', ChooseCompanyToLoginController::class)->name('auth.login.show-companies');
+    Route::post('/login/internal/companies/{company?}', [ChooseCompanyToLoginController::class, 'attemptInternalLoginWithCompany'])->name('auth.login.internal.with-company');
+
+    Route::post('/login/external', [LoginController::class, 'attemptExternalLogin'])->name('auth.login.external');
 });
-   
-  
-Route::middleware(AuthMiddleware::class)->group(function(){
-    Route::get('/escolha-teste', [TestsController::class, 'showChooseScreen'])->name('choose-test');
-        
-    Route::get('/teste/{test?}', TestsController::class)->name('test');
-    Route::post('/teste/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
+
+Route::middleware(AuthMiddleware::class)->group(function () {
+    Route::get('/choose-test', [TestsController::class, 'showChoose'])->name('choose-test');
+    Route::get('/collection/{collection}/test/{test?}', TestsController::class)->name('test');
+    Route::post('/collection/{collection}/test/{test}/submit', [TestsController::class, 'handleTestSubmit'])->name('test.submit');
+    Route::get('/feedback', [UserFeedbackController::class, 'create'])->name('feedbacks.create');
+    Route::post('/feedback', [UserFeedbackController::class, 'store']);
+    Route::view('/thanks', 'private.tests.thanks')->name('test.thanks');
 
     Route::resource('company', CompanyController::class);
-    // Route::get('/employee/create-first/{company}', [UserController::class, 'createFirstUser'])->name('employee.create-first');
-    Route::resource('employee', UserController::class);
+
+    Route::get('/user/import', [UserController::class, 'showImport'])->name('user.import');
+    Route::post('/user/import', [UserController::class, 'import']);
+    Route::resource('user', UserController::class);
 
     Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
     Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
-    
-    Route::get('/importar-colaboradores', ImportUsersController::class)->name('import-employees.show');
-    Route::post('/importar-colaboradores/{company}', [ImportUsersController::class, 'importUsers'])->name('import-employees.import');
 
-    Route::get('/dashboard', DashboardController::class)->name('dashboard.charts');
-    Route::get('/dashboard/riscos', RisksController::class)->name('dashboard.risks');
-    Route::get('/dashboard/riscos/inventario', [RisksController::class, 'generatePDF'])->name('dashboard.risks.pdf');
-    Route::get('/dashboard/{test}', TestResultsPerDepartmentController::class)->name('dashboard.test-result-per-department');
-    Route::get('/dashboard/{test}/lista', TestResultsListController::class)->name('dashboard.test-results-list');
+    Route::prefix('dashboard')->group(function () {
+        Route::get('demographics', DemographicsMainController::class)->name('dashboard.demographics');
+
+        Route::get('organizational', OrganizationalMainController::class)->name('dashboard.organizational-climate');
+        Route::get('organizational/answers', OrganizationalAnswersController::class)->name('dashboard.organizational-climate.by-answers');
+
+        Route::get('psychosocial', PsychosocialMainController::class)->name('dashboard.psychosocial');
+        Route::get('psychosocial/risks', PsychosocialRisksController::class)->name('dashboard.psychosocial.risks');
+        Route::get('psychosocial/risks/inventory', [PsychosocialRisksController::class, 'generatePDF'])->name('dashboard.psychosocial.risks.pdf');
+        Route::get('psychosocial/{test}', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
+        Route::get('psychosocial/{test}/list', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
+
+        Route::get('feedbacks', [UserFeedbackController::class, 'index'])->name('feedbacks.index');
+        Route::get('feedbacks/{feedback}', [UserFeedbackController::class, 'show'])->name('feedbacks.show');
+    });
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 });
