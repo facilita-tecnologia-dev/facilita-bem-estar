@@ -103,7 +103,7 @@ class OrganizationalMainController
                 $testDisplayName = $userTest->testType->display_name;
 
                 $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-
+                
                 foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
                     if (! array_key_exists('department', $filtersApplied) && ! array_key_exists('occupation', $filtersApplied)) {
                         $testCompiled[$testDisplayName]['Geral']['answers'][$questionNumber][] = $answer;
@@ -118,8 +118,9 @@ class OrganizationalMainController
                 foreach ($category['answers'] as $questionNumber => $answers) {
                     $count = count($answers);
                     $sum = array_sum($answers);
-                    $testCompiled[$testName][$categoryName]['total_average'] = $sum / $count;
+                    $testCompiled[$testName][$categoryName]['total_average'][] = $sum / $count;
                 }
+                $testCompiled[$testName][$categoryName]['total_average'] = array_sum($testCompiled[$testName][$categoryName]['total_average']) / count($testCompiled[$testName][$categoryName]['total_average']);
             }
         }
 

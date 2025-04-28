@@ -55,7 +55,7 @@ class UserFeedbackController
         ]);
 
         if ($validatedData['feedback'] == null) {
-            return to_route('choose-test');
+            return to_route('test.thanks');
         }
 
         UserFeedback::create([
@@ -64,7 +64,7 @@ class UserFeedbackController
             'content' => $validatedData['feedback'],
         ]);
 
-        return to_route('choose-test');
+        return to_route('test.thanks');
     }
 
     /**

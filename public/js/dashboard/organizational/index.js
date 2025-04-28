@@ -18,7 +18,7 @@ function renderOrganizationalTestsParticipation(){
     const wrapper = document.getElementById('organizational-participation')
     const colors = [chartDefaultColors.PRIMARY]
     
-    createBarChart(wrapper, chartId, labels, data, colors, "Índice de Participação (%)");
+    createBarChart(wrapper, chartId, labels, data, colors);
 }
 
 function renderOrganizationalCharts(){

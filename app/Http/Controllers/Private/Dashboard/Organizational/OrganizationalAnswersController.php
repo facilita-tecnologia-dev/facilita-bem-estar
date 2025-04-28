@@ -52,17 +52,18 @@ class OrganizationalAnswersController
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
-            foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
+            if($user->latestOrganizationalClimateCollection){
+                foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
+                    $testDisplayName = $userTest->testType->display_name;
 
-                $testDisplayName = $userTest->testType->display_name;
+                    $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
 
-                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+                    $questions = $userTest->testType->questions->keyBy('id');
 
-                $questions = $userTest->testType->questions->keyBy('id');
-
-                foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
-                    $testCompiled[$testDisplayName][$questions[$questionNumber]->statement]['Geral']['answers'][] = $answer;
-                    $testCompiled[$testDisplayName][$questions[$questionNumber]->statement][$user->department]['answers'][] = $answer;
+                    foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
+                        $testCompiled[$testDisplayName][$questions[$questionNumber]->statement]['Geral']['answers'][] = $answer;
+                        $testCompiled[$testDisplayName][$questions[$questionNumber]->statement][$user->department]['answers'][] = $answer;
+                    }
                 }
             }
         }
