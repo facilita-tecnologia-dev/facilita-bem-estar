@@ -43,7 +43,7 @@ class TestsController
             ->first();
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
-
+            //  dd(session()->all());
         return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
 
@@ -57,7 +57,7 @@ class TestsController
 
         $validationRules = $this->generateValidationRules($test);
         $validatedData = $request->validate($validationRules);
-
+       
         $this->testService->process($validatedData, $test);
 
         $totalTests = Test::where('collection_id', $collection->id)->max('order');

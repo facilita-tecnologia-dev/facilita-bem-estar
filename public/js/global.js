@@ -11,10 +11,12 @@ body.addEventListener("click", function (event) {
     }
 });
 
-sidebarMobileButton.addEventListener("click", function (e) {
-    e.stopPropagation();
-    sidebar.classList.replace("-left-full", "left-0");
-});
+if(sidebarMobileButton){
+    sidebarMobileButton.addEventListener("click", function (e) {
+        e.stopPropagation();
+        sidebar.classList.replace("-left-full", "left-0");
+    });
+}
 
 
 function formatCPF(cpf) {

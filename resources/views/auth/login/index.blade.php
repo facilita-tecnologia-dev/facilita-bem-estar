@@ -19,7 +19,7 @@
                     </div> --}}
 
                     <x-form action="{{ route('auth.login.internal') }}" id="login-internal" class="w-full flex flex-col gap-4 items-center" post>
-                        <x-form.input-text name="cpf" placeholder="CPF apenas números" />
+                        <x-form.input-text name="cpf" placeholder="CPF (000.000.000-00)" />
                         <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
                     </x-form>
 
@@ -48,6 +48,8 @@
         </div>
 
 </x-layouts.app>
+
+<script src="{{ asset('js/global.js') }}"></script>
 {{-- 
 <script>
     const toggleLoginFormButtons = document.querySelectorAll('[data-role="toggle-login-form"]');

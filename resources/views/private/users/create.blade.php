@@ -9,7 +9,7 @@
                 <x-form action="{{ route('user.store') }}" id="form-update-company-profile" post class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
                     <x-form.input-text name="name" label="Nome completo" placeholder="Digite o nome completo do usuário"/>
                     
-                    <x-form.input-text name="cpf" label="CPF apenas números" placeholder="Digite o cpf do usuário"/>
+                    <x-form.input-text name="cpf" label="CPF" placeholder="Digite o cpf do usuário"/>
                     
                     <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" label="Data de nascimento"/>
 
