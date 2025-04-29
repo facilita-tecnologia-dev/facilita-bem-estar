@@ -14,7 +14,7 @@ class ConflitosGestao implements RiskEvaluatorInterface
         if ($average >= 3.5) {
             $riskPoints++;
         }
-        
+
         foreach ($risk->relatedQuestions as $riskQuestion) {
             $answer = $riskQuestion->related_question_answer;
             $parentQuestionStatement = $riskQuestion->parent_question_statement;

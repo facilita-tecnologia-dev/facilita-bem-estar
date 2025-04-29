@@ -20,7 +20,7 @@ class UserRepository
             $userData = $data->except('role');
 
             $userRole = Role::where('display_name', InternalUserRoleEnum::from($data['role'])->value)->first();
-            
+
             $user = User::create($userData);
 
             $user->companies()->sync([session('company')->id => ['role_id' => $userRole->id]]);

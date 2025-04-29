@@ -38,23 +38,10 @@ class UserCollection extends Model
         ]);
     }
 
-    // public function scopeWithTests($query, $callback)
-    // {
-    //     $query->with([
-    //         'tests' => function ($q) use ($only) {
-    //             $q->select('id', 'user_collection_id', 'test_id')
-    //                 ->only($only)
-    //                 ->withTestType()
-    //             // ->withAnswersSum()
-    //             // ->withAnswersCount()
-    //                 ->withAnswers();
-    //         },
-    //     ]);
-    // }
     public function scopeWithTests($query, $callback)
     {
         $query->with([
-            'tests' => $callback
+            'tests' => $callback,
         ]);
     }
 }

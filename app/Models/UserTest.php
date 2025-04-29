@@ -47,13 +47,15 @@ class UserTest extends Model
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 
-    public function scopeWithTestType($query)
+    public function scopeWithTestType($query, $callback = null)
     {
         $query->with([
-            'testType' => function ($q) {
-                $q->select('id', 'key_name', 'display_name', 'handler_type')
-                    // ->withQuestions()
-                    ->withRisks();
+            'testType' => function ($query) use ($callback) {
+                $query->select('id', 'key_name', 'display_name', 'handler_type');
+
+                if ($callback) {
+                    $callback($query);
+                }
             },
         ]);
     }
@@ -68,29 +70,29 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswersSum($query){
+    public function scopeWithAnswersSum($query)
+    {
         $query->addSelect([
             'answers_sum' => DB::table('user_answers')
                 ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
                 ->selectRaw('SUM(question_options.value)')
-                ->whereColumn('user_answers.user_test_id', 'user_tests.id')
+                ->whereColumn('user_answers.user_test_id', 'user_tests.id'),
         ]);
     }
 
-    public function scopeWithAnswersCount($query){
+    public function scopeWithAnswersCount($query)
+    {
         $query->addSelect([
             'answers_count' => DB::table('user_answers')
                 ->selectRaw('COUNT(*)')
-                ->whereColumn('user_answers.user_test_id', 'user_tests.id')
+                ->whereColumn('user_answers.user_test_id', 'user_tests.id'),
         ]);
     }
 
-    public function scopeOnly($query, $only)
+    public function scopeJustOneTest($query, string $testName)
     {
-        $query->when($only, function ($query) use ($only) {
-            $query->whereHas('testType', function ($subQuery) use ($only) {
-                $subQuery->where('display_name', $only);
-            });
+        $query->whereHas('testType', function ($subQuery) use ($testName) {
+            $subQuery->where('display_name', $testName);
         });
     }
 }

@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -24,8 +23,8 @@ class User extends Authenticatable
     public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'company_users')
-                    ->withPivot('role_id')
-                    ->withTimestamps();
+            ->withPivot('role_id')
+            ->withTimestamps();
     }
 
     public function roles(): BelongsToMany
@@ -46,38 +45,28 @@ class User extends Authenticatable
     public function latestPsychosocialCollection()
     {
         return $this->hasOne(UserCollection::class)
-                    ->where('collection_id', 1)
-                    ->latest();
+            ->where('collection_id', 1)
+            ->latest();
     }
 
     public function latestOrganizationalClimateCollection()
     {
         return $this->hasOne(UserCollection::class)
-                    ->where('collection_id', 2)
-                    ->latest();
+            ->where('collection_id', 2)
+            ->latest();
     }
 
-    public function scopeWithLatestOrganizationalClimateCollection($query, $only = null, $year = null)
+    public function scopeWithLatestOrganizationalClimateCollection($query, $callback)
     {
         $query->with([
-            'latestOrganizationalClimateCollection' => function ($q) use ($only, $year) {
-                $q->whereBetween('created_at', [Carbon::create($year, 1, 1)->startOfDay(), Carbon::create($year, 12, 31)->endOfDay()])->withCollectionTypeName('organizational-climate')->withTests($only);
-            },
+            'latestOrganizationalClimateCollection' => $callback,
         ]);
     }
 
-    // public function scopeWithLatestPsychosocialCollection($query, $only = null, $year = null)
-    // {
-    //     $query->with([
-    //         'latestPsychosocialCollection' => function ($q) use ($only, $year) {
-    //             $q->whereBetween('created_at', [Carbon::create($year, 1, 1)->startOfDay(), Carbon::create($year, 12, 31)->endOfDay()])->withCollectionTypeName('psychosocial-risks')->withTests($only);
-    //         },
-    //     ]);
-    // }
     public function scopeWithLatestPsychosocialCollection($query, $callback)
     {
         $query->with([
-            'latestPsychosocialCollection' => $callback
+            'latestPsychosocialCollection' => $callback,
         ]);
     }
 

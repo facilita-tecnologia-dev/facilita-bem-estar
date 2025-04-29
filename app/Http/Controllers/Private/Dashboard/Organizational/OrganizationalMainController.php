@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
 use App\Enums\AdmissionRangeEnum;
 use App\Enums\AgeRangeEnum;
+use App\Models\User;
 use App\Services\TestService;
+use App\Services\User\UserFilterService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,33 +16,51 @@ class OrganizationalMainController
 {
     protected $testService;
 
+    protected $filterService;
+
     protected $pageData;
 
-    public function __construct(TestService $testService)
+    public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
+        $this->filterService = $filterService;
     }
 
     public function __invoke(Request $request)
     {
         Gate::authorize('view-manager-screens');
+        
+        // Catching users
+        $query = session('company')->users()
+            ->whereHas('latestPsychosocialCollection', function ($query) {
+                $query->whereYear('created_at', Carbon::now()->year);
+            })
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
+            ->getQuery();
 
-        $ageRange = $request->age_range ? AgeRangeEnum::from($request->age_range)->name : null;
-        $admissionRange = $request->admission_range ? AdmissionRangeEnum::from($request->admission_range)->name : null;
+        // Applying filters
+        $query = $query
+            ->hasAttribute('name', 'like', "%$request->name%")
+            ->hasAttribute('cpf', 'like', "%$request->cpf%")
+            ->hasAttribute('gender', '=', $request->gender)
+            ->hasAttribute('department', '=', $request->department)
+            ->hasAttribute('occupation', '=', $request->occupation);
 
-        $this->pageData = $this->pageQuery(
-            $request->name,
-            $request->cpf,
-            $request->department,
-            $request->occupation,
-            $request->gender,
-            $request->work_shift,
-            $request->marital_status,
-            $request->education_level,
-            $request->year,
-            $ageRange,
-            $admissionRange,
-        );
+        $query = $this->filterService->applyAgeRange($query, $request->age_range);
+        $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
+
+        // Catching user tests
+        $this->pageData = $query
+            ->withLatestOrganizationalClimateCollection(function ($query) use ($request) {
+                $query->whereYear('created_at', $request->year ?? '2025')
+                    ->withCollectionTypeName('organizational-climate')
+                    ->withTests(function ($query) {
+                        $query
+                            ->withAnswers()
+                            ->withTestType();
+                    });
+            })
+            ->get();
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
@@ -57,40 +78,6 @@ class OrganizationalMainController
         ]);
     }
 
-    private function pageQuery(
-        $filteredName = null,
-        $filteredCPF = null, $filteredDepartment = null,
-        $filteredOccupation = null,
-        $filteredGender = null,
-        $filteredWorkShift = null,
-        $filteredMaritalStatus = null,
-        $filteredEducationLevel = null,
-        $filteredYear = null,
-        $filteredAgeRange = null,
-        $filteredAdmissionRange = null,
-    ) {
-        $pageData = session('company')
-            ->users()
-            ->whereHas('latestOrganizationalClimateCollection', function ($query) use ($filteredYear) {
-                $query->whereYear('created_at', $filteredYear ?? Carbon::now()->year);
-            })
-            ->hasAttribute('name', 'like', "%$filteredName%")
-            ->hasAttribute('cpf', 'like', "%$filteredCPF%")
-            ->hasAttribute('gender', '=', $filteredGender)
-            ->hasAttribute('department', '=', $filteredDepartment)
-            ->hasAttribute('occupation', '=', $filteredOccupation)
-            ->hasAttribute('work_shift', '=', $filteredWorkShift)
-            ->hasAttribute('marital_status', '=', $filteredMaritalStatus)
-            ->hasAttribute('education_level', '=', $filteredEducationLevel)
-            ->hasAgeRange($filteredAgeRange)
-            ->hasAdmissionRange($filteredAdmissionRange)
-            ->select('users.id', 'users.name', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
-            ->withLatestOrganizationalClimateCollection(year: $filteredYear)
-            ->get();
-
-        return $pageData;
-    }
-
     private function getCompiledPageData(array $filtersApplied)
     {
         $metrics = session('company')->metrics;
@@ -98,21 +85,41 @@ class OrganizationalMainController
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
-            foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
-
-                $testDisplayName = $userTest->testType->display_name;
-
-                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-                
-                foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
-                    if (! array_key_exists('department', $filtersApplied) && ! array_key_exists('occupation', $filtersApplied)) {
-                        $testCompiled[$testDisplayName]['Geral']['answers'][$questionNumber][] = $answer;
-                    }
-                    $testCompiled[$testDisplayName][$user->department]['answers'][$questionNumber][] = $answer;
-                }
+            if ($user->latestOrganizationalClimateCollection) {
+                $this->compileUserTests($user, $metrics, $testCompiled, $filtersApplied);
             }
         }
 
+        $this->calculateAverageScore($testCompiled);
+
+        krsort($testCompiled);
+
+        return $testCompiled;
+    }
+
+    private function compileUserTests(User $user, Collection $metrics, &$testCompiled, array $filtersApplied)
+    {
+        foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
+            $testDisplayName = $userTest->testType->display_name;
+
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+
+            $this->updateAnswers($testDisplayName, $evaluatedTest, $testCompiled, $user, $filtersApplied);
+        }
+    }
+
+    private function updateAnswers(string $testDisplayName, array $evaluatedTest, array &$testCompiled, User $user, array $filtersApplied)
+    {
+        foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
+            if (! array_key_exists('department', $filtersApplied) && ! array_key_exists('occupation', $filtersApplied)) {
+                $testCompiled[$testDisplayName]['Geral']['answers'][$questionNumber][] = $answer;
+            }
+            $testCompiled[$testDisplayName][$user->department]['answers'][$questionNumber][] = $answer;
+        }
+    }
+
+    private function calculateAverageScore(&$testCompiled)
+    {
         foreach ($testCompiled as $testName => $test) {
             foreach ($test as $categoryName => $category) {
                 foreach ($category['answers'] as $questionNumber => $answers) {
@@ -123,35 +130,40 @@ class OrganizationalMainController
                 $testCompiled[$testName][$categoryName]['total_average'] = array_sum($testCompiled[$testName][$categoryName]['total_average']) / count($testCompiled[$testName][$categoryName]['total_average']);
             }
         }
-
-        krsort($testCompiled);
-
-        return $testCompiled;
     }
 
     private function getOrganizationalTestsParticipation()
     {
-        $usersByDepartment = $this->pageData->filter(function ($user) {
-            return $user->has('latestOrganizationalClimateCollection');
-        });
+        $usersWithCollection = $this->pageData;
+        $usersByDepartment = session('company')->users->groupBy('department');
 
-        $companyUsersByDepartment = session('company')->users->groupBy('department');
+        $participation = $this->calculateGeneralParticipation($usersWithCollection);
+        $participation = $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
 
-        $organizationalTestsParticipation = [];
+        return $participation;
+    }
 
-        $organizationalTestsParticipation['Geral'] = [
-            'Participação' => ($usersByDepartment->count() / session('company')->users->count()) * 100,
+    private function calculateGeneralParticipation(Collection $usersWithCollection)
+    {
+        return [
+            'Geral' => [
+                'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
+            ],
         ];
+    }
 
-        foreach ($usersByDepartment->groupBy('department') as $departmentName => $department) {
+    private function calculateDepartmentParticipation(Collection $usersWithCollection, Collection $companyUsersByDepartment)
+    {
+        $departmentParticipation = [];
+
+        foreach ($usersWithCollection->groupBy('department') as $departmentName => $department) {
             $countDepartmentUsers = $companyUsersByDepartment[$departmentName]->count();
-            $departmentParticipation = [
+
+            $departmentParticipation[$departmentName] = [
                 'Participação' => ($department->count() / $countDepartmentUsers) * 100,
             ];
-
-            $organizationalTestsParticipation[$departmentName] = $departmentParticipation;
         }
 
-        return $organizationalTestsParticipation;
+        return $departmentParticipation;
     }
 }

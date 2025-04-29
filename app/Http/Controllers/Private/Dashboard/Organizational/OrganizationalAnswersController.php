@@ -52,7 +52,7 @@ class OrganizationalAnswersController
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
-            if($user->latestOrganizationalClimateCollection){
+            if ($user->latestOrganizationalClimateCollection) {
                 foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
                     $testDisplayName = $userTest->testType->display_name;
 

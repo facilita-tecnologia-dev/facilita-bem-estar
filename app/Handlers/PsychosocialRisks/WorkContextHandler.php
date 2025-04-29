@@ -14,7 +14,7 @@ class WorkContextHandler
     public function process(UserTest $userTest, Collection $metrics): array
     {
         $average = $userTest->answers_sum / $userTest->answers_count;
-        
+
         $risksList = [];
 
         foreach ($userTest->testType->risks as $risk) {

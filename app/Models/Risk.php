@@ -38,13 +38,14 @@ class Risk extends Model
         return $this->belongsTo(Test::class, 'test_id');
     }
 
-    public function scopeWithRelatedQuestions($query){
-        $query->with('relatedQuestions', fn($query) => 
-            $query->withRelatedQuestionAnswer()
-                    ->withParentQuestionStatement());
+    public function scopeWithRelatedQuestions($query)
+    {
+        $query->with('relatedQuestions', fn ($query) => $query->withRelatedQuestionAnswer()
+            ->withParentQuestionStatement());
     }
 
-    public function scopeWithControlActions($query){
+    public function scopeWithControlActions($query)
+    {
         $query->with('controlActions');
     }
 }

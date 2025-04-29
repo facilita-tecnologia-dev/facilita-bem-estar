@@ -6,24 +6,22 @@ use App\Enums\GenderEnum;
 use App\Enums\InternalUserRoleEnum;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
-use App\Imports\UsersImport;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\User\UserElegibilityService;
 use App\Services\User\UserFilterService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Maatwebsite\Excel\Facades\Excel;
 
 class UserController
 {
     protected UserFilterService $filterService;
+
     protected UserElegibilityService $elegibilityService;
+
     protected UserRepository $userRepository;
 
     public function __construct(UserFilterService $filterService, UserElegibilityService $elegibilityService, UserRepository $userRepository)
@@ -70,9 +68,8 @@ class UserController
         Gate::authorize('create', Auth::user());
 
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
-        $rolesToSelect = array_map(fn ($role) => 
-            InternalUserRoleEnum::from($role['display_name'])->value, 
-            Role::whereIn('id', [1,2])->get()->toArray()
+        $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
+            Role::whereIn('id', [1, 2])->get()->toArray()
         );
 
         return view('private.users.create', compact('rolesToSelect', 'gendersToSelect'));
@@ -111,9 +108,8 @@ class UserController
         Gate::authorize('update', Auth::user());
 
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
-        $rolesToSelect = array_map(fn ($role) => 
-            InternalUserRoleEnum::from($role['display_name'])->value, 
-            Role::whereIn('id', [1,2])->get()->toArray()
+        $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
+            Role::whereIn('id', [1, 2])->get()->toArray()
         );
 
         $roleId = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
@@ -161,7 +157,7 @@ class UserController
     public function import(Request $request, Company $company)
     {
         Gate::authorize('create', Auth::user());
-        
+
         $this->userRepository->import($request, $company);
 
         return back()->with('message', 'Usuários importados com sucesso');

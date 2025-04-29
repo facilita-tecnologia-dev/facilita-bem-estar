@@ -111,7 +111,6 @@ class PsychosocialRisksController
             }
         }
 
-        // dd($testCompiled);
         return $testCompiled;
     }
 }

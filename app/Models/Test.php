@@ -40,15 +40,15 @@ class Test extends Model
         return $this->hasMany(Risk::class);
     }
 
-    public function scopeWithQuestions($query)
-    {
-        $query->with('questions:id,test_id,statement');
-    }
+    // public function scopeWithQuestions($query)
+    // {
+    //     $query->with('questions:id,test_id,statement');
+    // }
 
-    public function scopeWithRisks($query)
+    public function scopeWithRisks($query, $callback)
     {
-        $query->with('risks', fn($query) => 
-            $query->withRelatedQuestions()
-                    ->withControlActions());
+        $query->with([
+            'risks' => $callback,
+        ]);
     }
 }

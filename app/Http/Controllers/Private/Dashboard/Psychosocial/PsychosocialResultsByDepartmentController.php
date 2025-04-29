@@ -3,26 +3,54 @@
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Services\TestService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PsychosocialResultsByDepartmentController
 {
     protected $testService;
 
-    protected $companyUserCollections;
+    protected $pageData;
 
     public function __construct(TestService $testService)
     {
         $this->testService = $testService;
     }
 
-    public function __invoke($testName)
+    public function __invoke(Request $request, $testName)
     {
         Gate::authorize('view-manager-screens');
 
-        $this->companyUserCollections = $this->pageQuery($testName);
+        // Catching users
+        $query = session('company')->users()
+            ->whereHas('latestPsychosocialCollection', function ($query) {
+                $query->whereYear('created_at', Carbon::now()->year);
+            })
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
+            ->getQuery();
 
-        $resultsPerDepartment = $this->getCompiledTestsData();
+        // Catching user tests
+        $this->pageData = $query
+            ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
+                $query->whereYear('created_at', $request->year ?? '2025')
+                    ->withCollectionTypeName('psychosocial-risks')
+                    ->withTests(function ($query) use ($testName) {
+                        $query
+                            ->justOneTest($testName)
+                            ->withAnswersSum()
+                            ->withAnswersCount()
+                            ->withTestType(function ($q) {
+                                $q->withRisks(function ($i) {
+                                    $i->withRelatedQuestions()
+                                        ->withControlActions();
+                                });
+                            });
+                    });
+            })
+            ->get();
+
+        $resultsPerDepartment = $this->getCompiledPageData();
 
         return view('private.dashboard.psychosocial.by-department', compact(
             'testName',
@@ -30,52 +58,55 @@ class PsychosocialResultsByDepartmentController
         ));
     }
 
-    private function pageQuery($testName)
-    {
-        $companyUserCollections = session('company')
-            ->users()
-            ->has('collections')
-            ->select('users.id', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
-            ->withLatestPsychosocialCollection(only: $testName)
-            ->get();
-
-        return $companyUserCollections;
-    }
-
     /**
      * Compila os dados dividindo-os por setor para enviar para a view
      */
-    private function getCompiledTestsData()
+    private function getCompiledPageData()
     {
         $metrics = session('company')->metrics;
 
         $testCompiled = [];
 
-        foreach ($this->companyUserCollections as $user) {
+        foreach ($this->pageData as $user) {
             $userTest = $user->latestPsychosocialCollection->tests[0];
             $userDepartment = $user->department;
 
-            if (! isset($testCompiled[$userDepartment]['total'])) {
-                $testCompiled[$userDepartment]['total'] = 0;
-            }
-
-            $testCompiled[$userDepartment]['total']++;
+            $this->sumDepartmentCount($userDepartment, $testCompiled);
 
             $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
 
-            if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
-                $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;
-                $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_color'] = $evaluatedTest['severity_color'];
-                $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_key'] = $evaluatedTest['severity_key'];
-            }
+            $this->compileTestResults($userDepartment, $evaluatedTest, $testCompiled);
 
-            uasort($testCompiled[$userDepartment]['severities'], function ($a, $b) {
-                return $b['severity_key'] <=> $a['severity_key'];
-            });
-
-            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count']++;
+            $this->sortSeveritiesByDepartment($userDepartment, $testCompiled);
         }
 
         return $testCompiled;
+    }
+
+    private function sumDepartmentCount(string $userDepartment, array &$testCompiled)
+    {
+        if (! isset($testCompiled[$userDepartment]['total'])) {
+            $testCompiled[$userDepartment]['total'] = 0;
+        }
+
+        $testCompiled[$userDepartment]['total']++;
+    }
+
+    private function compileTestResults(string $userDepartment, array $evaluatedTest, array &$testCompiled)
+    {
+        if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
+            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;
+            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_color'] = $evaluatedTest['severity_color'];
+            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_key'] = $evaluatedTest['severity_key'];
+        }
+
+        $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count']++;
+    }
+
+    private function sortSeveritiesByDepartment(string $userDepartment, array &$testCompiled)
+    {
+        uasort($testCompiled[$userDepartment]['severities'], function ($a, $b) {
+            return $b['severity_key'] <=> $a['severity_key'];
+        });
     }
 }

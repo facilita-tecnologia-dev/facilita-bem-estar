@@ -4,7 +4,6 @@ namespace App\Services\User;
 
 use App\Enums\AdmissionRangeEnum;
 use App\Enums\AgeRangeEnum;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -12,7 +11,9 @@ class UserFilterService
 {
     public function applyAgeRange(Builder $query, ?string $range): Builder
     {
-        if (!$range) return $query;
+        if (! $range) {
+            return $query;
+        }
 
         [$min, $max] = match ($range) {
             AgeRangeEnum::YOUNG->value => [18, 25],
@@ -22,12 +23,14 @@ class UserFilterService
         };
 
         return $query->whereDate('birth_date', '<=', Carbon::now()->subYears($min))
-                     ->whereDate('birth_date', '>=', Carbon::now()->subYears($max + 1)->addDay());
+            ->whereDate('birth_date', '>=', Carbon::now()->subYears($max + 1)->addDay());
     }
 
     public function applyAdmissionRange(Builder $query, ?string $range): Builder
     {
-        if (!$range) return $query;
+        if (! $range) {
+            return $query;
+        }
 
         [$min, $max] = match ($range) {
             AdmissionRangeEnum::NEW_EMPLOYEE->value => [0, 1],
@@ -37,6 +40,6 @@ class UserFilterService
         };
 
         return $query->whereDate('admission', '<=', Carbon::now()->subYears($min))
-                     ->whereDate('admission', '>=', Carbon::now()->subYears($max + 1)->addDay());
+            ->whereDate('admission', '>=', Carbon::now()->subYears($max + 1)->addDay());
     }
 }

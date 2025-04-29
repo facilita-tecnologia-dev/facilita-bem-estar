@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
-use App\Enums\AdmissionRangeEnum;
-use App\Enums\AgeRangeEnum;
 use App\Models\User;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
@@ -15,7 +13,9 @@ use Illuminate\Support\Facades\Gate;
 class PsychosocialMainController
 {
     protected $testService;
+
     protected $filterService;
+
     protected $pageData;
 
     public function __construct(TestService $testService, UserFilterService $filterService)
@@ -30,12 +30,13 @@ class PsychosocialMainController
 
         // Catching users
         $query = session('company')->users()
-                ->whereHas('latestPsychosocialCollection', function ($query) {
-                    $query->whereYear('created_at', Carbon::now()->year);
-                })
-                ->getQuery();
+            ->whereHas('latestPsychosocialCollection', function ($query) {
+                $query->whereYear('created_at', Carbon::now()->year);
+            })
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
+            ->getQuery();
 
-        //Applying filters
+        // Applying filters
         $query = $query
             ->hasAttribute('name', 'like', "%$request->name%")
             ->hasAttribute('cpf', 'like', "%$request->cpf%")
@@ -45,19 +46,23 @@ class PsychosocialMainController
 
         $query = $this->filterService->applyAgeRange($query, $request->age_range);
         $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
-                
+
         // Catching user tests
         $this->pageData = $query
-            ->withLatestPsychosocialCollection(function($query) use($request) {
+            ->withLatestPsychosocialCollection(function ($query) use ($request) {
                 $query->whereYear('created_at', $request->year ?? '2025')
-                        ->withCollectionTypeName('psychosocial-risks')
-                        ->withTests(function($query){
-                            $query->withTestType()
-                                ->withAnswersSum()
-                                ->withAnswersCount();
-                        });
+                    ->withCollectionTypeName('psychosocial-risks')
+                    ->withTests(function ($query) {
+                        $query->withAnswersSum()
+                            ->withAnswersCount()
+                            ->withTestType(function ($q) {
+                                $q->withRisks(function ($i) {
+                                    $i->withRelatedQuestions()
+                                        ->withControlActions();
+                                });
+                            });
+                    });
             })
-            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->get();
 
         $psychosocialRiskResults = $this->getCompiledPageData();
@@ -95,11 +100,11 @@ class PsychosocialMainController
 
     private function compileUserTests(User $user, Collection $metrics, array &$testCompiled)
     {
-        if($user->latestPsychosocialCollection){
+        if ($user->latestPsychosocialCollection) {
             foreach ($user->latestPsychosocialCollection->tests as $userTest) {
                 $testDisplayName = $userTest->testType->display_name;
-                // dd($userTest);
                 $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+
                 $this->updateTestSeverities($testDisplayName, $evaluatedTest, $testCompiled);
 
                 if (isset($evaluatedTest['risks'])) {
@@ -134,14 +139,14 @@ class PsychosocialMainController
             if (isset($test['risks'])) {
                 foreach ($test['risks'] as $riskName => $testRisk) {
                     $average = array_sum($testRisk['score']) / count($testRisk['score']);
-    
+
                     $testCompiled[$testName]['risks'][$riskName]['score'] = ceil($average);
                     $this->determineRiskLevel($average, $testCompiled, $testName, $riskName);
                 }
             }
         }
     }
-    
+
     private function determineRiskLevel(float $average, array &$testCompiled, string $testName, string $riskName)
     {
         if ($average > 2) {
@@ -156,10 +161,10 @@ class PsychosocialMainController
     private function getPsychosocialTestsParticipation()
     {
         $usersWithCollection = $this->pageData;
-        $companyUsersByDepartment = session('company')->users->groupBy('department');
+        $usersByDepartment = session('company')->users->groupBy('department');
 
         $participation = $this->calculateGeneralParticipation($usersWithCollection);
-        $participation += $this->calculateDepartmentParticipation($usersWithCollection, $companyUsersByDepartment);
+        $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
 
         return $participation;
     }
@@ -169,16 +174,16 @@ class PsychosocialMainController
         return [
             'Geral' => [
                 'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
-            ]
+            ],
         ];
     }
 
-    private function calculateDepartmentParticipation($usersWithCollection, $companyUsersByDepartment)
+    private function calculateDepartmentParticipation(Collection $usersWithCollection, Collection $usersByDepartment)
     {
         $departmentParticipation = [];
 
         foreach ($usersWithCollection->groupBy('department') as $departmentName => $department) {
-            $countDepartmentUsers = $companyUsersByDepartment[$departmentName]->count();
+            $countDepartmentUsers = $usersByDepartment[$departmentName]->count();
 
             $departmentParticipation[$departmentName] = [
                 'Participação' => ($department->count() / $countDepartmentUsers) * 100,

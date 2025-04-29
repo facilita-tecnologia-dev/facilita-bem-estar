@@ -17,7 +17,7 @@ class DificuldadeConcentracao implements RiskEvaluatorInterface
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
             $answer = $riskQuestion->related_question_answer;
-            
+
             if ($answer >= 3) {
                 $riskPoints++;
             }
