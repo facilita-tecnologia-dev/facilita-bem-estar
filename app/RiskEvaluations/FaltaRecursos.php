@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class FaltaRecursos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
     {
         $riskPoints = 0;
 
@@ -15,16 +15,17 @@ class FaltaRecursos implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->relatedQuestions as $risk) {
-            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
-            $answer = $answers[$risk->question_Id];
-            if ($parentQuestion->statement == 'Os recursos de trabalho são em número suficiente para a realização das tarefas') {
+        foreach ($risk->relatedQuestions as $riskQuestion) {
+            $answer = $riskQuestion->related_question_answer;
+            $parentQuestionStatement = $riskQuestion->parent_question_statement;
+
+            if ($parentQuestionStatement == 'Os recursos de trabalho são em número suficiente para a realização das tarefas') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
 
-            if ($parentQuestion->statement == 'Os equipamentos são adequados para a realização das tarefas') {
+            if ($parentQuestionStatement == 'Os equipamentos são adequados para a realização das tarefas') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }

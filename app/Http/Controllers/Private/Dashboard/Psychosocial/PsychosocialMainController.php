@@ -4,48 +4,66 @@ namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Enums\AdmissionRangeEnum;
 use App\Enums\AgeRangeEnum;
+use App\Models\User;
 use App\Services\TestService;
+use App\Services\User\UserFilterService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PsychosocialMainController
 {
     protected $testService;
-
+    protected $filterService;
     protected $pageData;
 
-    public function __construct(TestService $testService)
+    public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
+        $this->filterService = $filterService;
     }
 
     public function __invoke(Request $request)
     {
         Gate::authorize('view-manager-screens');
 
-        $ageRange = $request->age_range ? AgeRangeEnum::from($request->age_range)->name : null;
-        $admissionRange = $request->admission_range ? AdmissionRangeEnum::from($request->admission_range)->name : null;
+        // Catching users
+        $query = session('company')->users()
+                ->whereHas('latestPsychosocialCollection', function ($query) {
+                    $query->whereYear('created_at', Carbon::now()->year);
+                })
+                ->getQuery();
 
-        $this->pageData = $this->pageQuery(
-            $request->name,
-            $request->cpf,
-            $request->department,
-            $request->occupation,
-            $request->gender,
-            $request->work_shift,
-            $request->marital_status,
-            $request->education_level,
-            $request->year,
-            $ageRange,
-            $admissionRange,
-        );
+        //Applying filters
+        $query = $query
+            ->hasAttribute('name', 'like', "%$request->name%")
+            ->hasAttribute('cpf', 'like', "%$request->cpf%")
+            ->hasAttribute('gender', '=', $request->gender)
+            ->hasAttribute('department', '=', $request->department)
+            ->hasAttribute('occupation', '=', $request->occupation);
+
+        $query = $this->filterService->applyAgeRange($query, $request->age_range);
+        $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
+                
+        // Catching user tests
+        $this->pageData = $query
+            ->withLatestPsychosocialCollection(function($query) use($request) {
+                $query->whereYear('created_at', $request->year ?? '2025')
+                        ->withCollectionTypeName('psychosocial-risks')
+                        ->withTests(function($query){
+                            $query->withTestType()
+                                ->withAnswersSum()
+                                ->withAnswersCount();
+                        });
+            })
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
+            ->get();
 
         $psychosocialRiskResults = $this->getCompiledPageData();
         $psychosocialTestsParticipation = $this->getPsychosocialTestsParticipation();
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-
         $pendingTestUsers = session('company')->users->diff($this->pageData);
 
         return view('private.dashboard.psychosocial.index', [
@@ -57,116 +75,116 @@ class PsychosocialMainController
         ]);
     }
 
-    private function pageQuery(
-        $filteredName = null,
-        $filteredCPF = null, $filteredDepartment = null,
-        $filteredOccupation = null,
-        $filteredGender = null,
-        $filteredWorkShift = null,
-        $filteredMaritalStatus = null,
-        $filteredEducationLevel = null,
-        $filteredYear = null,
-        $filteredAgeRange = null,
-        $filteredAdmissionRange = null,
-    ) {
-        $pageData = session('company')
-            ->users()
-            ->whereHas('latestPsychosocialCollection', function ($query) use ($filteredYear) {
-                $query->whereYear('created_at', $filteredYear ?? Carbon::now()->year);
-            })
-            ->hasAttribute('name', 'like', "%$filteredName%")
-            ->hasAttribute('cpf', 'like', "%$filteredCPF%")
-            ->hasAttribute('gender', '=', $filteredGender)
-            ->hasAttribute('department', '=', $filteredDepartment)
-            ->hasAttribute('occupation', '=', $filteredOccupation)
-            ->hasAttribute('work_shift', '=', $filteredWorkShift)
-            ->hasAttribute('marital_status', '=', $filteredMaritalStatus)
-            ->hasAttribute('education_level', '=', $filteredEducationLevel)
-            ->hasAgeRange($filteredAgeRange)
-            ->hasAdmissionRange($filteredAdmissionRange)
-            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->withLatestPsychosocialCollection(year: $filteredYear)
-            ->get();
-
-        return $pageData;
-    }
-
     private function getCompiledPageData()
     {
         $metrics = session('company')->metrics;
-
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
-            if ($user->latestPsychosocialCollection && count($user->latestPsychosocialCollection->tests) > 0) {
-                foreach ($user->latestPsychosocialCollection->tests as $userTest) {
-                    $testDisplayName = $userTest->testType->display_name;
-                    $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-
-                    if (! isset($testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']])) {
-                        $testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']] = [
-                            'count' => 0,
-                            'severity_color' => $evaluatedTest['severity_color'],
-                        ];
-                    }
-
-                    if (isset($evaluatedTest['risks'])) {
-                        foreach ($evaluatedTest['risks'] as $riskName => $risk) {
-                            $testCompiled[$testDisplayName]['risks'][$riskName]['score'][] = $risk['riskPoints'];
-                        }
-                    }
-
-                    $testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']]['count'] += 1;
-                }
+            if ($user->latestPsychosocialCollection) {
+                $this->compileUserTests($user, $metrics, $testCompiled);
             }
         }
 
-        foreach ($testCompiled as $testName => $test) {
-            if (isset($test['risks'])) {
-                foreach ($test['risks'] as $riskName => $testRisk) {
-                    $average = array_sum($testRisk['score']) / count($testRisk['score']);
-                    $testCompiled[$testName]['risks'][$riskName]['score'] = ceil($average);
-
-                    if ($average > 2) {
-                        $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Alto';
-                    } elseif ($average > 1) {
-                        $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Médio';
-                    } else {
-                        $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Baixo';
-                    }
-                }
-            }
-        }
+        $this->calculateAverageRiskScores($testCompiled);
 
         krsort($testCompiled);
 
         return $testCompiled;
     }
 
+    private function compileUserTests(User $user, Collection $metrics, array &$testCompiled)
+    {
+        if($user->latestPsychosocialCollection){
+            foreach ($user->latestPsychosocialCollection->tests as $userTest) {
+                $testDisplayName = $userTest->testType->display_name;
+                // dd($userTest);
+                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+                $this->updateTestSeverities($testDisplayName, $evaluatedTest, $testCompiled);
+
+                if (isset($evaluatedTest['risks'])) {
+                    $this->updateTestRisks($testDisplayName, $evaluatedTest['risks'], $testCompiled);
+                }
+            }
+        }
+    }
+
+    private function updateTestSeverities(string $testDisplayName, array $evaluatedTest, array &$testCompiled)
+    {
+        if (! isset($testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']])) {
+            $testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']] = [
+                'count' => 0,
+                'severity_color' => $evaluatedTest['severity_color'],
+            ];
+        }
+
+        $testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']]['count'] += 1;
+    }
+
+    private function updateTestRisks(string $testDisplayName, array $risks, array &$testCompiled)
+    {
+        foreach ($risks as $riskName => $risk) {
+            $testCompiled[$testDisplayName]['risks'][$riskName]['score'][] = $risk['riskPoints'];
+        }
+    }
+
+    private function calculateAverageRiskScores(array &$testCompiled)
+    {
+        foreach ($testCompiled as $testName => $test) {
+            if (isset($test['risks'])) {
+                foreach ($test['risks'] as $riskName => $testRisk) {
+                    $average = array_sum($testRisk['score']) / count($testRisk['score']);
+    
+                    $testCompiled[$testName]['risks'][$riskName]['score'] = ceil($average);
+                    $this->determineRiskLevel($average, $testCompiled, $testName, $riskName);
+                }
+            }
+        }
+    }
+    
+    private function determineRiskLevel(float $average, array &$testCompiled, string $testName, string $riskName)
+    {
+        if ($average > 2) {
+            $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Alto';
+        } elseif ($average > 1) {
+            $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Médio';
+        } else {
+            $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Baixo';
+        }
+    }
+
     private function getPsychosocialTestsParticipation()
     {
-        $usersWithCollection = $this->pageData->filter(function ($user) {
-            return $user->has('latestPsychosocialCollection');
-        });
-
+        $usersWithCollection = $this->pageData;
         $companyUsersByDepartment = session('company')->users->groupBy('department');
 
-        $psychosocialTestsParticipation = [];
+        $participation = $this->calculateGeneralParticipation($usersWithCollection);
+        $participation += $this->calculateDepartmentParticipation($usersWithCollection, $companyUsersByDepartment);
 
-        $psychosocialTestsParticipation['Geral'] = [
-            'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
+        return $participation;
+    }
+
+    private function calculateGeneralParticipation($usersWithCollection)
+    {
+        return [
+            'Geral' => [
+                'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
+            ]
         ];
+    }
+
+    private function calculateDepartmentParticipation($usersWithCollection, $companyUsersByDepartment)
+    {
+        $departmentParticipation = [];
 
         foreach ($usersWithCollection->groupBy('department') as $departmentName => $department) {
             $countDepartmentUsers = $companyUsersByDepartment[$departmentName]->count();
 
-            $departmentParticipation = [
+            $departmentParticipation[$departmentName] = [
                 'Participação' => ($department->count() / $countDepartmentUsers) * 100,
             ];
-
-            $psychosocialTestsParticipation[$departmentName] = $departmentParticipation;
         }
 
-        return $psychosocialTestsParticipation;
+        return $departmentParticipation;
     }
 }

@@ -7,19 +7,18 @@ use Illuminate\Support\Collection;
 
 class Monotonia implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
     {
         $riskPoints = 0;
 
         if ($average <= 2.5) {
             $riskPoints += 1.5;
         }
+        foreach ($risk->relatedQuestions as $riskQuestion) {
+            $answer = $riskQuestion->related_question_answer;
+            $parentQuestionStatement = $riskQuestion->parent_question_statement;
 
-        foreach ($risk->relatedQuestions as $risk) {
-            $answer = $answers[$risk->question_Id];
-            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
-
-            if ($parentQuestion->statement == 'As tarefas que executo em meu trabalho são variadas') {
+            if ($parentQuestionStatement == 'As tarefas que executo em meu trabalho são variadas') {
                 if ($answer <= 2) {
                     $riskPoints += 1.5;
                 }

@@ -17,7 +17,7 @@
                     </div>
                     <div class="">
                         <p class="font-semibold text-lg text-left">Idade:</p>
-                        <p class="text-base text-left">{{ $user->birth_date ? Carbon\Carbon::create($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</p>
+                        <p class="text-base text-left">{{ $user->birth_date ? Carbon\Carbon::parse($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
                         <p class="font-semibold text-lg text-left">Sexo:</p>
@@ -33,11 +33,11 @@
                     </div>
                     <div class="">
                         <p class="font-semibold text-lg text-left">Data de admissão:</p>
-                        <p class="text-base text-left">{{ $admission ? $admission->format('d/m/Y') : 'Não cadastrado'}}</p>
+                        <p class="text-base text-left">{{ $user->admission ? Carbon\Carbon::parse($user->admission)->format('d/m/Y') : 'Não cadastrado'}}</p>
                     </div>
                     <div class="">
                         <p class="font-semibold text-lg text-left">Tempo de empresa:</p>
-                        <p class="text-base text-left">{{ $admission ? $admission->diffForHumans() : 'Não cadastrado'}}</p>
+                        <p class="text-base text-left">{{ $user->admission ? Carbon\Carbon::parse($user->admission)->diffForHumans() : 'Não cadastrado'}}</p>
                     </div>
                     <div class="">
                         <p class="font-semibold text-lg text-left">Último teste de Riscos Psicossociais realizado:</p>

@@ -10,7 +10,7 @@ class Risk extends Model
 {
     protected $table = 'risks';
 
-    protected $with = ['relatedQuestions:id,risk_id,question_Id', 'controlActions:id,risk_id,content'];
+    // protected $with = ['relatedQuestions:id,risk_id,question_Id', 'controlActions:id,risk_id,content'];
 
     /**
      * Returns the questions related to this risk.
@@ -36,5 +36,15 @@ class Risk extends Model
     public function relatedTest(): BelongsTo
     {
         return $this->belongsTo(Test::class, 'test_id');
+    }
+
+    public function scopeWithRelatedQuestions($query){
+        $query->with('relatedQuestions', fn($query) => 
+            $query->withRelatedQuestionAnswer()
+                    ->withParentQuestionStatement());
+    }
+
+    public function scopeWithControlActions($query){
+        $query->with('controlActions');
     }
 }

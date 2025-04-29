@@ -7,26 +7,25 @@ use Illuminate\Support\Collection;
 
 class GestaoIndividualista implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
     {
-        $evaluatedRisk = '';
         $riskPoints = 0;
 
         if ($average >= 3.5) {
             $riskPoints++;
         }
 
-        foreach ($risk->relatedQuestions as $risk) {
-            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
-            $answer = $answers[$risk->question_Id];
+        foreach ($risk->relatedQuestions as $riskQuestion) {
+            $answer = $riskQuestion->related_question_answer;
+            $parentQuestionStatement = $riskQuestion->parent_question_statement;
 
-            if ($parentQuestion->statement == 'Aqui os gestores preferem trabalhar individualmente') {
+            if ($parentQuestionStatement == 'Aqui os gestores preferem trabalhar individualmente') {
                 if ($answer >= 4) {
                     $riskPoints++;
                 }
             }
 
-            if ($parentQuestion->statement == 'O trabalho coletivo é valorizado pelos gestores') {
+            if ($parentQuestionStatement == 'O trabalho coletivo é valorizado pelos gestores') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }

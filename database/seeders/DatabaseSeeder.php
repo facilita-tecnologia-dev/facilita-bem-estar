@@ -9,6 +9,7 @@ use App\Models\UserAnswer;
 use App\Models\UserCollection;
 use App\Models\UserFeedback;
 use App\Models\UserTest;
+use Carbon\Carbon;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -43,17 +44,19 @@ class DatabaseSeeder extends Seeder
         //     )
         //     ->create();
 
-        $users = User::factory(50)->create();
+        $users = User::factory(350)->create();
 
         $users->each(function ($user) use ($testTypes) {
             $userCollection1 = UserCollection::factory()->create([
                 'user_id' => $user->id,
                 'collection_id' => 1,
+                'created_at' => Carbon::now()->subDays(rand(10, 200)),
             ]);
 
             $userCollection2 = UserCollection::factory()->create([
                 'user_id' => $user->id,
                 'collection_id' => 2,
+                'created_at' => Carbon::now()->subDays(rand(10, 200)),
             ]);
 
             $collection1Tests = $testTypes->where('collection_id', 1);
@@ -96,6 +99,6 @@ class DatabaseSeeder extends Seeder
 
         });
 
-        User::factory(10)->create();
+        User::factory(50)->create();
     }
 }

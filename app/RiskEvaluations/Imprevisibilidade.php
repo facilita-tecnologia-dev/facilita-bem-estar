@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class Imprevisibilidade implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
     {
         $riskPoints = 0;
 
@@ -15,17 +15,17 @@ class Imprevisibilidade implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->relatedQuestions as $risk) {
-            $answer = $answers[$risk->question_Id];
-            $parentQuestion = $questions->where('id', $risk->question_Id)->first();
+        foreach ($risk->relatedQuestions as $riskQuestion) {
+            $answer = $riskQuestion->related_question_answer;
+            $parentQuestionStatement = $riskQuestion->parent_question_statement;
 
-            if ($parentQuestion->statement == 'Há clareza na definição das tarefas') {
+            if ($parentQuestionStatement == 'Há clareza na definição das tarefas') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }
             }
 
-            if ($parentQuestion->statement == 'As informações de que preciso para executar minhas tarefas são claras') {
+            if ($parentQuestionStatement == 'As informações de que preciso para executar minhas tarefas são claras') {
                 if ($answer <= 2) {
                     $riskPoints++;
                 }

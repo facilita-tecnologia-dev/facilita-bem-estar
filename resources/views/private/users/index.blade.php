@@ -68,6 +68,8 @@
                     @endforeach
                 </x-table.body>
             </x-table>
+
+            {{ $users->links() }}
         </div>
     </div>
 

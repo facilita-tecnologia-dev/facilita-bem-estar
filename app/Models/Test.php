@@ -47,6 +47,8 @@ class Test extends Model
 
     public function scopeWithRisks($query)
     {
-        $query->with('risks');
+        $query->with('risks', fn($query) => 
+            $query->withRelatedQuestions()
+                    ->withControlActions());
     }
 }

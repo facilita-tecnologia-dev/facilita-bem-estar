@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class Isolamento implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
     {
         $riskPoints = 0;
 
@@ -15,8 +15,8 @@ class Isolamento implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->relatedQuestions as $risk) {
-            $answer = $answers[$risk->question_Id];
+        foreach ($risk->relatedQuestions as $riskQuestion) {
+            $answer = $riskQuestion->related_question_answer;
 
             if ($answer >= 3) {
                 $riskPoints++;

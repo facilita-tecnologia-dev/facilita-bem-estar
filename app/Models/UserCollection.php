@@ -13,34 +13,18 @@ class UserCollection extends Model
 
     protected $table = 'user_collections';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = ['user_id', 'collection_id'];
 
-    // protected $with = ['collectionType'];
-
-    /**
-     * Returns the user who owns this collection.
-     */
     public function userOwner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Returns the base collection of this user collection.
-     */
     public function collectionType(): BelongsTo
     {
         return $this->belongsTo(Collection::class, 'collection_id');
     }
 
-    /**
-     * Returns the tests of the users related to this collection.
-     */
     public function tests(): HasMany
     {
         return $this->hasMany(UserTest::class, 'user_collection_id');
@@ -54,17 +38,23 @@ class UserCollection extends Model
         ]);
     }
 
-    public function scopeWithTests($query, $only = null)
+    // public function scopeWithTests($query, $callback)
+    // {
+    //     $query->with([
+    //         'tests' => function ($q) use ($only) {
+    //             $q->select('id', 'user_collection_id', 'test_id')
+    //                 ->only($only)
+    //                 ->withTestType()
+    //             // ->withAnswersSum()
+    //             // ->withAnswersCount()
+    //                 ->withAnswers();
+    //         },
+    //     ]);
+    // }
+    public function scopeWithTests($query, $callback)
     {
         $query->with([
-            'tests' => function ($q) use ($only) {
-                $q->select('id', 'user_collection_id', 'test_id')
-                    ->only($only)
-                    ->withTestType()
-                // ->withAnswersSum()
-                // ->withAnswersCount()
-                    ->withAnswers();
-            },
+            'tests' => $callback
         ]);
     }
 }

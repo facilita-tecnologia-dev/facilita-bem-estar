@@ -8,7 +8,11 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Imports\UsersImport;
 use App\Models\Company;
+use App\Models\Role;
 use App\Models\User;
+use App\Repositories\UserRepository;
+use App\Services\User\UserElegibilityService;
+use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +22,16 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class UserController
 {
-    protected $users;
+    protected UserFilterService $filterService;
+    protected UserElegibilityService $elegibilityService;
+    protected UserRepository $userRepository;
+
+    public function __construct(UserFilterService $filterService, UserElegibilityService $elegibilityService, UserRepository $userRepository)
+    {
+        $this->filterService = $filterService;
+        $this->elegibilityService = $elegibilityService;
+        $this->userRepository = $userRepository;
+    }
 
     /**
      * Display a listing of the resource.
@@ -27,19 +40,19 @@ class UserController
     {
         Gate::authorize('viewAny', Auth::user());
 
-        $this->users = User::whereRelation('companies', 'companies.id', session('company')->id);
+        $query = Company::whereId(session('company')->id)->first()->users();
 
-        $users = session('company')
-            ->users()
+        $query = $query
             ->hasAttribute('name', 'like', "%$request->name%")
             ->hasAttribute('cpf', 'like', "%$request->cpf%")
             ->hasAttribute('gender', '=', $request->gender)
             ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation)
-            ->with('latestPsychosocialCollection:id,user_id,created_at')
-            ->with('latestOrganizationalClimateCollection:id,user_id,created_at')
+            ->hasAttribute('occupation', '=', $request->occupation);
+
+        $users = $query
+            ->with(['latestPsychosocialCollection', 'latestOrganizationalClimateCollection'])
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->get();
+            ->paginate(20);
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
@@ -57,7 +70,10 @@ class UserController
         Gate::authorize('create', Auth::user());
 
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
-        $rolesToSelect = array_map(fn (InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());
+        $rolesToSelect = array_map(fn ($role) => 
+            InternalUserRoleEnum::from($role['display_name'])->value, 
+            Role::whereIn('id', [1,2])->get()->toArray()
+        );
 
         return view('private.users.create', compact('rolesToSelect', 'gendersToSelect'));
     }
@@ -69,18 +85,7 @@ class UserController
     {
         Gate::authorize('create', Auth::user());
 
-        DB::transaction(function () use ($request) {
-            $userData = $request->safe()->except('role');
-            $userRole = $request->safe()->only('role');
-
-            $userRoleID = $userRole['role'] === InternalUserRoleEnum::INTERNAL_MANAGER->value ? 1 : 2;
-
-            $user = User::create($userData);
-
-            $user->companies()->sync([
-                session('company')->id => ['role_id' => $userRoleID],
-            ]);
-        });
+        $this->userRepository->create($request->safe());
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
     }
@@ -92,21 +97,10 @@ class UserController
     {
         Gate::authorize('view', Auth::user());
 
-        $admission = Carbon::parse($user->admission);
+        $latestOrganizationalClimateCollectionDate = $user->latestOrganizationalClimateCollection?->created_at->diffForHumans() ?? 'Nunca';
+        $latestPsychosocialCollectionDate = $user->latestPsychosocialCollection?->created_at->diffForHumans() ?? 'Nunca';
 
-        if ($user->latestOrganizationalClimateCollection) {
-            $latestOrganizationalClimateCollectionDate = $user->latestOrganizationalClimateCollection->created_at->diffForHumans();
-        } else {
-            $latestOrganizationalClimateCollectionDate = 'Nunca';
-        }
-
-        if ($user->latestPsychosocialCollection) {
-            $latestPsychosocialCollectionDate = $user->latestPsychosocialCollection->created_at->diffForHumans();
-        } else {
-            $latestPsychosocialCollectionDate = 'Nunca';
-        }
-
-        return view('private.users.show', compact('user', 'admission', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
+        return view('private.users.show', compact('user', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
     }
 
     /**
@@ -117,16 +111,19 @@ class UserController
         Gate::authorize('update', Auth::user());
 
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
-        $rolesToSelect = array_map(fn (InternalUserRoleEnum $role) => $role->value, InternalUserRoleEnum::cases());
+        $rolesToSelect = array_map(fn ($role) => 
+            InternalUserRoleEnum::from($role['display_name'])->value, 
+            Role::whereIn('id', [1,2])->get()->toArray()
+        );
 
-        $roleInThisCompany = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
-        $userRole = $roleInThisCompany === 1 ? InternalUserRoleEnum::INTERNAL_MANAGER->value : InternalUserRoleEnum::EMPLOYEE->value;
+        $roleId = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
+        $roleDisplayName = Role::whereId($roleId)->first()->display_name;
 
         return view('private.users.update', compact(
             'user',
             'rolesToSelect',
             'gendersToSelect',
-            'userRole',
+            'roleDisplayName',
         ));
     }
 
@@ -137,23 +134,7 @@ class UserController
     {
         Gate::authorize('update', Auth::user());
 
-        DB::transaction(function () use ($request, $user) {
-            $userData = $request->safe()->except('role');
-            $userRole = $request->safe()->only('role');
-
-            $userRoleID = $userRole['role'] === 'Gestor Interno' ? 1 : 2;
-
-            $user->update($userData);
-
-            $user->companies()->sync([
-                session('company')->id => ['role_id' => $userRoleID],
-            ]);
-
-            if (Auth::user()->id == $user->id) {
-                session(['user' => $user]);
-                Auth::setUser($user->fresh());
-            }
-        });
+        $this->userRepository->update($request->safe(), $user);
 
         return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
     }
@@ -161,11 +142,11 @@ class UserController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $employee)
+    public function destroy(User $user)
     {
         Gate::authorize('delete', Auth::user());
 
-        $employee->delete();
+        $this->userRepository->delete($user);
 
         return to_route('user.index');
     }
@@ -180,8 +161,8 @@ class UserController
     public function import(Request $request, Company $company)
     {
         Gate::authorize('create', Auth::user());
-
-        Excel::import(new UsersImport($company), $request->file('import_users')->store('temp'));
+        
+        $this->userRepository->import($request, $company);
 
         return back()->with('message', 'Usuários importados com sucesso');
     }

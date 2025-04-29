@@ -20,7 +20,7 @@
                     <x-form.input-text name="occupation" label="Cargo" placeholder="Digite o cargo do usuário"/>
 
                     <x-form.input-date name="admission" max="{{ Carbon\Carbon::now()->toDateString() }}" label="Data de admissão"/>
-
+                    
                     <x-form.select name="role" label="Gestor/Colaborador" :options="$rolesToSelect" />
                         
                 </x-form>

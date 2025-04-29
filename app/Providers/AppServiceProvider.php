@@ -6,9 +6,12 @@ use App\Models\Company;
 use App\Models\User;
 use App\Policies\CompanyPolicy;
 use App\Policies\UserPolicy;
+use App\View\Composers\FiltersComposer;
+use App\View\Composers\SidebarComposer;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -56,5 +59,8 @@ class AppServiceProvider extends ServiceProvider
         // Gate::define('answer-test', function (User $user) {
         //     return !$user->collections->count();
         // });
+
+        View::composer('components.structure.sidebar', SidebarComposer::class);
+        View::composer('components.filters-trigger', FiltersComposer::class);
     }
 }

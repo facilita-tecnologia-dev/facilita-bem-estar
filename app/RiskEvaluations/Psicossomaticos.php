@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class Psicossomaticos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, array $answers, $average, Collection $metrics, Collection $questions)
+    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
     {
         $riskPoints = 0;
 

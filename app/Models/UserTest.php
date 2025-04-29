@@ -52,7 +52,7 @@ class UserTest extends Model
         $query->with([
             'testType' => function ($q) {
                 $q->select('id', 'key_name', 'display_name', 'handler_type')
-                    ->withQuestions()
+                    // ->withQuestions()
                     ->withRisks();
             },
         ]);
@@ -68,22 +68,22 @@ class UserTest extends Model
         ]);
     }
 
-    // public function scopeWithAnswersSum($query){
-    //     $query->addSelect([
-    //         'answers_sum' => DB::table('user_answers')
-    //             ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
-    //             ->selectRaw('SUM(question_options.value)')
-    //             ->whereColumn('user_answers.user_test_id', 'user_tests.id')
-    //     ]);
-    // }
+    public function scopeWithAnswersSum($query){
+        $query->addSelect([
+            'answers_sum' => DB::table('user_answers')
+                ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
+                ->selectRaw('SUM(question_options.value)')
+                ->whereColumn('user_answers.user_test_id', 'user_tests.id')
+        ]);
+    }
 
-    // public function scopeWithAnswersCount($query){
-    //     $query->addSelect([
-    //         'answers_count' => DB::table('user_answers')
-    //             ->selectRaw('COUNT(*)')
-    //             ->whereColumn('user_answers.user_test_id', 'user_tests.id')
-    //     ]);
-    // }
+    public function scopeWithAnswersCount($query){
+        $query->addSelect([
+            'answers_count' => DB::table('user_answers')
+                ->selectRaw('COUNT(*)')
+                ->whereColumn('user_answers.user_test_id', 'user_tests.id')
+        ]);
+    }
 
     public function scopeOnly($query, $only)
     {

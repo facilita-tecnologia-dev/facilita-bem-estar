@@ -31,7 +31,7 @@
 
                     <x-form.input-date name="admission" max="{{ Carbon\Carbon::now()->toDateString() }}" label="Data de admissão" value="{{ $user->admission }}" />
 
-                    <x-form.select name="role" label="Gestor/Colaborador" :options="$rolesToSelect" value="{{ $userRole }}" />
+                    <x-form.select name="role" label="Gestor/Colaborador" :options="$rolesToSelect" value="{{ $roleDisplayName }}" />
                     
                 </x-form>
 

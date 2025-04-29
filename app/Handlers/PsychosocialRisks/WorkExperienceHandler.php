@@ -13,21 +13,13 @@ class WorkExperienceHandler
 
     public function process(UserTest $userTest, Collection $metrics): array
     {
-        $answersToArray = [];
-
-        foreach ($userTest->answers as $answer) {
-            $question = $userTest->testType->questions->where('id', $answer->question_id)->first();
-            $answersToArray[$question->id] = $answer->related_option_value;
-        }
-
-        $score = array_sum($answersToArray);
-        $average = $score / count($answersToArray);
+        $average = $userTest->answers_sum / $userTest->answers_count;
 
         $risksList = [];
 
         foreach ($userTest->testType->risks as $risk) {
             $handler = $this->riskEvaluatorService->getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $answersToArray, $average, $metrics, $userTest->testType->questions);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $average, $metrics);
             $risksList[$risk->name]['riskPoints'] = $evaluatedRisk;
             $risksList[$risk->name]['controlActions'] = $risk->controlActions;
         }
