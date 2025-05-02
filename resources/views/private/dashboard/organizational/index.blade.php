@@ -39,7 +39,8 @@
                     <x-charts.bar-vertical id="general-bars" title="Índice Geral de Satisfação por Teste" class="md:col-span-2" />
                 
                     @foreach ($organizationalClimateResults as $testName => $testData)
-                        <x-charts.bar-horizontal tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" />
+                        {{-- <x-charts.bar-horizontal tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" /> --}}
+                        <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" />
                     @endforeach
                 </div>
 

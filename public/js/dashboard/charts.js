@@ -25,7 +25,15 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
     const chart = document.createElement('canvas');
     chart.classList = 'w-full';
     chart.id = chartId;
-    chart.style.height = 40 * data.length + 'px';
+
+    
+    if(orientation == 'vertical'){
+        chart.style.width = '100%';
+        chart.style.height = '250px';
+        chart.style.minWidth = 120 * data.length + 'px';
+    } else{
+        chart.style.height = 40 * data.length + 'px';
+    }
 
 
     if(!wrapper){
@@ -46,14 +54,15 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                 backgroundColor: colors,
                 borderWidth: 1,
                 borderRadius: 4,
-                minBarLength: 2,
+                minBarThickness: 70,
             }]
         },
         options: {
             legend: {
                 display: false
             },
-            responsive: true,
+            // responsive: true,
+            responsive: false,
             indexAxis: orientation == 'horizontal' ? 'y' : 'x',
             maintainAspectRatio: false,
             plugins: {
@@ -106,14 +115,24 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                     max: 100,
                     ticks: {
                         callback: function(value, index, ticks) {
-                            const label = String(this.getLabelForValue(value));
-                            const matches = label.match(/\(([^)]+)\)/g);
-                            const sigla = matches ? matches.map(item => item.slice(1, -1)) : [];
-                            if(matches){
-                                return sigla[0];
-                            } else{
-                                return this.getLabelForValue(value);
+                            const label = this.getLabelForValue(value);
+                            const maxLineLength = 15; // caracteres por linha (ajuste conforme necessário)
+                            const words = label.split(' ');
+                            const lines = [];
+                            let currentLine = '';
+
+                            for (const word of words) {
+                                if ((currentLine + word).length <= maxLineLength) {
+                                currentLine += word + ' ';
+                                } else {
+                                lines.push(currentLine.trim());
+                                currentLine = word + ' ';
+                                }
                             }
+
+                            if (currentLine) lines.push(currentLine.trim());
+
+                            return lines;
                         }
                     },
                 },

@@ -47,7 +47,7 @@ function renderOrganizationalCharts(){
         wrapper.style.height = Object.keys(testType).length * 60 + "px";
         colors = generateHSLAColors(Object.keys(testType).length)
         
-        createBarChart(wrapper, chartId, labels, data, null, colors, 'horizontal');
+        createBarChart(wrapper, chartId, labels, data, null, colors);
     });
 }
 
