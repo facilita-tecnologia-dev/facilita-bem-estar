@@ -17,8 +17,9 @@ function renderCompanyMetrics(){
 
     const wrapper = document.getElementById('company-metrics')
     const colors = [chartDefaultColors.PRIMARY]
-    
-    createBarChart(wrapper, chartId, labels, data, null, colors, 'vertical', true);
+    if(data.length > 0){
+        createBarChart(wrapper, chartId, labels, data, null, colors, 'vertical', true);
+    }
 }
 
 function renderDemographics(){
@@ -34,9 +35,9 @@ function renderDemographics(){
         wrapper.style.height = Object.keys(demographic).length * 60 + "px";
         const labels = Object.keys(demographic)
         const colors = generateHSLAColors(data.length);
-        if(data,length > 0){
-            createBarChart(wrapper, chartId, labels, data, tooltips, colors, 'horizontal');
-        }
+
+        createBarChart(wrapper, chartId, labels, data, tooltips, colors, 'horizontal');
+
     });   
 }
 
