@@ -6,13 +6,13 @@
             <x-structure.page-title title="Índices Demográficos" />
 
             @if($demographics)
-                <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                <div class="w-full grid grid-cols-1 gap-4 items-start">
                     @can('access-psychosocial', Auth::user())
-                        <x-charts.bar-vertical id="company-metrics" title="Indicadores da empresa (%)" class="md:col-span-2" />
+                        <x-charts.bar-vertical id="company-metrics" title="Indicadores da empresa (%)" />
                     @endcan
 
                     @foreach ($demographics as $demographicName => $demographic)
-                        <x-charts.bar-horizontal :id="$demographicName" :title="$demographicName" />
+                        <x-charts.bar-vertical :id="$demographicName" :title="$demographicName" />
                     @endforeach
                 </div>
             @else

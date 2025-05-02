@@ -2,7 +2,7 @@
     <i class="fa-solid fa-bars text-gray-800"></i>
 </div>
 
-<div id="sidebar" class="bg-gray-100 z-40 w-[280px] overflow-auto transition-all duration-200  shadow-lg h-screen flex flex-col pt-8 pb-12 absolute -left-full top-0">
+<div id="sidebar" class="bg-gray-100 z-40 w-[280px] overflow-auto transition-all duration-200 shadow-lg h-screen flex flex-col pt-8 pb-12 absolute -left-full top-0">
     <header class="flex items-center justify-center px-4 py-2">
         @if(session('company')->logo)
             <img src="{{ asset(session('company')->logo) }}" alt="" class="h-10">
@@ -149,8 +149,11 @@
         </div>
     </div>
 
-    <footer class="px-4 py-2">
-        <div class="px-2 py-1.5 flex items-center gap-2 justify-start">
+    <footer class="px-4 py-2 flex flex-col gap-2">
+        {{-- <div class="flex items-center gap-2 justify-start">
+            <x-form.select name="company_switch" label="Outras empresas" value="{{ session('company')->id }}"  :options="$companiesToSwitch" />
+        </div> --}}
+        <div class="px-2 py-1.5 flex items-center gap-2 justify-start hover:bg-gray-200 transition rounded-md">
             <div class="w-5 flex justify-center items-center">
                 <i class="fa-solid fa-user"></i>
             </div>

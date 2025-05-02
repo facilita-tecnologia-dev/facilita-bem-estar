@@ -30,7 +30,7 @@ class UserFeedbackController
             ->whereHas('feedbacks', function ($query) use ($request) {
                 $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
             })
-            ->select('users.id', 'name')
+            ->select('users.id', 'name', 'department', 'work_shift')
             ->getQuery();
 
         // Applying filters

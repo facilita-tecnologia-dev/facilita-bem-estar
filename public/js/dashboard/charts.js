@@ -174,6 +174,8 @@ function createDoughnutChart(wrapper, chartId, labels = [], data, colors, labelT
     const datalabels = {
         display: true,
         color: '#333',
+        align: 'center',
+        display: 'auto',
         font: {
             size: 14
         },

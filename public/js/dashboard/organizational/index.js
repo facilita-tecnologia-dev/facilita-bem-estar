@@ -44,7 +44,6 @@ function renderOrganizationalCharts(){
         
         const chartId = `chart_i_${index}`;
         const wrapper = document.getElementById(key[index])
-        wrapper.style.height = Object.keys(testType).length * 60 + "px";
         colors = generateHSLAColors(Object.keys(testType).length)
         
         createBarChart(wrapper, chartId, labels, data, null, colors);
@@ -52,7 +51,7 @@ function renderOrganizationalCharts(){
 }
 
 function renderGeneralOrganizationBars(){
-    const chartId = 'test_participation_chart';
+    const chartId = 'test_indicators_chart';
     const wrapper = document.getElementById('general-bars')
     const colors = generateHSLAColors(Object.keys(organizationalClimateResults).length)
     let data = [];

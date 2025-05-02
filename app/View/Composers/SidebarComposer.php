@@ -21,10 +21,16 @@ class SidebarComposer
 
         $hasAnsweredPsychosocial = $this->elegibilityService->hasAnsweredPsychosocialCollection($user);
         $hasAnsweredOrganizational = $this->elegibilityService->hasAnsweredOrganizationalCollection($user);
+        $companiesToSwitch = array_map(fn($company) => [
+            'option' => $company['name'],
+            'value' => $company['id']
+        ] ,$user->companies->toArray());
+
 
         $view->with([
             'hasAnsweredPsychosocial' => $hasAnsweredPsychosocial,
             'hasAnsweredOrganizational' => $hasAnsweredOrganizational,
+            'companiesToSwitch' => $companiesToSwitch,
         ]);
     }
 }
