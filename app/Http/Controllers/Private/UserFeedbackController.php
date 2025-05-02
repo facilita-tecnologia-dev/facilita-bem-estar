@@ -45,7 +45,7 @@ class UserFeedbackController
         $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
 
         $userFeedbacks = $query
-            ->with('feedbacks')
+            ->with('feedbacks', fn($query) => $query->latest()->limit(1))
             ->get();
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
@@ -95,9 +95,8 @@ class UserFeedbackController
         Gate::authorize('view-manager-screens');
 
         $parentUser = $feedback->parentUser;
-        $otherFeedbacksFromSameUser = $parentUser->feedbacks()->orderBy('created_at', 'desc')->get()->reject(fn ($item) => $item->id == $feedback->id);
 
-        return view('private.dashboard.feedbacks.show', compact('feedback', 'parentUser', 'otherFeedbacksFromSameUser'));
+        return view('private.dashboard.feedbacks.show', compact('feedback', 'parentUser'));
     }
 
     /**

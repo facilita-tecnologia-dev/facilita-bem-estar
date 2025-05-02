@@ -1,3 +1,5 @@
+
+
 Chart.register(ChartDataLabels);
 
 const chartDefaultColors = Object.freeze({
