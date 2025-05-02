@@ -75,7 +75,7 @@ class PsychosocialResultsListController
             'testName' => $testName,
             'usersList' => $usersList,
             'filtersApplied' => $filtersApplied,
-            'filteredUsers' => count($this->pageData) > 0 ? $this->pageData : null,
+            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
         ]);
     }
 

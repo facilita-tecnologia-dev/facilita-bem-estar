@@ -3,7 +3,10 @@
 namespace Database\Factories;
 
 use App\Enums\DepartmentEnum;
+use App\Enums\EducationLevelEnum;
 use App\Enums\GenderEnum;
+use App\Enums\MaritalStatusEnum;
+use App\Enums\WorkShiftEnum;
 use App\Models\Company;
 use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -35,6 +38,9 @@ class UserFactory extends Factory
             'department' => $faker->randomElement(DepartmentEnum::cases())->value,
             'occupation' => $faker->word(),
             'admission' => $faker->date($format = 'Y-m-d', $max = 'now', $min = '1930-01-01'),
+            'marital_status' => $faker->randomElement(MaritalStatusEnum::cases())->value,
+            'work_shift' => $faker->randomElement(WorkShiftEnum::cases())->value,
+            'education_level' => $faker->randomElement(EducationLevelEnum::cases())->value,
         ];
     }
 

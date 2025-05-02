@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>    
-            <x-structure.page-title title="Colaborador | Editar" />
+            <x-structure.page-title title="Colaborador | Editar" :back="route('user.show', $user)"/>
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -35,7 +35,7 @@
                     
                 </x-form>
 
-                <div class="w-full flex flex-col md:flex-row justify-between gap-2">
+                <div class="w-full flex flex-row justify-between gap-2">
                     <x-action href="{{ route('user.show', $user) }}" variant="secondary">Cancelar</x-action>
                     <x-action tag="button" type="submit" form="form-update-company-profile" variant="secondary">Salvar</x-action>
                 </div>

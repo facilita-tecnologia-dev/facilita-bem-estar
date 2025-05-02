@@ -14,25 +14,48 @@
                 </div>
             @endif
             
-            <div class="w-full flex justify-end items-center gap-2">
-                <div class="flex gap-2">
-                    <x-action href="{{ route('user.import') }}">
-                        <i class="fa-solid fa-upload"></i>
-                    </x-action>
-                    <x-action href="{{ route('user.create') }}">
-                        <i class="fa-solid fa-plus"></i>
-                    </x-action>
+            <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
+
+                    <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                        <div class="flex items-center gap-2 w-full flex-wrap">
+                            <x-numbers-of-records :value="$filteredUserCount" />
+
+                            <x-applied-filters
+                                :filtersApplied="$filtersApplied"
+                            />
+                        </div>
+
+                        <x-filter-actions
+                            :filtersApplied="$filtersApplied"
+                            :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'hasAnsweredPsychosocialCollection', 'hasAnsweredOrganizationalCollection']" 
+                        />
+                    </div>
+
+                    <div class="w-full md:w-fit flex gap-2">
+                        <div class="w-full md:w-fit">
+                            <x-action href="{{ route('user.import') }}" width="full">
+                                <i class="fa-solid fa-upload text-sm sm:text-base"></i>
+                            </x-action>
+                        </div>
+                        <div class="w-full md:w-fit">
+                            <x-action href="{{ route('user.create') }}" width="full">
+                                <i class="fa-solid fa-plus text-sm sm:text-base"></i>
+                            </x-action>
+                        </div>
+                    </div>
                     
-                    <x-filters-trigger
+                    {{-- <x-filters-trigger
                         class="h-10 w-10"
-                        :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation']" 
-                    />
-                </div>
+                        :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'hasAnsweredPsychosocialCollection', 'hasAnsweredOrganizationalCollection']" 
+                    /> --}}
+                {{-- </div> --}}
             </div>
 
-            <x-filters-info-bar
+            {{-- <x-filters-info-bar
+                :countFiltered="true"
                 :filtersApplied="$filtersApplied"
-            />
+                :filteredUsersCount="$filteredUsersCount"
+            /> --}}
 
             <x-table class="flex flex-col gap-1">
                 <x-table.head class="flex items-center gap-3">
@@ -40,8 +63,8 @@
                     <x-table.head.th onclick="reorderTable(event, 1)" class="hidden lg:block w-24">Idade</x-table.head.th>
                     <x-table.head.th onclick="reorderTable(event, 2)" class="hidden md:block flex-1">Setor</x-table.head.th>
                     <x-table.head.th onclick="reorderTable(event, 3)" class="hidden sm:block flex-1">Cargo</x-table.head.th>
-                    <x-table.head.th class="truncate text-center w-12"><i class="fa-solid fa-brain"></i></x-table.head.th>
-                    <x-table.head.th class="truncate text-center w-12"><i class="fa-solid fa-cloud"></i></x-table.head.th>
+                    <x-table.head.th onclick="reorderTable(event, 4)" class="truncate text-center w-12"><i class="fa-solid fa-brain"></i></x-table.head.th>
+                    <x-table.head.th onclick="reorderTable(event, 5)" class="truncate text-center w-12"><i class="fa-solid fa-cloud"></i></x-table.head.th>
                 </x-table.head>
                 <x-table.body>
                     @foreach ($users as $user)
@@ -69,7 +92,7 @@
                 </x-table.body>
             </x-table>
 
-            {{ $users->links() }}
+            {{-- {{ $users->links() }} --}}
         </div>
     </div>
 

@@ -1,11 +1,9 @@
 <x-layouts.app>
-    <div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
+    <x-structure.page-container>
         <x-structure.sidebar />
         
-        <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
-            <div class="bg-white/25 w-fit px-6 py-2 rounded-md shadow-md">
-                <h2 class="text-2xl md:text-4xl text-gray-800 font-semibold text-left">Riscos Psicossociais</h2>
-            </div>
+        <x-structure.main-content-container>
+            <x-structure.page-title title="Riscos Psicossociais" :back="route('dashboard.psychosocial')" />
 
             <div class="w-full flex flex-col md:flex-row gap-4">
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -15,13 +13,11 @@
                     </p>
                 </div>
 
-                <x-action href="{{ route('dashboard.psychosocial.risks.pdf') }}">
-                    Visualizar Inventário de Riscos
-                </x-action>
-                
-                {{-- <a href="{{ route('dashboard.psychosocial.risks.pdf') }}" class="whitespace-nowrap py-2 px-4 bg-gray-100 rounded-md flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-200 transition">
-                    Visualizar Inventário de Riscos
-                </a> --}}
+                <div class="w-full md:w-fit">
+                    <x-action href="{{ route('dashboard.psychosocial.risks.pdf') }}" width="full">
+                        Visualizar Inventário de Riscos
+                    </x-action>
+                </div>
             </div>
     
             <div class="w-full space-y-8">
@@ -57,8 +53,8 @@
                     @endif
                 @endforeach
             </div>
-        </div>
-    </div>
+        </x-structure.main-content-container>
+    </x-structure.page-container>
 
     <script src="{{ asset('js/global.js') }}"></script>
 </x-layouts.app>

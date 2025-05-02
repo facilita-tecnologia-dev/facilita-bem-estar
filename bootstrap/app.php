@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\CanAccessOrganizationalMiddleware;
+use App\Http\Middleware\CanAccessPsychosocialMiddleware;
+use App\Http\Middleware\InternalManagerMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,7 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'can-access-psychosocial' => CanAccessPsychosocialMiddleware::class,
+            'can-access-organizational' => CanAccessOrganizationalMiddleware::class,
+            'is-internal-manager' => InternalManagerMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -16,9 +16,18 @@ class FiltersComposer
         $gendersToFilter = array_keys($companyUsers->groupBy('gender')->toArray());
         $departmentsToFilter = array_keys($companyUsers->groupBy('department')->toArray());
         $occupationsToFilter = array_keys($companyUsers->groupBy('occupation')->toArray());
-        $workShiftsToFilter = array_keys($companyUsers->groupBy('work_shift')->toArray());
-        $maritalStatusToFilter = array_keys($companyUsers->groupBy('marital_status')->toArray());
-        $educationLevelsToFilter = array_keys($companyUsers->groupBy('education_level')->toArray());
+        $workShiftsToFilter = array_filter(
+            array_keys($companyUsers->groupBy('work_shift')->toArray()),
+            fn($q) => $q !== '' && $q !== null
+        );
+        $maritalStatusToFilter = array_filter(
+            array_keys($companyUsers->groupBy('marital_status')->toArray()),
+            fn($q) => $q !== '' && $q !== null
+        );
+        $educationLevelsToFilter = array_filter(
+            array_keys($companyUsers->groupBy('education_level')->toArray()),
+            fn($q) => $q !== '' && $q !== null
+        );
 
         $ageRangesToFilter = collect(AgeRangeEnum::cases())->map(fn ($i) => [
             'option' => $i->value.' anos',
@@ -38,16 +47,21 @@ class FiltersComposer
             Carbon::now()->subYears(4)->year,
         ];
 
+        $hasAnsweredPsychosocial = ['Não Realizado','Realizado'];
+        $hasAnsweredOrganizational = ['Não Realizado','Realizado'];
+
         $view->with([
-            'gendersToFilter' => $gendersToFilter,
-            'departmentsToFilter' => $departmentsToFilter,
-            'occupationsToFilter' => $occupationsToFilter,
-            'workShiftsToFilter' => $workShiftsToFilter,
-            'maritalStatusToFilter' => $maritalStatusToFilter,
-            'educationLevelsToFilter' => $educationLevelsToFilter,
-            'ageRangesToFilter' => $ageRangesToFilter,
-            'admissionRangesToFilter' => $admissionRangesToFilter,
-            'yearsTofilter' => $yearsTofilter,
+            'gendersToFilter' => count($gendersToFilter) ? $gendersToFilter : null,
+            'departmentsToFilter' => count($departmentsToFilter) ? $departmentsToFilter : null,
+            'occupationsToFilter' => count($occupationsToFilter) ? $occupationsToFilter : null,
+            'workShiftsToFilter' => count($workShiftsToFilter) ? $workShiftsToFilter : null,
+            'maritalStatusToFilter' => count($maritalStatusToFilter) ? $maritalStatusToFilter : null,
+            'educationLevelsToFilter' => count($educationLevelsToFilter) ? $educationLevelsToFilter : null,
+            'ageRangesToFilter' => count($ageRangesToFilter) ? $ageRangesToFilter : null,
+            'admissionRangesToFilter' => count($admissionRangesToFilter) ? $admissionRangesToFilter : null,
+            'yearsTofilter' => count($yearsTofilter) ? $yearsTofilter : null,
+            'hasAnsweredPsychosocial' => $hasAnsweredPsychosocial,
+            'hasAnsweredOrganizational' => $hasAnsweredOrganizational,
         ]);
     }
 }

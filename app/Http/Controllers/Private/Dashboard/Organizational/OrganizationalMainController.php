@@ -32,11 +32,11 @@ class OrganizationalMainController
         
         // Catching users
         $query = session('company')->users()
-            ->whereHas('latestPsychosocialCollection', function ($query) {
+            ->whereHas('latestOrganizationalClimateCollection', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->getQuery();
+        ->getQuery();
 
         // Applying filters
         $query = $query
@@ -60,7 +60,7 @@ class OrganizationalMainController
                             ->withTestType();
                     });
             })
-            ->get();
+        ->get();
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
@@ -68,12 +68,13 @@ class OrganizationalMainController
         $organizationalTestsParticipation = $this->getOrganizationalTestsParticipation();
 
         $pendingTestUsers = session('company')->users->diff($this->pageData);
-
+        
         return view('private.dashboard.organizational.index', [
             'organizationalClimateResults' => $organizationalClimateResults,
             'organizationalTestsParticipation' => $organizationalTestsParticipation,
             'filtersApplied' => $filtersApplied,
             'filteredUsers' => count($this->pageData) > 0 ? $this->pageData : null,
+            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
             'pendingTestUsers' => ! $filtersApplied ? $pendingTestUsers : null,
         ]);
     }
@@ -138,7 +139,7 @@ class OrganizationalMainController
         $usersByDepartment = session('company')->users->groupBy('department');
 
         $participation = $this->calculateGeneralParticipation($usersWithCollection);
-        $participation = $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
+        $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
 
         return $participation;
     }
@@ -147,7 +148,8 @@ class OrganizationalMainController
     {
         return [
             'Geral' => [
-                'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
+                'count' => $usersWithCollection->count(),
+                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100
             ],
         ];
     }
@@ -160,7 +162,8 @@ class OrganizationalMainController
             $countDepartmentUsers = $companyUsersByDepartment[$departmentName]->count();
 
             $departmentParticipation[$departmentName] = [
-                'Participação' => ($department->count() / $countDepartmentUsers) * 100,
+                'count' => $department->count(),
+                'per_cent' => ($department->count() / $countDepartmentUsers) * 100,
             ];
         }
 

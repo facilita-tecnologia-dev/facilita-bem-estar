@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Comentário | Detalhe" />
+            <x-structure.page-title title="Comentário | Detalhe" :back="route('feedbacks.index')" />
             
             <div class="w-full bg-gray-100/50 p-4 rounded-md shadow-md">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -15,7 +15,7 @@
                         <p class="font-semibold">Data</p>
                         {{ $feedback->created_at->format('d/m/Y') }}
                     </div>
-                    <div>
+                    <div class="sm:col-span-2">
                         <p class="font-semibold">Comentário</p>
                         {{ $feedback->content }}
                     </div>

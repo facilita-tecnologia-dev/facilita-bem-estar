@@ -5,17 +5,19 @@
         
         <x-structure.main-content-container>
             <x-structure.page-title title="Clima Organizacional" />
+
             
             @if($organizationalClimateResults)
-                <div class="w-full flex md:flex-row items-start justify-end gap-2">
-                    <x-filters-info-bar
-                        :countFiltered="true"
-                        :filtersApplied="$filtersApplied"
-                        :filteredUsers="$filteredUsers"
-                    />
+                <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                    <div class="flex items-center gap-2 w-full flex-wrap">
+                        <x-numbers-of-records :value="$filteredUserCount" />
 
-                    <x-filters-trigger
-                        class="w-10 !h-10"
+                        <x-applied-filters
+                            :filtersApplied="$filtersApplied"
+                        />
+                    </div>
+
+                    <x-filter-actions
                         :filtersApplied="$filtersApplied"
                         :modalFilters="[
                             'name', 
@@ -33,7 +35,7 @@
                     />
                 </div>
             
-                <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 ">
+                <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 ">
                     <x-charts.bar-vertical id="general-bars" title="Índice Geral de Satisfação por Teste" class="md:col-span-2" />
                 
                     @foreach ($organizationalClimateResults as $testName => $testData)

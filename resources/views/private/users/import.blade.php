@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>  
-            <x-structure.page-title title="Importar colaboradores (.xls)" />
+            <x-structure.page-title title="Importar colaboradores (.xls)" :back="route('user.index')" />
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">

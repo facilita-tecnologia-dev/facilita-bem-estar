@@ -15,13 +15,8 @@ function reorderTable(event, column) {
 
         let cellA, cellB;
 
-        if (column === 4) {
-            cellA = parseFloat(cellsA[column].dataset.value) || 0;
-            cellB = parseFloat(cellsB[column].dataset.value) || 0;
-        } else {
-            cellA = cellsA[column].innerText;
-            cellB = cellsB[column].innerText;
-        }
+        cellA = cellsA[column].innerHTML;
+        cellB = cellsB[column].innerHTML;
 
         if (typeof cellA === "number" && typeof cellB === "number") {
             return ordemAscendente ? cellA - cellB : cellB - cellA;
@@ -35,7 +30,7 @@ function reorderTable(event, column) {
     rows.forEach((row) => body.appendChild(row));
 
     tableHeaders.forEach((item) => {
-        const icon = item.querySelector("i");
+        const icon = item.querySelector("i.fa-arrows-up-down");
         if (icon) {
             icon.remove();
         }

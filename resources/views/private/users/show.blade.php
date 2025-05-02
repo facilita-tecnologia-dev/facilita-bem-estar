@@ -3,53 +3,65 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>    
-            <x-structure.page-title :title="$user->name" />
+            <x-structure.page-title :title="$user->name" :back="url()->previous()" />
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <div class="w-full grid gri-cols-1 md:grid-cols-2 gap-4">
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Nome:</p>
-                        <p class="text-base text-left">{{ $user->name ?? 'Não cadastrado' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Nome:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->name ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">CPF:</p>
-                        <p class="text-base text-left">{{ $user->cpf ?? 'Não cadastrado' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">CPF:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->cpf ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Idade:</p>
-                        <p class="text-base text-left">{{ $user->birth_date ? Carbon\Carbon::parse($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Idade:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->birth_date ? Carbon\Carbon::parse($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Sexo:</p>
-                        <p class="text-base text-left">{{ $user->gender ?? 'Não cadastrado' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Sexo:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->gender ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Setor:</p>
-                        <p class="text-base text-left">{{ $user->department ?? 'Não cadastrado' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Estado Civil:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->marital_status ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Função:</p>
-                        <p class="text-base text-left">{{ $user->occupation ?? 'Não cadastrado' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Grau de Instrução:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->education_level ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Data de admissão:</p>
-                        <p class="text-base text-left">{{ $user->admission ? Carbon\Carbon::parse($user->admission)->format('d/m/Y') : 'Não cadastrado'}}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Setor:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->department ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Tempo de empresa:</p>
-                        <p class="text-base text-left">{{ $user->admission ? Carbon\Carbon::parse($user->admission)->diffForHumans() : 'Não cadastrado'}}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Função:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->occupation ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Último teste de Riscos Psicossociais realizado:</p>
-                        <p class="text-base text-left">{{ $latestPsychosocialCollectionDate ?? 'Nunca' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Turno:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->work_shift ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
-                        <p class="font-semibold text-lg text-left">Último teste de Clima Organizacional realizado:</p>
-                        <p class="text-base text-left">{{ $latestOrganizationalClimateCollectionDate ?? 'Nunca' }}</p>
+                        <p class="font-semibold text-base sm:text-lg text-left">Data de admissão:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->admission ? Carbon\Carbon::parse($user->admission)->format('d/m/Y') : 'Não cadastrado'}}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-base sm:text-lg text-left">Tempo de empresa:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->admission ? Carbon\Carbon::parse($user->admission)->diffForHumans() : 'Não cadastrado'}}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-base sm:text-lg text-left">Último teste de Riscos Psicossociais realizado:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $latestPsychosocialCollectionDate ?? 'Nunca' }}</p>
+                    </div>
+                    <div class="">
+                        <p class="font-semibold text-base sm:text-lg text-left">Último teste de Clima Organizacional realizado:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $latestOrganizationalClimateCollectionDate ?? 'Nunca' }}</p>
                     </div>
                 </div>
 
-                <div class="w-full flex flex-col md:flex-row justify-between gap-2">
+                <div class="w-full flex flex-row justify-between gap-2">
                     <x-form action="{{ route('user.destroy', $user) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
                         <x-action tag="button" type="submit" variant="secondary">Excluir colaborador</x-action>
                     </x-form>

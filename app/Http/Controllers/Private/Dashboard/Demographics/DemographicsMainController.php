@@ -65,11 +65,17 @@ class DemographicsMainController
         $users = $this->pageData;
 
         $usersByDepartmentCount = $users->groupBy('department')->map(function ($group) {
-            return ($group->count() / session('company')->users->count()) * 100;
+            return [
+                'count' => $group->count(),
+                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+            ];
         });
 
         $usersByGenderCount = $users->groupBy('gender')->map(function ($group) {
-            return ($group->count() / session('company')->users->count()) * 100;
+            return [
+                'count' => $group->count(),
+                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+            ];
         });
 
         $usersByAdmissionPeriod = $users->groupBy(function ($user) {
@@ -83,7 +89,10 @@ class DemographicsMainController
                 default => 'Outro'
             };
         })->map(function ($group) {
-            return ($group->count() / session('company')->users->count()) * 100;
+            return [
+                'count' => $group->count(),
+                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+            ];
         });
 
         $usersByAgeGroup = $users->groupBy(function ($user) {
@@ -97,7 +106,10 @@ class DemographicsMainController
                 default => 'Outro'
             };
         })->map(function ($group) {
-            return ($group->count() / session('company')->users->count()) * 100;
+            return [
+                'count' => $group->count(),
+                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+            ];
         });
 
         $demographicsCompiled['Por sexo'] = $usersByGenderCount;

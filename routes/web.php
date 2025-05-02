@@ -47,30 +47,38 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::post('/feedback', [UserFeedbackController::class, 'store']);
     Route::view('/thanks', 'private.tests.thanks')->name('test.thanks');
 
-    Route::resource('company', CompanyController::class);
+    Route::middleware('is-internal-manager')->group(function(){
+        Route::resource('company', CompanyController::class);
+        Route::get('/user/import', [UserController::class, 'showImport'])->name('user.import');
+        Route::post('/user/import', [UserController::class, 'import']);
+        Route::resource('user', UserController::class);
 
-    Route::get('/user/import', [UserController::class, 'showImport'])->name('user.import');
-    Route::post('/user/import', [UserController::class, 'import']);
-    Route::resource('user', UserController::class);
+        Route::middleware('can-access-psychosocial')->group(function(){
+            Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
+            Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
+        });
 
-    Route::get('/indicadores', CompanyMetricsController::class)->name('company-metrics');
-    Route::post('/indicadores', [CompanyMetricsController::class, 'storeMetrics']);
+        Route::prefix('dashboard')->group(function () {
+            Route::get('demographics', DemographicsMainController::class)->name('dashboard.demographics');
 
-    Route::prefix('dashboard')->group(function () {
-        Route::get('demographics', DemographicsMainController::class)->name('dashboard.demographics');
+            Route::middleware('can-access-organizational')->group(function(){
+                Route::get('organizational', OrganizationalMainController::class)->name('dashboard.organizational-climate');
+                Route::get('organizational/answers', OrganizationalAnswersController::class)->name('dashboard.organizational-climate.by-answers');
+            
+                Route::get('feedbacks', [UserFeedbackController::class, 'index'])->name('feedbacks.index');
+                Route::get('feedbacks/{feedback}', [UserFeedbackController::class, 'show'])->name('feedbacks.show');
+            });
 
-        Route::get('organizational', OrganizationalMainController::class)->name('dashboard.organizational-climate');
-        Route::get('organizational/answers', OrganizationalAnswersController::class)->name('dashboard.organizational-climate.by-answers');
-
-        Route::get('psychosocial', PsychosocialMainController::class)->name('dashboard.psychosocial');
-        Route::get('psychosocial/risks', PsychosocialRisksController::class)->name('dashboard.psychosocial.risks');
-        Route::get('psychosocial/risks/inventory', [PsychosocialRisksController::class, 'generatePDF'])->name('dashboard.psychosocial.risks.pdf');
-        Route::get('psychosocial/{test}', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
-        Route::get('psychosocial/{test}/list', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
-
-        Route::get('feedbacks', [UserFeedbackController::class, 'index'])->name('feedbacks.index');
-        Route::get('feedbacks/{feedback}', [UserFeedbackController::class, 'show'])->name('feedbacks.show');
+            Route::middleware('can-access-psychosocial')->group(function(){
+                Route::get('psychosocial', PsychosocialMainController::class)->name('dashboard.psychosocial');
+                Route::get('psychosocial/risks', PsychosocialRisksController::class)->name('dashboard.psychosocial.risks');
+                Route::get('psychosocial/risks/inventory', [PsychosocialRisksController::class, 'generatePDF'])->name('dashboard.psychosocial.risks.pdf');
+                Route::get('psychosocial/{test}', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
+                Route::get('psychosocial/{test}/list', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
+            });
+        });
     });
+
 
     Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 });

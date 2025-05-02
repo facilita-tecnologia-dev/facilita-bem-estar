@@ -18,20 +18,24 @@ function renderCompanyMetrics(){
     const wrapper = document.getElementById('company-metrics')
     const colors = [chartDefaultColors.PRIMARY]
     
-    createBarChart(wrapper, chartId, labels, data, colors, 'vertical', true);
+    createBarChart(wrapper, chartId, labels, data, null, colors, 'vertical', true);
 }
 
 function renderDemographics(){
     const keys = Object.keys(demographics);
+
     
     Object.values(demographics).forEach((demographic, index) => {
-        const data = Object.values(demographic);
+        const data = Object.values(demographic).map(($item) => ($item['per_cent']));
+        const tooltips = Object.values(demographic).map(($item) => ($item['count']));
+
         const chartId = `demographic_chart_${index}`;
         const wrapper = document.getElementById(keys[index])
+        wrapper.style.height = Object.keys(demographic).length * 60 + "px";
         const labels = Object.keys(demographic)
         const colors = generateHSLAColors(data.length);
 
-        createBarChart(wrapper, chartId, labels, data, colors, 'horizontal');
+        createBarChart(wrapper, chartId, labels, data, tooltips, colors, 'horizontal');
     });   
 }
 

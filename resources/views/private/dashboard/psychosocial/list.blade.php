@@ -3,27 +3,43 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>   
-            <x-structure.page-title :title="$testName" />
+            <x-structure.page-title :title="$testName" :back="route('dashboard.psychosocial.by-department', $testName)"/>
 
-            <div class="w-full flex items-end sm:items-center gap-4 flex-col sm:flex-row">
-                <div class="bg-white/25 w-full sm:w-auto flex-1 px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        Lista de resultados do teste de {{ trim($testName) }} por colaborador.
-                    </p>
+                <div class="w-full flex flex-col gap-4">
+                    <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
+                        <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
+                            <i class="fa-solid fa-circle-info text-lg"></i>
+                            Lista de resultados do teste de {{ trim($testName) }} por colaborador.
+                        </p>
+                    </div>
+                    
+                    <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                        <div class="flex items-center gap-2 w-full flex-wrap">
+                            <x-numbers-of-records :value="$filteredUserCount" />
+
+                            <x-applied-filters
+                                :filtersApplied="$filtersApplied"
+                            />
+                        </div>
+
+                        <x-filter-actions
+                            :filtersApplied="$filtersApplied"
+                            :modalFilters="[
+                                'name', 
+                                'cpf', 
+                                'gender', 
+                                'department', 
+                                'occupation', 
+                                'work_shift', 
+                                'marital_status', 
+                                'education_level', 
+                                'age_range', 
+                                'admission_range',
+                            ]" 
+                        />
+                    </div>
                 </div>
 
-                <x-filters-trigger
-                    class="w-10 h-10"
-                    :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation']" 
-                />
-            </div>
-
-            <x-filters-info-bar
-                :countFiltered="true"
-                :filtersApplied="$filtersApplied"
-                :filteredUsers="$filteredUsers"
-            />
 
             <x-table>
                 <x-table.head class="flex items-center gap-3">

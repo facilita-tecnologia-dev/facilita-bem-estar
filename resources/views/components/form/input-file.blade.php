@@ -7,8 +7,8 @@
 ])
 
 <label {{ $attributes->merge(['class' => 'w-full flex items-center gap-3 pr-2 cursor-pointer bg-transparent overflow-hidden h-[45px] rounded-md text-base text-gray-800 placeholder:text-gray-500 border border-[#FF8AAF]']) }}>
-    <div class="bg-fuchsia-50 px-4 h-full flex items-center">
-        <span class="text-gray-800 text-sm md:text-md whitespace-nowrap flex items-center gap-2">
+    <div class="bg-fuchsia-50 px-4 h-full flex items-center p-1 overflow-hidden">
+        <span class="text-gray-800 text-sm md:text-md whitespace-nowrap flex items-center gap-2 truncate">
             <i class="fa-solid fa-upload"></i>
             {{ $label }}
         </span>

@@ -21,7 +21,7 @@ const chartLabelTypes = Object.freeze({
 })
 
 
-function createBarChart(wrapper, chartId, labels, data, colors = null, orientation = 'vertical', zeroEqualsUndefined = false){
+function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors = null, orientation = 'vertical', zeroEqualsUndefined = false){
     const chart = document.createElement('canvas');
     chart.classList = 'w-full';
     chart.id = chartId;
@@ -69,6 +69,7 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, orientati
                         if(zeroEqualsUndefined && value == 0){
                             return 'Não informado';
                         }
+                        
                         return value.toFixed() + '%';
                     },
                 },
@@ -78,6 +79,10 @@ function createBarChart(wrapper, chartId, labels, data, colors = null, orientati
                             return context[0].label;
                         },
                         label: function(context) {
+                            if(tooltips){
+                                return ` ${tooltips[context.dataIndex]} pessoas`
+                            }
+
                             let value = 0;
                             if(orientation == 'vertical'){
                                 value = context.parsed.y

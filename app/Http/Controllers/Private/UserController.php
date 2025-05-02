@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\User\UserElegibilityService;
 use App\Services\User\UserFilterService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -39,25 +40,51 @@ class UserController
         Gate::authorize('viewAny', Auth::user());
 
         $query = Company::whereId(session('company')->id)->first()->users();
-
+        
         $query = $query
+            ->when($request->filled('has_answered_psychosocial'), function($query) use($request) {
+                if($request->has_answered_psychosocial == 'Realizado'){
+                    $query->whereHas('latestPsychosocialCollection', function ($query) {
+                        $query->whereYear('created_at', Carbon::now()->year);
+                    });
+                } else{
+                    $query->whereDoesntHave('latestPsychosocialCollection', function ($query) {
+                        $query->whereYear('created_at', Carbon::now()->year);
+                    });
+                }
+            })
+            ->when($request->filled('has_answered_organizational'), function($query) use($request) {
+                if($request->has_answered_organizational == 'Realizado'){
+                    $query->whereHas('latestOrganizationalClimateCollection', function ($query) {
+                        $query->whereYear('created_at', Carbon::now()->year);
+                    });
+                } else{
+                    $query->whereDoesntHave('latestOrganizationalClimateCollection', function ($query) {
+                        $query->whereYear('created_at', Carbon::now()->year);
+                    });
+                }
+            })
             ->hasAttribute('name', 'like', "%$request->name%")
             ->hasAttribute('cpf', 'like', "%$request->cpf%")
             ->hasAttribute('gender', '=', $request->gender)
             ->hasAttribute('department', '=', $request->department)
             ->hasAttribute('occupation', '=', $request->occupation);
 
+        $filteredUserCount = $query->count();
+
         $users = $query
             ->with(['latestPsychosocialCollection', 'latestOrganizationalClimateCollection'])
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->paginate(20);
+            ->get();
+            // ->paginate(20);
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
-        return view('private.users.index', compact(
-            'users',
-            'filtersApplied'
-        ));
+        return view('private.users.index', [
+            'users' => $users,
+            'filtersApplied' => $filtersApplied,
+            'filteredUserCount' => $filteredUserCount > 0 ? $filteredUserCount : null,
+        ]);
     }
 
     /**

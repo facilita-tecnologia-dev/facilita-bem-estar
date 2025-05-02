@@ -76,6 +76,7 @@ class PsychosocialMainController
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
             'filtersApplied' => $filtersApplied,
             'filteredUsers' => count($this->pageData) > 0 ? $this->pageData : null,
+            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
             'pendingTestUsers' => ! $filtersApplied ? $pendingTestUsers : null,
         ]);
     }
@@ -173,7 +174,8 @@ class PsychosocialMainController
     {
         return [
             'Geral' => [
-                'Participação' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
+                'count' => $usersWithCollection->count(),
+                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100
             ],
         ];
     }
@@ -186,7 +188,8 @@ class PsychosocialMainController
             $countDepartmentUsers = $usersByDepartment[$departmentName]->count();
 
             $departmentParticipation[$departmentName] = [
-                'Participação' => ($department->count() / $countDepartmentUsers) * 100,
+                'count' => $department->count(),
+                'per_cent' => ($department->count() / $countDepartmentUsers) * 100,
             ];
         }
 

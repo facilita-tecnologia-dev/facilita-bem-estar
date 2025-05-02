@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
+use App\Models\User;
 use App\Services\TestService;
+use App\Services\User\UserFilterService;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -10,18 +14,42 @@ class OrganizationalAnswersController
 {
     protected $testService;
 
+    protected $filterService;
+    
     protected $pageData;
 
-    public function __construct(TestService $testService)
+    public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
+        $this->filterService = $filterService;
     }
 
     public function __invoke(Request $request)
     {
         Gate::authorize('view-manager-screens');
 
-        $this->pageData = $this->pageQuery($request->test);
+        // Catching users
+        $query = session('company')->users()
+            ->whereHas('latestOrganizationalClimateCollection', function ($query) {
+                $query->whereYear('created_at', Carbon::now()->year);
+            })
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
+        ->getQuery();
+
+        // Catching user tests
+        $this->pageData = $query
+            ->withLatestOrganizationalClimateCollection(function ($query) use ($request) {
+                $query->whereYear('created_at', $request->year ?? '2025')
+                    ->withCollectionTypeName('organizational-climate')
+                    ->withTests(function ($query) use($request) {
+                        $query
+                            ->when($request->test, fn($q) => $q->justOneTest($request->test))
+                            ->withAnswers()
+                            ->withTestType();
+                    });
+            })
+        ->get();
+
 
         $organizationalClimateResults = $this->getCompiledPageData();
 
@@ -33,18 +61,6 @@ class OrganizationalAnswersController
         ));
     }
 
-    private function pageQuery($filteredTest = null)
-    {
-        $pageData = session('company')
-            ->users()
-            ->has('collections')
-            ->select('users.id', 'users.name', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
-            ->withLatestOrganizationalClimateCollection(only: $filteredTest)
-            ->get();
-
-        return $pageData;
-    }
-
     private function getCompiledPageData()
     {
         $metrics = session('company')->metrics;
@@ -53,21 +69,40 @@ class OrganizationalAnswersController
 
         foreach ($this->pageData as $user) {
             if ($user->latestOrganizationalClimateCollection) {
-                foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
-                    $testDisplayName = $userTest->testType->display_name;
-
-                    $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-
-                    $questions = $userTest->testType->questions->keyBy('id');
-
-                    foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
-                        $testCompiled[$testDisplayName][$questions[$questionNumber]->statement]['Geral']['answers'][] = $answer;
-                        $testCompiled[$testDisplayName][$questions[$questionNumber]->statement][$user->department]['answers'][] = $answer;
-                    }
-                }
+                $this->compileUserResults($user, $metrics, $testCompiled);
             }
         }
 
+        $this->calculateAverageScoreByQuestion($testCompiled);
+
+        krsort($testCompiled);
+
+        return $testCompiled;
+    }
+
+    private function compileUserResults(User $user, Collection $metrics, &$testCompiled)
+    {
+        foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
+            $testDisplayName = $userTest->testType->display_name;
+
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+
+            $questions = $userTest->testType->questions->keyBy('id');
+
+            $this->updateAnswers($user, $testDisplayName, $evaluatedTest, $questions, $testCompiled);
+        }
+    }
+
+    private function updateAnswers(User $user, string $testDisplayName, array $evaluatedTest, $questions, &$testCompiled)
+    {
+        foreach ($evaluatedTest['processed_answers'] as $questionNumber => $answer) {
+            $testCompiled[$testDisplayName][$questions[$questionNumber]->statement]['Geral']['answers'][] = $answer;
+            $testCompiled[$testDisplayName][$questions[$questionNumber]->statement][$user->department]['answers'][] = $answer;
+        }
+    }
+
+    private function calculateAverageScoreByQuestion(&$testCompiled)
+    {
         foreach ($testCompiled as $testName => $test) {
             foreach ($test as $questionStatement => $question) {
                 foreach ($question as $departmentName => $departmentAnswers) {
@@ -78,9 +113,5 @@ class OrganizationalAnswersController
                 }
             }
         }
-
-        krsort($testCompiled);
-
-        return $testCompiled;
     }
 }

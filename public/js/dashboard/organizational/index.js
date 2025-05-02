@@ -4,11 +4,17 @@ renderOrganizationalTestsParticipation();
 
 function renderOrganizationalTestsParticipation(){
     let data = [];
+    let tooltips = [];
     let labels = [];
 
     Object.values(organizationalTestsParticipation).forEach((department) => {
-        data.push(department['Participação'])
+        data.push(department['per_cent'])
     })
+
+    Object.values(organizationalTestsParticipation).forEach((department) => {
+        tooltips.push(department['count'])
+    })
+    
     Object.keys(organizationalTestsParticipation).forEach((department) => {
         labels.push(department);
     });
@@ -18,7 +24,7 @@ function renderOrganizationalTestsParticipation(){
     const wrapper = document.getElementById('organizational-participation')
     const colors = [chartDefaultColors.PRIMARY]
     
-    createBarChart(wrapper, chartId, labels, data, colors);
+    createBarChart(wrapper, chartId, labels, data, tooltips, colors);
 }
 
 function renderOrganizationalCharts(){
@@ -41,7 +47,7 @@ function renderOrganizationalCharts(){
         wrapper.style.height = Object.keys(testType).length * 60 + "px";
         colors = generateHSLAColors(Object.keys(testType).length)
         
-        createBarChart(wrapper, chartId, labels, data, colors, 'horizontal');
+        createBarChart(wrapper, chartId, labels, data, null, colors, 'horizontal');
     });
 }
 
@@ -52,7 +58,6 @@ function renderGeneralOrganizationBars(){
     let data = [];
     let labels = [];
 
-   console.log(organizationalClimateResults)
     Object.values(organizationalClimateResults).forEach((testType) => {
         if(testType['Geral']){
             data.push(testType['Geral']['total_average'])
@@ -71,7 +76,7 @@ function renderGeneralOrganizationBars(){
     data.unshift( Number(generalAverage.toFixed()))
     labels.unshift('Geral')
 
-    createBarChart(wrapper, chartId, labels, data, colors);
+    createBarChart(wrapper, chartId, labels, data, null, colors);
 }
 
 function generateHSLAColors(count, saturation = 60, lightness = 85, alpha = 0.8) {

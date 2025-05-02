@@ -26,10 +26,15 @@ function renderPsychosocialRiskBars(){
 
 function renderPsychosocialTestsParticipation(){
     let data = [];
+    let tooltips = [];
     let labels = [];
 
     Object.values(psychosocialTestsParticipation).forEach((department) => {
-        data.push(department['Participação'])
+        data.push(department['per_cent'])
+    })
+
+    Object.values(psychosocialTestsParticipation).forEach((department) => {
+        tooltips.push(department['count'])
     })
 
     Object.keys(psychosocialTestsParticipation).forEach((department) => {
@@ -41,7 +46,7 @@ function renderPsychosocialTestsParticipation(){
     const wrapper = document.getElementById('psychosocial-participation')
     const colors = [chartDefaultColors.PRIMARY]
     
-    createBarChart(wrapper, chartId, labels, data, colors, "Índice de Participação (%)");
+    createBarChart(wrapper, chartId, labels, data, tooltips, colors);
 }
 
 function renderPsychosocialCharts(){

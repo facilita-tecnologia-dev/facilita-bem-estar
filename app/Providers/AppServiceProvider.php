@@ -56,11 +56,39 @@ class AppServiceProvider extends ServiceProvider
             return Response::denyAsNotFound();
         });
 
-        // Gate::define('answer-test', function (User $user) {
-        //     return !$user->collections->count();
-        // });
+        Gate::define('is-internal-manager', function(User $user): Response {
+            if($user->hasRole('internal-manager')){
+                return Response::allow();
+            }
+
+            return Response::denyAsNotFound();
+        });
+
+        Gate::define('is-employee', function(User $user): Response {
+            if($user->hasRole('employee')){
+                return Response::allow();
+            }
+
+            return Response::denyAsNotFound();
+        });
+
+        Gate::define('access-psychosocial', function(User $user): Response {
+            if(session('company')->id !== 2){
+                return Response::allow();
+            }
+
+            return Response::denyAsNotFound();
+        });
+
+        Gate::define('access-organizational', function(User $user): Response {
+            if(in_array(session('company')->id, [1,2])){
+                return Response::allow();
+            }
+
+            return Response::denyAsNotFound();
+        });
 
         View::composer('components.structure.sidebar', SidebarComposer::class);
-        View::composer('components.filters-trigger', FiltersComposer::class);
+        View::composer('components.filter-actions', FiltersComposer::class);
     }
 }

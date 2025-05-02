@@ -1,3 +1,3 @@
-<div class="w-screen h-screen flex overflow-hidden pt-16 md:pt-12">
+<div class="w-screen h-screen flex overflow-hidden pt-16">
     {{ $slot }}
 </div>

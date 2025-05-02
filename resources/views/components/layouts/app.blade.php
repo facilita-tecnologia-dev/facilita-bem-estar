@@ -18,7 +18,12 @@
 </head>
 <body
     style="
-        background: linear-gradient(215deg , #F4C5E0 0%, #F6F1F550 100%);
+        /* background: linear-gradient(215deg , #F4C5E0 0%, #F6F1F550 100%); */
+        /* background: linear-gradient(175deg , #d5f9eb 0%, #F6F1F550 100%); */
+        /* background: linear-gradient(215deg , #e8e8e8 0%, #cecece50 100%); */
+        background: radial-gradient(circle,rgba(238, 174, 202, 0.35) 0%, rgba(148, 187, 233, 0.25) 100%);
+        /* background: radial-gradient(circle, rgba(255, 171, 202, 0.3) 0%, rgba(148, 233, 206, 0.3) 100%); */
+
     "
     class="bg-cover h-screen"
 >

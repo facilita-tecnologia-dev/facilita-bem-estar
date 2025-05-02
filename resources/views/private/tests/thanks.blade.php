@@ -6,7 +6,7 @@
             <x-structure.page-title title="Obrigado por responder ao teste!" />
             
             <div class="flex flex-col items-center gap-6">
-                <img src="{{ asset('assets/thanks.svg') }}" class="block max-w-80">
+                <img src="{{ asset('assets/thanks.svg') }}" class="block max-w-32 sm:max-w-56">
                 <div class="space-y-2 text-center">
                     <p>Sua resposta é muito importante para o crescimento da empresa, obrigado.</p>
                     <p>Por favor, clique no botão abaixo para sair</p>

@@ -5,14 +5,30 @@
         <x-structure.main-content-container>
             <x-structure.page-title title="Lista de comentários" />
 
-            <div class="w-full flex items-start justify-end gap-2">
-                <x-filters-info-bar
+            <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                <div class="flex items-center gap-2 w-full flex-wrap">
+                    <x-numbers-of-records :value="$filteredUserCount" />
+
+                    <x-applied-filters
+                        :filtersApplied="$filtersApplied"
+                    />
+                </div>
+
+                <x-filter-actions
                     :filtersApplied="$filtersApplied"
-                    :filteredUsers="$filteredUsers"
-                />
-  
-                <x-filters-trigger
-                    :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'year']" 
+                    :modalFilters="[
+                        'name', 
+                        'cpf', 
+                        'gender', 
+                        'department', 
+                        'occupation', 
+                        'work_shift', 
+                        'marital_status', 
+                        'education_level', 
+                        'age_range', 
+                        'admission_range', 
+                        'year'
+                    ]" 
                 />
             </div>
             
