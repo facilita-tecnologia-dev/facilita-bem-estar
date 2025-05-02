@@ -35,7 +35,7 @@
                 </div>
             
                 <div class="w-full grid grid-cols-1 gap-4 ">
-                    <x-charts.bar-vertical id="general-bars" title="Índice Geral de Satisfação por Teste" class="" />
+                    <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers')" id="general-bars" title="Índice Geral de Satisfação por Teste" class="" />
                 
                     @foreach ($organizationalClimateResults as $testName => $testData)
                         <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" />
