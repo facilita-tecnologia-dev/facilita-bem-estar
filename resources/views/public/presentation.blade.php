@@ -11,7 +11,7 @@
     <script src="https://kit.fontawesome.com/1cb73192b4.js" crossorigin="anonymous"></script>
 
     {{-- @vite('resources/css/app.css') --}}
-    <link rel="stylesheet" href="{{ asset('build/assets/app-CpI_xRhE.css') }}">
+    <link rel="stylesheet" href="{{ asset('build/assets/app-ExKqppYO.css') }}">
 
     <title>Facilita Saúde Mental</title>
 </head>
