@@ -28,7 +28,7 @@ class RegisterController
 
         session(['user' => $user]);
 
-        return to_route('auth.register.internal.company');
+        return to_route('auth.cadastro.empresa');
     }
 
     public function showCompanyRegister()
@@ -79,6 +79,6 @@ class RegisterController
             Auth::login($user);
         });
 
-        return to_route('choose-test');
+        return to_route('escolher-teste');
     }
 }

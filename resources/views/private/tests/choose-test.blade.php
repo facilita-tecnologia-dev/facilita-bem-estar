@@ -8,7 +8,7 @@
             <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
                 <div
                 {{-- <a 
-                    href="{{ route('test', 1) }}" --}}
+                    href="{{ responder-teste', 1) }}" --}}
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 
@@ -23,7 +23,7 @@
                 </div>
 
                 <a 
-                    href="{{ route('test', $collections->where('key_name', 'psychosocial-risks')->first()) }}"
+                    href="{{ responder-teste', $collections->where('key_name', 'psychosocial-risks')->first()) }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 
@@ -37,7 +37,7 @@
                 </a>
 
                 <a 
-                    href="{{ route('test', $collections->where('key_name', 'organizational-climate')->first()) }}"
+                    href="{{ responder-teste', $collections->where('key_name', 'organizational-climate')->first()) }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 

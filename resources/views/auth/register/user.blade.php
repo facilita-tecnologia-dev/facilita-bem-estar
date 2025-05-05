@@ -33,7 +33,7 @@
                         </x-action>
                     </div> --}}
 
-                    <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>
+                    <x-action href="{{ route('apresentacao') }}" variant="simple">Voltar para a Home</x-action>
                 </div>
             </div>
         </div>

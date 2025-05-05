@@ -8,7 +8,7 @@
                         <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
                         <div class="flex flex-col gap-2 items-center">
                             <h1 class="text-3xl md:text-4xl font-semibold text-center text-gray-800">Login</h1>
-                            <p class="text-base text-center text-gray-800">Faça login para responder à pesquisa.</p>
+                            <p class="text-base text-center text-gray-800">Faça login como profissional de saúde</p>
                         </div>
                     </div>
 
@@ -18,17 +18,17 @@
                         <button data-role="toggle-login-form" id="external" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Profissional de Saúde</button>
                     </div> --}}
 
-                    <x-form action="{{ route('auth.login.usuario-interno') }}" id="login-internal" class="w-full flex flex-col gap-4 items-center" post>
+                    {{-- <x-form action="{{ route('auth.login.usuario-interno') }}" id="login-internal" class="w-full flex flex-col gap-4 items-center" post>
                         <x-form.input-text name="cpf" placeholder="CPF (000.000.000-00)" />
                         <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
-                    </x-form>
+                    </x-form> --}}
 
                     {{-- External --}}
-                    {{-- <x-form action="{{ route('auth.login.usuario-externo') }}" id="login-external" class="hidden w-full flex-col gap-4 items-center" post>
+                    <x-form action="{{ route('auth.login.usuario-externo') }}" id="login-external" class="hidden w-full flex-col gap-4 items-center" post>
                         <x-form.input-text name="cpf" placeholder="CPF apenas números" />
                         <x-form.input-text type="password" name="password" placeholder="Senha" />
                         <x-action tag="button" type="submit">Fazer login</x-action>
-                    </x-form> --}}
+                    </x-form>
 
                     {{-- <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">
                         <div class="w-full flex items-center gap-4">
@@ -42,7 +42,7 @@
                         </x-action>
                     </div> --}}
 
-                    {{-- <x-action href="{{ route('apresentacao') }}" variant="secondary">Voltar para a Home</x-action> --}}
+                    <x-action href="{{ route('apresentacao') }}" variant="secondary">Voltar para a Home</x-action>
                 </div>
             </div>
         </div>

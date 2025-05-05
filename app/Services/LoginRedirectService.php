@@ -29,10 +29,10 @@ class LoginRedirectService
                 $hasAnsweredCurrentTest = $this->elegibilityService->hasAnsweredPsychosocialCollection($user);
 
                 if($hasAnsweredCurrentTest){
-                    return route('test.thanks');
+                    return route('responder-teste.thanks');
                 }
 
-                return route('test', Collection::where('key_name', 'psychosocial-risks')->first());
+                return route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
             }
         }
 
@@ -43,10 +43,10 @@ class LoginRedirectService
                 $hasAnsweredCurrentTest = $this->elegibilityService->hasAnsweredOrganizationalCollection($user);
 
                 if($hasAnsweredCurrentTest){
-                    return route('test.thanks');
+                    return route('responder-teste.thanks');
                 }
 
-                return route('test', Collection::where('key_name', 'organizational-climate')->first());
+                return route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
             }
         }
 

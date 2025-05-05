@@ -29,7 +29,7 @@ class LoginController
         $userCompanies = $user->companies;
 
         if (count($user->companies) > 1) {
-            return redirect()->route('auth.login.show-companies');
+            return redirect()->route('auth.login.usuario-interno.escolher-empresa');
         }
 
         $userCompany = $userCompanies->first();
@@ -49,6 +49,6 @@ class LoginController
 
         Auth::login($user);
 
-        return to_route('choose-test');
+        return to_route('escolher-teste');
     }
 }

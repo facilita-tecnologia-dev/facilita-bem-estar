@@ -17,14 +17,14 @@
                         <button data-role="toggle-register-form" id="external" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Profissional de Saúde</button>
                     </div>
 
-                    <x-form action="{{ route('auth.register.internal.user') }}" id="register-internal" class="w-full flex flex-col gap-3 items-center" post>
+                    <x-form action="{{ route('auth.cadastro.usuario-interno') }}" id="register-internal" class="w-full flex flex-col gap-3 items-center" post>
                         <x-form.input-text name="name" placeholder="Digite o seu nome completo" />
                         <x-form.input-text name="cpf" placeholder="Digite o CPF" />
                         <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
                     {{-- External --}}
-                    <x-form action="{{ route('auth.register.external') }}" id="register-external" class="hidden w-full flex-col gap-3 items-center" post>
+                    <x-form action="{{ route('auth.cadastro.usuario-externo') }}" id="register-external" class="hidden w-full flex-col gap-3 items-center" post>
                         <x-form.input-text name="name" placeholder="Digite o seu nome completo" />
                         <x-form.input-text name="cpf" placeholder="Digite o CPF" />
                         <x-form.input-text type="password" name="password" placeholder="Digite a senha" />
@@ -32,7 +32,7 @@
                         <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
-                    <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>
+                    <x-action href="{{ route('apresentacao') }}" variant="simple">Voltar para a Home</x-action>
                 </div>
             </div>
         </div>

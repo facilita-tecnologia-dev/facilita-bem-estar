@@ -24,13 +24,13 @@ class ChooseCompanyToLoginController
                 return redirect()->route('dashboard.organizational-climate');
             }
 
-            return redirect()->route('test', Collection::where('key_name', 'organizational-climate')->first());
+            return redirect()->route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
         }
 
         if (Auth::user()->hasRole('internal-manager')) {
             return redirect()->route('dashboard.psychosocial');
         }
 
-        return redirect()->route('test', Collection::where('key_name', 'psychosocial-risks')->first());
+        return redirect()->route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
     }
 }

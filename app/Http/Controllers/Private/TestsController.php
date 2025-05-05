@@ -44,7 +44,7 @@ class TestsController
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
 
-        //  dd(session()->all());
+
         return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
 
@@ -77,10 +77,10 @@ class TestsController
                 return to_route('feedbacks.create');
             }
 
-            return to_route('test.thanks');
+            return to_route('responder-teste.thanks');
         }
 
-        return to_route('test', [$collection, $testIndex + 1]);
+        return to_route('responder-teste', [$collection, $testIndex + 1]);
     }
 
     private function generateValidationRules($testInfo): array

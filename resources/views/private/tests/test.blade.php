@@ -11,7 +11,7 @@
                         {{ $test->statement }}
                     </p>
                     
-                    <x-form action="{{ route('test.submit', [$collection, $testIndex]) }}" class="flex-1  flex flex-col gap-5" id="test-form" post>
+                    <x-form action="{{ route('enviar-teste', [$collection, $testIndex]) }}" class="flex-1  flex flex-col gap-5" id="test-form" post>
                         @foreach ($test->questions->toArray() as $key => $question)
                             @php
                                 $questionNumber = $key + 1;
@@ -43,7 +43,7 @@
                     </x-form>
                 </div>
                 <div class="w-full flex items-center justify-between">
-                    <x-action href="{{ $testIndex == 1 ? route('choose-test') : route('test', [$collection, $testIndex - 1]) }}" variant="primary">
+                    <x-action href="{{ $testIndex == 1 ? route('escolher-teste') : route('test', [$collection, $testIndex - 1]) }}" variant="primary">
                         Voltar
                     </x-action>
                     <x-action form="test-form" type="submit" tag="button" variant="primary">

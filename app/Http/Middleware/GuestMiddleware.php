@@ -31,10 +31,10 @@ class GuestMiddleware
 
             if ($userRole && $userRole->id == 2) {
                 if (session('company')->id !== 2) {
-                    return to_route('test', Collection::where('key_name', 'psychosocial-risks')->first());
+                    return to_route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
                 }
 
-                return to_route('test', Collection::where('key_name', 'organizational-climate')->first());
+                return to_route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
             }
         }
 

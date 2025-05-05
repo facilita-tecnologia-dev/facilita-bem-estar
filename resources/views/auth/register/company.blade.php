@@ -10,13 +10,13 @@
                         <x-structure.text-content>Registre sua empresa no Facilita Saúde Mental</x-structure.text-content>
                     </div>
 
-                    <x-form action="{{ route('auth.register.internal.company') }}" class="w-full flex flex-col gap-3 items-center" post>
+                    <x-form action="{{ route('auth.cadastro.empresa') }}" class="w-full flex flex-col gap-3 items-center" post>
                         <x-form.input-text name="name" placeholder="Razão Social" />
                         <x-form.input-text name="cnpj" placeholder="CNPJ apenas números" />
                         <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
-                    <x-action href="{{ route('presentation') }}" variant="simple">Voltar para a Home</x-action>
+                    <x-action href="{{ route('apresentacao') }}" variant="simple">Voltar para a Home</x-action>
                 </div>
             </div>
         </div>
