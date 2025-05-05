@@ -46,6 +46,7 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
     container.appendChild(chart);
 
     let delayed;
+    let captured;
 
     new Chart(chart, {
         type: 'bar',
@@ -148,6 +149,14 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                 duration: 1000,
                 onComplete: () => {
                     delayed = true;
+                    if (!captured) {
+                        const image = chart.toDataURL(); 
+                        const reportChartInput = document.querySelector(`input[name="${wrapper.id}-to-base-64"]`)
+                        if(reportChartInput){
+                            reportChartInput.value = image;
+                        }
+                        captured = true;
+                    }
                 },
                 delay: (context) => {
                     let delay = 0;

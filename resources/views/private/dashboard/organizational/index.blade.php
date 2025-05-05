@@ -7,35 +7,48 @@
             <x-structure.page-title title="Clima Organizacional" />
 
             @if($organizationalClimateResults)
-                <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
-                    <div class="flex items-center gap-2 w-full flex-wrap">
-                        <x-numbers-of-records :value="$filteredUserCount" />
+                <div class="w-full flex flex-row gap-4">
+                    <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                        <div class="flex items-center gap-2 w-full flex-wrap">
+                            <x-numbers-of-records :value="$filteredUserCount" />
 
-                        <x-applied-filters
+                            <x-applied-filters
+                                :filtersApplied="$filtersApplied"
+                            />
+                        </div>
+
+                        <x-filter-actions
                             :filtersApplied="$filtersApplied"
+                            :modalFilters="[
+                                'name', 
+                                'cpf', 
+                                'gender', 
+                                'department', 
+                                'occupation', 
+                                'work_shift', 
+                                'marital_status', 
+                                'education_level', 
+                                'age_range', 
+                                'admission_range', 
+                                'year'
+                            ]" 
                         />
                     </div>
-
-                    <x-filter-actions
-                        :filtersApplied="$filtersApplied"
-                        :modalFilters="[
-                            'name', 
-                            'cpf', 
-                            'gender', 
-                            'department', 
-                            'occupation', 
-                            'work_shift', 
-                            'marital_status', 
-                            'education_level', 
-                            'age_range', 
-                            'admission_range', 
-                            'year'
-                        ]" 
-                    />
+                    <div class="w-fit">
+                        <x-form action="{{ route('dashboard.organizational-climate.report') }}" post>
+                            <input type="hidden" name="Geral-to-base-64">
+                            @foreach ($organizationalClimateResults as $testName => $testData)
+                                <input type="hidden" name="{{ $testName }}-to-base-64">
+                            @endforeach
+                            <x-action tag="button">Imprimir relatório</x-action>
+                        </x-form>
+                    </div>
                 </div>
+
+
             
                 <div class="w-full grid grid-cols-1 gap-4 ">
-                    <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers')" id="general-bars" title="Índice Geral de Satisfação por Teste" class="" />
+                    <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers')" id="Geral" title="Índice Geral de Satisfação por Teste" class="" />
                 
                     @foreach ($organizationalClimateResults as $testName => $testData)
                         <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" />

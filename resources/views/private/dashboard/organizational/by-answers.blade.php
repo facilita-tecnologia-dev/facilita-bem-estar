@@ -12,6 +12,9 @@
                         Resultado detalhado das respostas de Clima Organizacional.
                     </p>
                 </div>
+                <div class="w-fit">
+                    <x-action href="{{ route('dashboard.organizational-climate.by-answers.report', ['test' => request()->test ?? null]) }}">Imprimir relatório</x-action>
+                </div>
             </div>
             
             <div class="w-full flex flex-col gap-10">

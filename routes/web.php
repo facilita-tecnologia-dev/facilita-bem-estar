@@ -63,7 +63,10 @@ Route::middleware(AuthMiddleware::class)->group(function () {
 
             Route::middleware('can-access-organizational')->group(function(){
                 Route::get('organizational', OrganizationalMainController::class)->name('dashboard.organizational-climate');
+                Route::post('organizational', [OrganizationalMainController::class, 'createPDFReport'])->name('dashboard.organizational-climate.report');
+                
                 Route::get('organizational/answers', OrganizationalAnswersController::class)->name('dashboard.organizational-climate.by-answers');
+                Route::get('organizational/answers/pdf', [OrganizationalAnswersController::class, 'createPDFReport'])->name('dashboard.organizational-climate.by-answers.report');
             
                 Route::get('feedbacks', [UserFeedbackController::class, 'index'])->name('feedbacks.index');
                 Route::get('feedbacks/{feedback}', [UserFeedbackController::class, 'show'])->name('feedbacks.show');

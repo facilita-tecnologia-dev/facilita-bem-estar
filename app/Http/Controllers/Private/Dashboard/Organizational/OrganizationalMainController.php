@@ -7,6 +7,7 @@ use App\Enums\AgeRangeEnum;
 use App\Models\User;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -76,6 +77,30 @@ class OrganizationalMainController
             'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
             'pendingTestUsers' => ! $filtersApplied ? $pendingTestUsers : null,
         ]);
+    }
+
+    public function createPDFReport(Request $request){
+        $charts = [];
+
+        foreach($request->all() as $chartName => $chartToBase64){
+            if(str_contains($chartName, '-to-base-64')){
+                $chartName = str_replace('_', ' ', str_replace('-to-base-64', '', $chartName));
+                $charts[$chartName] = $chartToBase64;
+            }
+        }
+
+        $company = session('company');
+
+        $companyLogo = $company->logo;
+        $companyName = $company->name;
+
+        $pdf = Pdf::loadView('pdf.organizational-climate-index', [
+            'companyLogo' => $companyLogo,
+            'companyName' => $companyName,
+            'charts' => $charts,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('graficos_clima_organizacional.pdf');
     }
 
     private function getCompiledPageData(array $filtersApplied)

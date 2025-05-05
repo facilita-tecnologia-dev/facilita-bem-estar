@@ -52,7 +52,7 @@ function renderOrganizationalCharts(){
 
 function renderGeneralOrganizationBars(){
     const chartId = 'test_indicators_chart';
-    const wrapper = document.getElementById('general-bars')
+    const wrapper = document.getElementById('Geral')
     const colors = generateHSLAColors(Object.keys(organizationalClimateResults).length)
     let data = [];
     let labels = [];

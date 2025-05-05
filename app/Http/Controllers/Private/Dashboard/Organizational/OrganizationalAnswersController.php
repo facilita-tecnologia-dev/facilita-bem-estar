@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Private\Dashboard\Organizational;
 use App\Models\User;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -28,6 +29,19 @@ class OrganizationalAnswersController
     {
         Gate::authorize('view-manager-screens');
 
+        $this->query($request);
+
+        $organizationalClimateResults = $this->getCompiledPageData();
+
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+
+        return view('private.dashboard.organizational.by-answers', compact(
+            'organizationalClimateResults',
+            'filtersApplied'
+        ));
+    }
+
+    private function query($request){
         // Catching users
         $query = session('company')->users()
             ->whereHas('latestOrganizationalClimateCollection', function ($query) {
@@ -49,16 +63,23 @@ class OrganizationalAnswersController
                     });
             })
         ->get();
+    }
 
+    public function createPDFReport(Request $request){
+        $company = session('company');
+        $this->query($request);
 
         $organizationalClimateResults = $this->getCompiledPageData();
+        $companyLogo = $company->logo;
+        $companyName = $company->name;
 
-        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+        $pdf = Pdf::loadView('pdf.organizational-climate-answers', [
+            'companyLogo' => $companyLogo,
+            'companyName' => $companyName,
+            'organizationalClimateResults' => $organizationalClimateResults
+        ])->setPaper('a4', 'landscape');
 
-        return view('private.dashboard.organizational.by-answers', compact(
-            'organizationalClimateResults',
-            'filtersApplied'
-        ));
+        return $pdf->stream('graficos_clima_organizacional.pdf');
     }
 
     private function getCompiledPageData()
