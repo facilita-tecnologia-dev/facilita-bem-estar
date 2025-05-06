@@ -33,11 +33,11 @@ class TestHandlerFactory
 
     public function getHandler(Test $testInfo)
     {
-        if (! $testInfo) {
+        if (! $testInfo['handler_type']) {
             return $this->app->make(DefaultTestHandler::class);
         }
 
-        return match ($testInfo->handler_type) {
+        return match ($testInfo['handler_type']) {
             // psychosocial-risks
             'work-context' => $this->app->make(WorkContextHandler::class),
             'management-style' => $this->app->make(ManagementStyleHandler::class),

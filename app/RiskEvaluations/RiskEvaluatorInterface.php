@@ -7,5 +7,8 @@ use Illuminate\Support\Collection;
 
 interface RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics);
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int;
 }

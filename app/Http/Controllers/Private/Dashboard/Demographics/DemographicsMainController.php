@@ -22,11 +22,7 @@ class DemographicsMainController
     {
         Gate::authorize('view-manager-screens');
 
-        $this->pageData = $this->pageQuery(
-            $request->name,
-            $request->department,
-            $request->occupation
-        );
+        $this->pageData = $this->pageQuery();
 
         $companyMetrics = $this->getCompanyMetrics();
         $demographics = $this->getCompanyDemographics();
@@ -85,8 +81,7 @@ class DemographicsMainController
                 $years <= 1 => '0-1 ano',
                 $years <= 4 => '2-4 anos',
                 $years <= 10 => '5-10 anos',
-                $years > 10 => 'Mais de 10 anos',
-                default => 'Outro'
+                default => 'Mais de 10 anos',
             };
         })->map(function ($group) {
             return [
@@ -102,8 +97,7 @@ class DemographicsMainController
                 $age <= 25 => '18-25 anos',
                 $age <= 35 => '26-35 anos',
                 $age <= 45 => '36-45 anos',
-                $age > 45 => 'Mais de 45 anos',
-                default => 'Outro'
+                default => 'Mais de 45 anos'
             };
         })->map(function ($group) {
             return [

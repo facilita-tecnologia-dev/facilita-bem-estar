@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,11 +16,6 @@ class UserTest extends Model
 
     protected $table = 'user_tests';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = ['user_collection_id', 'test_id', 'score', 'severity_title', 'severity_color'];
 
     // protected $with = ['testType', 'answers'];
@@ -47,9 +44,9 @@ class UserTest extends Model
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 
-    public function scopeWithTestType($query, $callback = null)
+    public function scopeWithTestType(Builder $query, Closure $callback) : Builder
     {
-        $query->with([
+        return $query->with([
             'testType' => function ($query) use ($callback) {
                 $query->select('id', 'key_name', 'display_name', 'handler_type');
 
@@ -60,9 +57,9 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswers($query)
+    public function scopeWithAnswers(Builder $query) : Builder
     {
-        $query->with([
+        return $query->with([
             'answers' => function ($q) {
                 $q->select('id', 'user_test_id', 'question_id', 'question_option_id')
                     ->withRelatedOptionValue();
@@ -70,9 +67,9 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswersSum($query)
+    public function scopeWithAnswersSum(Builder $query) : Builder
     {
-        $query->addSelect([
+        return $query->addSelect([
             'answers_sum' => DB::table('user_answers')
                 ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
                 ->selectRaw('SUM(question_options.value)')
@@ -80,18 +77,18 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswersCount($query)
+    public function scopeWithAnswersCount(Builder $query) : Builder
     {
-        $query->addSelect([
+        return $query->addSelect([
             'answers_count' => DB::table('user_answers')
                 ->selectRaw('COUNT(*)')
                 ->whereColumn('user_answers.user_test_id', 'user_tests.id'),
         ]);
     }
 
-    public function scopeJustOneTest($query, string $testName)
+    public function scopeJustOneTest(Builder $query, string $testName) : Builder
     {
-        $query->whereHas('testType', function ($subQuery) use ($testName) {
+        return $query->whereHas('testType', function ($subQuery) use ($testName) {
             $subQuery->where('display_name', $testName);
         });
     }

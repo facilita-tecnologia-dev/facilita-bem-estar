@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class DanosPsicologicos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -16,17 +19,17 @@ class DanosPsicologicos implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
+            $answer = $riskQuestion['related_question_answer'];
             if ($answer >= 4) {
                 $riskPoints++;
             }
         }
 
         $absenteeism = $metrics->filter(function ($companyMetric) {
-            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'absenteeism';
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'absenteeism';
         })->first();
 
-        if ($absenteeism && $absenteeism->value > 50) {
+        if ($absenteeism && $absenteeism['value'] > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }

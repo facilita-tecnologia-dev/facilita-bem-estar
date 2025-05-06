@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
@@ -26,9 +27,9 @@ class RiskQuestionMap extends Model
         return $this->belongsTo(Question::class, 'question_Id', 'id');
     }
 
-    public function scopeWithParentQuestionStatement($query)
+    public function scopeWithParentQuestionStatement(Builder $query) : Builder
     {
-        $query->addSelect([
+        return $query->addSelect([
             'parent_question_statement' => DB::table('questions')
                 ->whereColumn('questions.id', 'risk_question_map.question_Id')
                 ->select('questions.statement')
@@ -36,9 +37,9 @@ class RiskQuestionMap extends Model
         ]);
     }
 
-    public function scopeWithRelatedQuestionAnswer($query)
+    public function scopeWithRelatedQuestionAnswer(Builder $query) : Builder
     {
-        $query->addSelect([
+        return $query->addSelect([
             'related_question_answer' => DB::table('user_answers')
                 ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
                 ->whereColumn('user_answers.question_id', 'risk_question_map.question_id')

@@ -21,7 +21,7 @@ class GuestMiddleware
 
         if (Auth::check() && session('company')) {
             $userRole = $user->roles()->first();
-            if ($userRole && $userRole->id == 1) {
+            if ($userRole && $userRole['id'] == 1) {
                 if (session('company')->id !== 2) {
                     return to_route('dashboard.psychosocial');
                 }
@@ -29,7 +29,7 @@ class GuestMiddleware
                 return to_route('dashboard.organizational-climate');
             }
 
-            if ($userRole && $userRole->id == 2) {
+            if ($userRole && $userRole['id'] == 2) {
                 if (session('company')->id !== 2) {
                     return to_route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
                 }

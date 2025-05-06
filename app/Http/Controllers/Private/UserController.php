@@ -32,53 +32,21 @@ class UserController
         $this->userRepository = $userRepository;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         Gate::authorize('viewAny', Auth::user());
 
-        $query = Company::whereId(session('company')->id)->first()->users();
-        
-        $query = $query
-            ->when($request->filled('has_answered_psychosocial'), function($query) use($request) {
-                if($request->has_answered_psychosocial == 'Realizado'){
-                    $query->whereHas('latestPsychosocialCollection', function ($query) {
-                        $query->whereYear('created_at', Carbon::now()->year);
-                    });
-                } else{
-                    $query->whereDoesntHave('latestPsychosocialCollection', function ($query) {
-                        $query->whereYear('created_at', Carbon::now()->year);
-                    });
-                }
-            })
-            ->when($request->filled('has_answered_organizational'), function($query) use($request) {
-                if($request->has_answered_organizational == 'Realizado'){
-                    $query->whereHas('latestOrganizationalClimateCollection', function ($query) {
-                        $query->whereYear('created_at', Carbon::now()->year);
-                    });
-                } else{
-                    $query->whereDoesntHave('latestOrganizationalClimateCollection', function ($query) {
-                        $query->whereYear('created_at', Carbon::now()->year);
-                    });
-                }
-            })
-            ->hasAttribute('name', 'like', "%$request->name%")
-            ->hasAttribute('cpf', 'like', "%$request->cpf%")
-            ->hasAttribute('gender', '=', $request->gender)
-            ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation);
-
-        $filteredUserCount = $query->count();
-
-        $users = $query
+        $query = Company::whereId(session('company')->id)->first()->users()->getQuery();
+        $users = $this->filterService->sort($this->filterService->apply($query))
             ->with(['latestPsychosocialCollection', 'latestOrganizationalClimateCollection'])
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->get();
-            // ->paginate(20);
+            ->paginate(15)->appends(request()->query());
 
-        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+        $filteredUserCount = $users->total();
+
+        $filtersApplied = collect(request()->query())->except(['order_by', 'order_direction'])->filter(function($value, $key){
+            return $value !== null;
+        });
 
         return view('private.users.index', [
             'users' => $users,
@@ -87,9 +55,6 @@ class UserController
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         Gate::authorize('create', Auth::user());
@@ -102,9 +67,6 @@ class UserController
         return view('private.users.create', compact('rolesToSelect', 'gendersToSelect'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(UserStoreRequest $request)
     {
         Gate::authorize('create', Auth::user());
@@ -114,22 +76,16 @@ class UserController
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
         Gate::authorize('view', Auth::user());
 
-        $latestOrganizationalClimateCollectionDate = $user->latestOrganizationalClimateCollection?->created_at->diffForHumans() ?? 'Nunca';
-        $latestPsychosocialCollectionDate = $user->latestPsychosocialCollection?->created_at->diffForHumans() ?? 'Nunca';
+        $latestOrganizationalClimateCollectionDate = $user['latestOrganizationalClimateCollection']?->created_at->diffForHumans() ?? 'Nunca';
+        $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
 
         return view('private.users.show', compact('user', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(User $user)
     {
         Gate::authorize('update', Auth::user());
@@ -139,7 +95,7 @@ class UserController
             Role::whereIn('id', [1, 2])->get()->toArray()
         );
 
-        $roleId = $user->companies()->where('companies.id', session('company')->id)->first()->pivot->role_id;
+        $roleId = $user->companies()->where('companies.id', session('company')->id)->first()->pivot['role_id'];
         $roleDisplayName = Role::whereId($roleId)->first()->display_name;
 
         return view('private.users.update', compact(
@@ -150,9 +106,6 @@ class UserController
         ));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UserUpdateRequest $request, User $user)
     {
         Gate::authorize('update', Auth::user());
@@ -162,9 +115,6 @@ class UserController
         return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
         Gate::authorize('delete', Auth::user());
@@ -185,7 +135,7 @@ class UserController
     {
         Gate::authorize('create', Auth::user());
 
-        $this->userRepository->import($request, $company);
+        $this->userRepository->import($request);
 
         return back()->with('message', 'Usuários importados com sucesso');
     }

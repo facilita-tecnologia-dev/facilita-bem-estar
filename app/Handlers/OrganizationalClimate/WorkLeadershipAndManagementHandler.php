@@ -13,7 +13,7 @@ class WorkLeadershipAndManagementHandler
         $processedAnswers = [];
 
         foreach ($userTest->answers as $answer) {
-            $processedAnswers[$answer->question_id] = Helper::multiplyAnswer($answer->related_option_value);
+            $processedAnswers[$answer['question_id']] = Helper::multiplyAnswer($answer['related_option_value']);
         }
 
         return [

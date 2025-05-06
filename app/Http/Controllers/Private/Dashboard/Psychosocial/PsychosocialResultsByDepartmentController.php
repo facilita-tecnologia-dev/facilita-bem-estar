@@ -22,16 +22,24 @@ class PsychosocialResultsByDepartmentController
     {
         Gate::authorize('view-manager-screens');
 
-        // Catching users
-        $query = session('company')->users()
+        $this->pageData = $this->query($request, $testName);
+
+        $resultsPerDepartment = $this->getCompiledPageData();
+
+        return view('private.dashboard.psychosocial.by-department', compact(
+            'testName',
+            'resultsPerDepartment',
+        ));
+    }
+
+    private function query(Request $request, string $testName){
+        $query = session('company')->users()->getQuery();
+
+        return $query
             ->whereHas('latestPsychosocialCollection', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->getQuery();
-
-        // Catching user tests
-        $this->pageData = $query
             ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
                 $query->whereYear('created_at', $request->year ?? '2025')
                     ->withCollectionTypeName('psychosocial-risks')
@@ -49,13 +57,6 @@ class PsychosocialResultsByDepartmentController
                     });
             })
             ->get();
-
-        $resultsPerDepartment = $this->getCompiledPageData();
-
-        return view('private.dashboard.psychosocial.by-department', compact(
-            'testName',
-            'resultsPerDepartment',
-        ));
     }
 
     /**

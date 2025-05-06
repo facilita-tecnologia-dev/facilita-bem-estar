@@ -12,11 +12,6 @@ class Question extends Model
 
     protected $with = ['options'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = ['test_id', 'statement'];
 
     /**

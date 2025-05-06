@@ -42,7 +42,7 @@ class TestsController
             )
             ->first();
 
-        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
+        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get();
 
         return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
@@ -144,7 +144,7 @@ class TestsController
 
                     foreach ($testAnswers as $questionId => $answer) {
                         $question = $testType->questions->where('id', $questionId)->first();
-                        $option = $question->options->where('value', $answer)->first();
+                        $option = $question['options']->where('value', $answer)->first();
 
                         DB::table('user_answers')->insert([
                             'question_option_id' => $option->id,

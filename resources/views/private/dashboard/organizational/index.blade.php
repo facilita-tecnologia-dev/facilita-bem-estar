@@ -20,8 +20,6 @@
                         <x-filter-actions
                             :filtersApplied="$filtersApplied"
                             :modalFilters="[
-                                'name', 
-                                'cpf', 
                                 'gender', 
                                 'department', 
                                 'occupation', 
@@ -40,7 +38,7 @@
                             @foreach ($organizationalClimateResults as $testName => $testData)
                                 <input type="hidden" name="{{ $testName }}-to-base-64">
                             @endforeach
-                            <x-action tag="button">Imprimir relatório</x-action>
+                            <x-action tag="button" id="create-report-button">Imprimir relatório</x-action>
                         </x-form>
                     </div>
                 </div>

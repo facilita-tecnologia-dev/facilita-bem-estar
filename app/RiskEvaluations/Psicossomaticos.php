@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class Psicossomaticos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -15,8 +18,8 @@ class Psicossomaticos implements RiskEvaluatorInterface
             $riskPoints++;
         }
 
-        foreach ($risk->relatedQuestions as $risk) {
-            $answer = $answers[$risk->question_Id];
+        foreach ($risk->relatedQuestions as $riskQuestion) {
+            $answer = $riskQuestion['related_question_answer'];
 
             if ($answer >= 3) {
                 $riskPoints++;

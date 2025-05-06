@@ -13,7 +13,7 @@ class UsersImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        DB::transaction(function () use ($row) {
+        return DB::transaction(function () use ($row) {
             $birth_date = $this->convertDate($row['data_de_nascimento']);
             $admission = $this->convertDate($row['admissao']);
 
@@ -36,8 +36,11 @@ class UsersImport implements ToModel, WithHeadingRow
                     'company_id' => session('company')->id,
                     'role_id' => 2,
                 ]);
+
+                return $user;
             }
 
+            return null;
         });
     }
 

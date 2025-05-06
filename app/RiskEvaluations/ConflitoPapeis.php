@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class ConflitoPapeis implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -16,7 +19,7 @@ class ConflitoPapeis implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
+            $answer = $riskQuestion['related_question_answer'];
 
             if ($answer <= 4) {
                 $riskPoints++;

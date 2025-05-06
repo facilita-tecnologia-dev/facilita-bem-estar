@@ -2,9 +2,11 @@
 
 namespace App\Handlers;
 
+use App\Models\Test;
+
 class DefaultTestHandler implements TestHandlerInterface
 {
-    public function process(array $answers): array
+    public function process(Test $testInfo, array $answers, $questions): array
     {
         return [
             'answers' => $answers,

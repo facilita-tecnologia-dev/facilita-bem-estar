@@ -103,7 +103,7 @@ class OrganizationalAnswersController
 
     private function compileUserResults(User $user, Collection $metrics, &$testCompiled)
     {
-        foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
+        foreach ($user['latestOrganizationalClimateCollection']['tests'] as $userTest) {
             $testDisplayName = $userTest->testType->display_name;
 
             $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);

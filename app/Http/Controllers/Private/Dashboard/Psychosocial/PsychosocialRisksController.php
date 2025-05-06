@@ -93,7 +93,7 @@ class PsychosocialRisksController
 
     private function compileUserTests(User $user, Collection $metrics, array &$testCompiled)
     {
-        foreach ($user->latestPsychosocialCollection->tests as $userTest) {
+        foreach ($user['latestPsychosocialCollection']['tests'] as $userTest) {
             $testDisplayName = $userTest->testType->display_name;
 
             $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);

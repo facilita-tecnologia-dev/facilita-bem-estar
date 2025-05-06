@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Gate;
 
 class LoginRedirectService
 {
-    protected $elegibilityService;
+    protected UserElegibilityService $elegibilityService;
 
     public function __construct(UserElegibilityService $elegibilityService){
         $this->elegibilityService = $elegibilityService;

@@ -24,37 +24,28 @@ class UserFeedbackController
     {
         Gate::authorize('view-manager-screens');
 
-        // Catching users
-        $query = session('company')
-            ->users()
-            ->whereHas('feedbacks', function ($query) use ($request) {
-                $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
-            })
-            ->select('users.id', 'name', 'department', 'work_shift')
-            ->getQuery();
+        $userFeedbacks = $this->query($request);     
 
-        // Applying filters
-        $query = $query
-            ->hasAttribute('name', 'like', "%$request->name%")
-            ->hasAttribute('cpf', 'like', "%$request->cpf%")
-            ->hasAttribute('gender', '=', $request->gender)
-            ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation);
-
-        $query = $this->filterService->applyAgeRange($query, $request->age_range);
-        $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
-
-        $userFeedbacks = $query
-            ->with('feedbacks', fn($query) => $query->latest()->limit(1))
-            ->get();
-
+        $filteredUserCount = $userFeedbacks->total();
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.dashboard.feedbacks.index', [
             'userFeedbacks' => $userFeedbacks,
             'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($userFeedbacks) > 0 ? count($userFeedbacks) : null,
+            'filteredUserCount' => $filteredUserCount ? $filteredUserCount : null,
         ]);
+    }
+
+    private function query(Request $request){
+        $query = session('company')->users()->getQuery();
+
+        return $this->filterService->sort($this->filterService->apply($query))
+            ->whereHas('feedbacks', function ($query) use ($request) {
+                $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
+            })
+            ->select('users.id', 'name', 'department', 'work_shift')
+            ->with('feedbacks', fn($query) => $query->latest()->limit(1))
+            ->paginate(15)->appends(request()->query());
     }
 
     /**

@@ -39,8 +39,6 @@
                     <x-filter-actions
                         :filtersApplied="$filtersApplied"
                         :modalFilters="[
-                            'name', 
-                            'cpf', 
                             'gender', 
                             'department', 
                             'occupation', 

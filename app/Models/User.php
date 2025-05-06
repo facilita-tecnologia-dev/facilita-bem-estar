@@ -7,9 +7,12 @@ namespace App\Models;
 use App\Enums\AdmissionRangeEnum;
 use App\Enums\AgeRangeEnum;
 use Carbon\Carbon;
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -42,40 +45,40 @@ class User extends Authenticatable
         return $this->hasMany(UserCollection::class);
     }
 
-    public function latestPsychosocialCollection()
+    public function latestPsychosocialCollection() : HasOne
     {
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 1)
             ->latest();
     }
 
-    public function latestOrganizationalClimateCollection()
+    public function latestOrganizationalClimateCollection() : HasOne
     {
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 2)
             ->latest();
     }
 
-    public function scopeWithLatestOrganizationalClimateCollection($query, $callback)
+    public function scopeWithLatestOrganizationalClimateCollection(Builder $query, Closure $callback) : Builder
     {
-        $query->with([
+        return $query->with([
             'latestOrganizationalClimateCollection' => $callback,
         ]);
     }
 
-    public function scopeWithLatestPsychosocialCollection($query, $callback)
+    public function scopeWithLatestPsychosocialCollection(Builder $query, Closure $callback) : Builder
     {
-        $query->with([
+        return $query->with([
             'latestPsychosocialCollection' => $callback,
         ]);
     }
 
-    public function scopeHasAttribute($query, $attribute, $operator, $value)
-    {
-        $query->when($value, function ($query) use ($attribute, $operator, $value) {
-            $query->where($attribute, $operator, $value);
-        });
-    }
+    // public function scopeHasAttribute($query, $attribute, $operator, $value)
+    // {
+    //     $query->when($value, function ($query) use ($attribute, $operator, $value) {
+    //         $query->where($attribute, $operator, $value);
+    //     });
+    // }
 
     public function hasRole(string $role): bool
     {

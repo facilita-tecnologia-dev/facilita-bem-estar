@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,11 +12,6 @@ class Test extends Model
 {
     protected $table = 'tests';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = ['key_name', 'display_name', 'statement', 'reference', 'number_of_questions', 'handler_type', 'order'];
 
     // protected $with = ['questions', 'risks'];
@@ -40,14 +37,14 @@ class Test extends Model
         return $this->hasMany(Risk::class);
     }
 
-    // public function scopeWithQuestions($query)
+    // public function scopeWithQuestions(Builder $query)
     // {
     //     $query->with('questions:id,test_id,statement');
     // }
 
-    public function scopeWithRisks($query, $callback)
+    public function scopeWithRisks(Builder $query, Closure $callback) : Builder
     {
-        $query->with([
+        return $query->with([
             'risks' => $callback,
         ]);
     }

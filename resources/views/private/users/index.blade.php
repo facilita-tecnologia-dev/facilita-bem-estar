@@ -27,7 +27,20 @@
 
                         <x-filter-actions
                             :filtersApplied="$filtersApplied"
-                            :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'hasAnsweredPsychosocialCollection', 'hasAnsweredOrganizationalCollection']" 
+                            :modalFilters="[
+                                'name',
+                                'cpf',
+                                'gender', 
+                                'department', 
+                                'occupation', 
+                                'work_shift', 
+                                'marital_status', 
+                                'education_level', 
+                                'age_range', 
+                                'admission_range',
+                                'hasAnsweredPsychosocialCollection', 
+                                'hasAnsweredOrganizationalCollection'
+                            ]" 
                         />
                     </div>
 
@@ -59,12 +72,20 @@
 
             <x-table class="flex flex-col gap-1">
                 <x-table.head class="flex items-center gap-3">
-                    <x-table.head.th onclick="reorderTable(event, 0)" class="flex-1">Nome</x-table.head.th>
-                    <x-table.head.th onclick="reorderTable(event, 1)" class="hidden lg:block w-24">Idade</x-table.head.th>
-                    <x-table.head.th onclick="reorderTable(event, 2)" class="hidden md:block flex-1">Setor</x-table.head.th>
-                    <x-table.head.th onclick="reorderTable(event, 3)" class="hidden sm:block flex-1">Cargo</x-table.head.th>
-                    <x-table.head.th onclick="reorderTable(event, 4)" class="truncate text-center w-12"><i class="fa-solid fa-brain"></i></x-table.head.th>
-                    <x-table.head.th onclick="reorderTable(event, 5)" class="truncate text-center w-12"><i class="fa-solid fa-cloud"></i></x-table.head.th>
+                    <x-table.head.sortable-th class="flex-1" field="name">
+                        Nome
+                    </x-table.head.sortable-th>
+                    <x-table.head.sortable-th class="hidden lg:block w-24" field="age">
+                        Idade
+                    </x-table.head.sortable-th>
+                    <x-table.head.sortable-th class="hidden md:block flex-1" field="department">
+                        Setor
+                    </x-table.head.sortable-th>
+                    <x-table.head.sortable-th class="hidden sm:block flex-1" field="occupation">
+                        Função
+                    </x-table.head.sortable-th>
+                    <x-table.head.th class="truncate text-center w-12"><i class="fa-solid fa-brain"></i></x-table.head.th>
+                    <x-table.head.th class="truncate text-center w-12"><i class="fa-solid fa-cloud"></i></x-table.head.th>
                 </x-table.head>
                 <x-table.body>
                     @foreach ($users as $user)
@@ -92,7 +113,7 @@
                 </x-table.body>
             </x-table>
 
-            {{-- {{ $users->links() }} --}}
+            {{ $users->links() }}
         </div>
     </div>
 

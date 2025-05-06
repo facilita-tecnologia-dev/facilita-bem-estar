@@ -5,26 +5,26 @@ namespace App\Services;
 use App\Handlers\TestHandlerFactory;
 use App\Models\PendingTestAnswer;
 use App\Models\Test;
+use App\Models\UserTest;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class TestService
 {
-    protected $handlerFactory;
-
-    public $companyUsersCollections;
+    protected TestHandlerFactory $handlerFactory;
 
     public function __construct(TestHandlerFactory $handlerFactory)
     {
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function process(array $answers, Test $test)
+    public function process(array $answers, Test $test) : bool
     {
         $answersValues = array_map(function ($value) {
             return (int) $value;
         }, $answers);
 
-        $parentCollection = $test->parentCollection->key_name;
+        $parentCollection = $test->parentCollection['key_name'];
         session(["$parentCollection|$test->key_name|result" => $answersValues]);
 
         $pendingAnswers = [];
@@ -32,7 +32,7 @@ class TestService
 
         foreach ($answersValues as $questionId => $answer) {
             $question = $questions[$questionId];
-            $option = $question->options->firstWhere('value', $answer);
+            $option = $question['options']->firstWhere('value', $answer);
 
             if ($option) {
                 $pendingAnswers[] = [
@@ -55,7 +55,7 @@ class TestService
         return true;
     }
 
-    public function evaluateTest($userTest, $metrics)
+    public function evaluateTest(UserTest $userTest, Collection $metrics) : array
     {
         $handler = $this->handlerFactory->getHandler($userTest->testType);
         $evaluatedTest = $handler->process($userTest, $metrics);

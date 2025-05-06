@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class Monotonia implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -15,8 +18,8 @@ class Monotonia implements RiskEvaluatorInterface
             $riskPoints += 1.5;
         }
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
-            $parentQuestionStatement = $riskQuestion->parent_question_statement;
+            $answer = $riskQuestion['related_question_answer'];
+            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
 
             if ($parentQuestionStatement == 'As tarefas que executo em meu trabalho são variadas') {
                 if ($answer <= 2) {
@@ -26,10 +29,10 @@ class Monotonia implements RiskEvaluatorInterface
         }
 
         $turnover = $metrics->filter(function ($companyMetric) {
-            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'turnover';
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
         })->first();
 
-        if ($turnover && $turnover->value < 20) {
+        if ($turnover && $turnover['value'] < 20) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }

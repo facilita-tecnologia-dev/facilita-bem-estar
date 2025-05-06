@@ -10,11 +10,7 @@ class Option extends Model
 {
     protected $table = 'question_options';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
     protected $fillable = ['question_id', 'content', 'value'];
 
     /**

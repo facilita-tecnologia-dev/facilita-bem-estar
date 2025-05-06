@@ -4,10 +4,11 @@ namespace App\Handlers\WellBeing;
 
 use App\Enums\SeverityEnum;
 use App\Handlers\TestHandlerInterface;
+use App\Models\Test;
 
 class PressureAtWorkTestHandler implements TestHandlerInterface
 {
-    public function process(array $answers): array
+    public function process(Test $testInfo, array $answers, $questions): array
     {
         $totalPoints = array_sum($answers);
 

@@ -31,30 +31,30 @@ class OrganizationalMainController
     {
         Gate::authorize('view-manager-screens');
         
-        // Catching users
+        $this->pageData = $this->query($request);
+
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+
+        $organizationalClimateResults = $this->getCompiledPageData($filtersApplied);
+        $organizationalTestsParticipation = $this->getOrganizationalTestsParticipation();
+
+        return view('private.dashboard.organizational.index', [
+            'organizationalClimateResults' => $organizationalClimateResults,
+            'organizationalTestsParticipation' => $organizationalTestsParticipation,
+            'filtersApplied' => $filtersApplied,
+            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
+        ]);
+    }
+
+    private function query(Request $request){
         $query = session('company')->users()
+        ->getQuery();
+
+        return $this->filterService->apply($query)
             ->whereHas('latestOrganizationalClimateCollection', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-        ->getQuery();
-
-        // Applying filters
-        $query = $query
-            ->hasAttribute('name', 'like', "%$request->name%")
-            ->hasAttribute('cpf', 'like', "%$request->cpf%")
-            ->hasAttribute('gender', '=', $request->gender)
-            ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation)
-            ->hasAttribute('marital_status', '=', $request->marital_status)
-            ->hasAttribute('work_shift', '=', $request->work_shift)
-            ->hasAttribute('education_level', '=', $request->education_level);
-
-        $query = $this->filterService->applyAgeRange($query, $request->age_range);
-        $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
-
-        // Catching user tests
-        $this->pageData = $query
             ->withLatestOrganizationalClimateCollection(function ($query) use ($request) {
                 $query->whereYear('created_at', $request->year ?? '2025')
                     ->withCollectionTypeName('organizational-climate')
@@ -64,22 +64,7 @@ class OrganizationalMainController
                             ->withTestType();
                     });
             })
-        ->get();
-
-        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-
-        $organizationalClimateResults = $this->getCompiledPageData($filtersApplied);
-        $organizationalTestsParticipation = $this->getOrganizationalTestsParticipation();
-
-        $pendingTestUsers = session('company')->users->diff($this->pageData);
-        
-        return view('private.dashboard.organizational.index', [
-            'organizationalClimateResults' => $organizationalClimateResults,
-            'organizationalTestsParticipation' => $organizationalTestsParticipation,
-            'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
-            'pendingTestUsers' => ! $filtersApplied ? $pendingTestUsers : null,
-        ]);
+            ->get();
     }
 
     public function createPDFReport(Request $request){
@@ -135,7 +120,7 @@ class OrganizationalMainController
 
     private function compileUserTests(User $user, Collection $metrics, &$testCompiled, array $filtersApplied)
     {
-        foreach ($user->latestOrganizationalClimateCollection->tests as $userTest) {
+        foreach ($user['latestOrganizationalClimateCollection']['tests'] as $userTest) {
             $testDisplayName = $userTest->testType->display_name;
 
             $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);

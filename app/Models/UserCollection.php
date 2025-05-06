@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,17 +32,17 @@ class UserCollection extends Model
         return $this->hasMany(UserTest::class, 'user_collection_id');
     }
 
-    public function scopeWithCollectionTypeName($query, $collection)
+    public function scopeWithCollectionTypeName(Builder $query, string $collection) : Builder
     {
-        $query->addSelect(['collection_type_name' => Collection::select('key_name')
+        return $query->addSelect(['collection_type_name' => Collection::select('key_name')
             ->where('key_name', $collection)
             ->take(1),
         ]);
     }
 
-    public function scopeWithTests($query, $callback)
+    public function scopeWithTests(Builder $query, Closure $callback) : Builder
     {
-        $query->with([
+        return $query->with([
             'tests' => $callback,
         ]);
     }

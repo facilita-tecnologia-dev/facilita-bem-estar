@@ -30,7 +30,7 @@ class UserUpdateRequest extends FormRequest
         return [
             'name' => 'required|string|min:2|max:255',
             'cpf' => ['required', 'string', new validateCPF],
-            'birth_date' => ['required', 'date', Rule::date()->beforeOrEqual(today()->subYear(16)), Rule::date()->after(today()->subCenturies(1))],
+            'birth_date' => ['required', 'date', Rule::date()->beforeOrEqual(today()->subYears(16)), Rule::date()->after(today()->subCenturies(1))],
             'gender' => ['required', 'string', Rule::enum(GenderEnum::class)],
             'department' => 'required|string|max:255',
             'occupation' => 'required|string|max:255',

@@ -10,11 +10,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ValidatedInput;
+use Maatwebsite\Excel\Excel as ExcelReturn;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserRepository
 {
-    public function create(ValidatedInput $data)
+    public function create(ValidatedInput $data) : User
     {
         return DB::transaction(function () use ($data) {
             $userData = $data->except('role');
@@ -24,15 +25,17 @@ class UserRepository
             $user = User::create($userData);
 
             $user->companies()->sync([session('company')->id => ['role_id' => $userRole->id]]);
+
+            return $user;
         });
     }
 
-    public function import(Request $request, Company $company)
+    public function import(Request $request) : ExcelReturn
     {
-        return Excel::import(new UsersImport($company), $request->file('import_users')->store('temp'));
+        return Excel::import(new UsersImport(), $request->file('import_users')->store('temp'));
     }
 
-    public function update(ValidatedInput $data, User $user)
+    public function update(ValidatedInput $data, User $user) : User
     {
         return DB::transaction(function () use ($data, $user) {
             $userData = $data->except('role');
@@ -42,10 +45,12 @@ class UserRepository
             $user->update($userData);
 
             $user->companies()->sync([session('company')->id => ['role_id' => $userRole->id]]);
+
+            return $user;
         });
     }
 
-    public function delete(User $user)
+    public function delete(User $user) : mixed
     {
         return $user->delete();
     }

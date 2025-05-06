@@ -14,11 +14,11 @@ class UserElegibilityService
 
     public function hasAnsweredPsychosocialCollection(User $user): bool
     {
-        return $this->hasAnsweredThisYear($user->latestPsychosocialCollection?->created_at);
+        return $this->hasAnsweredThisYear($user['latestPsychosocialCollection']?->created_at);
     }
 
     public function hasAnsweredOrganizationalCollection(User $user): bool
     {
-        return $this->hasAnsweredThisYear($user->latestOrganizationalClimateCollection?->created_at);
+        return $this->hasAnsweredThisYear($user['latestOrganizationalClimateCollection']?->created_at);
     }
 }

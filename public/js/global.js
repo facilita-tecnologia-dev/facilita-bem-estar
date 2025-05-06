@@ -38,3 +38,24 @@ if(cpfInput){
         e.target.value = formatCPF(e.target.value);
     });
 }
+
+
+const triggerFilterModal = document.querySelector(
+    '[data-role="filter-modal-trigger"]'
+);
+
+const filterModal = document.querySelector('[data-role="filter-modal"]');
+
+if(filterModal){
+    body.addEventListener("click", function (event) {
+        if (event.target === filterModal) {
+            filterModal.classList.replace("flex", "hidden");
+        }
+    });
+}
+
+if(triggerFilterModal && filterModal){
+    triggerFilterModal.addEventListener("click", function () {
+        filterModal.classList.replace("hidden", "flex");
+    });
+}

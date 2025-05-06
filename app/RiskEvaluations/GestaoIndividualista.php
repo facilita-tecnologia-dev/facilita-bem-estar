@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class GestaoIndividualista implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -16,8 +19,8 @@ class GestaoIndividualista implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
-            $parentQuestionStatement = $riskQuestion->parent_question_statement;
+            $answer = $riskQuestion['related_question_answer'];
+            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
 
             if ($parentQuestionStatement == 'Aqui os gestores preferem trabalhar individualmente') {
                 if ($answer >= 4) {
@@ -33,10 +36,10 @@ class GestaoIndividualista implements RiskEvaluatorInterface
         }
 
         $extraHours = $metrics->filter(function ($companyMetric) {
-            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'extra-hours';
         })->first();
 
-        if ($extraHours && $extraHours->value > 50) {
+        if ($extraHours && $extraHours['value'] > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }

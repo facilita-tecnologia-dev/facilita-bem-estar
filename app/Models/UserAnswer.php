@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,11 +15,6 @@ class UserAnswer extends Model
 
     // protected $with = ['relatedOption'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = ['user_test_id', 'question_id', 'question_option_id'];
 
     /**
@@ -45,9 +41,9 @@ class UserAnswer extends Model
         return $this->belongsTo(Option::class, 'question_option_id');
     }
 
-    public function scopeWithRelatedOptionValue($query)
+    public function scopeWithRelatedOptionValue(Builder $query) : Builder
     {
-        $query->addSelect(['related_option_value' => Option::select('value')
+        return $query->addSelect(['related_option_value' => Option::select('value')
             ->whereColumn('id', 'user_answers.question_option_id')
             ->take(1),
         ]);

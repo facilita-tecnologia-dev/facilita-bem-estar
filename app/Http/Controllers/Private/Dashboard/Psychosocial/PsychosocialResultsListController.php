@@ -27,28 +27,30 @@ class PsychosocialResultsListController
     public function __invoke(Request $request, string $testName)
     {
         Gate::authorize('view-manager-screens');
+        
+        $this->pageData = $this->query($request, $testName);
+        $usersList = $this->getCompiledPageData();
 
-        // Catching users
+        $filteredUserCount = $this->pageData->total();
+        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
+
+        return view('private.dashboard.psychosocial.list', [
+            'testName' => $testName,
+            'usersList' => $usersList,
+            'pageData' => $this->pageData,
+            'filtersApplied' => $filtersApplied,
+            'filteredUserCount' => $filteredUserCount ? $filteredUserCount : null,
+        ]);
+    }
+
+    private function query(Request $request, string $testName){
         $query = session('company')->users()
+            ->getQuery();
+
+        return $this->filterService->sort($this->filterService->apply($query))
             ->whereHas('latestPsychosocialCollection', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })
-            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->getQuery();
-
-        // Applying filters
-        $query = $query
-            ->hasAttribute('name', 'like', "%$request->name%")
-            ->hasAttribute('cpf', 'like', "%$request->cpf%")
-            ->hasAttribute('gender', '=', $request->gender)
-            ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation);
-
-        $query = $this->filterService->applyAgeRange($query, $request->age_range);
-        $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
-
-        // Catching user tests
-        $this->pageData = $query
             ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
                 $query->whereYear('created_at', $request->year ?? '2025')
                     ->withCollectionTypeName('psychosocial-risks')
@@ -65,18 +67,7 @@ class PsychosocialResultsListController
                             });
                     });
             })
-            ->get();
-
-        $usersList = $this->getCompiledPageData();
-
-        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-
-        return view('private.dashboard.psychosocial.list', [
-            'testName' => $testName,
-            'usersList' => $usersList,
-            'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
-        ]);
+            ->paginate(15)->appends(request()->query());
     }
 
     /**
@@ -96,8 +87,6 @@ class PsychosocialResultsListController
 
             $this->compileTestResults($user, $evaluatedTest, $testCompiled);
         }
-
-        ksort($testCompiled);
 
         return $testCompiled;
     }

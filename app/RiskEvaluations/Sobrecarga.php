@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class Sobrecarga implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -16,7 +19,7 @@ class Sobrecarga implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
+            $answer = $riskQuestion['related_question_answer'];
 
             if ($answer <= 2) {
                 $riskPoints++;
@@ -24,10 +27,10 @@ class Sobrecarga implements RiskEvaluatorInterface
         }
 
         $extraHours = $metrics->filter(function ($companyMetric) {
-            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'extra-hours';
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'extra-hours';
         })->first();
 
-        if ($extraHours && $extraHours->value > 50) {
+        if ($extraHours && $extraHours['value'] > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }

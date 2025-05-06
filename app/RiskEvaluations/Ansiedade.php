@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class Ansiedade implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -16,7 +19,7 @@ class Ansiedade implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
+            $answer = $riskQuestion['related_question_answer'];
 
             if ($answer >= 4) {
                 $riskPoints++;
@@ -24,10 +27,10 @@ class Ansiedade implements RiskEvaluatorInterface
         }
 
         $turnover = $metrics->filter(function ($companyMetric) {
-            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'turnover';
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
         })->first();
 
-        if ($turnover && $turnover->value > 50) {
+        if ($turnover && $turnover['value'] > 50) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }

@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 
 class Afastamentos implements RiskEvaluatorInterface
 {
-    public function evaluateRisk(Risk $risk, $average, Collection $metrics)
+    /**
+     * @param Collection<int, \App\Models\Metric> $metrics
+     */
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
     {
         $riskPoints = 0;
 
@@ -16,7 +19,7 @@ class Afastamentos implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion->related_question_answer;
+            $answer = $riskQuestion['related_question_answer'];
 
             if ($answer >= 3) {
                 $riskPoints++;
@@ -24,10 +27,10 @@ class Afastamentos implements RiskEvaluatorInterface
         }
 
         $absences = $metrics->filter(function ($companyMetric) {
-            return $companyMetric->metricType && $companyMetric->metricType->key_name === 'absences';
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'absences';
         })->first();
 
-        if ($absences && $absences->value > 75) {
+        if ($absences && $absences['value'] > 75) {
             if ($riskPoints <= 2) {
                 $riskPoints++;
             }

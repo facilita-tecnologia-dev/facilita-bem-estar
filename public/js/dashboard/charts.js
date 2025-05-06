@@ -64,7 +64,6 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
             legend: {
                 display: false
             },
-            // responsive: true,
             responsive: false,
             indexAxis: orientation == 'horizontal' ? 'y' : 'x',
             maintainAspectRatio: false,
@@ -118,7 +117,7 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                     max: 100,
                     ticks: {
                         font: {
-                            size: 14
+                            size: 13
                         },
                         callback: function(value, index, ticks) {
                             const label = this.getLabelForValue(value);

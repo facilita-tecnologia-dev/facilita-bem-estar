@@ -18,15 +18,15 @@ class FiltersComposer
         $occupationsToFilter = array_keys($companyUsers->groupBy('occupation')->toArray());
         $workShiftsToFilter = array_filter(
             array_keys($companyUsers->groupBy('work_shift')->toArray()),
-            fn($q) => $q !== '' && $q !== null
+            fn($q) => $q !== ''
         );
         $maritalStatusToFilter = array_filter(
             array_keys($companyUsers->groupBy('marital_status')->toArray()),
-            fn($q) => $q !== '' && $q !== null
+            fn($q) => $q !== ''
         );
         $educationLevelsToFilter = array_filter(
             array_keys($companyUsers->groupBy('education_level')->toArray()),
-            fn($q) => $q !== '' && $q !== null
+            fn($q) => $q !== ''
         );
 
         $ageRangesToFilter = collect(AgeRangeEnum::cases())->map(fn ($i) => [
@@ -59,7 +59,7 @@ class FiltersComposer
             'educationLevelsToFilter' => count($educationLevelsToFilter) ? $educationLevelsToFilter : null,
             'ageRangesToFilter' => count($ageRangesToFilter) ? $ageRangesToFilter : null,
             'admissionRangesToFilter' => count($admissionRangesToFilter) ? $admissionRangesToFilter : null,
-            'yearsTofilter' => count($yearsTofilter) ? $yearsTofilter : null,
+            'yearsTofilter' => $yearsTofilter,
             'hasAnsweredPsychosocial' => $hasAnsweredPsychosocial,
             'hasAnsweredOrganizational' => $hasAnsweredOrganizational,
         ]);
