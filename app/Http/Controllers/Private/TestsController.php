@@ -44,7 +44,6 @@ class TestsController
 
         $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get() ?? [];
 
-        //  dd(session()->all());
         return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
 

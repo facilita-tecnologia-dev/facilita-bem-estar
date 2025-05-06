@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Indicadores" />
+            <x-structure.page-title title="Dados de Desempenho Organizacional" />
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -13,6 +13,13 @@
                     </p>
                 </div>
             @endif
+
+            <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
+                <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
+                    <i class="fa-solid fa-circle-info text-lg"></i>
+                    Média dos últimos 12 meses (%)
+                </p>
+            </div>
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <x-form action="{{ route('company-metrics') }}" id="form-update-company-profile" post class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">

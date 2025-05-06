@@ -117,6 +117,9 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                     min: 0,
                     max: 100,
                     ticks: {
+                        font: {
+                            size: 14
+                        },
                         callback: function(value, index, ticks) {
                             const label = this.getLabelForValue(value);
                             const maxLineLength = 15; // caracteres por linha (ajuste conforme necessário)
