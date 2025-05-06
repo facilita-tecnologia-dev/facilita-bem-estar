@@ -23,7 +23,7 @@
                 </div>
 
                 <a 
-                    href="{{ responder-teste', $collections->where('key_name', 'psychosocial-risks')->first()) }}"
+                    href="{{ route('responder-teste', $collections->where('key_name', 'psychosocial-risks')->first()) }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 
@@ -37,7 +37,7 @@
                 </a>
 
                 <a 
-                    href="{{ responder-teste', $collections->where('key_name', 'organizational-climate')->first()) }}"
+                    href="{{ route('responder-teste', $collections->where('key_name', 'organizational-climate')->first()) }}"
                     style="
                         background: linear-gradient(0deg , #ffffff25 0%, #ffffff25 100%);
                     " 

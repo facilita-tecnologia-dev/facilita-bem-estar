@@ -75,7 +75,7 @@
                             Riscos Psicossociais
                         </div>
                     @else
-                        <a href="{{ responder-teste', App\Models\Collection::where('key_name', 'psychosocial-risks')->first()) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                        <a href="{{ route('responder-teste', App\Models\Collection::where('key_name', 'psychosocial-risks')->first()) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
                             <div class="w-5 flex justify-center items-center">
                                 <i class="fa-solid fa-question"></i>
                             </div>
