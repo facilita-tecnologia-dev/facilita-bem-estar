@@ -35,7 +35,7 @@
                         />
                     </div>
                     <div class="w-fit">
-                        <x-form action="{{ route('dashboard.organizational-climate.report') }}" post>
+                        <x-form action="{!! route('dashboard.organizational-climate.report', request()->query()) !!}" post>
                             <input type="hidden" name="Geral-to-base-64">
                             @foreach ($organizationalClimateResults as $testName => $testData)
                                 <input type="hidden" name="{{ $testName }}-to-base-64">

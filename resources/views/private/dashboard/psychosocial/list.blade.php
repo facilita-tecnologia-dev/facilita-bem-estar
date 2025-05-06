@@ -43,7 +43,7 @@
 
             <x-table>
                 <x-table.head class="flex items-center gap-3">
-                    <x-table.head.th onclick="reorderTable(event, 0)" class="flex-1">Nome</x-table.head.th>
+                    {{-- <x-table.head.th onclick="reorderTable(event, 0)" class="flex-1">Nome</x-table.head.th> --}}
                     <x-table.head.th onclick="reorderTable(event, 1)" class="hidden lg:block flex-1">Setor</x-table.head.th>
                     <x-table.head.th onclick="reorderTable(event, 2)" class="hidden sm:block flex-1">Cargo</x-table.head.th>
                     <x-table.head.th onclick="reorderTable(event, 3)" class="w-40">Severidade</x-table.head.th>
@@ -58,7 +58,7 @@
                                 {{ $user['severity']['severity_color'] == App\Enums\SeverityEnum::BAIXO->value ? 'to-[#8cf8c050]' : '' }}
                                 {{ $user['severity']['severity_color'] == App\Enums\SeverityEnum::MINIMO->value ? 'to-[#76fc7150]' : '' }}
                             ">
-                            <x-table.body.td class="truncate flex-1" title="{{ $user['user']->name }}">{{ $user['user']->name }}</x-table.body.td>
+                            {{-- <x-table.body.td class="truncate flex-1" title="{{ $user['user']->name }}">{{ $user['user']->name }}</x-table.body.td> --}}
                             <x-table.body.td class="hidden lg:block flex-1" title="{{ $user['user']->department ?? '(Vazio)'}}">{{ $user['user']->department ?? '(Vazio)'}}</x-table.body.td>
                             <x-table.body.td class="hidden sm:block flex-1" title="{{ $user['user']->occupation ?? '(Vazio)'}}">{{ $user['user']->occupation ?? '(Vazio)'}}</x-table.body.td>
                             <x-table.body.td class="truncate w-40" data-value="{{ $user['severity']['severity_key'] }}">{{ $user['severity']['severity_title'] }}</x-table.body.td>

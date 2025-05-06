@@ -42,7 +42,10 @@ class PsychosocialMainController
             ->hasAttribute('cpf', 'like', "%$request->cpf%")
             ->hasAttribute('gender', '=', $request->gender)
             ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation);
+            ->hasAttribute('occupation', '=', $request->occupation)
+            ->hasAttribute('marital_status', '=', $request->marital_status)
+            ->hasAttribute('work_shift', '=', $request->work_shift)
+            ->hasAttribute('education_level', '=', $request->education_level);
 
         $query = $this->filterService->applyAgeRange($query, $request->age_range);
         $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);

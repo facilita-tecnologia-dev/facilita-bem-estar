@@ -33,13 +33,6 @@
                     </a>
                 @endcan
 
-                <a href="{{ route('dashboard.demographics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ request()->routeIs('dashboard.demographics') ? 'bg-gray-200' : ''}}">
-                    <div class="w-5 flex justify-center items-center">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-                    Demografia
-                </a>
-
                 @can('access-organizational', Auth::user())
                     <a href="{{ route('feedbacks.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ request()->routeIs('feedbacks.index') ? 'bg-gray-200' : ''}}">
                         <div class="w-5 flex justify-center items-center">
@@ -49,6 +42,24 @@
                     </a>
                 @endcan
 
+                @can('access-psychosocial', Auth::user())
+                    @can('update-metrics')
+                        <a href="{{ route('company-metrics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ request()->routeIs('company-metrics') ? 'bg-gray-200' : ''}}">
+                            <div class="w-5 flex justify-center items-center">
+                                <i class="fa-solid fa-percent"></i>
+                            </div>
+                            Dados de Desempenho Organizacional
+                        </a>
+                    @endcan
+                @endcan
+
+                
+                <a href="{{ route('dashboard.demographics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ request()->routeIs('dashboard.demographics') ? 'bg-gray-200' : ''}}">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    Demografia
+                </a>
             </div>
         @endcan
             
@@ -113,17 +124,6 @@
                         </div>
                         Colaboradores
                     </a>
-                @endcan
-
-                @can('access-psychosocial', Auth::user())
-                    @can('update-metrics')
-                        <a href="{{ route('company-metrics') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ request()->routeIs('company-metrics') ? 'bg-gray-200' : ''}}">
-                            <div class="w-5 flex justify-center items-center">
-                                <i class="fa-solid fa-percent"></i>
-                            </div>
-                            Indicadores
-                        </a>
-                    @endcan
                 @endcan
             </div>
         @endcan

@@ -21,7 +21,7 @@ class OrganizationalMainController
 
     protected $pageData;
 
-    public function __construct(TestService $testService, UserFilterService $filterService)
+    public function __construct(TestService $testService, UserFilterService $filterService,)
     {
         $this->testService = $testService;
         $this->filterService = $filterService;
@@ -45,7 +45,10 @@ class OrganizationalMainController
             ->hasAttribute('cpf', 'like', "%$request->cpf%")
             ->hasAttribute('gender', '=', $request->gender)
             ->hasAttribute('department', '=', $request->department)
-            ->hasAttribute('occupation', '=', $request->occupation);
+            ->hasAttribute('occupation', '=', $request->occupation)
+            ->hasAttribute('marital_status', '=', $request->marital_status)
+            ->hasAttribute('work_shift', '=', $request->work_shift)
+            ->hasAttribute('education_level', '=', $request->education_level);
 
         $query = $this->filterService->applyAgeRange($query, $request->age_range);
         $query = $this->filterService->applyAdmissionRange($query, $request->admission_range);
@@ -80,8 +83,14 @@ class OrganizationalMainController
     }
 
     public function createPDFReport(Request $request){
-        $charts = [];
+        $filtersApplied = [];
 
+        foreach($request->query() as $filterKeyName => $filter){
+            $filtersApplied[$this->filterService->getFilterDisplayName($filterKeyName)] = $filter;
+        }
+
+        $charts = [];
+        
         foreach($request->all() as $chartName => $chartToBase64){
             if(str_contains($chartName, '-to-base-64')){
                 $chartName = str_replace('_', ' ', str_replace('-to-base-64', '', $chartName));
@@ -98,7 +107,8 @@ class OrganizationalMainController
             'companyLogo' => $companyLogo,
             'companyName' => $companyName,
             'charts' => $charts,
-        ])->setPaper('a4', 'portrait');
+            'filtersApplied' => $filtersApplied,
+        ])->setPaper('a4', 'landscape');
 
         return $pdf->stream('graficos_clima_organizacional.pdf');
     }

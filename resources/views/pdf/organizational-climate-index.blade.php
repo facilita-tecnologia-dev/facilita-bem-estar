@@ -80,6 +80,18 @@
             @endif
             <h1 style="margin-bottom: 8px; font-size: 32px;">Clima Organizacional</h1>
             <p>Resultados dos testes de Clima Organizacional compilados em gráficos.</p>
+            <h3 style="
+                margin-top: 40px;
+            ">
+                Este relatório contém os seguintes filtros:
+            </h3>
+            @foreach ($filtersApplied as $filterName => $filter)
+                <p style="
+                    margin-top: 8px;
+                ">
+                    {{ $filterName }}: {{ $filter }}
+                </p>
+            @endforeach
         </div>
 
         <div style="
@@ -98,7 +110,7 @@
     <div class="page-break"></div>
 
     @php
-        $chunks = array_chunk($charts, 4, true); // Divide os gráficos em grupos de 3
+        $chunks = array_chunk($charts, 2, true); // Divide os gráficos em grupos de 3
     @endphp
 
     @foreach ($chunks as $chunk)
@@ -116,10 +128,10 @@
                 padding-top: 60px;
             ">
                 @foreach ($chunk as $chartName => $chart)
-                    <div style="margin-bottom: 40px;">
+                    <div style="margin-bottom: 60px;">
                         <h2 style="margin-bottom: 8px">{{ $chartName }}</h2>
                         <p style="margin-bottom: 8px; font-size: 12px;">Índice de satisfação (%)</p>
-                        <img src="{{ $chart }}" style="width:90%">
+                        <img src="{{ $chart }}" style="width:100%">
                     </div>
                 @endforeach
             </div>

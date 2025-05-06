@@ -8,7 +8,7 @@
             @if($demographics)
                 <div class="w-full grid grid-cols-1 gap-4 items-start">
                     @can('access-psychosocial', Auth::user())
-                        <x-charts.bar-vertical id="company-metrics" title="Indicadores da empresa (%)" />
+                        <x-charts.bar-vertical id="company-metrics" title="Dados de Desempenho Organizacional (%)" />
                     @endcan
 
                     @foreach ($demographics as $demographicName => $demographic)

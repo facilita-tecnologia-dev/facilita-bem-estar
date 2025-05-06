@@ -9,6 +9,23 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UserFilterService
 {
+    public function getFilterDisplayName(string $filterKeyName): string
+    {
+        return match($filterKeyName){
+            'name' => 'Nome',
+            'cpf' => 'CPF',
+            'gender' => 'Gênero',
+            'department' => 'Setor',
+            'occupation' => 'Função',
+            'work_shift' => 'Turno',
+            'marital_status' => 'Estado Civil',
+            'education_level' => 'Grau de Instrução',
+            'age_range' => 'Faixa Etária',
+            'admission_range' => 'Tempo de Empresa',
+            'year' => 'Ano de realização dos testes'
+        };
+    }
+
     public function applyAgeRange(Builder $query, ?string $range): Builder
     {
         if (! $range) {
