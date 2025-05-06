@@ -98,6 +98,7 @@ class OrganizationalMainController
             }
         }
 
+ 
         $company = session('company');
 
         $companyLogo = $company->logo;

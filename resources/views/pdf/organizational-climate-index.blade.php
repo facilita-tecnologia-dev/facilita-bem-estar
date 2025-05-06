@@ -80,18 +80,20 @@
             @endif
             <h1 style="margin-bottom: 8px; font-size: 32px;">Clima Organizacional</h1>
             <p>Resultados dos testes de Clima Organizacional compilados em gráficos.</p>
-            <h3 style="
-                margin-top: 40px;
-            ">
-                Este relatório contém os seguintes filtros:
-            </h3>
-            @foreach ($filtersApplied as $filterName => $filter)
-                <p style="
-                    margin-top: 8px;
+            @if(count($filtersApplied) > 0)
+                <h3 style="
+                    margin-top: 40px;
                 ">
-                    {{ $filterName }}: {{ $filter }}
-                </p>
-            @endforeach
+                    Este relatório contém os seguintes filtros:
+                </h3>
+                @foreach ($filtersApplied as $filterName => $filter)
+                    <p style="
+                        margin-top: 8px;
+                    ">
+                        {{ $filterName }}: {{ $filter }}
+                    </p>
+                @endforeach
+            @endif
         </div>
 
         <div style="
