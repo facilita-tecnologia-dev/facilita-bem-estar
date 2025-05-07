@@ -15,8 +15,8 @@
             @endif
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
-                <x-form action="{{ route('user.import', session('company')) }}" id="form-import-users" post enctype="multipart/form-data">
-                    <x-form.input-file name="import_users" accept=".xlsx" label="Escolha um arquivo Excel (.xls) com as informações dos funcionários"/>
+                <x-form action="{{ route('user.import') }}" id="form-import-users" post enctype="multipart/form-data">
+                    <x-form.input-file name="import_users" accept=".xlsx" label="Escolha um arquivo Excel (.xlsx) com as informações dos funcionários"/>
                 </x-form>                
 
                 <x-action tag="button" type="submit" form="form-import-users" variant="secondary">Importar arquivo</x-action>

@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>    
-            <x-structure.page-title :title="$user->name" :back="url()->previous()" />
+            <x-structure.page-title :title="$user->name" :back="route('user.index')" />
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <div class="w-full grid gri-cols-1 md:grid-cols-2 gap-4">

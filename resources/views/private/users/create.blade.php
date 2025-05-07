@@ -13,7 +13,7 @@
                     
                     <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" label="Data de nascimento"/>
 
-                    <x-form.select name="gender" label="Sexo" :options="$gendersToSelect" />
+                    <x-form.select name="gender" label="Sexo" :options="$gendersToSelect" defaultValue/>
                     
                     <x-form.input-text name="department" label="Setor" placeholder="Digite o departamento do usuário"/>
                     

@@ -33,11 +33,8 @@ class OrganizationalAnswersController
 
         $organizationalClimateResults = $this->getCompiledPageData();
 
-        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-
         return view('private.dashboard.organizational.by-answers', compact(
             'organizationalClimateResults',
-            'filtersApplied'
         ));
     }
 

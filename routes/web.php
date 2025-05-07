@@ -50,7 +50,7 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/comentario', [UserFeedbackController::class, 'create'])->name('feedbacks.create');
     Route::post('/comentario', [UserFeedbackController::class, 'store']);
     
-    Route::view('/obrigado', 'private.tests.thanks')->name('test.thanks');
+    Route::view('/obrigado', 'private.tests.thanks')->name('responder-teste.thanks');
 
     Route::middleware('is-internal-manager')->group(function(){
         Route::resource('company', CompanyController::class);

@@ -44,7 +44,7 @@ class UserTest extends Model
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 
-    public function scopeWithTestType(Builder $query, Closure $callback) : Builder
+    public function scopeWithTestType(Builder $query, ?Closure $callback = null) : Builder
     {
         return $query->with([
             'testType' => function ($query) use ($callback) {

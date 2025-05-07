@@ -28,7 +28,7 @@ class UserStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:2|max:255',
+            'name' => 'required|string|min:5|max:255',
             'cpf' => ['required', 'unique:users', 'string', new validateCPF],
             'birth_date' => ['required', 'date', Rule::date()->beforeOrEqual(today()->subYears(16)), Rule::date()->after(today()->subCenturies(1))],
             'gender' => ['required', 'string', Rule::enum(GenderEnum::class)],

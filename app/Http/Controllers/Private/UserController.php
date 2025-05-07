@@ -131,9 +131,13 @@ class UserController
         return view('private.users.import');
     }
 
-    public function import(Request $request, Company $company)
+    public function import(Request $request)
     {
         Gate::authorize('create', Auth::user());
+
+        $request->validate([
+            'import_users' => 'required|file|mimes:xlsx|max:1024',
+        ]);
 
         $this->userRepository->import($request);
 
