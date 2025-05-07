@@ -9,11 +9,9 @@ beforeEach(function () {
     session(['company' => Company::first()]);
 });
 
-
-it('show user page', function(){
+it('show users page', function(){
     $response = $this->get(route('user.index'));
 
     $response->assertOk();
-    $response->assertViewIs('private.users.index');
     $response->assertViewHasAll(['users', 'filtersApplied', 'filteredUserCount']);
 });

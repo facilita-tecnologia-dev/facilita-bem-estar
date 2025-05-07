@@ -17,7 +17,7 @@ class CompanyMetricsController
     {
         Gate::authorize('update-metrics');
 
-        $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get()->groupBy('metricType.key_name')->toArray();
+        $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get()->keyBy('metricType.key_name');
 
         return view('private.company.company-metrics', compact('metrics'));
     }
@@ -25,7 +25,7 @@ class CompanyMetricsController
     public function storeMetrics(Request $request)
     {
         Gate::authorize('update-metrics');
-
+        
         $validatedData = $request->validate([
             'turnover' => 'nullable|between:0,100',
             'absenteeism' => 'nullable|between:0,100',

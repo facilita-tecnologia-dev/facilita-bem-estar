@@ -27,11 +27,15 @@ it('name should be required', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
-    
+
     $response->assertSessionHasErrors(['name' => __('validation.required', ['attribute' => 'name'])]);
+    
 });
 
 it('name should have a minimum of 5 characters', function(){
@@ -42,11 +46,15 @@ it('name should have a minimum of 5 characters', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['name' => __('validation.min.string', ['attribute' => 'name', 'min' => 5])]);
+    
 });
 
 it('name should have a maximum of 255 characters', function(){
@@ -57,11 +65,15 @@ it('name should have a maximum of 255 characters', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['name' => __('validation.max.string', ['attribute' => 'name', 'max' => 255])]);
+    
 });
 /* --------------------------------------------- */
 it('cpf should be required', function(){
@@ -72,11 +84,15 @@ it('cpf should be required', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['cpf' => __('validation.required', ['attribute' => 'cpf'])]);
+    
 });
 
 it('cpf should be unique on users table', function(){
@@ -87,11 +103,15 @@ it('cpf should be unique on users table', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['cpf' => __('validation.unique', ['attribute' => 'cpf', 'unique' => 'users'])]);
+    
 });
 
 it('cpf should be a valid formatted CPF', function(){
@@ -102,11 +122,15 @@ it('cpf should be a valid formatted CPF', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['cpf' => "O CPF deve estar no formato 000.000.000-00."]);
+    
 });
 
 it('cpf should be a valid CPF', function(){
@@ -117,11 +141,15 @@ it('cpf should be a valid CPF', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['cpf' => "O CPF informado é inválido."]);
+    
 });
 /* --------------------------------------------- */
 it('birth date should be required', function(){
@@ -132,11 +160,15 @@ it('birth date should be required', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['birth_date' => __('validation.required', ['attribute' => 'birth date'])]);
+    
 });
 
 it('birth date should be before or equal 16 years ago', function(){
@@ -147,11 +179,15 @@ it('birth date should be before or equal 16 years ago', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['birth_date' => __('validation.before_or_equal', ['attribute' => 'birth date', 'date' => now()->subYears(16)->format('Y-m-d')])]);
+    
 });
 
 it('birth date should be after 100 years ago', function(){
@@ -162,11 +198,15 @@ it('birth date should be after 100 years ago', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2025-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['birth_date' => __('validation.after', ['attribute' => 'birth date', 'date' => now()->subCenturies(1)->format('Y-m-d')])]);
+    
 });
 /* --------------------------------------------- */
 it('admission should be required', function(){
@@ -177,11 +217,15 @@ it('admission should be required', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['admission' => __('validation.required', ['attribute' => 'admission'])]);
+    
 });
 
 it('admission should be before or equal today', function(){
@@ -192,11 +236,15 @@ it('admission should be before or equal today', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2029-04-23',
         'role' => 'Gestor Interno'
     ]);
     
     $response->assertSessionHasErrors(['admission' => __('validation.before_or_equal', ['attribute' => 'admission', 'date' => today()->format('Y-m-d')])]);
+    
 });
 
 it('admission should be after 100 years ago', function(){
@@ -207,11 +255,15 @@ it('admission should be after 100 years ago', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '1905-04-29',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['admission' => __('validation.after', ['attribute' => 'admission', 'date' => now()->subCenturies(1)->format('Y-m-d')])]);
+    
 });
 /* --------------------------------------------- */
 it('gender should be required', function(){
@@ -222,11 +274,15 @@ it('gender should be required', function(){
         'gender' => '',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['gender' => __('validation.required', ['attribute' => 'gender'])]);
+    
 });
 
 it('gender should be a valid gender', function(){
@@ -237,11 +293,15 @@ it('gender should be a valid gender', function(){
         'gender' => 'aaaa',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['gender' => __('validation.enum', ['attribute' => 'gender'])]);
+    
 });
 /* --------------------------------------------- */
 it('department should be required', function(){
@@ -252,11 +312,15 @@ it('department should be required', function(){
         'gender' => 'Masculino',
         'department' => '',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['department' => __('validation.required', ['attribute' => 'department'])]);
+    
 });
 
 it('department should have a maximum of 255 characters', function(){
@@ -267,11 +331,15 @@ it('department should have a maximum of 255 characters', function(){
         'gender' => 'Masculino',
         'department' => str_repeat('*', 256),
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['department' => __('validation.max.string', ['attribute' => 'department', 'max' => 255])]);
+    
 });
 /* --------------------------------------------- */
 it('occupation should be required', function(){
@@ -282,11 +350,15 @@ it('occupation should be required', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => '',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['occupation' => __('validation.required', ['attribute' => 'occupation'])]);
+    
 });
 
 it('occupation should have a maximum of 255 characters', function(){
@@ -297,11 +369,129 @@ it('occupation should have a maximum of 255 characters', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => str_repeat('*', 256),
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'Gestor Interno'
     ]);
 
     $response->assertSessionHasErrors(['occupation' => __('validation.max.string', ['attribute' => 'occupation', 'max' => 255])]);
+    
+});
+/* --------------------------------------------- */
+it('work shift should be required', function(){
+    $response = $this->post(route('user.store'), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => '',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['work_shift' => __('validation.required', ['attribute' => 'work shift'])]);
+    
+});
+
+it('work shift should have a maximum of 255 characters', function(){
+    $response = $this->post(route('user.store'), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => str_repeat('*', 256),
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['work_shift' => __('validation.max.string', ['attribute' => 'work shift', 'max' => 255])]);
+    
+});
+/* --------------------------------------------- */
+it('education level should be required', function(){
+    $response = $this->post(route('user.store'), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => '',
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['education_level' => __('validation.required', ['attribute' => 'education level'])]);
+    
+});
+
+it('education level should have a maximum of 255 characters', function(){
+    $response = $this->post(route('user.store'), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => str_repeat('*', 256),
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['education_level' => __('validation.max.string', ['attribute' => 'education level', 'max' => 255])]);
+    
+});
+/* --------------------------------------------- */
+it('marital status should be required', function(){
+    $response = $this->post(route('user.store'), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => '',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['marital_status' => __('validation.required', ['attribute' => 'marital status'])]);
+    
+});
+
+it('marital status should have a maximum of 255 characters', function(){
+    $response = $this->post(route('user.store'), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => str_repeat('*', 256),
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['marital_status' => __('validation.max.string', ['attribute' => 'marital status', 'max' => 255])]);
+    
 });
 /* --------------------------------------------- */
 it('role should be required', function(){
@@ -312,11 +502,15 @@ it('role should be required', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => ''
     ]);
 
     $response->assertSessionHasErrors(['role' => __('validation.required', ['attribute' => 'role'])]);
+    
 });
 
 it('role should be a valid role', function(){
@@ -327,9 +521,13 @@ it('role should be a valid role', function(){
         'gender' => 'Masculino',
         'department' => 'Financeiro',
         'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
         'admission' => '2009-04-12',
         'role' => 'aaaa'
     ]);
 
     $response->assertSessionHasErrors(['role' => __('validation.enum', ['attribute' => 'role'])]);
+    
 });

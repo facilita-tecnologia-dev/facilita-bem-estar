@@ -289,6 +289,120 @@ it('occupation should have a maximum of 255 characters', function(){
     $response->assertSessionHasErrors(['occupation' => __('validation.max.string', ['attribute' => 'occupation', 'max' => 255])]);
 });
 /* --------------------------------------------- */
+it('work shift should be required', function(){
+    $response = $this->put(route('user.update', User::first()), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => '',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['work_shift' => __('validation.required', ['attribute' => 'work shift'])]);
+    
+});
+
+it('work shift should have a maximum of 255 characters', function(){
+    $response = $this->put(route('user.update', User::first()), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => str_repeat('*', 256),
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['work_shift' => __('validation.max.string', ['attribute' => 'work shift', 'max' => 255])]);
+    
+});
+/* --------------------------------------------- */
+it('education level should be required', function(){
+    $response = $this->put(route('user.update', User::first()), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => '',
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['education_level' => __('validation.required', ['attribute' => 'education level'])]);
+    
+});
+
+it('education level should have a maximum of 255 characters', function(){
+    $response = $this->put(route('user.update', User::first()), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => str_repeat('*', 256),
+        'marital_status' => 'Solteiro',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['education_level' => __('validation.max.string', ['attribute' => 'education level', 'max' => 255])]);
+    
+});
+/* --------------------------------------------- */
+it('marital status should be required', function(){
+    $response = $this->put(route('user.update', User::first()), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => '',
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['marital_status' => __('validation.required', ['attribute' => 'marital status'])]);
+    
+});
+
+it('marital status should have a maximum of 255 characters', function(){
+    $response = $this->put(route('user.update', User::first()), [
+        'name' => 'Joe Doe',
+        'cpf' => '123.456.789-09',
+        'birth_date' => '2009-04-23',
+        'gender' => 'Masculino',
+        'department' => 'Financeiro',
+        'occupation' => 'Financeiro I',
+        'work_shift' => 'Diurno',
+        'education_level' => 'Ensino Superior Completo',
+        'marital_status' => str_repeat('*', 256),
+        'admission' => '2009-04-12',
+        'role' => 'Gestor Interno'
+    ]);
+
+    $response->assertSessionHasErrors(['marital_status' => __('validation.max.string', ['attribute' => 'marital status', 'max' => 255])]);
+    
+});
+/* --------------------------------------------- */
 it('role should be required', function(){
     $response = $this->put(route('user.update', User::first()), [
         'name' => 'Joe Doe',

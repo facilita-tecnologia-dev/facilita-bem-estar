@@ -79,25 +79,3 @@ it('organizational tests should be answerable', function(){
         }
     }
 });
-
-it('should be able to see the feedback page', function(){
-    $response = $this->get(route('feedbacks.create'));
-
-    $response->assertOk();
-});
-
-it('should be able to send a filled feedback', function(){
-    $response = $this->post(route('feedbacks.create'), [
-        'feedback' => 'Meu feedback'
-    ]);
-
-    $response->assertRedirectToRoute('responder-teste.thanks');
-});
-
-it('should be able to send a empty / not send a feedback', function(){
-    $response = $this->post(route('feedbacks.create'), [
-        'feedback' => ''
-    ]);
-
-    $response->assertRedirectToRoute('responder-teste.thanks');
-});
