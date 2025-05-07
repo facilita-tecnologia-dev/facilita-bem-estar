@@ -74,10 +74,11 @@
             text-align:center;
         ">
             @if($companyLogo)
-                <img src="{{ public_path($companyLogo) }}" style="max-width: 8cm; object-fit:contain; margin-bottom: 32px;">            
+                <img src="{{ public_path($companyLogo) }}" style="max-width: 8cm; object-fit:contain; margin-bottom: 24px;">            
             @else
                 <h2> {{ $companyName }}</h2>
             @endif
+            <h2 style="margin-bottom: 18px;">{{ $companyName }}</h2>
             <h1 style="margin-bottom: 8px; font-size: 32px;">Clima Organizacional</h1>
             <p>Resultados dos testes de Clima Organizacional compilados em gráficos.</p>
             @if(count($filtersApplied) > 0)

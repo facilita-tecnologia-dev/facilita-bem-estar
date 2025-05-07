@@ -13,7 +13,7 @@
                     </p>
                 </div>
                 <div class="w-fit">
-                    <x-action href="{{ route('dashboard.organizational-climate.by-answers.report', ['test' => request()->test ?? null]) }}">Imprimir relatório</x-action>
+                    <x-action href="{{ route('dashboard.organizational-climate.by-answers.report', ['test' => request()->test ?? null]) }}">Visualizar relatório</x-action>
                 </div>
             </div>
             

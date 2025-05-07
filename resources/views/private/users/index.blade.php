@@ -84,8 +84,12 @@
                     <x-table.head.sortable-th class="hidden sm:block flex-1" field="occupation">
                         Função
                     </x-table.head.sortable-th>
-                    <x-table.head.th class="truncate text-center w-12"><i class="fa-solid fa-brain"></i></x-table.head.th>
-                    <x-table.head.th class="truncate text-center w-12"><i class="fa-solid fa-cloud"></i></x-table.head.th>
+                    <x-table.head.sortable-th class="truncate text-center w-12" field="psychosocial-risks">
+                        <i class="fa-solid fa-brain"></i>
+                    </x-table.head.sortable-th>
+                    <x-table.head.sortable-th class="truncate text-center w-12" field="organizational-climate">
+                        <i class="fa-solid fa-cloud"></i>
+                    </x-table.head.sortable-th>
                 </x-table.head>
                 <x-table.body>
                     @foreach ($users as $user)
