@@ -36,7 +36,7 @@
             @endif
 
             @if(in_array('occupation', $modalFilters))
-                <x-form.select name="occupation" placeholder="Cargo" label="Cargo" value="{{ $filtersApplied['occupation'] ?? null }}"  :options="$occupationsToFilter" defaultValue />
+                <x-form.select name="occupation" placeholder="Função" label="Função" value="{{ $filtersApplied['occupation'] ?? null }}"  :options="$occupationsToFilter" defaultValue />
             @endif
 
             @if(in_array('work_shift', $modalFilters))

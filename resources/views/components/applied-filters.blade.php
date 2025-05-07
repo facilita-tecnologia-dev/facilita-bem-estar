@@ -13,7 +13,7 @@
                 <span class="block px-3 py-1 rounded-md bg-gray-100/50 text-xs sm:text-sm">Setor: {{ $filtersApplied['department'] }}</span>
             @endif
             @if(isset($filtersApplied['occupation']))
-                <span class="block px-3 py-1 rounded-md bg-gray-100/50 text-xs sm:text-sm">Cargo: {{ $filtersApplied['occupation'] }}</span>
+                <span class="block px-3 py-1 rounded-md bg-gray-100/50 text-xs sm:text-sm">Função: {{ $filtersApplied['occupation'] }}</span>
             @endif
             @if(isset($filtersApplied['gender']))
                 <span class="block px-3 py-1 rounded-md bg-gray-100/50 text-xs sm:text-sm">Sexo: {{ $filtersApplied['gender'] }}</span>

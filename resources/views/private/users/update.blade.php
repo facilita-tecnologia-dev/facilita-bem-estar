@@ -24,10 +24,16 @@
                     <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" value="{{ $user->birth_date }}" label="Data de nascimento"/>
 
                     <x-form.select name="gender" label="Sexo" :options="$gendersToSelect" value="{{ $user->gender }}" />
+
+                    <x-form.input-text name="marital_status" label="Estado Civil" placeholder="Digite o estado civil do usuário" value="{{ $user->marital_status }}"/>
+
+                    <x-form.input-text name="education_level" label="Grau de Instrução" placeholder="Digite o grau de instrução do usuário" value="{{ $user->education_level }}"/>
                     
                     <x-form.input-text name="department" label="Setor" placeholder="Digite o departamento do usuário" value="{{ $user->department }}"/>
                     
-                    <x-form.input-text name="occupation" label="Cargo" placeholder="Digite o cargo do usuário" value="{{ $user->occupation }}"/>
+                    <x-form.input-text name="occupation" label="Cargo" placeholder="Digite a cargo do usuário" value="{{ $user->occupation }}"/>
+                    
+                    <x-form.input-text name="work_shift" label="Turno" placeholder="Digite o turno do usuário" value="{{ $user->work_shift }}"/>
 
                     <x-form.input-date name="admission" max="{{ Carbon\Carbon::now()->toDateString() }}" label="Data de admissão" value="{{ $user->admission }}" />
 

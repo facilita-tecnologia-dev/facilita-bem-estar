@@ -6,6 +6,7 @@ use App\Enums\DepartmentEnum;
 use App\Enums\EducationLevelEnum;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
+use App\Enums\OccupationEnum;
 use App\Enums\WorkShiftEnum;
 use App\Models\Company;
 use Faker\Factory as FakerFactory;
@@ -36,7 +37,7 @@ class UserFactory extends Factory
             'birth_date' => $faker->date($format = 'Y-m-d', $max = '2007-01-01', $min = '1930-01-01'),
             'gender' => $faker->randomElement(GenderEnum::cases())->value,
             'department' => $faker->randomElement(DepartmentEnum::cases())->value,
-            'occupation' => $faker->word(),
+            'occupation' => $faker->randomElement(OccupationEnum::cases())->value,
             'admission' => $faker->date($format = 'Y-m-d', $max = 'now', $min = '1930-01-01'),
             'marital_status' => $faker->randomElement(MaritalStatusEnum::cases())->value,
             'work_shift' => $faker->randomElement(WorkShiftEnum::cases())->value,

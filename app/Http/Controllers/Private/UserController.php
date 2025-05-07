@@ -70,7 +70,7 @@ class UserController
     public function store(UserStoreRequest $request)
     {
         Gate::authorize('create', Auth::user());
-
+        
         $this->userRepository->create($request->safe());
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
@@ -121,7 +121,7 @@ class UserController
 
         $this->userRepository->delete($user);
 
-        return to_route('user.index');
+        return to_route('user.index')->with('message', 'Perfil do colaborador excluído com sucesso!');
     }
 
     public function showImport()
