@@ -1,4 +1,13 @@
 window.addEventListener('DOMContentLoaded', () => {
+
+    setTimeout(function () {
+        const button = document.getElementById('create-report-button');
+        if (button) {
+            button.disabled = false;
+            button.style.opacity = '100%';
+        }
+    }, 2500);
+
     function createColorPalette(count, saturation = 60, lightness = 85, alpha = 0.8) {
         return Array.from({ length: count }, (_, i) => {
             const hue = Math.round((360 * i) / count);
