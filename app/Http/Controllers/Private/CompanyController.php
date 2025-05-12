@@ -19,22 +19,21 @@ class CompanyController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|min:4|max:255',
-            'cnpj' => 'required|size:14',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|string|min:4|max:255',
+    //         'cnpj' => 'required|size:14',
+    //     ]);
 
-        return to_route('user.create-first', $validatedData);
-    }
+    //     return to_route('user.create-first', $validatedData);
+    // }
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        Gate::authorize('view', session('company'));
         $company = session('company');
 
         return view('private.company.show', compact('company'));
@@ -45,7 +44,6 @@ class CompanyController
      */
     public function edit(string $id)
     {
-        Gate::authorize('update', session('company'));
         $company = session('company');
 
         return view('private.company.update', compact('company'));
@@ -56,8 +54,6 @@ class CompanyController
      */
     public function update(Request $request)
     {
-        Gate::authorize('update', session('company'));
-
         $company = session('company');
 
         $validatedData = $request->validate([

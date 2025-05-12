@@ -17,26 +17,32 @@ class GuestMiddleware
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        $user = Auth::user();
+        // if(Auth::guard('company')->check()){
+        //     $user = Auth::guard('company')->user();
+        // }
 
-        if (Auth::check() && session('company')) {
-            $userRole = $user->roles()->first();
-            if ($userRole && $userRole['id'] == 1) {
-                if (session('company')->id !== 2) {
-                    return to_route('dashboard.psychosocial');
-                }
+        // if(Auth::guard('user')->check()){
+        //     $user = Auth::guard('user')->user();
+        // }
 
-                return to_route('dashboard.organizational-climate');
-            }
+        // if ($user && session('company')) {
+        //     $userRole = $user->roles()->first();
+        //     if ($userRole && $userRole['id'] == 1) {
+        //         if (session('company')->id !== 2) {
+        //             return to_route('dashboard.psychosocial');
+        //         }
 
-            if ($userRole && $userRole['id'] == 2) {
-                if (session('company')->id !== 2) {
-                    return to_route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
-                }
+        //         return to_route('dashboard.organizational-climate');
+        //     }
 
-                return to_route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
-            }
-        }
+        //     if ($userRole && $userRole['id'] == 2) {
+        //         if (session('company')->id !== 2) {
+        //             return to_route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
+        //         }
+
+        //         return to_route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
+        //     }
+        // }
 
         return $next($request);
     }

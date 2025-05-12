@@ -20,8 +20,6 @@ class DemographicsMainController
 
     public function __invoke(Request $request)
     {
-        Gate::authorize('view-manager-screens');
-
         $this->pageData = $this->pageQuery();
 
         $companyMetrics = $this->getCompanyMetrics();
@@ -46,11 +44,10 @@ class DemographicsMainController
     private function getCompanyMetrics()
     {
         $metrics = session('company')->metrics()->get()->groupBy('metricType.display_name');
-
         $metricsCompiled = [];
-
+        
         foreach ($metrics as $metricName => $metric) {
-            $metricsCompiled[$metricName] = (int) $metric[0]->value;
+            $metricsCompiled[$metricName] = (int) $metric[0]->value ?? 0;
         }
 
         return $metricsCompiled;
@@ -60,12 +57,17 @@ class DemographicsMainController
     {
         $users = $this->pageData;
 
+        if(!$users->count()){
+            return null;
+        }
+
         $usersByDepartmentCount = $users->groupBy('department')->map(function ($group) {
             return [
                 'count' => $group->count(),
                 'per_cent' => ($group->count() / session('company')->users->count()) * 100
             ];
         });
+
 
         $usersByGenderCount = $users->groupBy('gender')->map(function ($group) {
             return [

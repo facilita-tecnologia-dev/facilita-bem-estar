@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Private;
 
 use App\Enums\GenderEnum;
 use App\Enums\InternalUserRoleEnum;
+use App\Helpers\AuthGuardHelper;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\Company;
@@ -34,8 +35,6 @@ class UserController
 
     public function index(Request $request)
     {
-        Gate::authorize('viewAny', Auth::user());
-
         $query = Company::whereId(session('company')->id)->first()->users()->getQuery();
         $users = $this->filterService->sort($this->filterService->apply($query))
             ->with(['latestPsychosocialCollection', 'latestOrganizationalClimateCollection'])
@@ -49,7 +48,7 @@ class UserController
         });
 
         return view('private.users.index', [
-            'users' => $users,
+            'users' => $users->count() ? $users : null,
             'filtersApplied' => $filtersApplied,
             'filteredUserCount' => $filteredUserCount > 0 ? $filteredUserCount : null,
         ]);
@@ -57,8 +56,6 @@ class UserController
 
     public function create()
     {
-        Gate::authorize('create', Auth::user());
-
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
         $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
             Role::whereIn('id', [1, 2])->get()->toArray()
@@ -69,8 +66,6 @@ class UserController
 
     public function store(UserStoreRequest $request)
     {
-        Gate::authorize('create', Auth::user());
-        
         $this->userRepository->create($request->safe());
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
@@ -78,8 +73,6 @@ class UserController
 
     public function show(User $user)
     {
-        Gate::authorize('view', Auth::user());
-
         $latestOrganizationalClimateCollectionDate = $user['latestOrganizationalClimateCollection']?->created_at->diffForHumans() ?? 'Nunca';
         $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
 
@@ -88,8 +81,6 @@ class UserController
 
     public function edit(User $user)
     {
-        Gate::authorize('update', Auth::user());
-
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
         $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
             Role::whereIn('id', [1, 2])->get()->toArray()
@@ -108,8 +99,6 @@ class UserController
 
     public function update(UserUpdateRequest $request, User $user)
     {
-        Gate::authorize('update', Auth::user());
-
         $this->userRepository->update($request->safe(), $user);
 
         return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
@@ -117,8 +106,6 @@ class UserController
 
     public function destroy(User $user)
     {
-        Gate::authorize('delete', Auth::user());
-
         $this->userRepository->delete($user);
 
         return to_route('user.index')->with('message', 'Perfil do colaborador excluído com sucesso!');
@@ -126,15 +113,11 @@ class UserController
 
     public function showImport()
     {
-        Gate::authorize('create', Auth::user());
-
         return view('private.users.import');
     }
 
     public function import(Request $request)
     {
-        Gate::authorize('create', Auth::user());
-
         $request->validate([
             'import_users' => 'required|file|mimes:xlsx|max:1024',
         ]);

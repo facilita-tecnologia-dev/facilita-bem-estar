@@ -6,54 +6,55 @@
         <x-structure.main-content-container>        
             <x-structure.page-title title="Riscos Psicossociais" />
 
-            <div class="w-full flex flex-col gap-4">
-                <div class="w-full flex flex-col md:flex-row gap-2">
-                    <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                        <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                            @if($psychosocialTestsParticipation['Geral']['per_cent'] >= 75)
-                                <i class="fa-solid fa-check text-lg"></i>
-                                A adesão é superior à 75%, portanto os resultados devem ser considerados válidos.
-                            @else
-                                <i class="fa-solid fa-xmark text-lg"></i>
-                                A adesão é inferior à 75%, portanto os resultados não devem ser considerados válidos.
-                            @endif
-                        </p>
+            @if($psychosocialTestsParticipation)
+                <div class="w-full flex flex-col gap-4">
+                    <div class="w-full flex flex-col md:flex-row gap-2">
+                        <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
+                            <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
+                                @if($psychosocialTestsParticipation['Geral']['per_cent'] >= 75)
+                                    <i class="fa-solid fa-check text-lg"></i>
+                                    A adesão é superior à 75%, portanto os resultados devem ser considerados válidos.
+                                @else
+                                    <i class="fa-solid fa-xmark text-lg"></i>
+                                    A adesão é inferior à 75%, portanto os resultados não devem ser considerados válidos.
+                                @endif
+                            </p>
+                        </div>
+        
+                        <div class="w-full md:w-fit">
+                            <x-action href="{{ route('dashboard.psychosocial.risks') }}" width="full">
+                                Visualizar Riscos
+                            </x-action>
+                        </div> 
                     </div>
-    
-                    <div class="w-full md:w-fit">
-                        <x-action href="{{ route('dashboard.psychosocial.risks') }}" width="full">
-                            Visualizar Riscos
-                        </x-action>
-                    </div> 
-                </div>
-                
-                <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
-                    <div class="flex items-center gap-2 w-full flex-wrap">
-                        <x-numbers-of-records :value="$filteredUserCount" />
+            
+                    
+                    <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                        <div class="flex items-center gap-2 w-full flex-wrap">
+                            <x-numbers-of-records :value="$filteredUserCount" />
 
-                        <x-applied-filters
+                            <x-applied-filters
+                                :filtersApplied="$filtersApplied"
+                            />
+                        </div>
+
+                        <x-filter-actions
                             :filtersApplied="$filtersApplied"
+                            :modalFilters="[
+                                'gender', 
+                                'department', 
+                                'occupation', 
+                                'work_shift', 
+                                'marital_status', 
+                                'education_level', 
+                                'age_range', 
+                                'admission_range', 
+                                'year'
+                            ]" 
                         />
                     </div>
-
-                    <x-filter-actions
-                        :filtersApplied="$filtersApplied"
-                        :modalFilters="[
-                            'gender', 
-                            'department', 
-                            'occupation', 
-                            'work_shift', 
-                            'marital_status', 
-                            'education_level', 
-                            'age_range', 
-                            'admission_range', 
-                            'year'
-                        ]" 
-                    />
                 </div>
-            </div>
 
-            @if($psychosocialRiskResults)
                 <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach ($psychosocialRiskResults as $testName => $testData)
                         <a href="{{ route('dashboard.psychosocial.by-department', $testName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center shadow-md rounded-md bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
@@ -76,10 +77,17 @@
                 @endif
 
             @else
-                <div class="w-full flex flex-col items-center gap-2">
-                    <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
-                    <p class="text-base text-center">Nenhum resultado encontrado, tente novamente.</p>
-                </div>
+                @if($companyHasTests)
+                    <div class="w-full flex flex-col items-center gap-2">
+                        <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
+                        <p class="text-base text-center">Nenhum resultado encontrado, tente novamente.</p>
+                    </div>
+                @else
+                    <div class="w-full flex flex-col items-center justify-center gap-2 flex-1">
+                        <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
+                        <p class="text-base text-center">Você ainda não realizou testes de Riscos Psicossociais.</p>
+                    </div>
+                @endif
             @endif
             
         </x-structure.main-content-container>

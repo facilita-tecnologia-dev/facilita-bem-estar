@@ -14,35 +14,37 @@
                 </div>
             @endif
             
-            <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
+          
+                <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
+                    @if($users)
+                        <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                            <div class="flex items-center gap-2 w-full flex-wrap">
+                                <x-numbers-of-records :value="$filteredUserCount" />
 
-                    <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
-                        <div class="flex items-center gap-2 w-full flex-wrap">
-                            <x-numbers-of-records :value="$filteredUserCount" />
+                                <x-applied-filters
+                                    :filtersApplied="$filtersApplied"
+                                />
+                            </div>
 
-                            <x-applied-filters
+                            <x-filter-actions
                                 :filtersApplied="$filtersApplied"
+                                :modalFilters="[
+                                    'name',
+                                    'cpf',
+                                    'gender', 
+                                    'department', 
+                                    'occupation', 
+                                    'work_shift', 
+                                    'marital_status', 
+                                    'education_level', 
+                                    'age_range', 
+                                    'admission_range',
+                                    'hasAnsweredPsychosocialCollection', 
+                                    'hasAnsweredOrganizationalCollection'
+                                ]" 
                             />
                         </div>
-
-                        <x-filter-actions
-                            :filtersApplied="$filtersApplied"
-                            :modalFilters="[
-                                'name',
-                                'cpf',
-                                'gender', 
-                                'department', 
-                                'occupation', 
-                                'work_shift', 
-                                'marital_status', 
-                                'education_level', 
-                                'age_range', 
-                                'admission_range',
-                                'hasAnsweredPsychosocialCollection', 
-                                'hasAnsweredOrganizationalCollection'
-                            ]" 
-                        />
-                    </div>
+                    @endif
 
                     <div class="w-full md:w-fit flex gap-2">
                         <div class="w-full md:w-fit">
@@ -56,68 +58,62 @@
                             </x-action>
                         </div>
                     </div>
-                    
-                    {{-- <x-filters-trigger
-                        class="h-10 w-10"
-                        :modalFilters="['name', 'cpf', 'gender', 'department', 'occupation', 'hasAnsweredPsychosocialCollection', 'hasAnsweredOrganizationalCollection']" 
-                    /> --}}
-                {{-- </div> --}}
-            </div>
+                </div>
+            @if($users)
+                <x-table class="flex flex-col gap-1">
+                    <x-table.head class="flex items-center gap-3">
+                        <x-table.head.sortable-th class="flex-1" field="name">
+                            Nome
+                        </x-table.head.sortable-th>
+                        <x-table.head.sortable-th class="hidden lg:block w-24" field="age">
+                            Idade
+                        </x-table.head.sortable-th>
+                        <x-table.head.sortable-th class="hidden md:block flex-1" field="department">
+                            Setor
+                        </x-table.head.sortable-th>
+                        <x-table.head.sortable-th class="hidden sm:block flex-1" field="occupation">
+                            Função
+                        </x-table.head.sortable-th>
+                        <x-table.head.sortable-th class="truncate text-center w-12" field="psychosocial-risks">
+                            <i class="fa-solid fa-brain"></i>
+                        </x-table.head.sortable-th>
+                        <x-table.head.sortable-th class="truncate text-center w-12" field="organizational-climate">
+                            <i class="fa-solid fa-cloud"></i>
+                        </x-table.head.sortable-th>
+                    </x-table.head>
+                    <x-table.body>
+                        @foreach ($users as $user)
+                            <x-table.body.tr tag="a" href="{{ route('user.show', $user) }}" class="flex items-center gap-3" >
+                                <x-table.body.td class="truncate flex-1">{{ $user->name }}</x-table.body.td>
+                                <x-table.body.td class="hidden lg:block w-24">{{ $user->birth_date ? Carbon\Carbon::create($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</x-table.body.td>
+                                <x-table.body.td class="hidden md:block truncate flex-1">{{ $user->department ?? 'Não cadastrado' }}</x-table.body.td>
+                                <x-table.body.td class="hidden sm:block truncate flex-1">{{ $user->occupation ?? 'Não cadastrado' }}</x-table.body.td>
+                                <x-table.body.td class="text-center w-12">
+                                    @if($user->latestPsychosocialCollection && $user->latestPsychosocialCollection->created_at->year == Carbon\Carbon::now()->year)
+                                        <i class="fa-solid fa-check"></i>
+                                    @else
+                                        <i class="fa-solid fa-xmark"></i>
+                                    @endif
+                                </x-table.body.td>
+                                <x-table.body.td class="text-center w-12">
+                                    @if($user->latestOrganizationalClimateCollection && $user->latestOrganizationalClimateCollection->created_at->year == Carbon\Carbon::now()->year)
+                                        <i class="fa-solid fa-check"></i>
+                                    @else
+                                        <i class="fa-solid fa-xmark"></i>
+                                    @endif
+                                </x-table.body.td>
+                            </x-table.body.tr>
+                        @endforeach
+                    </x-table.body>
+                </x-table>
 
-            {{-- <x-filters-info-bar
-                :countFiltered="true"
-                :filtersApplied="$filtersApplied"
-                :filteredUsersCount="$filteredUsersCount"
-            /> --}}
-
-            <x-table class="flex flex-col gap-1">
-                <x-table.head class="flex items-center gap-3">
-                    <x-table.head.sortable-th class="flex-1" field="name">
-                        Nome
-                    </x-table.head.sortable-th>
-                    <x-table.head.sortable-th class="hidden lg:block w-24" field="age">
-                        Idade
-                    </x-table.head.sortable-th>
-                    <x-table.head.sortable-th class="hidden md:block flex-1" field="department">
-                        Setor
-                    </x-table.head.sortable-th>
-                    <x-table.head.sortable-th class="hidden sm:block flex-1" field="occupation">
-                        Função
-                    </x-table.head.sortable-th>
-                    <x-table.head.sortable-th class="truncate text-center w-12" field="psychosocial-risks">
-                        <i class="fa-solid fa-brain"></i>
-                    </x-table.head.sortable-th>
-                    <x-table.head.sortable-th class="truncate text-center w-12" field="organizational-climate">
-                        <i class="fa-solid fa-cloud"></i>
-                    </x-table.head.sortable-th>
-                </x-table.head>
-                <x-table.body>
-                    @foreach ($users as $user)
-                        <x-table.body.tr tag="a" href="{{ route('user.show', $user) }}" class="flex items-center gap-3" >
-                            <x-table.body.td class="truncate flex-1">{{ $user->name }}</x-table.body.td>
-                            <x-table.body.td class="hidden lg:block w-24">{{ $user->birth_date ? Carbon\Carbon::create($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</x-table.body.td>
-                            <x-table.body.td class="hidden md:block truncate flex-1">{{ $user->department ?? 'Não cadastrado' }}</x-table.body.td>
-                            <x-table.body.td class="hidden sm:block truncate flex-1">{{ $user->occupation ?? 'Não cadastrado' }}</x-table.body.td>
-                            <x-table.body.td class="text-center w-12">
-                                @if($user->latestPsychosocialCollection && $user->latestPsychosocialCollection->created_at->year == Carbon\Carbon::now()->year)
-                                    <i class="fa-solid fa-check"></i>
-                                @else
-                                    <i class="fa-solid fa-xmark"></i>
-                                @endif
-                            </x-table.body.td>
-                            <x-table.body.td class="text-center w-12">
-                                @if($user->latestOrganizationalClimateCollection && $user->latestOrganizationalClimateCollection->created_at->year == Carbon\Carbon::now()->year)
-                                    <i class="fa-solid fa-check"></i>
-                                @else
-                                    <i class="fa-solid fa-xmark"></i>
-                                @endif
-                            </x-table.body.td>
-                        </x-table.body.tr>
-                    @endforeach
-                </x-table.body>
-            </x-table>
-
-            {{ $users->links() }}
+                {{ $users->links() }}
+            @else
+                <div class="w-full flex flex-col items-center gap-2">
+                    <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
+                    <p class="text-base text-center">Você ainda não registrou colaboradores.</p>
+                </div>         
+            @endif
         </div>
     </div>
 

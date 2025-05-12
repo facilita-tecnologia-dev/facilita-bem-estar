@@ -9,12 +9,26 @@ class LogoutController
 {
     public function logout(Request $request)
     {
-        Auth::logout();
+        if (Auth::guard('company')->check()) {
+            Auth::guard('company')->logout();
 
-        $request->session()->invalidate();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return to_route('auth.login.empresa');
+        }
+        
+        if (Auth::guard('user')->check()) {
+            Auth::guard('user')->logout();
 
-        $request->session()->regenerateToken();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        return to_route('auth.login');
+            return to_route('auth.login.usuario-interno');
+        }
+        
+      
+
+
     }
 }

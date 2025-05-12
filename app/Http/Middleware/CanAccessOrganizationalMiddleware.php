@@ -12,9 +12,9 @@ class CanAccessOrganizationalMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if(Gate::denies('access-organizational')){
-            abort(403, 'Você não tem permissão para acessar essa página.');
-        }
+        // if(Gate::denies('access-organizational')){
+        //     abort(403, 'Você não tem permissão para acessar essa página.');
+        // }
 
         return $next($request);
     }

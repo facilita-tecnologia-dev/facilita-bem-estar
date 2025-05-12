@@ -27,8 +27,6 @@ class OrganizationalAnswersController
 
     public function __invoke(Request $request)
     {
-        Gate::authorize('view-manager-screens');
-
         $this->query($request);
 
         $organizationalClimateResults = $this->getCompiledPageData();

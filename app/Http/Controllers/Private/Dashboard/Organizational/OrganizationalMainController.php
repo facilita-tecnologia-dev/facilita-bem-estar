@@ -29,8 +29,6 @@ class OrganizationalMainController
 
     public function __invoke(Request $request)
     {
-        Gate::authorize('view-manager-screens');
-        
         $this->pageData = $this->query($request);
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
@@ -41,6 +39,7 @@ class OrganizationalMainController
         return view('private.dashboard.organizational.index', [
             'organizationalClimateResults' => $organizationalClimateResults,
             'organizationalTestsParticipation' => $organizationalTestsParticipation,
+            'companyHasTests' => session('company')->users()->has('collections')->exists(),
             'filtersApplied' => $filtersApplied,
             'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
         ]);
@@ -157,6 +156,10 @@ class OrganizationalMainController
     {
         $usersWithCollection = $this->pageData;
         $usersByDepartment = session('company')->users->groupBy('department');
+
+        if(!$usersWithCollection->count()){
+            return null;
+        }
 
         $participation = $this->calculateGeneralParticipation($usersWithCollection);
         $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);

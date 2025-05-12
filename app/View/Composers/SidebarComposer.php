@@ -2,6 +2,8 @@
 
 namespace App\View\Composers;
 
+use App\Helpers\AuthGuardHelper;
+use App\Models\User;
 use App\Services\User\UserElegibilityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -17,20 +19,21 @@ class SidebarComposer
 
     public function compose(View $view): void
     {
-        $user = Auth::user();
+        $user = AuthGuardHelper::user();
 
-        $hasAnsweredPsychosocial = $this->elegibilityService->hasAnsweredPsychosocialCollection($user);
-        $hasAnsweredOrganizational = $this->elegibilityService->hasAnsweredOrganizationalCollection($user);
-        $companiesToSwitch = array_map(fn($company) => [
-            'option' => $company['name'],
-            'value' => $company['id']
-        ] ,$user->companies->toArray());
-
-
-        $view->with([
-            'hasAnsweredPsychosocial' => $hasAnsweredPsychosocial,
-            'hasAnsweredOrganizational' => $hasAnsweredOrganizational,
-            'companiesToSwitch' => $companiesToSwitch,
-        ]);
+        if($user instanceof User){
+            $hasAnsweredPsychosocial = $this->elegibilityService->hasAnsweredPsychosocialCollection($user);
+            $hasAnsweredOrganizational = $this->elegibilityService->hasAnsweredOrganizationalCollection($user);
+            $companiesToSwitch = array_map(fn($company) => [
+                'option' => $company['name'],
+                'value' => $company['id']
+            ] ,$user->companies->toArray());
+            
+            $view->with([
+                'hasAnsweredPsychosocial' => $hasAnsweredPsychosocial,
+                'hasAnsweredOrganizational' => $hasAnsweredOrganizational,
+                'companiesToSwitch' => $companiesToSwitch,
+            ]);
+        }
     }
 }

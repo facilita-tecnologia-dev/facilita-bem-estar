@@ -22,15 +22,12 @@ class UserFeedbackController
      */
     public function index(Request $request)
     {
-        Gate::authorize('view-manager-screens');
-
         $userFeedbacks = $this->query($request);     
-
         $filteredUserCount = $userFeedbacks->total();
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.dashboard.feedbacks.index', [
-            'userFeedbacks' => $userFeedbacks,
+            'userFeedbacks' => $userFeedbacks->count() ? $userFeedbacks : null,
             'filtersApplied' => $filtersApplied,
             'filteredUserCount' => $filteredUserCount ? $filteredUserCount : null,
         ]);
@@ -83,8 +80,6 @@ class UserFeedbackController
      */
     public function show(UserFeedback $feedback)
     {
-        Gate::authorize('view-manager-screens');
-
         $parentUser = $feedback->parentUser;
 
         return view('private.dashboard.feedbacks.show', compact('feedback', 'parentUser'));

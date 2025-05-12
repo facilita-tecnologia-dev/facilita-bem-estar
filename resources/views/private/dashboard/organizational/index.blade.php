@@ -57,10 +57,17 @@
                     <x-charts.bar-vertical id="organizational-participation" title="Participação no teste de Clima Organizacional" />
                 @endif
             @else
-                <div class="w-full flex flex-col items-center gap-2">
-                    <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
-                    <p class="text-base text-center">Nenhum resultado encontrado, tente novamente.</p>
-                </div>
+                @if($companyHasTests)
+                    <div class="w-full flex flex-col items-center gap-2">
+                        <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
+                        <p class="text-base text-center">Nenhum resultado encontrado, tente novamente.</p>
+                    </div>
+                @else
+                    <div class="w-full flex flex-col items-center gap-2">
+                        <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
+                        <p class="text-base text-center">Você ainda não realizou nenhuma Pesquisa de Clima Organizacional.</p>
+                    </div>
+                @endif
             @endif
         
         </x-structure.main-content-container>

@@ -26,8 +26,6 @@ class PsychosocialResultsListController
 
     public function __invoke(Request $request, string $testName)
     {
-        Gate::authorize('view-manager-screens');
-        
         $this->pageData = $this->query($request, $testName);
         $usersList = $this->getCompiledPageData();
 

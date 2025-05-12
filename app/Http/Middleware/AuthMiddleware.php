@@ -16,9 +16,8 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // dd(session()->all());
-        if (! Auth::check()) {
-            return to_route('auth.login');
+        if(!Auth::guard('company')->check() && !Auth::guard('user')->check()){
+            return to_route('auth.login.usuario-interno');
         }
 
         return $next($request);

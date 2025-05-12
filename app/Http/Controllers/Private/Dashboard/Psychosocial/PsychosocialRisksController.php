@@ -48,8 +48,6 @@ class PsychosocialRisksController
 
     public function __invoke()
     {
-        Gate::authorize('view-manager-screens');
-
         $risks = $this->getCompiledPageData(true);
 
         return view('private.dashboard.psychosocial.risks', compact('risks'));
@@ -57,7 +55,6 @@ class PsychosocialRisksController
 
     public function generatePDF()
     {
-        Gate::authorize('view-manager-screens');
         $risks = $this->getCompiledPageData();
         
         $company = session('company');

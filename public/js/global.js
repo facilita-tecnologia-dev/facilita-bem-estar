@@ -1,3 +1,5 @@
+// Sidebar
+
 const sidebarMobileButton = document.querySelector(
     '[data-role="sidebar-mobile-button"]'
 );
@@ -18,6 +20,8 @@ if(sidebarMobileButton){
     });
 }
 
+
+// Format CPF
 
 function formatCPF(cpf) {
     cpf = cpf.replace(/\D/g, '');
@@ -40,6 +44,31 @@ if(cpfInput){
 }
 
 
+// Format CNPJ
+
+function formatCNPJ(cnpj) {
+    cnpj = cnpj.replace(/\D/g, '');
+
+    cnpj = cnpj.substring(0, 14);
+
+    cnpj = cnpj.replace(/^(\d{2})(\d)/, '$1.$2');
+    cnpj = cnpj.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    cnpj = cnpj.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    cnpj = cnpj.replace(/(\d{4})(\d)/, '$1-$2');
+
+    return cnpj;
+}
+
+const cnpjInput = document.querySelector('[name="cnpj"]');
+if (cnpjInput) {
+    cnpjInput.addEventListener('input', function(e) {
+        e.target.value = formatCNPJ(e.target.value);
+    });
+}
+
+
+// Filter Modal
+
 const triggerFilterModal = document.querySelector(
     '[data-role="filter-modal-trigger"]'
 );
@@ -59,3 +88,4 @@ if(triggerFilterModal && filterModal){
         filterModal.classList.replace("hidden", "flex");
     });
 }
+

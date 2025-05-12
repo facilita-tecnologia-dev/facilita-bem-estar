@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Models\User;
+use App\Models\UserCollection;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class PsychosocialMainController
@@ -26,18 +28,17 @@ class PsychosocialMainController
 
     public function __invoke(Request $request)
     {
-        Gate::authorize('view-manager-screens');
-
         $this->pageData = $this->query($request);
 
         $psychosocialRiskResults = $this->getCompiledPageData();
         $psychosocialTestsParticipation = $this->getPsychosocialTestsParticipation();
-
+        
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.dashboard.psychosocial.index', [
             'psychosocialRiskResults' => $psychosocialRiskResults,
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
+            'companyHasTests' => session('company')->users()->has('collections')->exists(),
             'filtersApplied' => $filtersApplied,
             'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
         ]);
@@ -150,6 +151,10 @@ class PsychosocialMainController
     {
         $usersWithCollection = $this->pageData;
         $usersByDepartment = session('company')->users->groupBy('department');
+
+        if(!$usersWithCollection->count()){
+            return null;
+        }
 
         $participation = $this->calculateGeneralParticipation($usersWithCollection);
         $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);

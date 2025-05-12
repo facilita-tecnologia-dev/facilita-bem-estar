@@ -12,10 +12,6 @@ class ImportUsersController
 {
     public function __invoke()
     {
-        if (Gate::denies('view-manager-screens')) {
-            abort(403, 'Acesso não autorizado');
-        }
-
         return view('private.users.import');
     }
 
