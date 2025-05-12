@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ChooseCompanyToLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CompanyCampaignController;
 use App\Http\Controllers\Private\CompanyController;
 use App\Http\Controllers\Private\CompanyMetricsController;
 use App\Http\Controllers\Private\Dashboard\Demographics\DemographicsMainController;
@@ -55,6 +56,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::resource('company', CompanyController::class);
     Route::resource('user', UserController::class);
+    Route::resource('campaign', CompanyCampaignController::class);
     
     Route::get('/usuario/importar', [UserController::class, 'showImport'])->name('user.import');
     Route::post('/usuario/importar', [UserController::class, 'import']);

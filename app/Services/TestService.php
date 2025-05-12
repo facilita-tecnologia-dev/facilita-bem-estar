@@ -40,7 +40,7 @@ class TestService
                     'question_option_id' => $option->id,
                     'question_id' => $questionId,
                     'test_id' => $test->id,
-                    'user_id' => Auth::user()->id,
+                    'user_id' => Auth::guard('user')->user()->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

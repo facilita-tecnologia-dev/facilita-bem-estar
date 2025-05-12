@@ -43,9 +43,11 @@
                     </x-form>
                 </div>
                 <div class="w-full flex items-center justify-between">
-                    <x-action href="{{ $testIndex == 1 ? route('escolher-teste') : route('responder-teste', [$collection, $testIndex - 1]) }}" variant="primary">
-                        Voltar
-                    </x-action>
+                    <div class="{{ $testIndex == 1 ? 'pointer-events-none opacity-50' : '' }}">
+                        <x-action href="{{ route('responder-teste', [$collection, $testIndex - 1]) }}" variant="primary">
+                            Voltar
+                        </x-action>
+                    </div>
                     <x-action form="test-form" type="submit" tag="button" variant="primary">
                         Prosseguir
                     </x-action>

@@ -2,7 +2,7 @@
     'name',
     'id' => null,
     'placeholder' => '',
-    'type' => 'text',
+    'type' => null,
     'value' => null,
     'label' => null,
     'disabled' => null,
@@ -23,7 +23,7 @@
 
         <div class="relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
 
-            <input type="date"
+            <input type="{{ $type ?? 'date' }}"
                 {{ $attributes->merge(['class' => 'w-full h-[43px] focus:outline-0 bg-transparent']) }}
                 name="{{ $name }}"
                 id="{{ $id ? $id : $name }}"

@@ -21,13 +21,6 @@ class TestsController
         $this->testService = $testService;
     }
 
-    public function showChoose()
-    {
-        $collections = Collection::all();
-
-        return view('private.tests.choose-test', compact('collections'));
-    }
-
     public function __invoke(Collection $collection, $testIndex = 1)
     {
         $test = Test::query()
@@ -42,7 +35,7 @@ class TestsController
             ->first();
 
 
-        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::user()->id)->where('test_id', '=', $test->id)->get();
+        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::guard('user')->user()->id)->where('test_id', '=', $test->id)->get();
 
         return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
@@ -116,12 +109,12 @@ class TestsController
         }
 
         DB::transaction(function () use ($testAnswersByCollection) {
-            PendingTestAnswer::query()->where('user_id', Auth::user()->id)->delete();
+            PendingTestAnswer::query()->where('user_id', Auth::guard('user')->user()->id)->delete();
 
             foreach ($testAnswersByCollection as $collectionName => $collection) {
                 $relatedCollection = Collection::where('key_name', $collectionName)->first();
                 $newTestCollection = UserCollection::create([
-                    'user_id' => Auth::user()->id,
+                    'user_id' => Auth::guard('user')->user()->id,
                     'collection_id' => $relatedCollection->id,
                     'created_at' => now(),
                     'updated_at' => now(),

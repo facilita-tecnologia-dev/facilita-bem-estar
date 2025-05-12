@@ -17,9 +17,7 @@ class Company extends Authenticatable
 
     protected $fillable = ['name', 'cnpj', 'logo'];
 
-    /**
-     * Get the users related to this company
-     */
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_users')
@@ -27,11 +25,13 @@ class Company extends Authenticatable
             ->withTimestamps();
     }
 
-    /**
-     * Get the company metrics related to this company
-     */
     public function metrics(): HasMany
     {
         return $this->hasMany(CompanyMetric::class, 'company_id');
+    }
+
+    public function campaigns() : HasMany
+    {
+        return $this->hasMany(CompanyCampaign::class, 'company_id');
     }
 }

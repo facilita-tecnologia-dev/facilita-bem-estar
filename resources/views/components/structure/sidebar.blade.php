@@ -52,25 +52,33 @@
             </a>
         </div>
             
-        @if(Auth::guard('user')->check())
-            <div class="submenu space-y-3">
-                <p class="uppercase text-xs font-semibold px-2">Testes</p>
 
-                <a href="{{ route('responder-teste', App\Models\Collection::where('key_name', 'psychosocial-risks')->first()) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ $hasAnsweredPsychosocial ? 'pointer-events-none opacity-50' : '' }}">
+        <div class="submenu space-y-3">
+            <p class="uppercase text-xs font-semibold px-2">Testes</p>
+            @if(Auth::guard('company')->check())
+                <a href="{{ route('campaign.index') }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    Campanhas
+                </a>
+            @endif
+            @if(Auth::guard('user')->check())
+                <a href="{{ route('responder-teste', App\Models\Collection::where('key_name', 'psychosocial-risks')->first()) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ !$hasActivePsychosocialCampaign || $hasAnsweredPsychosocial  ? 'pointer-events-none opacity-50' : '' }}">
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-question"></i>
                     </div>
                     Riscos Psicossociais
                 </a>
 
-                <a href="{{ route('responder-teste', App\Models\Collection::where('key_name', 'organizational-climate')->first()) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ $hasAnsweredPsychosocial ? 'pointer-events-none opacity-50' : '' }}">
+                <a href="{{ route('responder-teste', App\Models\Collection::where('key_name', 'organizational-climate')->first()) }}" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition {{ !$hasActiveOrganizationalCampaign || $hasAnsweredOrganizational  ? 'pointer-events-none opacity-50' : '' }}">
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-question"></i>
                     </div>
                     Clima Organizacional
                 </a>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <div class="submenu space-y-3">
             <p class="uppercase text-xs font-semibold px-2">Empresa</p>

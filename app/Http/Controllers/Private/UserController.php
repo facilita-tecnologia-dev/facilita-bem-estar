@@ -66,7 +66,7 @@ class UserController
 
     public function store(UserStoreRequest $request)
     {
-        $this->userRepository->create($request->safe());
+        $this->userRepository->store($request->safe());
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
     }
@@ -106,7 +106,7 @@ class UserController
 
     public function destroy(User $user)
     {
-        $this->userRepository->delete($user);
+        $this->userRepository->destroy($user);
 
         return to_route('user.index')->with('message', 'Perfil do colaborador excluído com sucesso!');
     }

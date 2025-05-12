@@ -14,51 +14,51 @@
                 </div>
             @endif
             
-          
-                <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
-                    @if($users)
-                        <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
-                            <div class="flex items-center gap-2 w-full flex-wrap">
-                                <x-numbers-of-records :value="$filteredUserCount" />
+            <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
+                @if($users)
+                    <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">
+                        <div class="flex items-center gap-2 w-full flex-wrap">
+                            <x-numbers-of-records :value="$filteredUserCount" />
 
-                                <x-applied-filters
-                                    :filtersApplied="$filtersApplied"
-                                />
-                            </div>
-
-                            <x-filter-actions
+                            <x-applied-filters
                                 :filtersApplied="$filtersApplied"
-                                :modalFilters="[
-                                    'name',
-                                    'cpf',
-                                    'gender', 
-                                    'department', 
-                                    'occupation', 
-                                    'work_shift', 
-                                    'marital_status', 
-                                    'education_level', 
-                                    'age_range', 
-                                    'admission_range',
-                                    'hasAnsweredPsychosocialCollection', 
-                                    'hasAnsweredOrganizationalCollection'
-                                ]" 
                             />
                         </div>
-                    @endif
 
-                    <div class="w-full md:w-fit flex gap-2">
-                        <div class="w-full md:w-fit">
-                            <x-action href="{{ route('user.import') }}" width="full">
-                                <i class="fa-solid fa-upload text-sm sm:text-base"></i>
-                            </x-action>
-                        </div>
-                        <div class="w-full md:w-fit">
-                            <x-action href="{{ route('user.create') }}" width="full">
-                                <i class="fa-solid fa-plus text-sm sm:text-base"></i>
-                            </x-action>
-                        </div>
+                        <x-filter-actions
+                            :filtersApplied="$filtersApplied"
+                            :modalFilters="[
+                                'name',
+                                'cpf',
+                                'gender', 
+                                'department', 
+                                'occupation', 
+                                'work_shift', 
+                                'marital_status', 
+                                'education_level', 
+                                'age_range', 
+                                'admission_range',
+                                'hasAnsweredPsychosocialCollection', 
+                                'hasAnsweredOrganizationalCollection'
+                            ]" 
+                        />
+                    </div>
+                @endif
+
+                <div class="w-full md:w-fit flex gap-2">
+                    <div class="w-full md:w-fit">
+                        <x-action href="{{ route('user.import') }}" width="full">
+                            <i class="fa-solid fa-upload text-sm sm:text-base"></i>
+                        </x-action>
+                    </div>
+                    <div class="w-full md:w-fit">
+                        <x-action href="{{ route('user.create') }}" width="full">
+                            <i class="fa-solid fa-plus text-sm sm:text-base"></i>
+                        </x-action>
                     </div>
                 </div>
+            </div>
+
             @if($users)
                 <x-table class="flex flex-col gap-1">
                     <x-table.head class="flex items-center gap-3">

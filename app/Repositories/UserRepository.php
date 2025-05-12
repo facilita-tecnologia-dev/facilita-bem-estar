@@ -15,7 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class UserRepository
 {
-    public function create(ValidatedInput $data) : User
+    public function store(ValidatedInput $data) : User
     {
         return DB::transaction(function () use ($data) {
             $userData = $data->except('role');
@@ -50,7 +50,7 @@ class UserRepository
         });
     }
 
-    public function delete(User $user) : mixed
+    public function destroy(User $user) : mixed
     {
         return $user->delete();
     }
