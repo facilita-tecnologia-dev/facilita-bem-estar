@@ -29,6 +29,7 @@ class OrganizationalMainController
 
     public function __invoke(Request $request)
     {
+        Gate::authorize('organizational-dashboard-view');
         $this->pageData = $this->query($request);
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
@@ -67,6 +68,8 @@ class OrganizationalMainController
     }
 
     public function createPDFReport(Request $request){
+        Gate::authorize('organizational-dashboard-view');
+        
         $filtersApplied = [];
 
         foreach($request->query() as $filterKeyName => $filter){

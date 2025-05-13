@@ -21,9 +21,11 @@
                     </div>
                 </div>
 
-                <div class="w-full flex flex-row justify-between gap-2">
-                    <x-action href="{{ route('company.edit', session('company')) }}" variant="secondary">Editar</x-action>
-                </div>
+                @can('company-edit')
+                    <div class="w-full flex flex-row justify-between gap-2">
+                        <x-action href="{{ route('company.edit', session('company')) }}" variant="secondary">Editar</x-action>
+                    </div>
+                @endcan
             </div>
         </x-structure.main-content-container>
     </x-structure.page-container>

@@ -2,23 +2,276 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Helpers\AuthGuardHelper;
+use App\Models\Company;
+use App\Models\User;
+use App\Policies\UserPolicy;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     */
+    // protected $policies = [
+    //     User::class => UserPolicy::class,
+    // ];
+
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap services.
-     */
     public function boot(): void
     {
-        //
+        // $this->registerPolicies();
+
+        Gate::define('user-index', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_index');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+            
+            return false;
+        });
+
+        Gate::define('user-show', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_show');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+            
+            return false;
+        });
+
+        Gate::define('user-create', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_create');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+            
+            return false;
+        });
+
+        Gate::define('user-edit', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_edit');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+            
+            return false;
+        });
+
+        Gate::define('user-delete', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_delete');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+            
+            return false;
+        });
+
+        Gate::define('answer-tests', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('answer_tests');;
+            }
+
+            return false;
+        });
+
+        Gate::define('feedbacks-index', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('feedbacks_index');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('company-show', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('company_show');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('company-edit', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('company_edit');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('metrics-edit', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('metrics_edit');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('psychosocial-dashboard-view', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('psychosocial_dashboard_view');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('organizational-dashboard-view', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('organizational_dashboard_view');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('demographics-dashboard-view', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('demographics_dashboard_view');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('campaign-index', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('campaign_index');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('campaign-show', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('campaign_show');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('campaign-create', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('campaign_create');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('campaign-edit', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('campaign_edit');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('campaign-delete', function (?Authenticatable $user) {
+            if(AuthGuardHelper::user() instanceof User){
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('campaign_delete');;
+            }
+
+            if(AuthGuardHelper::user() instanceof Company){
+                return true;
+            }
+
+            return false;
+        });
     }
 }

@@ -30,12 +30,16 @@
                 </div>
 
                 <div class="w-full flex flex-row justify-between gap-2">
-                    @if(now() < $campaign->start_date)
-                        <x-form action="{{ route('campaign.destroy', $campaign) }}" delete onsubmit="return confirm('Você deseja excluir a campanha?')">
-                            <x-action tag="button" type="submit" variant="secondary">Excluir campanha</x-action>
-                        </x-form>
-                    @endif
-                    <x-action href="{{ route('campaign.edit', $campaign) }}" variant="secondary">Editar</x-action>
+                    @can('campaign-delete')
+                        @if(now() < $campaign->start_date)
+                            <x-form action="{{ route('campaign.destroy', $campaign) }}" delete onsubmit="return confirm('Você deseja excluir a campanha?')">
+                                <x-action tag="button" type="submit" variant="secondary">Excluir campanha</x-action>
+                            </x-form>
+                        @endif
+                    @endcan
+                    @can('campaign-edit')
+                        <x-action href="{{ route('campaign.edit', $campaign) }}" variant="secondary">Editar</x-action>
+                    @endcan
                 </div>
             </div>
         </x-structure.main-content-container>    

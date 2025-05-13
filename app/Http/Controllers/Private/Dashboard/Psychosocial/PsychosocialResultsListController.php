@@ -26,9 +26,11 @@ class PsychosocialResultsListController
 
     public function __invoke(Request $request, string $testName)
     {
+        Gate::authorize('psychosocial-dashboard-view');
+        
         $this->pageData = $this->query($request, $testName);
+        dd($this->pageData);
         $usersList = $this->getCompiledPageData();
-
         $filteredUserCount = $this->pageData->total();
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 

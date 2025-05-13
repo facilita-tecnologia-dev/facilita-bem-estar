@@ -28,6 +28,8 @@ class PsychosocialMainController
 
     public function __invoke(Request $request)
     {
+        Gate::authorize('psychosocial-dashboard-view');
+        
         $this->pageData = $this->query($request);
 
         $psychosocialRiskResults = $this->getCompiledPageData();

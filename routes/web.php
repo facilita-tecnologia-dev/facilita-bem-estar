@@ -43,7 +43,6 @@ use Illuminate\Support\Facades\Route;
 // });
 
 // Route::middleware(AuthMiddleware::class)->group(function () {
-    // Route::get('/escolher-teste', [TestsController::class, 'showChoose'])->name('escolher-teste');
     Route::view('/bem-vindo/empresa', 'private.welcome.register-company')->name('welcome.register-company');
 
     Route::get('/colecao/{collection}/teste/{test?}', TestsController::class)->name('responder-teste');

@@ -35,6 +35,8 @@ class UserController
 
     public function index(Request $request)
     {
+        Gate::authorize('user-index');
+
         $query = Company::whereId(session('company')->id)->first()->users()->getQuery();
         $users = $this->filterService->sort($this->filterService->apply($query))
             ->with(['latestPsychosocialCollection', 'latestOrganizationalClimateCollection'])
@@ -56,6 +58,8 @@ class UserController
 
     public function create()
     {
+        Gate::authorize('user-create');
+
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
         $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
             Role::whereIn('id', [1, 2])->get()->toArray()
@@ -66,6 +70,8 @@ class UserController
 
     public function store(UserStoreRequest $request)
     {
+        Gate::authorize('user-create');
+
         $this->userRepository->store($request->safe());
 
         return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
@@ -73,6 +79,8 @@ class UserController
 
     public function show(User $user)
     {
+        Gate::authorize('user-show');
+
         $latestOrganizationalClimateCollectionDate = $user['latestOrganizationalClimateCollection']?->created_at->diffForHumans() ?? 'Nunca';
         $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
 
@@ -81,6 +89,8 @@ class UserController
 
     public function edit(User $user)
     {
+        Gate::authorize('user-edit');
+
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
         $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
             Role::whereIn('id', [1, 2])->get()->toArray()
@@ -99,6 +109,8 @@ class UserController
 
     public function update(UserUpdateRequest $request, User $user)
     {
+        Gate::authorize('user-edit');
+
         $this->userRepository->update($request->safe(), $user);
 
         return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
@@ -106,6 +118,8 @@ class UserController
 
     public function destroy(User $user)
     {
+        Gate::authorize('user-delete');
+        
         $this->userRepository->destroy($user);
 
         return to_route('user.index')->with('message', 'Perfil do colaborador excluído com sucesso!');

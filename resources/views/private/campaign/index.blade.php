@@ -14,15 +14,17 @@
                 </div>
             @endif
             
-            <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
-                <div class="w-full md:w-fit flex gap-2">
-                    <div class="w-full md:w-fit">
-                        <x-action href="{{ route('campaign.create') }}" width="full">
-                            <i class="fa-solid fa-plus text-sm sm:text-base"></i>
-                        </x-action>
+            @can('campaign-create')
+                <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
+                    <div class="w-full md:w-fit flex gap-2">
+                        <div class="w-full md:w-fit">
+                            <x-action href="{{ route('campaign.create') }}" width="full">
+                                <i class="fa-solid fa-plus text-sm sm:text-base"></i>
+                            </x-action>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endcan
 
             @if($companyCampaigns)
                 <x-table class="flex flex-col gap-1">

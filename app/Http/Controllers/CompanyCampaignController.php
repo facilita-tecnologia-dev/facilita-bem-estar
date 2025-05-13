@@ -10,6 +10,7 @@ use App\Models\CompanyCampaign;
 use App\Repositories\CampaignRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class CompanyCampaignController
@@ -21,21 +22,17 @@ class CompanyCampaignController
         $this->campaignRepository = $campaignRepository;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
+        Gate::authorize('campaign-index');
         $companyCampaigns = Company::firstWhere('id', session('company')->id)->campaigns()->with('collection')->paginate(15);
 
         return view('private.campaign.index', compact('companyCampaigns'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
+        Gate::authorize('campaign-create');
         $collectionsToSelect = Collection::all()->map(fn($collection) => [
             'option' => $collection->name,
             'value' => $collection->id
@@ -44,11 +41,9 @@ class CompanyCampaignController
         return view('private.campaign.create', compact('collectionsToSelect'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(CampaignStoreRequest $request)
     {
+        Gate::authorize('campaign-create');
         $companyHasSameCampaignThisYear = Company::firstWhere('id', session('company')->id)
             ->campaigns()
             ->whereYear('start_date', now()->year)
@@ -64,21 +59,17 @@ class CompanyCampaignController
         return to_route('campaign.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(CompanyCampaign $campaign)
     {
+        Gate::authorize('campaign-show');
         return view('private.campaign.show', [
             'campaign' => $campaign
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(CompanyCampaign $campaign)
     {
+        Gate::authorize('campaign-edit');
         $collectionsToSelect = Collection::all()->map(fn($collection) => [
             'option' => $collection->name,
             'value' => $collection->id
@@ -87,12 +78,9 @@ class CompanyCampaignController
         return view('private.campaign.edit', compact('campaign', 'collectionsToSelect'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(CampaignUpdateRequest $request, CompanyCampaign $campaign)
     {
-
+        Gate::authorize('campaign-edit');
         $companyHasSameCampaignThisYear = Company::firstWhere('id', session('company')->id)
             ->campaigns()
             ->whereYear('start_date', now()->year)
@@ -100,7 +88,7 @@ class CompanyCampaignController
             ->first();
 
         
-        if($companyHasSameCampaignThisYear->count()){
+        if($companyHasSameCampaignThisYear->count() && $companyHasSameCampaignThisYear->id !== $campaign->id){
             return back()->with('message', "Sua empresa já cadastrou uma campanha de testes de ". $companyHasSameCampaignThisYear->collection->name ." em 2025.");
         }
 
@@ -109,11 +97,9 @@ class CompanyCampaignController
         return to_route('campaign.index')->with('message', 'Campanha editada com sucesso.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(CompanyCampaign $campaign)
     {
+        Gate::authorize('campaign-delete');
         $this->campaignRepository->destroy($campaign);
 
         return to_route('campaign.index')->with('message', 'Campanha excluída com sucesso.');

@@ -27,6 +27,8 @@ class OrganizationalAnswersController
 
     public function __invoke(Request $request)
     {
+        Gate::authorize('organizational-dashboard-view');
+
         $this->query($request);
 
         $organizationalClimateResults = $this->getCompiledPageData();
@@ -61,6 +63,8 @@ class OrganizationalAnswersController
     }
 
     public function createPDFReport(Request $request){
+        Gate::authorize('organizational-dashboard-view');
+        
         $company = session('company');
         $this->query($request);
 

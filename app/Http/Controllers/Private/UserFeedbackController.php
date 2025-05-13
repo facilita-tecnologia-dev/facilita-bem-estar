@@ -22,6 +22,7 @@ class UserFeedbackController
      */
     public function index(Request $request)
     {
+        Gate::authorize('feedbacks-index');
         $userFeedbacks = $this->query($request);     
         $filteredUserCount = $userFeedbacks->total();
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
@@ -50,6 +51,7 @@ class UserFeedbackController
      */
     public function create()
     {
+        Gate::authorize('answer-tests');
         return view('private.tests.feedback');
     }
 
@@ -58,6 +60,7 @@ class UserFeedbackController
      */
     public function store(Request $request)
     {
+        Gate::authorize('answer-tests');
         $validatedData = $request->validate([
             'feedback' => 'nullable|string|min:12',
         ]);
@@ -80,6 +83,7 @@ class UserFeedbackController
      */
     public function show(UserFeedback $feedback)
     {
+        Gate::authorize('feedbacks-index');
         $parentUser = $feedback->parentUser;
 
         return view('private.dashboard.feedbacks.show', compact('feedback', 'parentUser'));

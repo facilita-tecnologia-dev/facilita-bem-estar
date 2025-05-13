@@ -20,6 +20,7 @@ class PsychosocialResultsByDepartmentController
 
     public function __invoke(Request $request, $testName)
     {
+        Gate::authorize('psychosocial-dashboard-view');
         $this->pageData = $this->query($request, $testName);
 
         $resultsPerDepartment = $this->getCompiledPageData();

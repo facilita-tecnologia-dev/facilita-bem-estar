@@ -15,6 +15,7 @@ class CompanyMetricsController
      */
     public function __invoke(Request $request)
     {
+        Gate::authorize('metrics-edit');
         $metrics = CompanyMetric::where('company_id', session('company')->id)->with('metricType')->get()->keyBy('metricType.key_name');
 
         return view('private.company.company-metrics', compact('metrics'));
@@ -22,6 +23,8 @@ class CompanyMetricsController
 
     public function storeMetrics(Request $request)
     {
+        Gate::authorize('metrics-edit');
+        
         $validatedData = $request->validate([
             'turnover' => 'nullable|between:0,100',
             'absenteeism' => 'nullable|between:0,100',

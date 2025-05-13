@@ -20,6 +20,7 @@ class DemographicsMainController
 
     public function __invoke(Request $request)
     {
+        Gate::authorize('demographics-dashboard-view');
         $this->pageData = $this->pageQuery();
 
         $companyMetrics = $this->getCompanyMetrics();

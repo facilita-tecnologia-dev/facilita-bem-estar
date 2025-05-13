@@ -62,10 +62,14 @@
                 </div>
 
                 <div class="w-full flex flex-row justify-between gap-2">
-                    <x-form action="{{ route('user.destroy', $user) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
-                        <x-action tag="button" type="submit" variant="secondary">Excluir colaborador</x-action>
-                    </x-form>
-                    <x-action href="{{ route('user.edit', $user) }}" variant="secondary">Editar</x-action>
+                    @can('user-delete')
+                        <x-form action="{{ route('user.destroy', $user) }}" delete onsubmit="return confirm('Você deseja excluir o colaborador?')">
+                            <x-action tag="button" type="submit" variant="secondary">Excluir colaborador</x-action>
+                        </x-form>
+                    @endcan
+                    @can('user-edit')
+                        <x-action href="{{ route('user.edit', $user) }}" variant="secondary">Editar</x-action>
+                    @endcan
                 </div>
             </div>
         </x-structure.main-content-container>    

@@ -45,18 +45,20 @@
                     </div>
                 @endif
 
-                <div class="w-full md:w-fit flex gap-2">
-                    <div class="w-full md:w-fit">
-                        <x-action href="{{ route('user.import') }}" width="full">
-                            <i class="fa-solid fa-upload text-sm sm:text-base"></i>
-                        </x-action>
+                @can('user-create')
+                    <div class="w-full md:w-fit flex gap-2">
+                        <div class="w-full md:w-fit">
+                            <x-action href="{{ route('user.import') }}" width="full">
+                                <i class="fa-solid fa-upload text-sm sm:text-base"></i>
+                            </x-action>
+                        </div>
+                        <div class="w-full md:w-fit">
+                            <x-action href="{{ route('user.create') }}" width="full">
+                                <i class="fa-solid fa-plus text-sm sm:text-base"></i>
+                            </x-action>
+                        </div>
                     </div>
-                    <div class="w-full md:w-fit">
-                        <x-action href="{{ route('user.create') }}" width="full">
-                            <i class="fa-solid fa-plus text-sm sm:text-base"></i>
-                        </x-action>
-                    </div>
-                </div>
+                @endcan
             </div>
 
             @if($users)
