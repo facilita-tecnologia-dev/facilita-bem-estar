@@ -24,7 +24,7 @@ class CompanyMetricsController
     public function storeMetrics(Request $request)
     {
         Gate::authorize('metrics-edit');
-        
+
         $validatedData = $request->validate([
             'turnover' => 'nullable|between:0,100',
             'absenteeism' => 'nullable|between:0,100',

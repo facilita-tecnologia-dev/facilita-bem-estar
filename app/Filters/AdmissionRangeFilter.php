@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 class AdmissionRangeFilter implements UserFilterInterface
 {
     public function handle(Builder $query, \Closure $next): Builder
-    { 
+    {
         if (request()->filled('admission_range')) {
             assert(is_string(request('admission_range')));
 
@@ -23,7 +23,7 @@ class AdmissionRangeFilter implements UserFilterInterface
             };
 
             $query->whereDate('admission', '<=', Carbon::now()->subYears($min))
-            ->whereDate('admission', '>=', Carbon::now()->subYears($max + 1)->addDay());
+                ->whereDate('admission', '>=', Carbon::now()->subYears($max + 1)->addDay());
         }
 
         return $next($query);

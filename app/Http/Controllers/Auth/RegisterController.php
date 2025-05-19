@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\RegisterCompanyRequest;
-use App\Http\Requests\RegisterExternalRequest;
-use App\Http\Requests\RegisterInternalUserRequest;
 use App\Models\Company;
 use App\Models\CompanyMetric;
 use App\Models\Metric;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +16,6 @@ class RegisterController
     {
         return view('auth.register.company');
     }
-
 
     public function attemptCompanyRegister(RegisterCompanyRequest $request)
     {
@@ -33,11 +28,11 @@ class RegisterController
 
             $metrics = Metric::all();
 
-            foreach($metrics as $metric){
+            foreach ($metrics as $metric) {
                 CompanyMetric::create([
                     'metric_id' => $metric->id,
                     'company_id' => $company->id,
-                    'value' => 0,
+                    'value' => 'null',
                 ]);
             }
 
@@ -46,7 +41,7 @@ class RegisterController
 
             session(['company' => $company]);
         });
-        
-        return to_route('welcome.register-company');
+
+        return to_route('welcome.company');
     }
 }

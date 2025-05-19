@@ -23,11 +23,11 @@ class CampaignUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ['required', 'string', 'min:8', 'max:255'],
-            "collection_id" => ['nullable'],
-            "start_date" => ['nullable', 'date', Rule::date()->afterOrEqual(now())],
-            "end_date" => ['nullable', 'date', 'after:start_date'],
-            "description" => ['required', 'min:8', 'string'],
+            'name' => ['required', 'string', 'min:8', 'max:255'],
+            'collection_id' => ['nullable'],
+            'start_date' => ['nullable', 'date', Rule::date()->afterOrEqual(now())],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'description' => ['required', 'min:8', 'string'],
         ];
     }
 }

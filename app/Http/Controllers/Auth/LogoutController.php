@@ -14,10 +14,10 @@ class LogoutController
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            
+
             return to_route('auth.login.empresa');
         }
-        
+
         if (Auth::guard('user')->check()) {
             Auth::guard('user')->logout();
 
@@ -26,9 +26,6 @@ class LogoutController
 
             return to_route('auth.login.usuario-interno');
         }
-        
-      
-
 
     }
 }

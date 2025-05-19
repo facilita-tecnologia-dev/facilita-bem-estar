@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Handlers\TestHandlerFactory;
+use App\Helpers\AuthGuardHelper;
 use App\Models\PendingTestAnswer;
 use App\Models\Test;
 use App\Models\UserTest;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 
 class TestService
 {
@@ -18,7 +18,7 @@ class TestService
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function process(array $answers, Test $test) : bool
+    public function process(array $answers, Test $test): bool
     {
         $answersValues = array_map(function ($value) {
             return (int) $value;
@@ -40,7 +40,7 @@ class TestService
                     'question_option_id' => $option->id,
                     'question_id' => $questionId,
                     'test_id' => $test->id,
-                    'user_id' => Auth::guard('user')->user()->id,
+                    'user_id' => AuthGuardHelper::user()->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -55,7 +55,7 @@ class TestService
         return true;
     }
 
-    public function evaluateTest(UserTest $userTest, Collection $metrics) : array
+    public function evaluateTest(UserTest $userTest, Collection $metrics): array
     {
         $handler = $this->handlerFactory->getHandler($userTest->testType);
         $evaluatedTest = $handler->process($userTest, $metrics);

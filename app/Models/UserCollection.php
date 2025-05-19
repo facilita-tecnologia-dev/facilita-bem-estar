@@ -32,7 +32,7 @@ class UserCollection extends Model
         return $this->hasMany(UserTest::class, 'user_collection_id');
     }
 
-    public function scopeWithCollectionTypeName(Builder $query, string $collection) : Builder
+    public function scopeWithCollectionTypeName(Builder $query, string $collection): Builder
     {
         return $query->addSelect(['collection_type_name' => Collection::select('key_name')
             ->where('key_name', $collection)
@@ -40,7 +40,7 @@ class UserCollection extends Model
         ]);
     }
 
-    public function scopeWithTests(Builder $query, Closure $callback) : Builder
+    public function scopeWithTests(Builder $query, Closure $callback): Builder
     {
         return $query->with([
             'tests' => $callback,

@@ -2,10 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Collection;
+use App\Helpers\AuthGuardHelper;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class GuestMiddleware
@@ -17,32 +16,9 @@ class GuestMiddleware
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        // if(Auth::guard('company')->check()){
-        //     $user = Auth::guard('company')->user();
-        // }
-
-        // if(Auth::guard('user')->check()){
-        //     $user = Auth::guard('user')->user();
-        // }
-
-        // if ($user && session('company')) {
-        //     $userRole = $user->roles()->first();
-        //     if ($userRole && $userRole['id'] == 1) {
-        //         if (session('company')->id !== 2) {
-        //             return to_route('dashboard.psychosocial');
-        //         }
-
-        //         return to_route('dashboard.organizational-climate');
-        //     }
-
-        //     if ($userRole && $userRole['id'] == 2) {
-        //         if (session('company')->id !== 2) {
-        //             return to_route('responder-teste', Collection::where('key_name', 'psychosocial-risks')->first());
-        //         }
-
-        //         return to_route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
-        //     }
-        // }
+        if (AuthGuardHelper::user()) {
+            return back();
+        }
 
         return $next($request);
     }

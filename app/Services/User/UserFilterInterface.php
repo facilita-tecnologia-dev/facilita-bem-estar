@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Builder;
 
 interface UserFilterInterface
 {
-    public function handle(Builder $query, \Closure $next) : Builder;
+    public function handle(Builder $query, \Closure $next): Builder;
 }

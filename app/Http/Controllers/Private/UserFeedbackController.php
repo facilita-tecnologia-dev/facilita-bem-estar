@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Private;
 
+use App\Helpers\AuthGuardHelper;
 use App\Models\UserFeedback;
 use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class UserFeedbackController
 {
     protected $filterService;
 
-    public function __construct(UserFilterService $filterService){
+    public function __construct(UserFilterService $filterService)
+    {
         $this->filterService = $filterService;
     }
 
@@ -23,7 +24,7 @@ class UserFeedbackController
     public function index(Request $request)
     {
         Gate::authorize('feedbacks-index');
-        $userFeedbacks = $this->query($request);     
+        $userFeedbacks = $this->query($request);
         $filteredUserCount = $userFeedbacks->total();
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
@@ -34,7 +35,8 @@ class UserFeedbackController
         ]);
     }
 
-    private function query(Request $request){
+    private function query(Request $request)
+    {
         $query = session('company')->users()->getQuery();
 
         return $this->filterService->sort($this->filterService->apply($query))
@@ -42,7 +44,7 @@ class UserFeedbackController
                 $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
             })
             ->select('users.id', 'name', 'department', 'work_shift')
-            ->with('feedbacks', fn($query) => $query->latest()->limit(1))
+            ->with('feedbacks', fn ($query) => $query->latest()->limit(1))
             ->paginate(15)->appends(request()->query());
     }
 
@@ -51,7 +53,8 @@ class UserFeedbackController
      */
     public function create()
     {
-        Gate::authorize('answer-tests');
+        Gate::authorize('answer-organizational-test');
+
         return view('private.tests.feedback');
     }
 
@@ -60,7 +63,7 @@ class UserFeedbackController
      */
     public function store(Request $request)
     {
-        Gate::authorize('answer-tests');
+        Gate::authorize('answer-organizational-test');
         $validatedData = $request->validate([
             'feedback' => 'nullable|string|min:12',
         ]);
@@ -71,7 +74,7 @@ class UserFeedbackController
 
         UserFeedback::create([
             'company_id' => session('company')->id,
-            'user_id' => Auth::user()->id,
+            'user_id' => AuthGuardHelper::user()->id,
             'content' => $validatedData['feedback'],
         ]);
 

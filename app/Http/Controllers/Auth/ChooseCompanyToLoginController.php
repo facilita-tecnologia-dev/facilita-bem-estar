@@ -20,14 +20,14 @@ class ChooseCompanyToLoginController
         session(['company' => $company]);
 
         if (session('company')->id == 2) {
-            if (Auth::user()->hasRole('internal-manager')) {
+            if (Auth::user()->hasRole('manager')) {
                 return redirect()->route('dashboard.organizational-climate');
             }
 
             return redirect()->route('responder-teste', Collection::where('key_name', 'organizational-climate')->first());
         }
 
-        if (Auth::user()->hasRole('internal-manager')) {
+        if (Auth::user()->hasRole('manager')) {
             return redirect()->route('dashboard.psychosocial');
         }
 

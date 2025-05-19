@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Services\TestService;
+use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -13,9 +14,12 @@ class PsychosocialResultsByDepartmentController
 
     protected $pageData;
 
-    public function __construct(TestService $testService)
+    protected $filterService;
+
+    public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
+        $this->filterService = $filterService;
     }
 
     public function __invoke(Request $request, $testName)
@@ -31,10 +35,11 @@ class PsychosocialResultsByDepartmentController
         ));
     }
 
-    private function query(Request $request, string $testName){
+    private function query(Request $request, string $testName)
+    {
         $query = session('company')->users()->getQuery();
 
-        return $query
+        return $this->filterService->apply($query)
             ->whereHas('latestPsychosocialCollection', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })

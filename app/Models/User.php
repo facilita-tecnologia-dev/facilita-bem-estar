@@ -4,9 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Enums\AdmissionRangeEnum;
-use App\Enums\AgeRangeEnum;
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,7 +30,9 @@ class User extends Authenticatable
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'company_users')->withPivot('company_id');
+        return $this->belongsToMany(Role::class, 'company_users')
+        ->withPivot('company_id')
+        ->wherePivot('company_id', session('company')->id);
     }
 
     public function feedbacks(): HasMany
@@ -46,28 +45,33 @@ class User extends Authenticatable
         return $this->hasMany(UserCollection::class);
     }
 
-    public function latestPsychosocialCollection() : HasOne
+    public function latestCollections(): HasMany
+    {
+        return $this->collections()->latest();
+    }
+
+    public function latestPsychosocialCollection(): HasOne
     {
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 1)
             ->latest();
     }
 
-    public function latestOrganizationalClimateCollection() : HasOne
+    public function latestOrganizationalClimateCollection(): HasOne
     {
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 2)
             ->latest();
     }
 
-    public function scopeWithLatestOrganizationalClimateCollection(Builder $query, Closure $callback) : Builder
+    public function scopeWithLatestOrganizationalClimateCollection(Builder $query, Closure $callback): Builder
     {
         return $query->with([
             'latestOrganizationalClimateCollection' => $callback,
         ]);
     }
 
-    public function scopeWithLatestPsychosocialCollection(Builder $query, Closure $callback) : Builder
+    public function scopeWithLatestPsychosocialCollection(Builder $query, Closure $callback): Builder
     {
         return $query->with([
             'latestPsychosocialCollection' => $callback,
@@ -79,21 +83,29 @@ class User extends Authenticatable
         return $this->roles->contains('name', $role);
     }
 
-    public function hasPermission(string $action, /*?string $department = null*/): bool
+    public function departmentScopes(): HasMany
+    {
+        return $this->hasMany(UserDepartmentPermission::class, 'user_id');
+    }
+
+    public function hasPermission(string $action): bool
     {
         $permissionId = Permission::where('key_name', $action)->value('id');
 
         // Permissão específica por setor
-        // $hasDepartmentPermission = DB::table('user_department_permissions')
-        //     ->where('user_id', $this->id)
-        //     ->where('company_id', $companyId)
-        //     ->when($department, fn($q) => $q->where('department', $department))
-        //     ->where('permission_id', $permissionId)
-        //     ->exists();
+        $hasDepartmentPermission = DB::table('user_custom_permissions')
+            ->where('user_id', $this->id)
+            ->where('company_id', session('company')->id)
+            ->where('permission_id', $permissionId)
+            ->first();
 
-        // if ($hasDepartmentPermission) {
-        //     return true;
-        // }
+        if ($hasDepartmentPermission) {
+            if ($hasDepartmentPermission->allowed == true) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         // Verifica o papel do usuário na empresa
         $roleId = DB::table('company_users')
@@ -101,7 +113,7 @@ class User extends Authenticatable
             ->where('company_id', session('company')->id)
             ->value('role_id');
 
-        if (!$roleId) {
+        if (! $roleId) {
             return false;
         }
 
@@ -109,6 +121,7 @@ class User extends Authenticatable
         return DB::table('role_permissions')
             ->where('role_id', $roleId)
             ->where('permission_id', $permissionId)
+            ->where('allowed', true)
             ->exists();
     }
 }

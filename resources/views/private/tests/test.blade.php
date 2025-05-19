@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container class="items-center">
-            <x-structure.page-title title="{{ $collection->key_name == 'psychosocial-risks' ? 'Etapa - '.$testIndex : $test->display_name }}" />
+            <x-structure.page-title title="{{ $collection->key_name == 'psychosocial-risks' ? 'Etapa - '.$testIndex : $test->display_name }}" centered />
 
             <div class="flex flex-col items-center gap-8">
                 <div class="flex flex-col gap-3 w-full max-w-[550px] max-h-full">

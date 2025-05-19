@@ -37,11 +37,12 @@ class validateCPF implements ValidationRule
         for ($t = 9; $t < 11; $t++) {
             $sum = 0;
             for ($i = 0; $i < $t; $i++) {
-                $sum += (int)$cpf[$i] * (($t + 1) - $i); // 👈 cast para int
+                $sum += (int) $cpf[$i] * (($t + 1) - $i); // 👈 cast para int
             }
             $d = ((10 * $sum) % 11) % 10;
-            if ((int)$cpf[$t] !== $d) {
+            if ((int) $cpf[$t] !== $d) {
                 $fail('O CPF informado é inválido.');
+
                 return;
             }
         }

@@ -89,3 +89,31 @@ if(triggerFilterModal && filterModal){
     });
 }
 
+// LGPD Bar
+
+const LGPDBar = document.querySelector('[data-role="lgpd-bar"]');
+const LGPDAcceptButton = LGPDBar?.querySelector('button');
+
+
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+}
+
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days*24*60*60*1000));
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/;SameSite=Lax";
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (!getCookie('lgpd_consent')) {
+        LGPDBar.style.display = 'flex';
+    }
+
+    LGPDAcceptButton.addEventListener('click', function() {
+        setCookie('lgpd_consent', '1', 30);
+        LGPDBar.style.display = 'none';
+    });
+});

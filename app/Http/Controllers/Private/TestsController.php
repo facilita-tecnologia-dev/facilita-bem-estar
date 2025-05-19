@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Private;
 
+use App\Helpers\AuthGuardHelper;
 use App\Models\Collection;
 use App\Models\PendingTestAnswer;
 use App\Models\Test;
@@ -9,7 +10,6 @@ use App\Models\UserCollection;
 use App\Models\UserTest;
 use App\Services\TestService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TestsController
@@ -34,8 +34,7 @@ class TestsController
             )
             ->first();
 
-
-        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', Auth::guard('user')->user()->id)->where('test_id', '=', $test->id)->get();
+        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', AuthGuardHelper::user()->id)->where('test_id', '=', $test->id)->get();
 
         return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
     }
@@ -109,12 +108,12 @@ class TestsController
         }
 
         DB::transaction(function () use ($testAnswersByCollection) {
-            PendingTestAnswer::query()->where('user_id', Auth::guard('user')->user()->id)->delete();
+            PendingTestAnswer::query()->where('user_id', AuthGuardHelper::user()->id)->delete();
 
             foreach ($testAnswersByCollection as $collectionName => $collection) {
                 $relatedCollection = Collection::where('key_name', $collectionName)->first();
                 $newTestCollection = UserCollection::create([
-                    'user_id' => Auth::guard('user')->user()->id,
+                    'user_id' => AuthGuardHelper::user()->id,
                     'collection_id' => $relatedCollection->id,
                     'created_at' => now(),
                     'updated_at' => now(),

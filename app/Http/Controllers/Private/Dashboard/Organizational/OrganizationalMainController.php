@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
-use App\Enums\AdmissionRangeEnum;
-use App\Enums\AgeRangeEnum;
 use App\Models\User;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
@@ -21,7 +19,7 @@ class OrganizationalMainController
 
     protected $pageData;
 
-    public function __construct(TestService $testService, UserFilterService $filterService,)
+    public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
         $this->filterService = $filterService;
@@ -46,9 +44,10 @@ class OrganizationalMainController
         ]);
     }
 
-    private function query(Request $request){
+    private function query(Request $request)
+    {
         $query = session('company')->users()
-        ->getQuery();
+            ->getQuery();
 
         return $this->filterService->apply($query)
             ->whereHas('latestOrganizationalClimateCollection', function ($query) {
@@ -67,25 +66,25 @@ class OrganizationalMainController
             ->get();
     }
 
-    public function createPDFReport(Request $request){
+    public function createPDFReport(Request $request)
+    {
         Gate::authorize('organizational-dashboard-view');
-        
+
         $filtersApplied = [];
 
-        foreach($request->query() as $filterKeyName => $filter){
+        foreach ($request->query() as $filterKeyName => $filter) {
             $filtersApplied[$this->filterService->getFilterDisplayName($filterKeyName)] = $filter;
         }
 
         $charts = [];
-        
-        foreach($request->all() as $chartName => $chartToBase64){
-            if(str_contains($chartName, '-to-base-64')){
+
+        foreach ($request->all() as $chartName => $chartToBase64) {
+            if (str_contains($chartName, '-to-base-64')) {
                 $chartName = str_replace('_', ' ', str_replace('-to-base-64', '', $chartName));
                 $charts[$chartName] = $chartToBase64;
             }
         }
 
- 
         $company = session('company');
 
         $companyLogo = $company->logo;
@@ -160,7 +159,7 @@ class OrganizationalMainController
         $usersWithCollection = $this->pageData;
         $usersByDepartment = session('company')->users->groupBy('department');
 
-        if(!$usersWithCollection->count()){
+        if (! $usersWithCollection->count()) {
             return null;
         }
 
@@ -175,7 +174,7 @@ class OrganizationalMainController
         return [
             'Geral' => [
                 'count' => $usersWithCollection->count(),
-                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100
+                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
             ],
         ];
     }
@@ -184,12 +183,10 @@ class OrganizationalMainController
     {
         $departmentParticipation = [];
 
-        foreach ($usersWithCollection->groupBy('department') as $departmentName => $department) {
-            $countDepartmentUsers = $companyUsersByDepartment[$departmentName]->count();
-
+        foreach ($companyUsersByDepartment as $departmentName => $department) {
             $departmentParticipation[$departmentName] = [
-                'count' => $department->count(),
-                'per_cent' => ($department->count() / $countDepartmentUsers) * 100,
+                'count' => $usersWithCollection->where('department', $departmentName)->count(),
+                'per_cent' => ($usersWithCollection->where('department', $departmentName)->count() / $department->count()) * 100,
             ];
         }
 

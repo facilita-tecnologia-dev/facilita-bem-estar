@@ -22,8 +22,8 @@ class AgeRangeFilter implements UserFilterInterface
                 default => [18, 100],
             };
 
-             $query->whereDate('birth_date', '<=', Carbon::now()->subYears($min))
-            ->whereDate('birth_date', '>=', Carbon::now()->subYears($max + 1)->addDay());
+            $query->whereDate('birth_date', '<=', Carbon::now()->subYears($min))
+                ->whereDate('birth_date', '>=', Carbon::now()->subYears($max + 1)->addDay());
         }
 
         return $next($query);

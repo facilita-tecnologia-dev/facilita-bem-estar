@@ -27,7 +27,7 @@ class RiskQuestionMap extends Model
         return $this->belongsTo(Question::class, 'question_Id', 'id');
     }
 
-    public function scopeWithParentQuestionStatement(Builder $query) : Builder
+    public function scopeWithParentQuestionStatement(Builder $query): Builder
     {
         return $query->addSelect([
             'parent_question_statement' => DB::table('questions')
@@ -37,7 +37,7 @@ class RiskQuestionMap extends Model
         ]);
     }
 
-    public function scopeWithRelatedQuestionAnswer(Builder $query) : Builder
+    public function scopeWithRelatedQuestionAnswer(Builder $query): Builder
     {
         return $query->addSelect([
             'related_question_answer' => DB::table('user_answers')

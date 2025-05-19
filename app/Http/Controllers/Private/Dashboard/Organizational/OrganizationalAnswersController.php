@@ -16,7 +16,7 @@ class OrganizationalAnswersController
     protected $testService;
 
     protected $filterService;
-    
+
     protected $pageData;
 
     public function __construct(TestService $testService, UserFilterService $filterService)
@@ -38,33 +38,35 @@ class OrganizationalAnswersController
         ));
     }
 
-    private function query($request){
+    private function query($request)
+    {
         // Catching users
         $query = session('company')->users()
             ->whereHas('latestOrganizationalClimateCollection', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-        ->getQuery();
+            ->getQuery();
 
         // Catching user tests
         $this->pageData = $query
             ->withLatestOrganizationalClimateCollection(function ($query) use ($request) {
                 $query->whereYear('created_at', $request->year ?? '2025')
                     ->withCollectionTypeName('organizational-climate')
-                    ->withTests(function ($query) use($request) {
+                    ->withTests(function ($query) use ($request) {
                         $query
-                            ->when($request->test, fn($q) => $q->justOneTest($request->test))
+                            ->when($request->test, fn ($q) => $q->justOneTest($request->test))
                             ->withAnswers()
                             ->withTestType();
                     });
             })
-        ->get();
+            ->get();
     }
 
-    public function createPDFReport(Request $request){
+    public function createPDFReport(Request $request)
+    {
         Gate::authorize('organizational-dashboard-view');
-        
+
         $company = session('company');
         $this->query($request);
 
@@ -75,7 +77,7 @@ class OrganizationalAnswersController
         $pdf = Pdf::loadView('pdf.organizational-climate-answers', [
             'companyLogo' => $companyLogo,
             'companyName' => $companyName,
-            'organizationalClimateResults' => $organizationalClimateResults
+            'organizationalClimateResults' => $organizationalClimateResults,
         ])->setPaper('a4', 'landscape');
 
         return $pdf->stream('graficos_clima_organizacional.pdf');

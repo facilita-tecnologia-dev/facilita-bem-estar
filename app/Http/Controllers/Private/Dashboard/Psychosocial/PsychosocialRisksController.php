@@ -43,7 +43,7 @@ class PsychosocialRisksController
                             });
                     });
             })
-        ->get();
+            ->get();
     }
 
     public function __invoke()
@@ -58,7 +58,7 @@ class PsychosocialRisksController
     {
         Gate::authorize('psychosocial-dashboard-view');
         $risks = $this->getCompiledPageData();
-        
+
         $company = session('company');
 
         $companyLogo = $company->logo;
@@ -80,7 +80,7 @@ class PsychosocialRisksController
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
-            if($user->latestPsychosocialCollection){
+            if ($user->latestPsychosocialCollection) {
                 $this->compileUserTests($user, $metrics, $testCompiled);
             }
         }

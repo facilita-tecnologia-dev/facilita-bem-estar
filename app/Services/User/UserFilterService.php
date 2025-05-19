@@ -6,6 +6,7 @@ use App\Filters\AdmissionRangeFilter;
 use App\Filters\AgeRangeFilter;
 use App\Filters\CPFFilter;
 use App\Filters\DepartmentFilter;
+use App\Filters\DepartmentScopeFilter;
 use App\Filters\EducationLevelFilter;
 use App\Filters\GenderFilter;
 use App\Filters\HasAnsweredOrganizationalFilter;
@@ -24,6 +25,7 @@ class UserFilterService
      * @var UserFilterInterface[]
      */
     protected array $filters = [
+        DepartmentScopeFilter::class,
         NameFilter::class,
         CPFFilter::class,
         GenderFilter::class,
@@ -54,38 +56,38 @@ class UserFilterService
             ->thenReturn();
     }
 
-    public function sort(Builder $query): Builder{ 
+    public function sort(Builder $query): Builder
+    {
         $orderBy = request('order_by') ?? null;
 
-    
-        if($orderBy){
+        if ($orderBy) {
 
             $direction = strtolower(request('order_direction', 'asc')) === 'desc' ? 'desc' : 'asc';
 
-            if($orderBy == "psychosocial-risks"){
+            if ($orderBy == 'psychosocial-risks') {
                 $latestPsychosocialSub = DB::table('user_collections')
                     ->select('user_id', DB::raw('MAX(created_at) as latest_created_at'))
                     ->where('collection_id', 1)
                     ->groupBy('user_id');
 
-                return $query->leftJoinSub($latestPsychosocialSub, 'latest_psychosocial', function ($join) use($direction) {
+                return $query->leftJoinSub($latestPsychosocialSub, 'latest_psychosocial', function ($join) {
                     $join->on('users.id', '=', 'latest_psychosocial.user_id');
                 })->orderBy('latest_psychosocial.latest_created_at', $direction);
             }
 
-            if($orderBy == "organizational-climate"){
+            if ($orderBy == 'organizational-climate') {
                 $latestOrganizationalSub = DB::table('user_collections')
                     ->select('user_id', DB::raw('MAX(created_at) as latest_created_at'))
                     ->where('collection_id', 2)
                     ->groupBy('user_id');
 
-                return $query->leftJoinSub($latestOrganizationalSub, 'latest_organizational', function ($join) use($direction) {
+                return $query->leftJoinSub($latestOrganizationalSub, 'latest_organizational', function ($join) {
                     $join->on('users.id', '=', 'latest_organizational.user_id');
                 })->orderBy('latest_organizational.latest_created_at', $direction);
             }
 
             $column = $this->customSorts[$orderBy] ?? $orderBy;
-            
+
             return $query->orderBy($column, $direction);
         }
 
@@ -94,7 +96,7 @@ class UserFilterService
 
     public function getFilterDisplayName(string $filterKeyName): string
     {
-        return match($filterKeyName){
+        return match ($filterKeyName) {
             'name' => 'Nome',
             'cpf' => 'CPF',
             'gender' => 'Gênero',

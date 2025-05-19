@@ -2,87 +2,115 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\SessionErrorHelper;
 use App\Http\Requests\LoginExternalRequest;
 use App\Http\Requests\LoginInternalRequest;
-use App\Models\Collection;
 use App\Models\Company;
 use App\Models\User;
 use App\Rules\validateCNPJ;
+use App\Rules\validateCPF;
 use App\Services\LoginRedirectService;
+use App\Services\LoginService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
 class LoginController
 {
-    public function showInternalUserLogin()
+    protected $loginService;
+
+    public function __construct(LoginService $loginService)
     {
-        return view('auth.login.index');
+        $this->loginService = $loginService;    
     }
 
-    public function showCompanyLogin(){
-        return view('auth.login.company');
-    }
-
-    public function attemptInternalUserLogin(LoginInternalRequest $request)
+    public function attemptInternalUserLogin(Request $request)
     {
-        $user = User::where('cpf', $request->safe()->only('cpf'))->first();
-
-        if (! $user) {
-            return back()->with('message', 'Usuário não encontrado.');
-        }
-
-        Auth::guard('user')->login($user);
-        session()->regenerate();
-
-        $userCompanies = $user->companies;
-
-        if (count($user->companies) > 1) {
-            return redirect()->route('auth.login.usuario-interno.escolher-empresa');
-        }
-
-        $userCompany = $userCompanies->first();
+        $validatedData = $request->validate([
+            'cpf' => ['required', 'string', new validateCPF],
+        ]);
         
-        session(['company' => $userCompany]);
+        $user = User::firstWhere('cpf', $validatedData['cpf']);
+        
+        if (! $user) {
+            SessionErrorHelper::flash('cpf', 'Usuário não cadastrado.');
+            return back();
+        }
 
-        return redirect()->to(route('user.index'));
+        $redirectRoute = $this->loginService->attemptLogin($user, $validatedData);
+  
+        return redirect()->to($redirectRoute);
     }
 
-    
-    public function attemptCompanyLogin(Request $request){
+    public function attemptCompanyLogin(Request $request)
+    {
         $validatedData = $request->validate([
             'cnpj' => ['required', 'string', new validateCNPJ],
             'password' => ['required'],
         ]);
-        
+
         $company = Company::firstWhere('cnpj', $validatedData['cnpj']);
-        
-        if(!$company){
-            return back()->with('message', 'Empresa não cadastrada.');
+
+        if (!$company) {
+            SessionErrorHelper::flash('cnpj', 'Empresa não cadastrada.');
+            return back();
         }
 
-        if(Hash::check($validatedData['password'], $company->password)){
-            Auth::guard('company')->login($company);
-            session()->regenerate();
+        $redirectRoute = $this->loginService->attemptLogin($company, $validatedData);
 
-            session(['company' => $company]);
-
-            return redirect()->to(route('user.index'));
-        }
-
-        return back()->with('message', 'A senha está incorreta.');
+        return redirect()->to($redirectRoute);
     }
 
-    // public function attemptExternalLogin(LoginExternalRequest $request)
-    // {
-    //     $user = User::where('cpf', $request->safe()->only('cpf'))->first();
+    public function showChooseCompany(User $user)
+    {
+        return view('auth.login.choose-company', compact('user'));
+    }
 
-    //     if (! $user) {
-    //         return back()->with('message', 'Usuário não encontrado.');
-    //     }
+    public function loginUserWithCompany(User $user, Company $company)
+    {
+        session(['company' => $company]);
 
-    //     Auth::login($user);
+        if($user->hasRole('manager')){
+            return redirect()->to(route('auth.login.gestor.senha', $user));
+        }
 
-    //     return to_route('escolher-teste');
-    // }
+        $this->loginService->login($user);
+
+        return redirect()->to($this->loginService->getRedirectRoute($user));
+    }
+
+    public function showPasswordForm(User $user){
+        return view('auth.login.password', compact('user'));
+    }
+
+    public function checkManagerPassword(Request $request, User $user)
+    {
+        $validatedData = $request->validate([
+            'password' => ['required'],
+        ]);
+
+        $isTempPassword = str_starts_with($user->password, 'temp_') && strlen($user->password) == 37;
+        
+        if($isTempPassword){
+            if($validatedData['password'] !== $user->password){
+                SessionErrorHelper::flash('password', 'A senha está incorreta.');
+                return back();
+            }
+        } else{
+            if(!Hash::check($validatedData['password'], $user->password)){ 
+                SessionErrorHelper::flash('password', 'A senha está incorreta.');
+                return back();
+            }
+        }
+
+        $this->loginService->login($user);
+        
+        if($isTempPassword){
+            return redirect()->to(route('auth.login.redefinir-senha'));
+        }
+
+        return redirect()->to($this->loginService->getRedirectRoute($user));
+    }
 }

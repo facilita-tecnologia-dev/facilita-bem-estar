@@ -44,7 +44,7 @@ class UserTest extends Model
         return $this->hasMany(UserAnswer::class, 'user_test_id');
     }
 
-    public function scopeWithTestType(Builder $query, ?Closure $callback = null) : Builder
+    public function scopeWithTestType(Builder $query, ?Closure $callback = null): Builder
     {
         return $query->with([
             'testType' => function ($query) use ($callback) {
@@ -57,7 +57,7 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswers(Builder $query) : Builder
+    public function scopeWithAnswers(Builder $query): Builder
     {
         return $query->with([
             'answers' => function ($q) {
@@ -67,7 +67,7 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswersSum(Builder $query) : Builder
+    public function scopeWithAnswersSum(Builder $query): Builder
     {
         return $query->addSelect([
             'answers_sum' => DB::table('user_answers')
@@ -77,7 +77,7 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeWithAnswersCount(Builder $query) : Builder
+    public function scopeWithAnswersCount(Builder $query): Builder
     {
         return $query->addSelect([
             'answers_count' => DB::table('user_answers')
@@ -86,7 +86,7 @@ class UserTest extends Model
         ]);
     }
 
-    public function scopeJustOneTest(Builder $query, string $testName) : Builder
+    public function scopeJustOneTest(Builder $query, string $testName): Builder
     {
         return $query->whereHas('testType', function ($subQuery) use ($testName) {
             $subQuery->where('display_name', $testName);

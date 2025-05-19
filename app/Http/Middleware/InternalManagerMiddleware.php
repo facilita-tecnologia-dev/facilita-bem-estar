@@ -5,14 +5,13 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 class InternalManagerMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if(! Auth::user()->hasRole('internal-manager')){
+        if (! Auth::user()->hasRole('manager')) {
             abort(403, 'Você não tem permissão para acessar essa página.');
         }
 

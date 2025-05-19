@@ -29,7 +29,6 @@ return new class extends Migration
             $table->smallInteger('appointment_duration')->nullable();
             $table->string('resume')->nullable();
             $table->text('description')->nullable();
-            // $table->foreignIdFor(Company::class);
             $table->rememberToken();
             $table->timestamps();
         });

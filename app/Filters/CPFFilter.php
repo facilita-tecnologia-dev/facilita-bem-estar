@@ -10,7 +10,7 @@ class CPFFilter implements UserFilterInterface
     public function handle(Builder $query, \Closure $next): Builder
     {
         if (request()->filled('cpf')) {
-            $query->where('cpf', 'like', '%' . request('cpf') . '%');
+            $query->where('cpf', 'like', '%'.request('cpf').'%');
         }
 
         return $next($query);

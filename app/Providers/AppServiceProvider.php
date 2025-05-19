@@ -2,16 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Company;
-use App\Models\User;
-use App\Policies\CompanyPolicy;
-use App\Policies\UserPolicy;
 use App\View\Composers\FiltersComposer;
 use App\View\Composers\SidebarComposer;
-use Illuminate\Auth\Access\Response;
+use App\View\Composers\UserWelcomeComposer;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,11 +14,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
-    {
-        // Gate::policy(User::class, UserPolicy::class);
-        // Gate::policy(Company::class, CompanyPolicy::class);
-    }
+    public function register(): void {}
 
     /**
      * Bootstrap any application services.
@@ -33,49 +23,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
 
-        // Gate::define('view-manager-screens', function (User $user): Response {
-        //     if ($user->hasRole('internal-manager') || Auth::guard('company')->check()) {
-        //         return Response::allow();
-        //     }
-
-        //     return Response::denyAsNotFound();
-        // });
-
-        // Gate::define('answer-tests', function (User $user): Response {
-        //     if ($user->hasRole('internal-manager') || $user->hasRole('employee')) {
-        //         return Response::allow();
-        //     }
-
-        //     return Response::denyAsNotFound();
-        // });
-
-        // Gate::define('update-metrics', function (User $user): Response {
-        //     if ($user->hasRole('internal-manager')  || Auth::guard('company')->check()) {
-        //         return Response::allow();
-        //     }
-
-        //     return Response::denyAsNotFound();
-        // });
-
-        // Gate::define('is-internal-manager', function(User $user): Response {
-        //     if($user->hasRole('internal-manager')){
-        //         return Response::allow();
-        //     }
-
-        //     return Response::denyAsNotFound();
-        // });
-
-        // Gate::define('is-employee', function(User $user): Response {
-        //     if($user->hasRole('employee')){
-        //         return Response::allow();
-        //     }
-
-        //     return Response::denyAsNotFound();
-        // });
-
-     
-
         View::composer('components.structure.sidebar', SidebarComposer::class);
         View::composer('components.filter-actions', FiltersComposer::class);
+        View::composer('private.welcome.user', UserWelcomeComposer::class);
     }
 }

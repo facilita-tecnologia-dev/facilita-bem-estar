@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,7 +17,6 @@ class Company extends Authenticatable
 
     protected $fillable = ['name', 'cnpj', 'logo'];
 
-
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'company_users')
@@ -30,8 +29,20 @@ class Company extends Authenticatable
         return $this->hasMany(CompanyMetric::class, 'company_id');
     }
 
-    public function campaigns() : HasMany
+    public function campaigns(): HasMany
     {
         return $this->hasMany(CompanyCampaign::class, 'company_id');
+    }
+
+    public function getActiveCampaigns() : Collection
+    {
+        return $this->campaigns
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now());
+    }
+
+    public function hasCompletedBasicData() : bool
+    {
+        return $this->users->count() && $this->logo && $this->metrics()->where('value', '!=', 'null')->count();
     }
 }

@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Models\User;
-use App\Models\UserCollection;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class PsychosocialMainController
@@ -29,12 +27,12 @@ class PsychosocialMainController
     public function __invoke(Request $request)
     {
         Gate::authorize('psychosocial-dashboard-view');
-        
+
         $this->pageData = $this->query($request);
 
         $psychosocialRiskResults = $this->getCompiledPageData();
         $psychosocialTestsParticipation = $this->getPsychosocialTestsParticipation();
-        
+
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.dashboard.psychosocial.index', [
@@ -46,7 +44,8 @@ class PsychosocialMainController
         ]);
     }
 
-    private function query(Request $request){
+    private function query(Request $request)
+    {
         $query = session('company')->users()->getQuery();
 
         return $this->filterService->apply($query)
@@ -154,7 +153,7 @@ class PsychosocialMainController
         $usersWithCollection = $this->pageData;
         $usersByDepartment = session('company')->users->groupBy('department');
 
-        if(!$usersWithCollection->count()){
+        if (! $usersWithCollection->count()) {
             return null;
         }
 
@@ -169,7 +168,7 @@ class PsychosocialMainController
         return [
             'Geral' => [
                 'count' => $usersWithCollection->count(),
-                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100
+                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
             ],
         ];
     }
@@ -178,12 +177,10 @@ class PsychosocialMainController
     {
         $departmentParticipation = [];
 
-        foreach ($usersWithCollection->groupBy('department') as $departmentName => $department) {
-            $countDepartmentUsers = $usersByDepartment[$departmentName]->count();
-
+        foreach ($usersByDepartment as $departmentName => $department) {
             $departmentParticipation[$departmentName] = [
-                'count' => $department->count(),
-                'per_cent' => ($department->count() / $countDepartmentUsers) * 100,
+                'count' => $usersWithCollection->where('department', $departmentName)->count(),
+                'per_cent' => ($usersWithCollection->where('department', $departmentName)->count() / $department->count()) * 100,
             ];
         }
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Role::class);
             $table->foreignIdFor(Permission::class);
+            $table->boolean('allowed');
         });
     }
 

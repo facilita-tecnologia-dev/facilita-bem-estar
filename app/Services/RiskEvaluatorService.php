@@ -10,7 +10,7 @@ class RiskEvaluatorService
 {
     public function __construct(private RiskEvaluatorFactory $riskEvaluatorFactory) {}
 
-    public function getRiskEvaluatorHandler(Risk $risk) : RiskEvaluatorInterface
+    public function getRiskEvaluatorHandler(Risk $risk): RiskEvaluatorInterface
     {
         $handler = $this->riskEvaluatorFactory->getRiskEvaluator($risk);
 

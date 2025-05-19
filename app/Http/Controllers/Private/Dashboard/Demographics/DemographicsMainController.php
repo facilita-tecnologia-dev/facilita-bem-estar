@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private\Dashboard\Demographics;
 
 use App\Services\TestService;
+use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -13,9 +14,12 @@ class DemographicsMainController
 
     protected $pageData;
 
-    public function __construct(TestService $testService)
+    protected $filterService;
+
+    public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
+        $this->filterService = $filterService;
     }
 
     public function __invoke(Request $request)
@@ -34,8 +38,9 @@ class DemographicsMainController
 
     private function pageQuery()
     {
-        $pageData = session('company')
-            ->users()
+        $query = session('company')->users()->getQuery();
+
+        return $this->filterService->apply($query)
             ->select('users.id', 'users.department', 'users.gender', 'users.admission', 'users.birth_date')
             ->get();
 
@@ -46,7 +51,7 @@ class DemographicsMainController
     {
         $metrics = session('company')->metrics()->get()->groupBy('metricType.display_name');
         $metricsCompiled = [];
-        
+
         foreach ($metrics as $metricName => $metric) {
             $metricsCompiled[$metricName] = (int) $metric[0]->value ?? 0;
         }
@@ -58,22 +63,21 @@ class DemographicsMainController
     {
         $users = $this->pageData;
 
-        if(!$users->count()){
+        if (! $users->count()) {
             return null;
         }
 
-        $usersByDepartmentCount = $users->groupBy('department')->map(function ($group) {
+        $usersByDepartmentCount = $users->groupBy('department')->map(function ($group) use ($users) {
             return [
                 'count' => $group->count(),
-                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+                'per_cent' => ($group->count() / $users->count()) * 100,
             ];
         });
 
-
-        $usersByGenderCount = $users->groupBy('gender')->map(function ($group) {
+        $usersByGenderCount = $users->groupBy('gender')->map(function ($group) use ($users) {
             return [
                 'count' => $group->count(),
-                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+                'per_cent' => ($group->count() / $users->count()) * 100,
             ];
         });
 
@@ -86,10 +90,10 @@ class DemographicsMainController
                 $years <= 10 => '5-10 anos',
                 default => 'Mais de 10 anos',
             };
-        })->map(function ($group) {
+        })->map(function ($group) use ($users) {
             return [
                 'count' => $group->count(),
-                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+                'per_cent' => ($group->count() / $users->count()) * 100,
             ];
         });
 
@@ -102,10 +106,10 @@ class DemographicsMainController
                 $age <= 45 => '36-45 anos',
                 default => 'Mais de 45 anos'
             };
-        })->map(function ($group) {
+        })->map(function ($group) use ($users) {
             return [
                 'count' => $group->count(),
-                'per_cent' => ($group->count() / session('company')->users->count()) * 100
+                'per_cent' => ($group->count() / $users->count()) * 100,
             ];
         });
 

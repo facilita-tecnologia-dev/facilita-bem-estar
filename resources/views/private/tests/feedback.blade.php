@@ -3,7 +3,7 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container class="items-center justify-center">
-            <x-structure.page-title title="Deixe seu comentário, crítica, elogio ou sugestão." />
+            <x-structure.page-title title="Deixe seu comentário, crítica, elogio ou sugestão." centered />
             
             <div class="w-full max-w-[550px]">
                 <x-form action="{{ route('feedbacks.create') }}" post class="flex flex-col gap-2 items-center">

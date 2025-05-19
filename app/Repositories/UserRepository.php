@@ -4,54 +4,71 @@ namespace App\Repositories;
 
 use App\Enums\InternalUserRoleEnum;
 use App\Imports\UsersImport;
-use App\Models\Company;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ValidatedInput;
-use Maatwebsite\Excel\Excel as ExcelReturn;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserRepository
 {
-    public function store(ValidatedInput $data) : User
+    public function store(ValidatedInput $data): User
     {
         return DB::transaction(function () use ($data) {
             $userData = $data->except('role');
 
             $userRole = Role::where('display_name', InternalUserRoleEnum::from($data['role'])->value)->first();
 
+            if($userRole->name == 'manager'){
+                $userData['password'] = 'temp_' . bin2hex(random_bytes(16));
+            }     
+
             $user = User::create($userData);
 
             $user->companies()->sync([session('company')->id => ['role_id' => $userRole->id]]);
 
+            session(['company' => session('company')->load('users')]);
+
             return $user;
         });
     }
 
-    public function import(Request $request) : ExcelReturn
+    public function import(Request $request): void
     {
-        return Excel::import(new UsersImport(), $request->file('import_users')->store('temp'));
+        Excel::import(new UsersImport, $request->file('import_users')->store('temp'));
+
+        session(['company' => session('company')->load('users')]);
     }
 
-    public function update(ValidatedInput $data, User $user) : User
+    public function update(ValidatedInput $data, User $user): User
     {
+
         return DB::transaction(function () use ($data, $user) {
             $userData = $data->except('role');
-
+            
             $userRole = Role::where('display_name', InternalUserRoleEnum::from($data['role'])->value)->first();
-
+            
+            if($userRole->name == 'manager'){
+                if(!$user->password){
+                    $userData['password'] = 'temp_' . bin2hex(random_bytes(16));
+                }
+            }       
+            
             $user->update($userData);
 
             $user->companies()->sync([session('company')->id => ['role_id' => $userRole->id]]);
 
+            session(['company' => session('company')->load('users')]);
+
             return $user;
         });
     }
 
-    public function destroy(User $user) : mixed
+    public function destroy(User $user): void
     {
-        return $user->delete();
+        $user->delete();
+
+        session(['company' => session('company')->load('users')]);
     }
 }

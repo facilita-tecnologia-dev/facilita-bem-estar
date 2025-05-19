@@ -8,9 +8,9 @@ use Illuminate\Support\Collection;
 class ConflitosGestao implements RiskEvaluatorInterface
 {
     /**
-     * @param Collection<int, \App\Models\Metric> $metrics
+     * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics) : float | int
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): float|int
     {
         $riskPoints = 0;
 

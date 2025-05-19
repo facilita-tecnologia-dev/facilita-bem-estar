@@ -11,10 +11,10 @@
                             <p class="text-base text-center text-gray-800">Escolha em qual das empresas você quer fazer login</p>
                         </div>
                     </div>
-
+  
                     <div class="flex flex-col gap-2 max-h-64 overflow-auto px-2 py-2">
-                        @foreach ($userCompanies as $company)
-                            <x-form action="{{ route('auth.login.usuario-interno.entrar-com-empresa', $company) }}" post>
+                        @foreach ($user->companies as $company)
+                            <x-form action="{{ route('auth.login.usuario-interno.entrar-com-empresa', ['user' => $user, 'company' => $company]) }}" post>
                                 <button type="submit" class="block rounded-md shadow-md bg-gray-100/50 border border-gray-200 w-full px-2 py-3 text-center relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all">
                                     {{ $company->name }}
                                 </button>

@@ -10,7 +10,7 @@ class NameFilter implements UserFilterInterface
     public function handle(Builder $query, \Closure $next): Builder
     {
         if (request()->filled('name')) {
-            $query->where('name', 'like', '%' . request('name') . '%');
+            $query->where('name', 'like', '%'.request('name').'%');
         }
 
         return $next($query);

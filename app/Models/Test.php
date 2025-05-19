@@ -42,7 +42,7 @@ class Test extends Model
     //     $query->with('questions:id,test_id,statement');
     // }
 
-    public function scopeWithRisks(Builder $query, Closure $callback) : Builder
+    public function scopeWithRisks(Builder $query, Closure $callback): Builder
     {
         return $query->with([
             'risks' => $callback,

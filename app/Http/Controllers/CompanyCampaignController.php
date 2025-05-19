@@ -8,10 +8,7 @@ use App\Models\Collection;
 use App\Models\Company;
 use App\Models\CompanyCampaign;
 use App\Repositories\CampaignRepository;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
 
 class CompanyCampaignController
 {
@@ -33,9 +30,9 @@ class CompanyCampaignController
     public function create()
     {
         Gate::authorize('campaign-create');
-        $collectionsToSelect = Collection::all()->map(fn($collection) => [
+        $collectionsToSelect = Collection::all()->map(fn ($collection) => [
             'option' => $collection->name,
-            'value' => $collection->id
+            'value' => $collection->id,
         ]);
 
         return view('private.campaign.create', compact('collectionsToSelect'));
@@ -49,9 +46,9 @@ class CompanyCampaignController
             ->whereYear('start_date', now()->year)
             ->where('collection_id', $request->validated('collection_id'))
             ->first();
-        
-        if($companyHasSameCampaignThisYear->count()){
-            return back()->with('message', "Sua empresa já cadastrou uma campanha de testes de ". $companyHasSameCampaignThisYear->collection->name ." em 2025.");
+
+        if ($companyHasSameCampaignThisYear->count()) {
+            return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes de '.$companyHasSameCampaignThisYear->collection->name.' em 2025.');
         }
 
         $this->campaignRepository->store($request);
@@ -62,17 +59,18 @@ class CompanyCampaignController
     public function show(CompanyCampaign $campaign)
     {
         Gate::authorize('campaign-show');
+
         return view('private.campaign.show', [
-            'campaign' => $campaign
+            'campaign' => $campaign,
         ]);
     }
 
     public function edit(CompanyCampaign $campaign)
     {
         Gate::authorize('campaign-edit');
-        $collectionsToSelect = Collection::all()->map(fn($collection) => [
+        $collectionsToSelect = Collection::all()->map(fn ($collection) => [
             'option' => $collection->name,
-            'value' => $collection->id
+            'value' => $collection->id,
         ]);
 
         return view('private.campaign.edit', compact('campaign', 'collectionsToSelect'));
@@ -87,9 +85,8 @@ class CompanyCampaignController
             ->where('collection_id', $request->validated('collection_id'))
             ->first();
 
-        
-        if($companyHasSameCampaignThisYear->count() && $companyHasSameCampaignThisYear->id !== $campaign->id){
-            return back()->with('message', "Sua empresa já cadastrou uma campanha de testes de ". $companyHasSameCampaignThisYear->collection->name ." em 2025.");
+        if ($companyHasSameCampaignThisYear->count() && $companyHasSameCampaignThisYear->id !== $campaign->id) {
+            return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes de '.$companyHasSameCampaignThisYear->collection->name.' em 2025.');
         }
 
         $this->campaignRepository->update($campaign, $request);

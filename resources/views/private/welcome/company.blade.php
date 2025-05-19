@@ -43,7 +43,7 @@
                 @endif
             
                 @if(!session('company')->logo)
-                    <div class="w-full flex flex-col md:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
+                    <div class="w-full flex flex-col lg:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
                         <span class="text-sm md:text-base flex items-center gap-3">
                             <i class="fa-solid fa-fingerprint text-lg"></i>
                             Adicione o logotipo da sua empresa
@@ -52,21 +52,26 @@
                     </div>
                 @endif
                 @if(!session('company')->users->count())
-                    <div class="w-full flex flex-col md:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
+                    <div class="w-full flex flex-col lg:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
                         <span class="text-sm md:text-base flex items-center gap-3">
                             <i class="fa-solid fa-users text-lg"></i>
-                            Importe ou registre colaboradores — assim você poderá começar a aplicar testes, acompanhar dados e gerar insights personalizados.
+                            Importe ou crie colaboradores — assim você poderá começar a aplicar testes, acompanhar dados e gerar insights personalizados.
                         </span>
-                        <x-action variant="secondary" :href="route('user.import')">Importar colaboradores</x-action>
+                        <div class="flex items-center flex-wrap sm:flex-nowrap gap-2">    
+                            <x-action variant="secondary" :href="route('user.import')">Importar colaboradores</x-action>
+                            <x-action variant="secondary" :href="route('user.create')">Criar colaboradores</x-action>
+                        </div>
                     </div>
                 @endif
                 @if(!session('company')->metrics()->where('value', '>', 0)->exists())
-                    <div class="w-full flex flex-col md:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
+                    <div class="w-full flex flex-col lg:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
                         <span class="text-sm md:text-base flex items-center gap-3">
                             <i class="fa-solid fa-percent text-lg"></i>
                             Cadastre os Dados de Desempenho Organizacional da sua empresa nos últimos 12 meses (%)
                         </span>
-                        <x-action variant="secondary" :href="route('company-metrics')">Cadastrar Dados de Desempenho</x-action>
+                        <div>
+                            <x-action variant="secondary" :href="route('company-metrics')">Cadastrar Dados de Desempenho</x-action>
+                        </div>
                     </div>
                 @endif
             </div>

@@ -27,7 +27,7 @@ class PsychosocialResultsListController
     public function __invoke(Request $request, string $testName)
     {
         Gate::authorize('psychosocial-dashboard-view');
-        
+
         $this->pageData = $this->query($request, $testName);
         dd($this->pageData);
         $usersList = $this->getCompiledPageData();
@@ -43,7 +43,8 @@ class PsychosocialResultsListController
         ]);
     }
 
-    private function query(Request $request, string $testName){
+    private function query(Request $request, string $testName)
+    {
         $query = session('company')->users()
             ->getQuery();
 

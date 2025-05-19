@@ -6,9 +6,9 @@ use App\Helpers\AuthGuardHelper;
 use App\Models\Company;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Services\User\UserElegibilityService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
@@ -17,103 +17,122 @@ class AuthServiceProvider extends ServiceProvider
     //     User::class => UserPolicy::class,
     // ];
 
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
     public function boot(): void
     {
         // $this->registerPolicies();
 
         Gate::define('user-index', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('user_index');;
+                return $user->hasPermission('user_index');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
-            
+
             return false;
         });
 
         Gate::define('user-show', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('user_show');;
+                return $user->hasPermission('user_show');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
-            
+
             return false;
         });
 
         Gate::define('user-create', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('user_create');;
+                return $user->hasPermission('user_create');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
-            
+
             return false;
         });
 
         Gate::define('user-edit', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('user_edit');;
+                return $user->hasPermission('user_edit');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
-            
+
             return false;
         });
 
         Gate::define('user-delete', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('user_delete');;
+                return $user->hasPermission('user_delete');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
-            
+
             return false;
         });
 
-        Gate::define('answer-tests', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+        Gate::define('answer-psychosocial-test', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('answer_tests');;
+                $eligibilityService = app(UserElegibilityService::class);
+
+                return $user->hasPermission('answer_tests') && $eligibilityService->hasActivePsychosocialCampaign();
+            }
+
+            return false;
+        });
+
+        Gate::define('answer-organizational-test', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                $eligibilityService = app(UserElegibilityService::class);
+
+                return $user->hasPermission('answer_tests') && $eligibilityService->hasActiveOrganizationalCampaign();
             }
 
             return false;
         });
 
         Gate::define('feedbacks-index', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('feedbacks_index');;
+                return $user->hasPermission('feedbacks_index');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -121,13 +140,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('company-show', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('company_show');;
+                return $user->hasPermission('company_show');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -135,13 +155,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('company-edit', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('company_edit');;
+                return $user->hasPermission('company_edit');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -149,13 +170,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('metrics-edit', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('metrics_edit');;
+                return $user->hasPermission('metrics_edit');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -163,13 +185,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('psychosocial-dashboard-view', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('psychosocial_dashboard_view');;
+                return $user->hasPermission('psychosocial_dashboard_view');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -177,13 +200,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('organizational-dashboard-view', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('organizational_dashboard_view');;
+                return $user->hasPermission('organizational_dashboard_view');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -191,13 +215,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('demographics-dashboard-view', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('demographics_dashboard_view');;
+                return $user->hasPermission('demographics_dashboard_view');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -205,13 +230,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('campaign-index', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('campaign_index');;
+                return $user->hasPermission('campaign_index');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -219,13 +245,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('campaign-show', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('campaign_show');;
+                return $user->hasPermission('campaign_show');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -233,13 +260,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('campaign-create', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('campaign_create');;
+                return $user->hasPermission('campaign_create');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -247,13 +275,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('campaign-edit', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('campaign_edit');;
+                return $user->hasPermission('campaign_edit');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 
@@ -261,13 +290,59 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('campaign-delete', function (?Authenticatable $user) {
-            if(AuthGuardHelper::user() instanceof User){
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('campaign_delete');;
+                return $user->hasPermission('campaign_delete');
             }
 
-            if(AuthGuardHelper::user() instanceof Company){
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('user-permission-edit', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_permission_edit');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('user-department-scope-edit', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('user_department_scope_edit');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('documentation-show', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('documentation_show');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
                 return true;
             }
 

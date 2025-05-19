@@ -76,6 +76,8 @@
                         <x-table.head.sortable-th class="hidden sm:block flex-1" field="occupation">
                             Função
                         </x-table.head.sortable-th>
+                        <x-table.head.th class="text-center w-12">
+                        </x-table.head.th>
                         <x-table.head.sortable-th class="truncate text-center w-12" field="psychosocial-risks">
                             <i class="fa-solid fa-brain"></i>
                         </x-table.head.sortable-th>
@@ -90,6 +92,11 @@
                                 <x-table.body.td class="hidden lg:block w-24">{{ $user->birth_date ? Carbon\Carbon::create($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</x-table.body.td>
                                 <x-table.body.td class="hidden md:block truncate flex-1">{{ $user->department ?? 'Não cadastrado' }}</x-table.body.td>
                                 <x-table.body.td class="hidden sm:block truncate flex-1">{{ $user->occupation ?? 'Não cadastrado' }}</x-table.body.td>
+                                <x-table.body.td class="text-center w-12">
+                                    @if($user->hasRole('manager'))
+                                        <i class="fa-solid fa-briefcase"></i>
+                                    @endif
+                                </x-table.body.td>
                                 <x-table.body.td class="text-center w-12">
                                     @if($user->latestPsychosocialCollection && $user->latestPsychosocialCollection->created_at->year == Carbon\Carbon::now()->year)
                                         <i class="fa-solid fa-check"></i>
