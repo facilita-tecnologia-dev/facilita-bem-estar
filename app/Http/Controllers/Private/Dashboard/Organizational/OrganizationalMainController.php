@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
+use App\Models\Collection;
 use App\Models\User;
+use App\Models\UserCustomTest;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -29,9 +31,9 @@ class OrganizationalMainController
     {
         Gate::authorize('organizational-dashboard-view');
         $this->pageData = $this->query($request);
-
+        
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-
+        
         $organizationalClimateResults = $this->getCompiledPageData($filtersApplied);
         $organizationalTestsParticipation = $this->getOrganizationalTestsParticipation();
 
@@ -61,6 +63,11 @@ class OrganizationalMainController
                         $query
                             ->withAnswers()
                             ->withTestType();
+                    })
+                    ->withCustomTests(function($query) {
+                        $query
+                            ->withAnswers()
+                            ->withCustomTestType();
                     });
             })
             ->get();
@@ -103,7 +110,7 @@ class OrganizationalMainController
     private function getCompiledPageData(array $filtersApplied)
     {
         $metrics = session('company')->metrics;
-
+        
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
@@ -112,22 +119,45 @@ class OrganizationalMainController
             }
         }
 
+        
         $this->calculateAverageScore($testCompiled);
-
+        
         krsort($testCompiled);
 
         return $testCompiled;
     }
 
-    private function compileUserTests(User $user, Collection $metrics, &$testCompiled, array $filtersApplied)
+    private function compileUserTests(User $user, EloquentCollection $metrics, &$testCompiled, array $filtersApplied)
     {
-        foreach ($user['latestOrganizationalClimateCollection']['tests'] as $userTest) {
-            $testDisplayName = $userTest->testType->display_name;
+        $defaultTests = $user['latestOrganizationalClimateCollection']->tests->map(function($defaultTest) use($user) {
+            $relatedCustomTest = $user['latestOrganizationalClimateCollection']->customTests
+            ->first(fn($userCustomTest) => $userCustomTest->relatedCustomTest->test_id == $defaultTest->test_id);
 
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+            if($relatedCustomTest){
+                $mergedAnswers = $defaultTest['answers']->merge($relatedCustomTest->answers);
+               
+                $defaultTest->setRelation('answers', $mergedAnswers);
+            }
+
+            return $defaultTest;
+        });
+
+        $customTests = $user['latestOrganizationalClimateCollection']->customTests
+        ->filter(function($customTest){
+            return !$customTest->relatedCustomTest->test_id;
+        });
+
+        $mergedUserTests = $defaultTests->merge($customTests);
+
+        $mergedUserTests->each(function($userTest) use($metrics, $user, &$testCompiled, $filtersApplied) {
+            $testDisplayName = $userTest instanceof UserCustomTest ?
+                                $userTest->relatedCustomTest->display_name :
+                                $userTest->testType->display_name;
+            
+            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics, $user['latestOrganizationalClimateCollection']['collection_type_name']);
 
             $this->updateAnswers($testDisplayName, $evaluatedTest, $testCompiled, $user, $filtersApplied);
-        }
+        }); 
     }
 
     private function updateAnswers(string $testDisplayName, array $evaluatedTest, array &$testCompiled, User $user, array $filtersApplied)
@@ -169,7 +199,7 @@ class OrganizationalMainController
         return $participation;
     }
 
-    private function calculateGeneralParticipation(Collection $usersWithCollection)
+    private function calculateGeneralParticipation(EloquentCollection $usersWithCollection)
     {
         return [
             'Geral' => [
@@ -179,10 +209,10 @@ class OrganizationalMainController
         ];
     }
 
-    private function calculateDepartmentParticipation(Collection $usersWithCollection, Collection $companyUsersByDepartment)
+    private function calculateDepartmentParticipation(EloquentCollection $usersWithCollection, EloquentCollection $companyUsersByDepartment)
     {
         $departmentParticipation = [];
-
+        
         foreach ($companyUsersByDepartment as $departmentName => $department) {
             $departmentParticipation[$departmentName] = [
                 'count' => $usersWithCollection->where('department', $departmentName)->count(),

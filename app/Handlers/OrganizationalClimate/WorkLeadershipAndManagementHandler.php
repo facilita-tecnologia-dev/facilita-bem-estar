@@ -5,10 +5,11 @@ namespace App\Handlers\OrganizationalClimate;
 use App\Helpers\Helper;
 use App\Models\UserTest;
 use Illuminate\Support\Collection;
+use App\Models\UserCustomTest;
 
 class WorkLeadershipAndManagementHandler
 {
-    public function process(UserTest $userTest, Collection $metrics): array
+    public function process(UserTest | UserCustomTest $userTest, Collection $metrics): array
     {
         $processedAnswers = [];
 

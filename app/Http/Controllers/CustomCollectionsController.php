@@ -25,7 +25,7 @@ class CustomCollectionsController
     public function editCollection(Collection $collection)
     {   
         $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-        $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
+        $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
 
         $testsToUpdate = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase);
 
@@ -77,7 +77,7 @@ class CustomCollectionsController
     {
         DB::transaction(function() use($request, $collection){
             $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-            $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
+            $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
 
             $testsOnRequest = $this->getTestsFromRequest($request);
             $testsOnDatabase = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase);
@@ -95,7 +95,6 @@ class CustomCollectionsController
                 $test->is_deleted = 0;
                 $test->save();
             });
-
 
             // Tests to delete
             $testsOnDatabase->diffKeys($testsOnRequest)
@@ -244,17 +243,19 @@ class CustomCollectionsController
                 ->where('test_id', $test->id)
                 ->first();
     
-            $mergedQuestions = $test->questions->map(function($question) use($relatedCustomTest) {
-                $relatedCustomQuestion = $relatedCustomTest->questions->firstWhere('question_id', $question->id);
-                return $relatedCustomQuestion ?? $question;
-            });
-
-            $customTestQuestions = $relatedCustomTest->questions->whereNull('question_id');
- 
-            $mergedQuestions = $mergedQuestions->merge($customTestQuestions)->sortBy('is_deleted');
-
-
-            $test->setRelation('questions', $mergedQuestions);
+            if($relatedCustomTest){            
+                $mergedQuestions = $test->questions->map(function($question) use($relatedCustomTest) {
+                    $relatedCustomQuestion = $relatedCustomTest->questions->firstWhere('question_id', $question->id);
+                    return $relatedCustomQuestion ?? $question;
+                });
+    
+                $customTestQuestions = $relatedCustomTest->questions->whereNull('question_id');
+     
+                $mergedQuestions = $mergedQuestions->merge($customTestQuestions)->sortBy('is_deleted');
+    
+    
+                $test->setRelation('questions', $mergedQuestions);
+            }
 
             return $test;
         });

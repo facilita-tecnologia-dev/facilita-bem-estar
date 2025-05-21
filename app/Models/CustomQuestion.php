@@ -27,4 +27,9 @@ class CustomQuestion extends Model
     {
         return $this->belongsTo(Question::class, 'question_id');
     }
+
+    public function userAnswers(): HasMany
+    {
+        return $this->hasMany(UserCustomAnswer::class, 'custom_question_id');
+    }
 }

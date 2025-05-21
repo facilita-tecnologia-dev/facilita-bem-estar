@@ -32,6 +32,11 @@ class UserCollection extends Model
         return $this->hasMany(UserTest::class, 'user_collection_id');
     }
 
+    public function customTests(): HasMany
+    {
+        return $this->hasMany(UserCustomTest::class, 'user_collection_id');
+    }
+
     public function scopeWithCollectionTypeName(Builder $query, string $collection): Builder
     {
         return $query->addSelect(['collection_type_name' => Collection::select('key_name')
@@ -44,6 +49,13 @@ class UserCollection extends Model
     {
         return $query->with([
             'tests' => $callback,
+        ]);
+    }
+    
+    public function scopeWithCustomTests(Builder $query, ?Closure $callback): Builder
+    {
+        return $query->with([
+            'customTests' => $callback,
         ]);
     }
 }

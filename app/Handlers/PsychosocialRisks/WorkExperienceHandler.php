@@ -6,12 +6,13 @@ use App\Enums\SeverityEnum;
 use App\Models\UserTest;
 use App\Services\RiskEvaluatorService;
 use Illuminate\Support\Collection;
+use App\Models\UserCustomTest;
 
 class WorkExperienceHandler
 {
     public function __construct(private RiskEvaluatorService $riskEvaluatorService) {}
 
-    public function process(UserTest $userTest, Collection $metrics): array
+    public function process(UserTest | UserCustomTest $userTest, Collection $metrics): array
     {
         $average = $userTest['answers_sum'] / $userTest['answers_count'];
 

@@ -20,4 +20,9 @@ class CustomTest extends Model
     {
         return $this->hasMany(CustomQuestion::class);
     }
+
+    public function userCustomTests(): HasMany
+    {
+        return $this->hasMany(UserCustomTest::class);
+    }
 }

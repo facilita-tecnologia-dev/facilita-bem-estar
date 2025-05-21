@@ -12,9 +12,8 @@
                     </p>
                     
                     <x-form action="{{ route('enviar-teste', [$collection, $testIndex]) }}" class="flex-1 flex flex-col gap-5" id="test-form" post>
-                        @foreach ($test->questions->toArray() as $key => $question)
+                        @foreach ($test->questions as $key => $question)
                             @php
-                                $questionNumber = $key + 1;
                                 $pendingAnswer = $pendingAnswers[$key]->value ?? '';
                             @endphp
 
@@ -25,12 +24,12 @@
                                         {{ $question['statement'] }}
                                     </p>
                                 </div>
-                                
-                                @foreach ($question['options'] as $optionNumber => $option)
+
+                                @foreach ($question['options']->sortByDesc('value') as $optionNumber => $option)
                                     <x-test.option 
                                         :option="$option" 
-                                        questionNumber="{{ $question['id'] }}" 
-                                        optionNumber="{{ $optionNumber }}" 
+                                        name="{{ $question instanceof App\Models\CustomQuestion ? 'custom_' . $question->id : 'default_' . $question->id }}" 
+                                        id="{{ $question instanceof App\Models\CustomQuestion ? 'custom_' . $option->id : 'default_' . $option->id }}"
                                         :pendingAnswer="$pendingAnswer" 
                                     />
                                 @endforeach

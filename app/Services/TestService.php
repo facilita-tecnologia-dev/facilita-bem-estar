@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Handlers\TestHandlerFactory;
 use App\Helpers\AuthGuardHelper;
+use App\Models\Collection;
 use App\Models\CustomTest;
 use App\Models\PendingTestAnswer;
 use App\Models\Test;
+use App\Models\UserCustomTest;
 use App\Models\UserTest;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class TestService
 {
@@ -19,15 +21,14 @@ class TestService
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function process(array $answers, Test | CustomTest $test): bool
+    public function process(Collection $collection, Test | CustomTest $test, array $answers): bool
     {
         $answersValues = array_map(function ($value) {
             return (int) $value;
         }, $answers);
-
-        $parentCollection = $test->parentCollection['key_name'];
-        session(["$parentCollection|$test->key_name|result" => $answersValues]);
-
+    
+        session(["$collection->key_name|$test->key_name|result" => $answersValues]);
+        
         // $pendingAnswers = [];
         // $questions = $test->questions->keyBy('id');
 
@@ -57,9 +58,11 @@ class TestService
         return true;
     }
 
-    public function evaluateTest(UserTest $userTest, Collection $metrics): array
-    {
-        $handler = $this->handlerFactory->getHandler($userTest->testType);
+    public function evaluateTest(UserTest | UserCustomTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
+    {        
+        $testType = $userTest instanceof UserCustomTest ? $userTest->relatedCustomTest : $userTest->testType;
+
+        $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
         $evaluatedTest = $handler->process($userTest, $metrics);
 
         return $evaluatedTest;

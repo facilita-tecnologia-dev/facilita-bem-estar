@@ -3,12 +3,13 @@
 namespace App\Handlers\OrganizationalClimate;
 
 use App\Helpers\Helper;
+use App\Models\UserCustomTest;
 use App\Models\UserTest;
 use Illuminate\Support\Collection;
 
 class WorkConditionsHandler
 {
-    public function process(UserTest $userTest, Collection $metrics): array
+    public function process(UserTest | UserCustomTest $userTest, Collection $metrics): array
     {
         $processedAnswers = [];
 

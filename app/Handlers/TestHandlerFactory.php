@@ -2,6 +2,7 @@
 
 namespace App\Handlers;
 
+use App\Handlers\OrganizationalClimate\OrganizationalClimateHandler;
 use App\Handlers\OrganizationalClimate\WorkCommunicationAndInformationHandler;
 use App\Handlers\OrganizationalClimate\WorkConditionsHandler;
 use App\Handlers\OrganizationalClimate\WorkDevelopmentCarrerAndRecognitionHandler;
@@ -24,6 +25,8 @@ use App\Handlers\WellBeing\PressureAtWorkTestHandler;
 use App\Handlers\WellBeing\PressureForResultsTestHandler;
 use App\Handlers\WellBeing\SocialRelationsTestHandler;
 use App\Handlers\WellBeing\StressTestHandler;
+use App\Models\Collection;
+use App\Models\CustomTest;
 use App\Models\Test;
 use Illuminate\Contracts\Container\Container;
 
@@ -31,8 +34,14 @@ class TestHandlerFactory
 {
     public function __construct(private Container $app) {}
 
-    public function getHandler(Test $testInfo)
+    public function getHandler(Test | CustomTest $testInfo, ?string $collectionKeyName)
     {
+        if($collectionKeyName){
+            return match ($collectionKeyName) {
+                'organizational-climate' => $this->app->make(OrganizationalClimateHandler::class),
+            };
+        }
+
         if (! $testInfo['handler_type']) {
             return $this->app->make(DefaultTestHandler::class);
         }
