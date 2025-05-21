@@ -31,4 +31,9 @@ class Collection extends Model
     {
         return $this->hasMany(Test::class, 'collection_id');
     }
+
+    public function customTests(): HasMany
+    {
+        return $this->hasMany(CustomTest::class);
+    }
 }

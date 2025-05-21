@@ -16,11 +16,18 @@ class FiltersComposer
     {
         /** @var User $user */
         $user = AuthGuardHelper::user();
-        $departmentScopes = $user->departmentScopes()->where('allowed', true)->get()->pluck('department');
-        $companyUsers = Company::firstWhere('id', session('company')->id)
-        ->users()
-        ->whereIn('department', $departmentScopes)
-        ->get();
+        if($user instanceof User){
+            $departmentScopes = $user->departmentScopes()->where('allowed', true)->get()->pluck('department');
+
+            $companyUsers = Company::firstWhere('id', session('company')->id)
+            ->users()
+            ->whereIn('department', $departmentScopes)
+            ->get();
+        } else{
+            $companyUsers = Company::firstWhere('id', session('company')->id)
+            ->users()
+            ->get();
+        }
 
         $gendersToFilter = array_keys($companyUsers->groupBy('gender')->toArray());
 

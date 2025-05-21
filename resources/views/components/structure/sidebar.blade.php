@@ -71,6 +71,12 @@
                         Campanhas
                     </x-sidebar.item>
                 @endcan
+                <x-sidebar.item href="{{ route('company-collections') }}" class="{{ request()->routeIs('company-collections') ? 'bg-gray-200' : ''}}">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                    Coleções de Testes
+                </x-sidebar.item>
                 @can('answer-psychosocial-test')
                     <x-sidebar.item href="{{ route('responder-teste', App\Models\Collection::firstWhere('key_name', 'psychosocial-risks')) }}" class="{{ $hasAnsweredPsychosocial  ? 'pointer-events-none opacity-50' : '' }}">
                         <div class="w-5 flex justify-center items-center">

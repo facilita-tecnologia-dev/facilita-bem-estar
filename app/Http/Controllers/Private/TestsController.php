@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Private;
 
 use App\Helpers\AuthGuardHelper;
 use App\Models\Collection;
+use App\Models\CustomQuestion;
+use App\Models\CustomTest;
 use App\Models\PendingTestAnswer;
 use App\Models\Test;
 use App\Models\UserCollection;
 use App\Models\UserTest;
 use App\Services\TestService;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,32 +26,58 @@ class TestsController
 
     public function __invoke(Collection $collection, $testIndex = 1)
     {
-        $test = Test::query()
-            ->where('collection_id', $collection->id)
-            ->where('order', $testIndex)
-            ->with('questions', function ($query) {
-                $query->inRandomOrder()->with('options', function ($q) {
-                    $q->orderBy('value', 'desc');
-                });
+        $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
+        $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
+
+        $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase)->filter(function($test){
+            if(!$test instanceof CustomTest){
+                return !$test->customTest->is_deleted;
             }
-            )
-            ->first();
+            return true;
+        });
 
-        $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', AuthGuardHelper::user()->id)->where('test_id', '=', $test->id)->get();
+        $test = $tests->firstWhere('order', $testIndex);
+        
+        while($test == null){   
+            $testIndex++;
+            $test = $tests->firstWhere('order', $testIndex);
+        }
 
-        return view('private.tests.test', compact('test', 'testIndex', 'pendingAnswers', 'collection'));
+
+        $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
+            $relatedDefaultQuestion = $question->relatedQuestion;
+
+            return $relatedDefaultQuestion ? $relatedDefaultQuestion : $question;
+        });
+
+        $test->setRelation('questions', $mergedQuestions);
+
+        dump(session()->all());
+        // $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', AuthGuardHelper::user()->id)->where('test_id', '=', $test->id)->get();
+
+        return view('private.tests.test', compact('test', 'testIndex', /*'pendingAnswers',*/ 'collection'));
     }
 
     public function handleTestSubmit(Request $request, Collection $collection, $testIndex)
     {
-        $test = Test::query()
-            ->where('collection_id', $collection->id)
-            ->where('order', '=', $testIndex)
-            ->with('questions.options')
-            ->first();
+        $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
+        $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
+
+        $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase);
+
+        $test = $tests->firstWhere('order', $testIndex);
+
+        $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
+            $relatedDefaultQuestion = $question->relatedQuestion;
+
+            return $relatedDefaultQuestion ? $relatedDefaultQuestion : $question;
+        });
+
+        $test->setRelation('questions', $mergedQuestions);
 
         $validationRules = $this->generateValidationRules($test);
         $validatedData = $request->validate($validationRules);
+
         $this->testService->process($validatedData, $test);
 
         $totalTests = Test::where('collection_id', $collection->id)->max('order');
@@ -72,14 +101,22 @@ class TestsController
         return to_route('responder-teste', [$collection, $testIndex + 1]);
     }
 
-    private function generateValidationRules($testInfo): array
+    private function generateValidationRules($test): array
     {
         $validationRules = [];
 
-        $testQuestions = $testInfo->questions->groupBy('id');
+        // $testQuestions = $test->questions->groupBy('id');
 
-        foreach ($testQuestions as $question) {
-            $validationRules[$question[0]->id] = 'required';
+        foreach ($test->questions as $question) {
+            if($question instanceof CustomQuestion){
+                if($question->question_id){
+                    $validationRules[$question->question_id] = 'required';
+                }else{
+                    $validationRules[$question->id] = 'required';
+                }
+            } else{
+                $validationRules[$question->id] = 'required';
+            }
         }
 
         return $validationRules;
@@ -148,4 +185,37 @@ class TestsController
 
         return $testAnswersByCollection;
     }
+
+    private function getTestsFromDatabase(Collection $collection, EloquentCollection $defaultTestsOnDatabase,  EloquentCollection $customTestsOnDatabase){
+        $newCustomTestsOnDatabase = $customTestsOnDatabase->whereNull('test_id');
+
+        $compiled = $defaultTestsOnDatabase->map(function($test) use($collection, $customTestsOnDatabase) {
+            $relatedCustomTest = $customTestsOnDatabase
+                ->where('company_id', session('company')->id)
+                ->where('collection_id', $collection->id)
+                ->where('test_id', $test->id)
+                ->first();
+    
+            $mergedQuestions = $test->questions->map(function($question) use($relatedCustomTest) {
+                $relatedCustomQuestion = $relatedCustomTest->questions->firstWhere('question_id', $question->id);
+                return $relatedCustomQuestion ?? $question;
+            });
+
+            $customTestQuestions = $relatedCustomTest->questions->whereNull('question_id');
+ 
+            $mergedQuestions = $mergedQuestions->merge($customTestQuestions)->sortBy('is_deleted');
+
+
+            $test->setRelation('questions', $mergedQuestions);
+
+            return $test;
+        });
+
+        $compiled = $compiled->merge($newCustomTestsOnDatabase);
+
+        $compiled = $compiled->keyBy('display_name');
+
+        return $compiled;
+    }
+
 }

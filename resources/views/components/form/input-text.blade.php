@@ -11,7 +11,7 @@
     'icon' => null,
 ])
 
-<div class="w-full">
+<div data-role="input-text" class="w-full">
     @if($label)
         <label
             class="block text-base font-semibold mb-1 text-gray-800"

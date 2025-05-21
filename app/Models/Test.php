@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Test extends Model
 {
@@ -22,6 +23,11 @@ class Test extends Model
     public function parentCollection(): BelongsTo
     {
         return $this->belongsTo(Collection::class, 'collection_id');
+    }
+
+    public function customTest(): HasOne
+    {
+        return $this->hasOne(CustomTest::class);
     }
 
     /**

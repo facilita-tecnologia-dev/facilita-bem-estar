@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CompanyCampaignController;
+use App\Http\Controllers\CustomCollectionsController;
 use App\Http\Controllers\Private\CompanyController;
 use App\Http\Controllers\Private\CompanyMetricsController;
 use App\Http\Controllers\Private\Dashboard\Demographics\DemographicsMainController;
@@ -93,6 +94,10 @@ Route::middleware(AuthMiddleware::class)->group(function () {
         Route::get('psicossocial/{test}/departamentos', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
         Route::get('psicossocial/{test}/lista', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
     });
+
+    Route::get('empresa/colecoes-de-testes', [CustomCollectionsController::class, 'showCompanyCollections'])->name('company-collections');
+    Route::get('empresa/colecoes-de-testes/{collection}/editar', [CustomCollectionsController::class, 'editCollection'])->name('company-collections.update');
+    Route::post('empresa/colecoes-de-testes/{collection}/editar', [CustomCollectionsController::class, 'updateCollection']);
 
     Route::view('/politica-de-privacidade', 'private.lgpd.privacy-policy')->name('privacy-policy');
 
