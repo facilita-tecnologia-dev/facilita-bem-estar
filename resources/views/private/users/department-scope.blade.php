@@ -10,8 +10,8 @@
                         @foreach ($companyDepartments as $department)
                             <label class="flex items-center gap-4 w-full rounded-md shadow-md p-4 bg-gray-100/50 has-[input[type=checkbox]:checked]:bg-sky-300/50 cursor-pointer relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all">
                                 <input type="hidden" name="{{ $department }}" value="0" {{ $department == $user->department ? 'disabled' : '' }} >
-                                <input type="checkbox" name="{{ $department }}" {{ $userDepartmentPermissions->firstWhere('department', $department)?->allowed ? 'checked' : '' }}  {{ $department == $user->department ? 'disabled' : '' }} value="1" class="peer hidden">
-                                <i class="fa-solid fa-circle-check opacity-0 peer-checked:opacity-100 transition-opacity text-gray-800"></i>
+                                <input type="checkbox" name="{{ $department }}" {{ $userDepartmentPermissions->firstWhere('department', $department)?->allowed || $department == $user->department ? 'checked' : '' }}  {{ $department == $user->department ? 'disabled' : '' }} value="1" class="peer hidden">
+                                <i class="fa-solid fa-circle-check opacity-0 peer-checked:opacity-100 transition-opacity text-gray-800 "></i>
                                 <div class="w-full flex items-center justify-between">
                                     <p class="font-medium text-sm md:text-base text-gray-800">{{ $department }}</p>
                                     @if($department == $user->department)
