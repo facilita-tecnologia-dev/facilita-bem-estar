@@ -41,13 +41,9 @@ class CompanyCampaignController
     public function store(CampaignStoreRequest $request)
     {
         Gate::authorize('campaign-create');
-        $companyHasSameCampaignThisYear = Company::firstWhere('id', session('company')->id)
-            ->campaigns()
-            ->whereYear('start_date', now()->year)
-            ->where('collection_id', $request->validated('collection_id'))
-            ->first();
-
-        if ($companyHasSameCampaignThisYear->count()) {
+        $companyHasSameCampaignThisYear = session('company')->hasSameCampaignThisYear($request->validated('collection_id'));
+        
+        if ($companyHasSameCampaignThisYear) {
             return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes de '.$companyHasSameCampaignThisYear->collection->name.' em 2025.');
         }
 
@@ -59,9 +55,16 @@ class CompanyCampaignController
     public function show(CompanyCampaign $campaign)
     {
         Gate::authorize('campaign-show');
+        
+        $hasCollectionTestsThisYear = Company::firstWhere('id', session('company')->id)->users()
+        ->whereHas('collections', function ($query) use($campaign) {
+            $query->where('collection_id', $campaign->collection_id);
+        })
+        ->exists();
 
         return view('private.campaign.show', [
             'campaign' => $campaign,
+            'hasCollectionTestsThisYear' => $hasCollectionTestsThisYear,
         ]);
     }
 

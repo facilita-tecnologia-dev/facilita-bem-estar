@@ -24,7 +24,7 @@
                     <div data-role="tests-container" class="w-full flex flex-col gap-6">
                         @foreach ($testsToUpdate as $test)
                             <div data-role="test-section" class="flex flex-col gap-2">
-                                <div class="bg-gray-200 px-4 p-2 rounded-md flex items-center justify-between gap-4" data-role="test-header">
+                                <div class="bg-gray-200 px-4 p-4 sm:p-2 rounded-md flex items-start sm:items-center flex-col sm:flex-row justify-between gap-4" data-role="test-header">
                                     <h2 class="text-sm sm:text-base font-semibold">{{ $test->display_name }}</h2>
                                     <div class="flex gap-2">
                                         @php

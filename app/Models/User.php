@@ -50,6 +50,19 @@ class User extends Authenticatable
         return $this->collections()->latest();
     }
 
+    public function psychosocialRiskCollections(): HasMany
+    {
+        return $this->hasMany(UserCollection::class)
+        ->where('collection_id', 1);
+    }
+
+    public function organizationalClimateCollections(): HasMany
+    {
+        return $this->hasMany(UserCollection::class)
+        ->where('collection_id', 2)
+        ->whereYear('created_at', now()->year);
+    }
+
     public function latestPsychosocialCollection(): HasOne
     {
         return $this->hasOne(UserCollection::class)
@@ -57,8 +70,9 @@ class User extends Authenticatable
             ->latest();
     }
 
+
     public function latestOrganizationalClimateCollection(): HasOne
-    {
+    {      
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 2)
             ->latest();
@@ -75,6 +89,20 @@ class User extends Authenticatable
     {
         return $query->with([
             'latestPsychosocialCollection' => $callback,
+        ]);
+    }
+
+    public function scopeWithOrganizationalClimateCollections(Builder $query, Closure $callback): Builder
+    {
+        return $query->with([
+            'organizationalClimateCollections' => $callback,
+        ]);
+    }
+
+    public function scopeWithPsychosocialCollections(Builder $query, Closure $callback): Builder
+    {
+        return $query->with([
+            'psychosocialRiskCollections' => $callback,
         ]);
     }
 
@@ -123,5 +151,47 @@ class User extends Authenticatable
             ->where('permission_id', $permissionId)
             ->where('allowed', true)
             ->exists();
+    }
+
+    public function getCompatibleOrganizationalCollection($userOrganizationalCollectionsInThisYear, $companyCustomTests, $defaultTests): ?UserCollection
+    {
+        $userCollectionCompatible = $userOrganizationalCollectionsInThisYear->filter(function($userCollection) use($defaultTests, $companyCustomTests) {
+            if(count($userCollection->customTests)){
+                $userCollectionCompanyCustomTests = $userCollection->customTests[0]->relatedCustomTest->parentCompany->customTests;
+                $customTestsAreEqual = $companyCustomTests->count() === $userCollectionCompanyCustomTests->count()
+                && $companyCustomTests->every(function ($companyCustomTest) use ($userCollectionCompanyCustomTests) {
+                    $relatedUserCollectionTest = $userCollectionCompanyCustomTests->firstWhere('key_name', $companyCustomTest->key_name);
+                    
+                    if (!$relatedUserCollectionTest) {
+                        return false;
+                    }
+
+                    $companyCustomTestQuestions = $companyCustomTest->questions->pluck('id')->sort()->values()->all();
+                    $relatedUserCollectionTestQuestions = $relatedUserCollectionTest->questions->pluck('id')->sort()->values()->all();
+
+                    return $companyCustomTestQuestions === $relatedUserCollectionTestQuestions;
+                });
+
+                if($customTestsAreEqual){
+                    return true;
+                }
+ 
+                $customTestsMatchDefaultTests = $userCollectionCompanyCustomTests->every(function ($customTest) use ($defaultTests) {
+                    return $defaultTests->contains('id', $customTest->test_id);
+                });
+
+                if(count($companyCustomTests) < 1 && $customTestsMatchDefaultTests){
+                    return true;
+                }
+
+                return false;
+            }
+
+            if(count($companyCustomTests) < 1){
+                return true;
+            }
+        });
+
+        return $userCollectionCompatible->first();
     }
 }

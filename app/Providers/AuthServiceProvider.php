@@ -6,6 +6,7 @@ use App\Helpers\AuthGuardHelper;
 use App\Models\Company;
 use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Repositories\TestRepository;
 use App\Services\User\UserElegibilityService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -118,7 +119,12 @@ class AuthServiceProvider extends ServiceProvider
 
                 $eligibilityService = app(UserElegibilityService::class);
 
-                return $user->hasPermission('answer_tests') && $eligibilityService->hasActiveOrganizationalCampaign();
+                $companyCustomTests = TestRepository::companyCustomTests();
+                $defaultTests = TestRepository::defaultTests();
+
+                $hasCompatibleCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests);
+
+                return $user->hasPermission('answer_tests') && $eligibilityService->hasActiveOrganizationalCampaign() && !$hasCompatibleCollection;
             }
 
             return false;
@@ -340,6 +346,36 @@ class AuthServiceProvider extends ServiceProvider
                 $user = AuthGuardHelper::user();
 
                 return $user->hasPermission('documentation_show');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('collections-index', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('collections_index');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('collections-edit', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('collections_edit');
             }
 
             if (AuthGuardHelper::user() instanceof Company) {

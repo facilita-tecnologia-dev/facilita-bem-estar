@@ -18,6 +18,7 @@
 
         'bg-gray-100/50 text-gray-800 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all' => $variant === 'primary', // Aplica os estilos se a variant for 'solid'
         'border border-[#FF8AAF] bg-gray-100 text-gray-800 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all' => $variant === 'secondary', // Aplica os estilos se a variant for 'solid'
+        'border border-red-400 bg-red-400 text-gray-100 relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all' => $variant === 'danger', // Aplica os estilos se a variant for 'solid'
     ])
     {{ $disabled == true ? 'disabled' : ''}}
     {{ $attributes }}

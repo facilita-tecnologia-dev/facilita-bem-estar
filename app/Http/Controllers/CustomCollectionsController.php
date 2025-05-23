@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Collection;
+use App\Models\Company;
 use App\Models\CustomQuestion;
 use App\Models\CustomQuestionOption;
 use App\Models\CustomTest;
@@ -11,70 +12,39 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Pest\ArchPresets\Custom;
 
 class CustomCollectionsController
 {
     public function showCompanyCollections(){
-        $collections = Collection::withCount('tests')->get();
+        Gate::authorize('collections-index');
 
-        return view('private.tests.collections', compact('collections'));
+        $collections = Collection::withCount('tests')->get();
+        
+        $company = Company::firstWhere('id', session('company')->id);
+        $companyActiveCampaigns = $company->getActiveCampaigns();
+
+        return view('private.tests.collections', compact('collections', 'companyActiveCampaigns'));
     }
 
     public function editCollection(Collection $collection)
     {   
+        Gate::authorize('collections-edit');
+
         $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
         $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
 
         $testsToUpdate = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase);
 
-        // $newCustomTests = $customTests->filter(function($customTest) {
-        //     return !$customTest->test_id;
-        // });
-
-        
-        
-        // $testsToUpdate = $defaultTests;
-
-        // dd($testsOnDatabase->first()->questions);
-
-        // foreach($defaultTests as $defaultTest){
-        //     $customTestData = $customTests->where('company_id', session('company')->id)
-        //     ->where('collection_id', $collection->id)
-        //     ->where('test_id', $defaultTest->id)
-        //     ->first();
-
-        //     if($customTestData){
-        //         $customTestQuestions = $customTestData->questions;
-
-        //         $replacedQuestions = $defaultTest->questions->map(function ($question) use ($customTestQuestions) {
-        //             $customQuestion = $customTestQuestions
-        //                 ->where('company_id', session('company')->id)
-        //                 ->where('question_id', $question->id)
-        //                 ->first();
-            
-        //             return $customQuestion ?: $question;
-        //         });
-        
-        //         $customQuestionsToAdd = $customTestQuestions->filter(function($customQuestion) use($defaultTest) {
-        //             return !$defaultTest->questions->contains('id', $customQuestion->question_id);
-        //         });
-
-        //         $allQuestions = $replacedQuestions->concat($customQuestionsToAdd)->values();
-
-        //         $testToUpdate = $testsToUpdate->firstWhere('id', $defaultTest->id);
-        //         $testToUpdate->setRelation('questions', $allQuestions);
-        //     }
-        // }
-
-        // $testsToUpdate = $testsToUpdate->merge($newCustomTests);
-        
         return view('private.tests.collections.update', compact('collection', 'testsToUpdate'));
     }
 
     public function updateCollection(Request $request, Collection $collection)
     {
+        Gate::authorize('collections-edit');
+        
         DB::transaction(function() use($request, $collection){
             $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
             $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
@@ -140,9 +110,25 @@ class CustomCollectionsController
             });
 
             // Questions to delete
-            $testsOnDatabase->each(function($test, $testName) use($testsOnRequest) {
+            $testsOnDatabase->each(function($test, $testName) use($testsOnRequest, $collection) {
                 $relatedTestOnRequest = $testsOnRequest->first(fn($q, $key) => $key == $testName);
+                $relatedCustomTestOnDatabase = $test->customTest;
 
+                if(!$relatedCustomTestOnDatabase){
+                    $relatedCustomTestOnDatabase = CustomTest::create([
+                        'company_id' => session('company')->id,
+                        'collection_id' => $collection->id,
+                        'test_id' => $test->id,
+                        'key_name' => $test->key_name,
+                        'display_name' => $test->display_name,
+                        'statement' => $collection->tests[0]->statement,
+                        'reference' => '-',
+                        'number_of_questions' => $test->number_of_questions,
+                        'order' => $test->order,
+                        'is_deleted' => 0,
+                    ]);
+                }
+       
                 if($relatedTestOnRequest){
                     $testQuestions = $test->questions
                     ->map(function($question){
@@ -150,33 +136,45 @@ class CustomCollectionsController
                     });
 
                     $questionsToDelete = $testQuestions->diff($relatedTestOnRequest)
-                    ->each(function($question) use($test) {
-                        $relatedCustomQuestionOnDatabase = $test->questions
+                    ->each(function($question) use($test, $relatedCustomTestOnDatabase) {
+                        $relatedCustomQuestionOnDatabase = $relatedCustomTestOnDatabase->questions
                         ->map(function($question){
                             $question->statement = $question->statement == "" ? $question->relatedQuestion->statement : $question->statement;
                             return $question;
                         })
-                        ->first(fn($q) => $q->statement == $question);
-
+                        ->first(fn($q) => $q->statement == $question && $q instanceof CustomQuestion);
+                        
                         if($relatedCustomQuestionOnDatabase){
                             if(!$relatedCustomQuestionOnDatabase->is_deleted){
                                 $relatedCustomQuestionOnDatabase->is_deleted = 1;
                                 $relatedCustomQuestionOnDatabase->save();
                             }
                         } else{
+                            $question = $test->questions->firstWhere('statement', $question);
+
                             CustomQuestion::create([
                                 'company_id' => session('company')->id,
-                                'custom_test_id' => $test->id,
-                                'question_id' => $relatedCustomQuestionOnDatabase->id,
-                                'statement' => $relatedCustomQuestionOnDatabase->statement,
+                                'custom_test_id' => $relatedCustomTestOnDatabase->id,
+                                'question_id' => $question->id,
+                                'statement' => $question->statement,
                                 'is_deleted' => true,
                             ]);
                         }
                     });
+
                 } else{
-                    $test->questions->each(function($question){
-                        $question->is_deleted = true;
-                        $question->save();
+                    $test->questions->each(function($question) use($relatedCustomTestOnDatabase) {
+                        CustomQuestion::updateOrCreate(
+                            [
+                                'company_id' => session('company')->id,
+                                'custom_test_id' => $relatedCustomTestOnDatabase->id,
+                                'question_id' => $question->id,
+                            ],
+                            [
+                                'statement' => $question->statement,
+                                'is_deleted' => 1,
+                            ]
+                        );
                     });
                 }
             });
@@ -237,6 +235,7 @@ class CustomCollectionsController
         $newCustomTestsOnDatabase = $customTestsOnDatabase->whereNull('test_id');
 
         $compiled = $defaultTestsOnDatabase->map(function($test) use($collection, $customTestsOnDatabase) {
+
             $relatedCustomTest = $customTestsOnDatabase
                 ->where('company_id', session('company')->id)
                 ->where('collection_id', $collection->id)
@@ -245,15 +244,14 @@ class CustomCollectionsController
     
             if($relatedCustomTest){            
                 $mergedQuestions = $test->questions->map(function($question) use($relatedCustomTest) {
-                    $relatedCustomQuestion = $relatedCustomTest->questions->firstWhere('question_id', $question->id);
+                    $relatedCustomQuestion = $relatedCustomTest->questions->where('custom_test_id', $relatedCustomTest->id)->where('question_id', $question->id)->first();
                     return $relatedCustomQuestion ?? $question;
                 });
-    
+                
                 $customTestQuestions = $relatedCustomTest->questions->whereNull('question_id');
-     
+                
                 $mergedQuestions = $mergedQuestions->merge($customTestQuestions)->sortBy('is_deleted');
-    
-    
+                
                 $test->setRelation('questions', $mergedQuestions);
             }
 

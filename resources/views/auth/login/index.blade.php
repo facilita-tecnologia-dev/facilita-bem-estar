@@ -12,41 +12,12 @@
                         </div>
                     </div>
 
-                    {{-- <div class="relative w-fit bg-gray-200 rounded p-1 shadow-inner grid grid-cols-2 gap-2">
-                        <div data-role="toggle-bg" class="absolute w-[calc(50%-8px)] h-9 bg-gray-100 rounded-md left-1 top-1 transition-all"></div>
-                        <button data-role="toggle-login-form" id="manager" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Gestor</button>
-                        <button data-role="toggle-login-form" id="employee" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Colaborador</button>
-                    </div> --}}
-
-                    {{-- Manager --}}
-                    {{-- <x-form action="{{ route('auth.login.gestor') }}" id="login-manager" class="w-full flex flex-col gap-4 items-center" post>
-                        <x-form.input-text name="cpf" placeholder="CPF (000.000.000-00)" />
-                        <x-form.input-text type="password" name="password" placeholder="Senha" />
-                        <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
-                    </x-form> --}}
-
                     <x-form action="{{ route('auth.login.usuario-interno') }}" class="w-full flex flex-col gap-4 items-center" post>
                         <x-form.input-text name="cpf" placeholder="CPF (000.000.000-00)" />
                         <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
                     </x-form>
 
-                    {{-- @if(session('message'))
-                        <p>{{ session('message') }}</p>
-                    @endif --}}
-
-                    {{-- <div class="w-full px-6 md:px-8 flex flex-col gap-3 items-center">
-                        <div class="w-full flex items-center gap-4">
-                            <div class="flex-1 h-[1px] bg-gray-800"></div>
-                            <span class="text-base font-semibold text-gray-800 leading-tight">ou</span>
-                            <div class="flex-1 h-[1px] bg-gray-800"></div>
-                        </div>
-                        <x-action width="full">
-                            <i class="fa-brands fa-google"></i> 
-                            Fazer login com Google
-                        </x-action>
-                    </div> --}}
-
-                    {{-- <x-action href="{{ route('apresentacao') }}" variant="secondary">Voltar para a Home</x-action> --}}
+                    <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
                 </div>
             </div>
         </div>

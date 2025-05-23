@@ -18,6 +18,13 @@ class UsersImport implements ToModel, WithHeadingRow
             $admission = $this->convertDate($row['admissao']);
 
             if ($row['nome_completo'] != null) {
+                $user = User::firstWhere('cpf', $row['cpf']);
+
+                if($user){
+                    $user->companies()->syncWithoutDetaching([session('company')->id => ['role_id' => 2]]);
+                    return;
+                }
+
                 $user = User::create([
                     'name' => $row['nome_completo'],
                     'birth_date' => $birth_date,

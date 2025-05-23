@@ -40,4 +40,11 @@ class UserCustomTest extends Model
     {
         return $query->with('relatedCustomTest');
     }
+
+    public function scopeJustOneCustomTest(Builder $query, string $customTestName): Builder
+    {
+        return $query->whereHas('relatedCustomTest', function ($subQuery) use ($customTestName) {
+            $subQuery->where('display_name', $customTestName);
+        });
+    }
 }

@@ -105,7 +105,7 @@
                                     @endif
                                 </x-table.body.td>
                                 <x-table.body.td class="text-center w-6 sm:w-12">
-                                    @if($user->latestOrganizationalClimateCollection && $user->latestOrganizationalClimateCollection->created_at->year == Carbon\Carbon::now()->year)
+                                    @if($user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests))
                                         <i class="fa-solid fa-check"></i>
                                     @else
                                         <i class="fa-solid fa-xmark"></i>

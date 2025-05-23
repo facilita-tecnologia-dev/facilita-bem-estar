@@ -61,7 +61,7 @@
             </x-sidebar.menu>
         @endcanany
             
-        @canany(['campaign-index', 'answer-psychosocial-test', 'answer-organizational-test'])
+        @canany(['campaign-index', 'answer-psychosocial-test', 'answer-organizational-test', 'collections-index'])
             <x-sidebar.menu title="Testes">
                 @can('campaign-index')
                     <x-sidebar.item href="{{ route('campaign.index') }}" class="{{ request()->routeIs('campaign.index') ? 'bg-gray-200' : ''}}">
@@ -71,12 +71,14 @@
                         Campanhas
                     </x-sidebar.item>
                 @endcan
-                <x-sidebar.item href="{{ route('company-collections') }}" class="{{ request()->routeIs('company-collections') ? 'bg-gray-200' : ''}}">
-                    <div class="w-5 flex justify-center items-center">
-                        <i class="fa-solid fa-book"></i>
-                    </div>
-                    Coleções de Testes
-                </x-sidebar.item>
+                @can('collections-index')
+                    <x-sidebar.item href="{{ route('company-collections') }}" class="{{ request()->routeIs('company-collections') ? 'bg-gray-200' : ''}}">
+                        <div class="w-5 flex justify-center items-center">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                        Coleções de Testes
+                    </x-sidebar.item>
+                @endcan
                 @can('answer-psychosocial-test')
                     <x-sidebar.item href="{{ route('responder-teste', App\Models\Collection::firstWhere('key_name', 'psychosocial-risks')) }}" class="{{ $hasAnsweredPsychosocial  ? 'pointer-events-none opacity-50' : '' }}">
                         <div class="w-5 flex justify-center items-center">
@@ -119,7 +121,7 @@
 
         @can('documentation-show')
             <x-sidebar.menu title="Documentação">
-                <x-sidebar.item href="{{ asset('pdfs/criterios-para-avaliação-de-riscos-psicossociais.pdf') }}" target="_blank">
+                <x-sidebar.item href="{{ asset('files/criterios-para-avaliação-de-riscos-psicossociais.pdf') }}" target="_blank">
                     <div class="w-5 flex justify-center items-center">
                         <i class="fa-solid fa-book"></i>
                     </div>

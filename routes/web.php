@@ -58,6 +58,9 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/user/importar', [UserController::class, 'showImport'])->name('user.import');
     Route::post('/user/importar', [UserController::class, 'import']);
 
+    Route::get('/user/adicionar-usuario-existente', [UserController::class, 'showAddExistingUser'])->name('user.add-existing');
+    Route::post('/user/adicionar-usuario-existente', [UserController::class, 'addExistingUser']);
+
     Route::view('/user/redefinir-senha', 'auth.login.reset-password')->name('auth.login.redefinir-senha');
     Route::post('/user/redefinir-senha', [UserController::class, 'resetUserPassword']);
     

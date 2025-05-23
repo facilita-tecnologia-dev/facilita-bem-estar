@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Private\Dashboard\Organizational;
 
 use App\Models\User;
+use App\Models\UserCustomAnswer;
+use App\Models\UserCustomTest;
+use App\Repositories\TestRepository;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -19,19 +22,26 @@ class OrganizationalAnswersController
 
     protected $pageData;
 
+    protected $companyCustomTests;
+
+    protected $defaultTests;
+
     public function __construct(TestService $testService, UserFilterService $filterService)
     {
         $this->testService = $testService;
         $this->filterService = $filterService;
+
+        $this->companyCustomTests = TestRepository::companyCustomTests();
+        $this->defaultTests = TestRepository::defaultTests();
     }
 
     public function __invoke(Request $request)
     {
         Gate::authorize('organizational-dashboard-view');
 
-        $this->query($request);
+        $this->pageData = $this->query($request);
 
-        $organizationalClimateResults = $this->getCompiledPageData();
+        $organizationalClimateResults = $this->getCompiledPageData($request);
 
         return view('private.dashboard.organizational.by-answers', compact(
             'organizationalClimateResults',
@@ -42,22 +52,27 @@ class OrganizationalAnswersController
     {
         // Catching users
         $query = session('company')->users()
-            ->whereHas('latestOrganizationalClimateCollection', function ($query) {
+            ->getQuery();
+            
+        return $this->filterService->apply($query)
+            ->whereHas('organizationalClimateCollections', function ($query) {
                 $query->whereYear('created_at', Carbon::now()->year);
             })
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->getQuery();
-
-        // Catching user tests
-        $this->pageData = $query
-            ->withLatestOrganizationalClimateCollection(function ($query) use ($request) {
-                $query->whereYear('created_at', $request->year ?? '2025')
+            ->WithOrganizationalClimateCollections(function ($query) use ($request) {
+                $query->whereYear('created_at', $request->year ?? now()->year)
                     ->withCollectionTypeName('organizational-climate')
                     ->withTests(function ($query) use ($request) {
                         $query
-                            ->when($request->test, fn ($q) => $q->justOneTest($request->test))
+                            // ->when($request->test, fn ($q) => $q->justOneTest($request->test))
                             ->withAnswers()
                             ->withTestType();
+                    })
+                    ->withCustomTests(function($query) use ($request) {
+                        $query
+                            // ->when($request->test, fn ($q) => $q->justOneCustomTest($request->test))
+                            ->withAnswers()
+                            ->withCustomTestType();
                     });
             })
             ->get();
@@ -68,9 +83,10 @@ class OrganizationalAnswersController
         Gate::authorize('organizational-dashboard-view');
 
         $company = session('company');
-        $this->query($request);
 
-        $organizationalClimateResults = $this->getCompiledPageData();
+        $this->pageData = $this->query($request);
+
+        $organizationalClimateResults = $this->getCompiledPageData($request);
         $companyLogo = $company->logo;
         $companyName = $company->name;
 
@@ -83,15 +99,15 @@ class OrganizationalAnswersController
         return $pdf->stream('graficos_clima_organizacional.pdf');
     }
 
-    private function getCompiledPageData()
+    private function getCompiledPageData(Request $request)
     {
         $metrics = session('company')->metrics;
 
         $testCompiled = [];
-
+        
         foreach ($this->pageData as $user) {
-            if ($user->latestOrganizationalClimateCollection) {
-                $this->compileUserResults($user, $metrics, $testCompiled);
+            if ($user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $this->companyCustomTests, $this->defaultTests)) {
+                $this->compileUserResults($user, $metrics, $testCompiled, $request);
             }
         }
 
@@ -102,16 +118,51 @@ class OrganizationalAnswersController
         return $testCompiled;
     }
 
-    private function compileUserResults(User $user, Collection $metrics, &$testCompiled)
+    private function compileUserResults(User $user, Collection $metrics, &$testCompiled, Request $request)
     {
-        foreach ($user['latestOrganizationalClimateCollection']['tests'] as $userTest) {
-            $testDisplayName = $userTest->testType->display_name;
+        $latestOrganizationalCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $this->companyCustomTests, $this->defaultTests);
 
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+        if($latestOrganizationalCollection){
+            $defaultTests = $latestOrganizationalCollection->tests->map(function($defaultTest) use($user, $latestOrganizationalCollection) {
+                $relatedCustomTest = $latestOrganizationalCollection->customTests
+                ->first(fn($userCustomTest) => $userCustomTest->relatedCustomTest->test_id == $defaultTest->test_id);
+    
+                if($relatedCustomTest){
+                    $mergedAnswers = $defaultTest['answers']->merge($relatedCustomTest->answers);
+                
+                    $defaultTest->setRelation('answers', $mergedAnswers);
+                }
+    
+                return $defaultTest;
+            });
+            
+            $customTests = $latestOrganizationalCollection->customTests
+            ->filter(function($customTest){
+                return !$customTest->relatedCustomTest->test_id;
+            });
+    
+            $mergedUserTests = $defaultTests->merge($customTests);
 
-            $questions = $userTest->testType->questions->keyBy('id');
+            if($request->test){
+                $mergedUserTests = $mergedUserTests->filter(function($test) use($request) {
+                    $testDisplayName = $test instanceof UserCustomTest ? $test->relatedCustomTest->display_name : $test->testType->display_name;
+                    return $testDisplayName == $request->test;
+                });
+            }
 
-            $this->updateAnswers($user, $testDisplayName, $evaluatedTest, $questions, $testCompiled);
+            $mergedUserTests->each(function($userTest) use($latestOrganizationalCollection, $metrics, $user, &$testCompiled) {
+                $testDisplayName = $userTest instanceof UserCustomTest ?
+                                    $userTest->relatedCustomTest->display_name :
+                                    $userTest->testType->display_name;
+            
+                
+                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics, $latestOrganizationalCollection['collection_type_name']);
+                $questions = $userTest->answers->map(fn($answer) => $answer instanceof UserCustomAnswer ?
+                                                                                $answer->relatedQuestion : 
+                                                                                $answer->parentQuestion);
+    
+                $this->updateAnswers($user, $testDisplayName, $evaluatedTest, $questions->keyBy('id'), $testCompiled);
+            });
         }
     }
 

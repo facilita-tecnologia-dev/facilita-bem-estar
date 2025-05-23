@@ -11,10 +11,13 @@ use App\Models\Company;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RolePermission;
+use App\Models\Test;
 use App\Models\User;
 use App\Models\UserCustomPermission;
 use App\Models\UserDepartmentPermission;
+use App\Repositories\TestRepository;
 use App\Repositories\UserRepository;
+use App\Rules\validateCPF;
 use App\Services\LoginService;
 use App\Services\User\UserElegibilityService;
 use App\Services\User\UserFilterService;
@@ -31,11 +34,18 @@ class UserController
 
     protected UserRepository $userRepository;
 
+    protected $companyCustomTests;
+
+    protected $defaultTests;
+
     public function __construct(UserFilterService $filterService, UserElegibilityService $elegibilityService, UserRepository $userRepository)
     {
         $this->filterService = $filterService;
         $this->elegibilityService = $elegibilityService;
         $this->userRepository = $userRepository;
+
+        $this->companyCustomTests = TestRepository::companyCustomTests();
+        $this->defaultTests = TestRepository::defaultTests();
     }
 
     public function index(Request $request)
@@ -58,6 +68,8 @@ class UserController
             'users' => $users->count() ? $users : null,
             'filtersApplied' => $filtersApplied,
             'filteredUserCount' => $filteredUserCount > 0 ? $filteredUserCount : null,
+            'companyCustomTests' => $this->companyCustomTests ? $this->companyCustomTests : null,
+            'defaultTests' => $this->defaultTests ? $this->defaultTests : null,
         ]);
     }
 
@@ -86,7 +98,7 @@ class UserController
     {
         Gate::authorize('user-show');
 
-        $latestOrganizationalClimateCollectionDate = $user['latestOrganizationalClimateCollection']?->created_at->diffForHumans() ?? 'Nunca';
+        $latestOrganizationalClimateCollectionDate = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $this->companyCustomTests, $this->defaultTests)?->created_at->diffForHumans() ?? 'Nunca';
         $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
 
         return view('private.users.show', compact('user', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
@@ -287,5 +299,26 @@ class UserController
         $loginService = app(LoginService::class);
 
         return redirect()->to($loginService->getRedirectRoute($user));
+    }
+
+    public function showAddExistingUser(){
+        Gate::authorize('user-create');
+
+        return view('private.users.add-existing');
+    }
+
+    public function addExistingUser(Request $request){
+        Gate::authorize('user-create');
+        $validatedData = $request->validate([
+            'cpf' => ['required', 'string', new validateCPF],
+        ]);
+
+        $user = User::firstWhere('cpf', $validatedData['cpf']);
+
+        if($user){
+            $user->companies()->syncWithoutDetaching([session('company')->id => ['role_id' => 2]]);
+        }
+        
+        return redirect()->to(route('user.index'));
     }
 }

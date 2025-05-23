@@ -27,7 +27,7 @@ class Test extends Model
 
     public function customTest(): HasOne
     {
-        return $this->hasOne(CustomTest::class);
+        return $this->hasOne(CustomTest::class)->where('company_id', session('company')->id);
     }
 
     /**

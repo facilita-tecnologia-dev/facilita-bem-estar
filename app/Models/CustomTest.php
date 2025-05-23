@@ -11,6 +11,11 @@ class CustomTest extends Model
     protected $guarded = [];
     public $timestamps = false;
 
+    public function parentCompany(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
     public function parentCollection(): BelongsTo
     {
         return $this->belongsTo(Collection::class, 'collection_id');

@@ -52,7 +52,11 @@
                                 <x-table.body.td class="hidden sm:block truncate flex-1">{{ $campaign->collection->name }}</x-table.body.td>
                                 <x-table.body.td class="hidden lg:block truncate flex-1">{{ $campaign->start_date->format('d/m/Y - H:i') }}</x-table.body.td>
                                 <x-table.body.td class="hidden lg:block truncate flex-1">{{ $campaign->end_date->format('d/m/Y - H:i') }}</x-table.body.td>
-                                <x-table.body.td class="truncate w-24">{{ now() >= $campaign->start_date && now() <= $campaign->end_date ? 'Ativo' : 'Não ativo' }}</x-table.body.td>
+                                <x-table.body.td class="truncate w-24">
+                                    @if(now() >= $campaign->start_date && now() <= $campaign->end_date) Ativa @endif
+                                    @if(now() <= $campaign->start_date) Agendada @endif
+                                    @if(now() >= $campaign->end_date) Encerrada @endif
+                                </x-table.body.td>
                             </x-table.body.tr>
                         @endforeach
                     </x-table.body>

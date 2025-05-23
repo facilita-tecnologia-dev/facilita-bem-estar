@@ -53,8 +53,6 @@ class UserFeedbackController
      */
     public function create()
     {
-        Gate::authorize('answer-organizational-test');
-
         return view('private.tests.feedback');
     }
 
@@ -63,7 +61,6 @@ class UserFeedbackController
      */
     public function store(Request $request)
     {
-        Gate::authorize('answer-organizational-test');
         $validatedData = $request->validate([
             'feedback' => 'nullable|string|min:12',
         ]);

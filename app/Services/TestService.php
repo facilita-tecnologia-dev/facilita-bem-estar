@@ -61,7 +61,6 @@ class TestService
     public function evaluateTest(UserTest | UserCustomTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
     {        
         $testType = $userTest instanceof UserCustomTest ? $userTest->relatedCustomTest : $userTest->testType;
-
         $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
         $evaluatedTest = $handler->process($userTest, $metrics);
 

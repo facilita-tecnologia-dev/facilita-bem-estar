@@ -31,7 +31,7 @@
 
                 <div class="w-full flex flex-row justify-between gap-2">
                     @can('campaign-delete')
-                        @if(now() < $campaign->start_date)
+                        @if(session('company')->hasSameCampaignThisYear($campaign->collection->id))
                             <x-form action="{{ route('campaign.destroy', $campaign) }}" delete onsubmit="return confirm('Você deseja excluir a campanha?')">
                                 <x-action tag="button" type="submit" variant="secondary">Excluir campanha</x-action>
                             </x-form>

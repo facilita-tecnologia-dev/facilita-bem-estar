@@ -30,28 +30,32 @@ class TestsController
     public function __invoke(Collection $collection, $testIndex = 1)
     {
         $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-        $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
-
+        $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
+        
         $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase)->filter(function($test){
             if($test instanceof CustomTest){
                 return !$test->is_deleted;
             }
             
             if($test->customTest){
-                return !$test->customTest->is_deleted;
+                if($test->customTest->company_id == session('company')->id){
+                    return !$test->customTest->is_deleted ? true : false;
+                }
             }
 
             return true;
         });
 
         $test = $tests->firstWhere('order', $testIndex);
- 
+
         if($test == null){
             while($test == null){   
                 $testIndex++;
                 $test = $tests->firstWhere('order', $testIndex);
             }
         }
+
+
 
         $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
             $relatedDefaultQuestion = $question->relatedQuestion;
@@ -70,7 +74,7 @@ class TestsController
     public function handleTestSubmit(Request $request, Collection $collection, $testIndex)
     {
         $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-        $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
+        $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
 
         $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase)->filter(function($test){
             if($test instanceof CustomTest){
@@ -78,14 +82,16 @@ class TestsController
             }
             
             if($test->customTest){
-                return !$test->customTest->is_deleted;
+                if($test->customTest->company_id == session('company')->id){
+                    return !$test->customTest->is_deleted ? true : false;
+                }
             }
 
             return true;
         });
         
         $test = $tests->firstWhere('order', $testIndex);
-
+        
         $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
             $relatedDefaultQuestion = $question->relatedQuestion;
 
@@ -165,7 +171,9 @@ class TestsController
             }
             
             if($test->customTest){
-                return !$test->customTest->is_deleted;
+                if($test->customTest->company_id == session('company')->id){
+                    return !$test->customTest->is_deleted ? true : false;
+                }
             }
 
             return true;

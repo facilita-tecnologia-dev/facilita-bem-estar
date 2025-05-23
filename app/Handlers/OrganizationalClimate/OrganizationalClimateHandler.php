@@ -13,7 +13,6 @@ class OrganizationalClimateHandler
     public function process(UserTest | UserCustomTest $userTest, Collection $metrics): array
     {
         $processedAnswers = [];
-        
         foreach ($userTest->answers as $answer) {
             $questionId = $answer instanceof UserCustomAnswer ? $answer->custom_question_id : $answer->question_id;
             $processedAnswers[$questionId] = Helper::multiplyAnswer($answer['related_option_value']);

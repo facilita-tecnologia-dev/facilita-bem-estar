@@ -45,4 +45,18 @@ class Company extends Authenticatable
     {
         return $this->users->count() && $this->logo && $this->metrics()->where('value', '!=', 'null')->count();
     }
+
+    public function customTests(): HasMany
+    {
+        return $this->hasMany(CustomTest::class);
+    }
+
+    public function hasSameCampaignThisYear($collectionId) : bool
+    {
+        return $this
+            ->campaigns()
+            ->whereYear('start_date', now()->year)
+            ->where('collection_id', $collectionId)
+            ->exists();
+    }
 }

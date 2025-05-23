@@ -18,7 +18,7 @@ class UserCustomAnswer extends Model
 
     public function relatedQuestion(): BelongsTo
     {
-        return $this->belongsTo(CustomQuestion::class);
+        return $this->belongsTo(CustomQuestion::class, 'custom_question_id');
     }
 
     public function relatedOption(): BelongsTo

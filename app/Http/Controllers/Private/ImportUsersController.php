@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Private;
 use App\Imports\UsersImport;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ImportUsersController

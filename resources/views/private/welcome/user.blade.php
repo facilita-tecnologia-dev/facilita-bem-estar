@@ -20,12 +20,14 @@
                             </span>
                             
                             @php
-                                $latestCollection = App\Helpers\AuthGuardHelper::user()
-                                    ->latestCollections
-                                    ->firstWhere('collection_id', $activeCampaign->collection_id)
+                                $companyCustomTests = App\Repositories\TestRepository::companyCustomTests();
+                                $defaultTests = App\Repositories\TestRepository::defaultTests();
+                                $user = App\Helpers\AuthGuardHelper::user();
+
+                                $hasCompatibleCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests);
                             @endphp
 
-                            @if($latestCollection && $latestCollection->created_at->year == now()->year)
+                            @if($hasCompatibleCollection)
                                 <p class="p-4 text-sm sm:text-base">Respondido</p>
                             @else
                                 <x-action variant="secondary" :href="route('responder-teste', App\Models\Collection::firstWhere('id', $activeCampaign->collection_id))">Responder testes</x-action>

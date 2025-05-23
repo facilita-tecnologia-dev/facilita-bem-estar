@@ -1,6 +1,6 @@
 <x-layouts.app>
 
-        <div class="flex h-full justify-end">
+        <div class="flex h-full justify-center">
             <div class="w-full max-w-[600px] bg-gray-100 flex justify-center items-center px-4">
                 <div class="w-full max-w-[400px] flex flex-col items-center gap-8">
                     <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
@@ -18,7 +18,7 @@
                         <x-action tag="button" type="submit">Registrar</x-action>
                     </x-form>
 
-                    <x-action href="{{ route('apresentacao') }}" variant="simple">Voltar para a Home</x-action>
+                    <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
                 </div>
             </div>
         </div>
