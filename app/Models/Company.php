@@ -24,6 +24,11 @@ class Company extends Authenticatable
             ->withTimestamps();
     }
 
+    public function feedbacks(): HasMany
+    {
+        return $this->hasMany(UserFeedback::class);
+    }
+
     public function metrics(): HasMany
     {
         return $this->hasMany(CompanyMetric::class, 'company_id');
@@ -58,5 +63,12 @@ class Company extends Authenticatable
             ->whereYear('start_date', now()->year)
             ->where('collection_id', $collectionId)
             ->exists();
+    }
+
+    public function getFirstName(): string
+    {
+        $name = explode(' ', $this->name);
+
+        return $name[0];
     }
 }

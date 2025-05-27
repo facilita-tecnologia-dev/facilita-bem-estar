@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Private;
 
+use App\Exports\FeedbacksExport;
 use App\Helpers\AuthGuardHelper;
 use App\Models\UserFeedback;
 use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserFeedbackController
 {
@@ -41,7 +43,8 @@ class UserFeedbackController
 
         return $this->filterService->sort($this->filterService->apply($query))
             ->whereHas('feedbacks', function ($query) use ($request) {
-                $query->whereYear('created_at', $request->year ?? Carbon::now()->year);
+                $query->whereYear('created_at', $request->year ?? Carbon::now()->year)
+                        ->where('company_id', session('company')->id);
             })
             ->select('users.id', 'name', 'department', 'work_shift')
             ->with('feedbacks', fn ($query) => $query->latest()->limit(1))
@@ -54,6 +57,10 @@ class UserFeedbackController
     public function create()
     {
         return view('private.tests.feedback');
+    }
+    
+    public function export(){
+        return Excel::download(new FeedbacksExport, session('company')->getFirstName() . ' - Pesquisa de Clima Organizacional - Comentários.xlsx');
     }
 
     /**

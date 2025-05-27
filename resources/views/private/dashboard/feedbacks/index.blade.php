@@ -29,6 +29,10 @@
                             'year'
                         ]" 
                     />
+
+                    <div class="w-full sm:w-fit">
+                        <x-action href="{{ route('export-feedbacks') }}" width="full">Exportar comentários</x-action>
+                    </div>
                 </div>
      
                 <x-table>

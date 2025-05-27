@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\CommentsExport;
 use App\Http\Controllers\Auth\ChooseCompanyToLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::middleware(GuestMiddleware::class)->group(function () {
     Route::get('/', [PresentationController::class, 'index'])->name('apresentacao');
@@ -52,6 +54,8 @@ Route::middleware(AuthMiddleware::class)->group(function () {
 
     Route::get('/comentario', [UserFeedbackController::class, 'create'])->name('feedbacks.create');
     Route::post('/comentario', [UserFeedbackController::class, 'store']);
+
+    Route::get('/exportar-comentarios', [UserFeedbackController::class, 'export'])->name('export-feedbacks');
 
     Route::view('/obrigado', 'private.tests.thanks')->name('responder-teste.thanks');
 
