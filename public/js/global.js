@@ -8,7 +8,7 @@ const body = document.querySelector("body");
 const sidebar = document.querySelector("#sidebar");
 
 body.addEventListener("click", function (event) {
-    if (!sidebar.contains(event.target)) {
+    if (sidebar && !sidebar.contains(event.target)) {
         sidebar.classList.replace("left-0", "-left-full");
     }
 });
@@ -112,8 +112,10 @@ document.addEventListener("DOMContentLoaded", function() {
         LGPDBar.style.display = 'flex';
     }
 
-    LGPDAcceptButton.addEventListener('click', function() {
-        setCookie('lgpd_consent', '1', 30);
-        LGPDBar.style.display = 'none';
-    });
+    if(LGPDAcceptButton){    
+        LGPDAcceptButton.addEventListener('click', function() {
+            setCookie('lgpd_consent', '1', 30);
+            LGPDBar.style.display = 'none';
+        });
+    }
 });

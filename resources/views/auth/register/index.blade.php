@@ -7,7 +7,6 @@
                         <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
                         <div class="flex flex-col gap-2 items-center">
                             <h1 class="text-3xl md:text-4xl font-semibold text-center text-gray-800">Registre-se</h1>
-                            {{-- <p class="text-base text-center text-gray-800">Para se registrar como profissional de saúde, cadastre as suas credenciais nos campos abaixo.</p> --}}
                         </div>
                     </div>
 
@@ -16,12 +15,6 @@
                         <button data-role="toggle-register-form" id="internal" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Empresa</button>
                         <button data-role="toggle-register-form" id="external" class="relative w-full px-2 h-9 rounded-md whitespace-nowrap">Profissional de Saúde</button>
                     </div>
-
-                    {{-- <x-form action="{{ route('auth.cadastro.usuario-interno') }}" id="register-internal" class="w-full flex flex-col gap-3 items-center" post>
-                        <x-form.input-text name="name" placeholder="Digite o seu nome completo" />
-                        <x-form.input-text name="cpf" placeholder="Digite o CPF" />
-                        <x-action tag="button" type="submit">Registrar</x-action>
-                    </x-form> --}}
 
                     {{-- External --}}
                     <x-form action="{{ route('auth.cadastro.usuario-externo') }}" id="register-external" class="hidden w-full flex-col gap-3 items-center" post>

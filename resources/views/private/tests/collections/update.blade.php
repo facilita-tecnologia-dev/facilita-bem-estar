@@ -46,7 +46,7 @@
                                             style="{{ $testIsDeleted ? 'opacity: 50%;' : '' }}"
                                             :disabled="$testIsDeleted"
                                         >
-                                            <i class="fa-solid fa-minus"></i>
+                                            <i class="fa-solid fa-xmark"></i>
                                         </x-action>
                                         <x-action 
                                             tag="button" 
@@ -55,7 +55,7 @@
                                             style="{{ $testActive ? 'opacity: 50%;' : '' }}"
                                             :disabled="$testActive"
                                             >
-                                            <i class="fa-solid fa-plus"></i>
+                                            <i class="fa-solid fa-check"></i>
                                         </x-action>
                                     </div>
                                 </div>
@@ -71,10 +71,10 @@
                                                 readonly
                                             />
                                             <x-action variant="secondary" tag="button" type="button" data-role="delete" style="{{ $question->is_deleted == 1 ? 'opacity: 50%;' : '' }}">
-                                                <i class="fa-solid fa-minus"></i>
+                                                <i class="fa-solid fa-xmark"></i>
                                             </x-action>
                                             <x-action variant="secondary" tag="button" type="button" data-role="restore" style="{{ $question->is_deleted == 1 ? 'opacity: 100%;' : '' }}">
-                                                <i class="fa-solid fa-plus"></i>
+                                                <i class="fa-solid fa-check"></i>
                                             </x-action>
                                         </div>
                                     @endforeach

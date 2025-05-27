@@ -13,7 +13,8 @@
                 </div>
 
                 <x-form action="{{ route('auth.login.redefinir-senha') }}" class="w-full flex flex-col gap-4 items-center" post>
-                    <x-form.input-text type="password" name="password" placeholder="Digite sua senha" />
+                    <x-form.input-text type="password" name="password" placeholder="Digite sua senha" oninput="checkPasswordSteps(event)" />
+                    <x-password-requirements/>
                     <x-form.input-text type="password" name="password_confirmation" placeholder="Digite sua senha novamente" />
                     <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
                 </x-form>
@@ -25,3 +26,4 @@
 </x-layouts.app>
 
 <script src="{{ asset('js/global.js') }}"></script>
+<script src="{{ asset('js/auth/login/reset-password.js') }}"></script>

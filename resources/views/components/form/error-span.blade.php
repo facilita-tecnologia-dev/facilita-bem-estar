@@ -1,3 +1,3 @@
 <div class="w-full">
-    <span class="text-xs md:text-sm text-rose-400">{{ $text }}</span>
+    <span class="text-xs text-rose-400">{{ $text }}</span>
 </div>
