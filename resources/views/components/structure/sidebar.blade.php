@@ -157,12 +157,12 @@
 
     @if(Auth::guard('user')->check())
         <footer class="px-4 py-2 flex flex-col gap-2">
-            <div class="px-2 py-1.5 flex items-center gap-2 justify-start hover:bg-gray-200 transition rounded-md">
+            <a href="{{ route('user.show', App\Helpers\AuthGuardHelper::user()) }}" class="px-2 py-1.5 flex items-center gap-2 justify-start hover:bg-gray-200 transition rounded-md">
                 <div class="w-5 flex justify-center items-center">
                     <i class="fa-solid fa-user"></i>
                 </div>
                 <span class="flex-1 truncate">{{ Auth::guard('user')->user()->name }}</span>
-            </div>
+            </a>
         </footer>
     @endif
 </div>

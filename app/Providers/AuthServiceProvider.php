@@ -44,7 +44,7 @@ class AuthServiceProvider extends ServiceProvider
                 /** @var User $user */
                 $user = AuthGuardHelper::user();
 
-                return $user->hasPermission('user_show');
+                return $user->hasPermission('user_show') || $user->id === AuthGuardHelper::user()->id;
             }
 
             if (AuthGuardHelper::user() instanceof Company) {
@@ -339,6 +339,36 @@ class AuthServiceProvider extends ServiceProvider
 
             return false;
         });
+        
+        Gate::define('collections-index', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('collections_index');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('collections-edit', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('collections_edit');
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return true;
+            }
+
+            return false;
+        });
 
         Gate::define('documentation-show', function (?Authenticatable $user) {
             if (AuthGuardHelper::user() instanceof User) {
@@ -361,21 +391,6 @@ class AuthServiceProvider extends ServiceProvider
                 $user = AuthGuardHelper::user();
 
                 return $user->hasPermission('collections_index');
-            }
-
-            if (AuthGuardHelper::user() instanceof Company) {
-                return true;
-            }
-
-            return false;
-        });
-
-        Gate::define('collections-edit', function (?Authenticatable $user) {
-            if (AuthGuardHelper::user() instanceof User) {
-                /** @var User $user */
-                $user = AuthGuardHelper::user();
-
-                return $user->hasPermission('collections_edit');
             }
 
             if (AuthGuardHelper::user() instanceof Company) {

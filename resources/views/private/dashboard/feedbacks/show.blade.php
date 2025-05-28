@@ -3,7 +3,14 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Comentário | Detalhe" :back="route('feedbacks.index')" />
+            <x-structure.page-title 
+                title="Comentário | Detalhe"
+                :back="route('feedbacks.index')"
+                :breadcrumbs="[
+                    'Comentários' => route('feedbacks.index'),
+                    'Comentário | Detalhe' => '',
+                ]"
+            />
             
             <div class="w-full bg-gray-100/50 p-4 rounded-md shadow-md">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -9,8 +9,8 @@ class OccupationFilter implements UserFilterInterface
 {
     public function handle(Builder $query, \Closure $next): Builder
     {
-        if (request()->filled('occupation')) {
-            $query->where('occupation', request('occupation'));
+        if (request()->filled('occupation') && !in_array('Todos', request('occupation'))) {
+            $query->whereIn('occupation', request('occupation'));
         }
 
         return $next($query);

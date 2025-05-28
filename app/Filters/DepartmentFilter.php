@@ -9,8 +9,8 @@ class DepartmentFilter implements UserFilterInterface
 {
     public function handle(Builder $query, \Closure $next): Builder
     {
-        if (request()->filled('department')) {
-            $query->where('department', request('department'));
+        if (request()->filled('department') && !in_array('Todos', request('department'))) {
+            $query->whereIn('department', request('department'));
         }
 
         return $next($query);

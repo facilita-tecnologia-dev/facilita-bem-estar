@@ -16,11 +16,11 @@
             {{ $label }}
         </label>
     @endif
-
+        
     <div for="role" class="relative w-full flex items-center overflow-hidden gap-3 bg-gray-100 rounded-md border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
-        <select  name="{{ $name }}" id="{{ $name }}" {{ $disabled ? 'disabled' : '' }} class="flex-1 pl-3 pr-9 h-[43px] bg-transparent appearance-none focus:outline-none">
+        <select multiple  name="{{ $name }}" id="{{ $name }}" {{ $disabled ? 'disabled' : '' }} class="flex-1 p-1.5 h-[140px] bg-transparent appearance-none focus:outline-none">
             @if($defaultValue)
-                <option value="" {{ !$value ? 'selected' : '' }}>Todos</option>
+                <option class="p-1.5 cursor-pointer rounded-md mt-1 checked:bg-gradient-to-b checked:from-sky-300/50 checked:to-sky-300/50" value="Todos" {{ in_array('Todos', $value ?? []) ? 'selected' : '' }}>Todos</option>
             @endif
             @foreach ($options as $option)
                 @php
@@ -34,16 +34,13 @@
                     } else{
                         $optionValue = $option;
                     }
+                    // dump($value, old($name), old($name) == $optionValue || $value == $optionValue ? 'selected' : '');
                 @endphp
-             
-                <option value="{{ $optionValue }}" {{ old($name) == $optionValue || $value == $optionValue ? 'selected' : '' }}>{{ $optionText }}</option>
+
+                <option class="p-1.5 cursor-pointer rounded-md mt-1 checked:bg-gradient-to-b checked:from-sky-300/50 checked:to-sky-300/50" value="{{ $optionValue }}" {{ in_array($optionValue, old($name, $value ?? [])) ? 'selected' : '' }}>{{ $optionText }}</option>
                 
             @endforeach
         </select>
-    
-        <div class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
-            <i class="fa-solid fa-chevron-down"></i>
-        </div>
     </div>
 
     @error($name)

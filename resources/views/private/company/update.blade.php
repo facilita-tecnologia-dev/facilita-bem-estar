@@ -3,7 +3,14 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>  
-            <x-structure.page-title title="Empresa | Editar" :back="route('company.show', $company)" />
+            <x-structure.page-title 
+                title="Empresa | Editar" 
+                :back="route('company.show', $company)" 
+                :breadcrumbs="[
+                    'Empresa' => route('company.show', $company),
+                    'Editar' => ''
+                ]"
+            />
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">

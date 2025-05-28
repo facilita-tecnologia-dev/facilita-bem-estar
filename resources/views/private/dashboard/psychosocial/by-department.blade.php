@@ -3,7 +3,16 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title :title="$testName" :back="route('dashboard.psychosocial')" />
+            {{-- <x-structure.page-title :title="$testName" :back="route('dashboard.psychosocial')" /> --}}
+
+            <x-structure.page-title 
+                :title="$testName" 
+                :back="route('dashboard.psychosocial')"
+                :breadcrumbs="[
+                    'Riscos Psicossociais' => route('dashboard.psychosocial'),
+                    'Divisão por departamento' => ''
+                ]"
+            />
 
             <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
                 <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">

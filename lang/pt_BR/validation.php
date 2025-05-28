@@ -205,6 +205,8 @@ return [
         'role' => 'gestor/colaborador',
         'cnpj' => 'cnpj',
         'password' => 'senha',
+        'current_password' => 'senha atual',
+        'new_password' => 'nova senha',
         'age_range' => 'faixa etária',
         'admission_range' => 'tempo de empresa',
         'year' => 'ano de realização dos testes',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Private;
 use App\Enums\GenderEnum;
 use App\Enums\InternalUserRoleEnum;
 use App\Helpers\AuthGuardHelper;
+use App\Helpers\SessionErrorHelper;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\Company;
@@ -301,13 +302,39 @@ class UserController
         return redirect()->to($loginService->getRedirectRoute($user));
     }
 
-    public function showAddExistingUser(){
+    public function resetPasswordOnShowScreen(Request $request, User $user)
+    {   
+        $validatedData = $request->validate([
+            "current_password" => ['required'],
+            'new_password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ]);
+
+        if(!Hash::check($validatedData['current_password'], $user->password)){
+            SessionErrorHelper::flash('current_password', 'Senha incorreta.');
+            return back();
+        }
+
+        if(Hash::check($validatedData['new_password'], $user->password)){
+            SessionErrorHelper::flash('new_password', 'Essa senha já foi/está sendo utilizada.');
+            return back();
+        }
+
+        $user->update([
+            'password' => Hash::make($validatedData['new_password']),
+        ]);
+
+        return back()->with('message', 'Senha redefinida com sucesso!');
+    }
+
+    public function showAddExistingUser()
+    {
         Gate::authorize('user-create');
 
         return view('private.users.add-existing');
     }
 
-    public function addExistingUser(Request $request){
+    public function addExistingUser(Request $request)
+    {
         Gate::authorize('user-create');
         $validatedData = $request->validate([
             'cpf' => ['required', 'string', new validateCPF],

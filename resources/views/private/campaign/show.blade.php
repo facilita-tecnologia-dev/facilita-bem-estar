@@ -3,8 +3,15 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>    
-            <x-structure.page-title :title="$campaign->name" :back="route('campaign.index')" />
-    
+            <x-structure.page-title 
+                :title="$campaign->name"
+                :back="route('campaign.index')"
+                :breadcrumbs="[
+                    'Campanhas' => route('campaign.index'),
+                    'Campanha | Detalhe' => '',
+                ]"
+            />
+
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="">

@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers\Private;
 
+use App\Helpers\SessionErrorHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 
 class CompanyController
 {
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('auth.register.company');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         Gate::authorize('company-show');
@@ -27,9 +24,6 @@ class CompanyController
         return view('private.company.show', compact('company'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         Gate::authorize('company-edit');
@@ -38,9 +32,6 @@ class CompanyController
         return view('private.company.update', compact('company'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request)
     {
         Gate::authorize('company-edit');
@@ -59,5 +50,45 @@ class CompanyController
         $company->save();
 
         return back()->with('message', 'Perfil da empresa atualizado com sucesso!');
+    }
+
+    public function destroy(Request $request, string $id)
+    {
+        $validatedData = $request->validate([
+            'password' => ['required']
+        ]);
+
+        if(!Hash::check($validatedData['password'], session('company')->password)){
+            SessionErrorHelper::flash('password', 'Senha incorreta.');
+            return back();
+        }
+
+        session('company')->delete();
+
+        return redirect()->to(route('logout'));
+    }
+
+    public function resetCompanyPassword(Request $request, string $id)
+    {
+        $validatedData = $request->validate([
+            "current_password" => ['required'],
+            'new_password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ]);
+
+        if(!Hash::check($validatedData['current_password'], session('company')->password)){
+            SessionErrorHelper::flash('current_password', 'Senha incorreta.');
+            return back();
+        }
+
+        if(Hash::check($validatedData['new_password'], session('company')->password)){
+            SessionErrorHelper::flash('new_password', 'Essa senha já foi/está sendo utilizada.');
+            return back();
+        }
+
+        session('company')->update([
+            'password' => Hash::make($validatedData['new_password']),
+        ]);
+
+        return back()->with('message', 'Senha redefinida com sucesso!');
     }
 }

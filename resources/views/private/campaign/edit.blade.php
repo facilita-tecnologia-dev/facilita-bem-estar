@@ -3,7 +3,15 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Editar campanha de testes" />
+            <x-structure.page-title 
+                title="Editar campanha de testes"
+                :back="route('campaign.show', $campaign)"
+                :breadcrumbs="[
+                    'Campanhas' => route('campaign.index'),
+                    'Campanha | Detalhe' => route('campaign.show', $campaign),
+                    'Editar campanha' => ''
+                ]"
+            />
 
             @if(session('message'))
                 <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
@@ -41,7 +49,8 @@
                         value="{{ old('end_date', $campaign->end_date->format('Y-m-d\TH:i')) }}"
                         disabled="{{ $campaign->end_date < now() ? true : false }}" 
                         min="{{ \Carbon\Carbon::now()->addHours(1)->format('Y-m-d\TH:i') }}" 
-                        label="Data de encerramento"/>
+                        label="Data de encerramento"
+                    />
                 
                     <div class="md:col-span-2">
                         <x-form.textarea name="description" label="Descrição" value="{{ old('description', $campaign->description) }}" placeholder="Digite a descrição da campanha de teste" class="bg-gray-100 shadow-none border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500"/>    

@@ -68,9 +68,14 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::view('/user/redefinir-senha', 'auth.login.reset-password')->name('auth.login.redefinir-senha');
     Route::post('/user/redefinir-senha', [UserController::class, 'resetUserPassword']);
     
+    Route::put('/user/{user}/redefinir-senha', [UserController::class, 'resetPasswordOnShowScreen'])->name('user.reset-password');
+    
+    Route::put('/empresa/{company}/redefinir-senha', [CompanyController::class, 'resetCompanyPassword'])->name('company.reset-password');
+
     Route::resource('company', CompanyController::class);
     Route::resource('user', UserController::class);
     Route::resource('campaign', CompanyCampaignController::class);
+    
 
 
     Route::get('/user/{user}/permissoes', [UserController::class, 'showPermissions'])->name('user.permissions');
