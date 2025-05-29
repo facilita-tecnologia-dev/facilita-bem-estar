@@ -7,6 +7,7 @@ namespace App\Models;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -31,8 +32,14 @@ class User extends Authenticatable
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'company_users')
-        ->withPivot('company_id')
-        ->wherePivot('company_id', session('company')->id);
+        ->withPivot('company_id');
+    }
+
+    public function roleInCompany(?Company $company = null): Role
+    {
+        $roles = $this->roles()->get(); 
+        $company = $company ?? session('company');
+        return $roles->first(fn($role) => $role->pivot->company_id == $company->id);
     }
 
     public function feedbacks(): HasMany
@@ -108,7 +115,7 @@ class User extends Authenticatable
 
     public function hasRole(string $role): bool
     {
-        return $this->roles->contains('name', $role);
+        return $this->roleInCompany()->name == $role;
     }
 
     public function departmentScopes(): HasMany

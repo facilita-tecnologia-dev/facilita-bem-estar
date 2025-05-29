@@ -22,7 +22,7 @@
                     <x-action tag="button" type="submit" variant="secondary">Fazer login</x-action>
                 </x-form>
 
-                {{-- <x-action href="{{ route('apresentacao') }}" variant="secondary">Voltar para a Home</x-action> --}}
+                <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
             </div>
         </div>
     </div>

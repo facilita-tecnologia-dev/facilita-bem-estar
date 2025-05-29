@@ -76,7 +76,8 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::resource('user', UserController::class);
     Route::resource('campaign', CompanyCampaignController::class);
     
-
+    
+    Route::post('/user/trocar-empresa', [LoginController::class, 'switchCompanyLogin'])->name('user.switch-company');
 
     Route::get('/user/{user}/permissoes', [UserController::class, 'showPermissions'])->name('user.permissions');
     Route::post('/user/{user}/permissoes', [UserController::class, 'updatePermissions']);

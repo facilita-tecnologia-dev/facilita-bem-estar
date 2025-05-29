@@ -399,5 +399,16 @@ class AuthServiceProvider extends ServiceProvider
 
             return false;
         });
+
+        Gate::define('switch-companies', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+                
+                return $user->companies->count() > 1;
+            }
+
+            return false;
+        });
     }
 }

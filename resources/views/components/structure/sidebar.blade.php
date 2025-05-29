@@ -143,8 +143,7 @@
        
             </a>
         </div> --}}
-
-
+        
         <x-sidebar.menu title="Logout">
             <x-sidebar.item href="{{ route('logout') }}" onclick="return confirm('Você deseja mesmo sair?')">
                 <div class="w-5 flex justify-center items-center">
@@ -153,6 +152,24 @@
                 Logout
             </x-sidebar.item>
         </x-sidebar.menu>
+        
+        <x-modal.background data-role="reset-password-modal">
+            <x-modal.wrapper class="max-w-[450px]">
+                <x-modal.title>Fazer logout</x-modal.title>
+
+                <div class="w-full flex flex-col gap-2">
+                    <p class="text-center">Deseja fazer logout do sistema?</p>
+                    <x-action href="{{ route('logout') }}" variant="danger" width="full" data-role="logout-modal-trigger">Fazer logout</x-action>
+                </div>
+            </x-modal.wrapper>
+        </x-modal.background>
+
+        @can('switch-companies')
+            <x-sidebar.menu title="Login em outra empresa">
+                <x-sidebar.switch-company :companies="$companiesToSwitch" />
+            </x-sidebar.menu>
+        @endcan
+
     </div>
 
     @if(Auth::guard('user')->check())

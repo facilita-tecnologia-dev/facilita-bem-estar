@@ -20,7 +20,7 @@ class SidebarComposer
     public function compose(View $view): void
     {
         $user = AuthGuardHelper::user();
-
+        
         if ($user instanceof User) {
             $companyCustomTests = TestRepository::companyCustomTests();
             $defaultTests = TestRepository::defaultTests();

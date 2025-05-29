@@ -42,7 +42,7 @@
         </select>
     
         <div class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
-            <i class="fa-solid fa-chevron-down"></i>
+            <i class="fa-solid fa-chevron-down text-sm"></i>
         </div>
     </div>
 

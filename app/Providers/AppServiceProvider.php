@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
-
+        
         View::composer('components.structure.sidebar', SidebarComposer::class);
         View::composer('components.filter-actions', FiltersComposer::class);
         View::composer('private.welcome.user', UserWelcomeComposer::class);

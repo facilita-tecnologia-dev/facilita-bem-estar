@@ -19,7 +19,7 @@ use App\Models\UserDepartmentPermission;
 use App\Repositories\TestRepository;
 use App\Repositories\UserRepository;
 use App\Rules\validateCPF;
-use App\Services\LoginService;
+use App\Services\AuthService;
 use App\Services\User\UserElegibilityService;
 use App\Services\User\UserFilterService;
 use Illuminate\Http\Request;
@@ -297,9 +297,9 @@ class UserController
         $user->password = Hash::make($validatedData['password']);
         $user->save();
 
-        $loginService = app(LoginService::class);
+        $authService = app(AuthService::class);
 
-        return redirect()->to($loginService->getRedirectRoute($user));
+        return redirect()->to($authService->getRedirectLoginRoute($user));
     }
 
     public function resetPasswordOnShowScreen(Request $request, User $user)

@@ -18,16 +18,17 @@
                 </div>
 
                 @php
-                    $totalActions = 3;
+                    $totalActions = 4;
                     $neededActionsCount = 0;
 
                     if(!session('company')->logo){$neededActionsCount++;}
                     if(!session('company')->users->count()){$neededActionsCount++;}
-                    if(!session('company')->metrics()->where('value', '>', 0)->exists()){$neededActionsCount++;}
+                    if(!session('company')->users->filter(fn($user)=> $user->hasRole('manager'))->count()){$neededActionsCount++;}
+                    if(!session('company')->metrics()->where('value', '!=', 'null')->exists()){$neededActionsCount++;}
                 @endphp
                 @if($neededActionsCount)
-                    <div class="w-full max-w-96 grid grid-cols-3 gap-2 rounded-md bg-gray-100/50 shadow-md p-4">
-                        <p class="col-span-3 text-sm text-right">
+                    <div class="w-full max-w-96 grid grid-cols-4 gap-2 rounded-md bg-gray-100/50 shadow-md p-4">
+                        <p class="col-span-4 text-sm text-right">
                             {{ $neededActionsCount }} ações recomendadas
                         </p>
 
@@ -51,6 +52,7 @@
                         <x-action variant="secondary" :href="route('company.edit', session('company'))">Editar perfil da empresa</x-action>
                     </div>
                 @endif
+
                 @if(!session('company')->users->count())
                     <div class="w-full flex flex-col lg:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
                         <span class="text-sm md:text-base flex items-center gap-3">
@@ -63,6 +65,19 @@
                         </div>
                     </div>
                 @endif
+
+                @if(!session('company')->users->filter(fn($user)=> $user->hasRole('manager'))->count())
+                    <div class="w-full flex flex-col lg:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
+                        <span class="text-sm md:text-base flex items-center gap-3">
+                            <i class="fa-solid fa-briefcase"></i>
+                            Atribua um usuário como gestor e ajuste as permissões ou a visualização de setores, se necessário.
+                        </span>
+                        <div class="flex items-center flex-wrap sm:flex-nowrap gap-2">    
+                            <x-action variant="secondary" :href="route('user.index')">Lista de usuários</x-action>
+                        </div>
+                    </div>
+                @endif
+                    
                 @if(!session('company')->metrics()->where('value', '>', 0)->exists())
                     <div class="w-full flex flex-col lg:flex-row items-center justify-between gap-4 bg-gray-100 rounded-md shadow-md p-4">
                         <span class="text-sm md:text-base flex items-center gap-3">

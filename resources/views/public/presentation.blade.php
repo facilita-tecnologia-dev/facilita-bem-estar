@@ -33,16 +33,16 @@
                 <span class="hidden sm:block">Registro como profissional de saúde</span>
             </a> --}}
             <a href="{{ route('auth.login.empresa') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-user"></i>
+                <i class="fa-solid fa-building"></i>
                 <span class="hidden sm:block">Login como empresa</span>
             </a>
             <a href="{{ route('auth.cadastro.empresa') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-right-to-bracket"></i>
+                <i class="fa-solid fa-building"></i>
                 <span class="hidden sm:block">Registrar empresa</span>
             </a>
             <a href="{{ route('auth.login.usuario-interno') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
                 <i class="fa-solid fa-user"></i>
-                <span class="hidden sm:block">Login</span>
+                <span class="hidden sm:block">Login como colaborador</span>
             </a>
             {{-- <a href="{{ route('auth.cadastro.usuario-interno') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
                 <i class="fa-solid fa-right-to-bracket"></i>
@@ -249,5 +249,7 @@
     {{-- <footer class="flex items-center justify-center px-4 py-12 sm:py-14">
         <p class="text-base text-gray-800 font-regular text-center">© 2025 Facilita Tecnologia. Todos os direitos reservados.</p>
     </footer> --}}
+    
+    <script src="{{ asset('js/presentation.js') }}"></script>
 </body>
 </html>

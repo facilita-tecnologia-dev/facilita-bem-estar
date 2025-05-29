@@ -155,3 +155,44 @@ function updatePasswordRequirement(requirementId, satisfied){
         iconUnchecked.classList.replace('hidden', 'block');
     }
 }
+
+
+// Logout modal
+
+document.addEventListener('DOMContentLoaded', function () {
+    const triggerLogoutModal = document.querySelector(
+        '[data-role="logout-modal-trigger"]'
+    );
+
+    const logoutModal = document.querySelector('[data-role="logout-modal"]');
+    const openModal = localStorage.getItem('open-logout-modal');
+
+    if (openModal) {
+        showLogoutModal(logoutModal);         
+    }
+
+
+    if(logoutModal){
+        body.addEventListener("click", function (event) {
+            if (event.target === logoutModal) {
+                hideLogoutModal(logoutModal);
+                localStorage.removeItem('open-logout-modal');   
+            }
+        });
+    }
+
+    if(triggerLogoutModal && logoutModal){
+        triggerLogoutModal.addEventListener("click", function () {
+            showLogoutModal(logoutModal);
+            localStorage.setItem('open-logout-modal', true);
+        });
+    }
+});
+
+function showLogoutModal(logoutModal){
+    logoutModal.classList.replace("hidden", "flex");
+}
+
+function hideLogoutModal(logoutModal){
+    logoutModal.classList.replace("flex", "hidden");
+}

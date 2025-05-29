@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\AuthGuardHelper;
 use App\Helpers\SessionErrorHelper;
 use App\Http\Requests\LoginExternalRequest;
 use App\Http\Requests\LoginInternalRequest;
@@ -10,7 +11,7 @@ use App\Models\User;
 use App\Rules\validateCNPJ;
 use App\Rules\validateCPF;
 use App\Services\LoginRedirectService;
-use App\Services\LoginService;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,11 +20,11 @@ use Illuminate\Support\ViewErrorBag;
 
 class LoginController
 {
-    protected $loginService;
+    protected $authService;
 
-    public function __construct(LoginService $loginService)
+    public function __construct(AuthService $authService)
     {
-        $this->loginService = $loginService;    
+        $this->authService = $authService;    
     }
 
     public function attemptInternalUserLogin(Request $request)
@@ -39,7 +40,7 @@ class LoginController
             return back();
         }
 
-        $redirectRoute = $this->loginService->attemptLogin($user, $validatedData);
+        $redirectRoute = $this->authService->authenticate($user, $validatedData);
   
         return redirect()->to($redirectRoute);
     }
@@ -58,7 +59,7 @@ class LoginController
             return back();
         }
 
-        $redirectRoute = $this->loginService->attemptLogin($company, $validatedData);
+        $redirectRoute = $this->authService->authenticate($company, $validatedData);
 
         return redirect()->to($redirectRoute);
     }
@@ -76,9 +77,9 @@ class LoginController
             return redirect()->to(route('auth.login.gestor.senha', $user));
         }
 
-        $this->loginService->login($user);
+        $this->authService->login($user);
 
-        return redirect()->to($this->loginService->getRedirectRoute($user));
+        return redirect()->to($this->authService->getRedirectLoginRoute($user));
     }
 
     public function showPasswordForm(User $user){
@@ -91,7 +92,7 @@ class LoginController
             'password' => ['required'],
         ]);
 
-        $isTempPassword = str_starts_with($user->password, 'temp_') && strlen($user->password) == 37;
+        $isTempPassword = $this->authService->checkIsTemporaryPassword($user->password);
         
         if($isTempPassword){
             if($validatedData['password'] !== $user->password){
@@ -99,18 +100,38 @@ class LoginController
                 return back();
             }
         } else{
-            if(!Hash::check($validatedData['password'], $user->password)){ 
-                SessionErrorHelper::flash('password', 'A senha está incorreta.');
-                return back();
-            }
+            return redirect()->to($this->authService->checkPasswordHash($validatedData['password'], $user->password));
         }
 
-        $this->loginService->login($user);
+        $this->authService->login($user);
         
         if($isTempPassword){
             return redirect()->to(route('auth.login.redefinir-senha'));
         }
 
-        return redirect()->to($this->loginService->getRedirectRoute($user));
+        return redirect()->to($this->authService->getRedirectLoginRoute($user));
+    }
+
+    public function switchCompanyLogin(Request $request){
+        if(request('company_id') === session('company_id')){
+            return back();
+        }
+
+        /** @var User $user */
+        $user = AuthGuardHelper::user();
+
+        $this->authService->logout($request);
+        
+        $company = Company::firstWhere('id', request('company_id'));
+        $roleInCompany = $user->roleInCompany($company);
+        session(['company' => $company]);
+        
+        if($roleInCompany->name === 'manager'){
+            return redirect()->to(route('auth.login.gestor.senha', $user));
+        } 
+
+        $this->authService->login($user);
+
+        return redirect()->to($this->authService->getRedirectLoginRoute($user));
     }
 }
