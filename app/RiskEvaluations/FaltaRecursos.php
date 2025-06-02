@@ -10,7 +10,7 @@ class FaltaRecursos implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): float|int
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
     {
         $riskPoints = 0;
 

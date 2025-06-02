@@ -3,7 +3,12 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Índices Demográficos" />
+            <x-structure.page-title 
+                title="Índices Demográficos" 
+                :breadcrumbs="[
+                    'Índices Demográficos' => '',
+                ]"
+            />
 
             <div class="w-full grid grid-cols-1 gap-4 items-start">
                 <x-charts.bar-vertical id="company-metrics" title="Dados de Desempenho Organizacional (%)" />

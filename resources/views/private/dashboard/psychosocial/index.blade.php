@@ -4,22 +4,25 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>        
-            <x-structure.page-title title="Riscos Psicossociais" />
+            <x-structure.page-title 
+                title="Riscos Psicossociais" 
+                :breadcrumbs="[
+                    'Riscos Psicossociais' => ''
+                ]"
+            />
 
             @if($psychosocialTestsParticipation)
                 <div class="w-full flex flex-col gap-4">
                     <div class="w-full flex flex-col md:flex-row gap-2">
-                        <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                            <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                                @if($psychosocialTestsParticipation['Geral']['per_cent'] >= 75)
-                                    <i class="fa-solid fa-check text-lg"></i>
-                                    A adesão é superior à 75%, portanto os resultados devem ser considerados válidos.
-                                @else
-                                    <i class="fa-solid fa-xmark text-lg"></i>
-                                    A adesão é inferior à 75%, portanto os resultados não devem ser considerados válidos.
-                                @endif
-                            </p>
-                        </div>
+                        <x-structure.message>
+                            @if($psychosocialTestsParticipation['Geral']['per_cent'] >= 75)
+                                <i class="fa-solid fa-check"></i>
+                                A adesão é superior à 75%, portanto os resultados devem ser considerados válidos.
+                            @else
+                                <i class="fa-solid fa-xmark"></i>
+                                A adesão é inferior à 75%, portanto os resultados não devem ser considerados válidos.
+                            @endif
+                        </x-structure.message>
         
                         <div class="w-full md:w-fit">
                             <x-action href="{{ route('dashboard.psychosocial.risks') }}" width="full">

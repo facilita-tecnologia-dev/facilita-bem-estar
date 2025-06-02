@@ -7,8 +7,8 @@
                 :title="$campaign->name"
                 :back="route('campaign.index')"
                 :breadcrumbs="[
-                    'Campanhas' => route('campaign.index'),
-                    'Campanha | Detalhe' => '',
+                    'Lista de Campanhas' => route('campaign.index'),
+                    'Campanha - Detalhe' => '',
                 ]"
             />
 
@@ -37,16 +37,20 @@
                 </div>
 
                 <div class="w-full flex flex-row justify-between gap-2">
-                    @can('campaign-delete')
-                        @if(session('company')->hasSameCampaignThisYear($campaign->collection->id))
-                            <x-form action="{{ route('campaign.destroy', $campaign) }}" delete onsubmit="return confirm('Você deseja excluir a campanha?')">
-                                <x-action tag="button" type="submit" variant="secondary">Excluir campanha</x-action>
-                            </x-form>
-                        @endif
-                    @endcan
-                    @can('campaign-edit')
-                        <x-action href="{{ route('campaign.edit', $campaign) }}" variant="secondary">Editar</x-action>
-                    @endcan
+                    <div class="flex items-center gap-2" data-position="left">
+                        @can('campaign-delete')
+                            @if(session('company')->hasSameCampaignThisYear($campaign->collection->id))
+                                <x-form action="{{ route('campaign.destroy', $campaign) }}" delete onsubmit="return confirm('Você deseja excluir a campanha?')">
+                                    <x-action tag="button" type="submit" variant="danger">Excluir campanha</x-action>
+                                </x-form>
+                            @endif
+                        @endcan
+                    </div>
+                    <div class="flex items-center gap-2" data-position="right">
+                        @can('campaign-edit')
+                            <x-action href="{{ route('campaign.edit', $campaign) }}" variant="secondary">Editar</x-action>
+                        @endcan
+                    </div>
                 </div>
             </div>
         </x-structure.main-content-container>    

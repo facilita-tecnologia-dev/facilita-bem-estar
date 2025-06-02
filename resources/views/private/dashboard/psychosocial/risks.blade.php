@@ -6,12 +6,10 @@
             <x-structure.page-title title="Riscos Psicossociais" :back="route('dashboard.psychosocial')" />
 
             <div class="w-full flex flex-col md:flex-row gap-4">
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        Resultado detalhado da avaliação de riscos psicossociais que necessitam intervenção.
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    Resultado detalhado da avaliação de riscos psicossociais que necessitam intervenção.
+                </x-structure.message>
 
                 <div class="w-full md:w-fit">
                     <x-action href="{{ route('dashboard.psychosocial.risks.pdf') }}" width="full">

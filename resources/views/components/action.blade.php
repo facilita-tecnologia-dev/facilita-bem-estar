@@ -11,7 +11,7 @@
 
 <{{ $elementTag }} 
     @class([
-        'px-4 py-3 text-sm md:text-base block rounded-md shadow-md cursor-pointer font-medium transition duration-200 whitespace-nowrap leading-tight flex items-center justify-center gap-2',
+        'px-4 py-2 text-sm md:text-base block rounded-md shadow-md cursor-pointer font-medium transition duration-200 whitespace-nowrap leading-tight flex items-center justify-center gap-2',
 
         'w-fit' => $width === 'fit', // Aplica os estilos se o width for 'fit'
         'w-full' => $width === 'full', // Aplica os estilos se o width for 'full'

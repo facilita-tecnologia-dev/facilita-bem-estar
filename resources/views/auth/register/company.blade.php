@@ -16,7 +16,7 @@
                         <x-form.input-text type="password" name="password" placeholder="Senha" oninput="checkPasswordSteps(event)"/>
                         <x-password-requirements/>
                         <x-form.input-text type="password" name="password_confirmation" placeholder="Confirme sua senha" />
-                        <x-action tag="button" type="submit">Registrar</x-action>
+                        <x-action tag="button" type="submit" width="full" variant="secondary">Registrar</x-action>
                     </x-form>
 
                     <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>

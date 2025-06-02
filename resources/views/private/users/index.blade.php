@@ -3,15 +3,18 @@
         <x-structure.sidebar />
         
         <div class="flex-1 overflow-auto px-4 py-2 md:px-8 md:py-4 flex flex-col items-start justify-start gap-6">   
-            <x-structure.page-title title="Lista de colaboradores" />
+            <x-structure.page-title 
+                title="Lista de colaboradores" 
+                :breadcrumbs="[
+                    'Lista de colaboradores' => '',
+                ]"
+            />
 
             @if(session('message'))
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        {{ session('message') }}
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    {{ session('message') }}
+                </x-structure.message>
             @endif
             
             <div class="w-full flex justify-end flex-col-reverse md:flex-row items-start gap-2">
@@ -98,14 +101,14 @@
                                     @endif
                                 </x-table.body.td>
                                 <x-table.body.td class="text-center w-6 sm:w-12">
-                                    @if($user->latestPsychosocialCollection && $user->latestPsychosocialCollection->created_at->year == Carbon\Carbon::now()->year)
+                                    @if($user->latestPsychosocialCollection)
                                         <i class="fa-solid fa-check"></i>
                                     @else
                                         <i class="fa-solid fa-xmark"></i>
                                     @endif
                                 </x-table.body.td>
                                 <x-table.body.td class="text-center w-6 sm:w-12">
-                                    @if($user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests))
+                                    @if($user->latestOrganizationalClimateCollection)
                                         <i class="fa-solid fa-check"></i>
                                     @else
                                         <i class="fa-solid fa-xmark"></i>

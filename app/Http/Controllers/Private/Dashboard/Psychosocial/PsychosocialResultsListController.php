@@ -49,9 +49,8 @@ class PsychosocialResultsListController
             ->getQuery();
 
         return $this->filterService->sort($this->filterService->apply($query))
-            ->whereHas('latestPsychosocialCollection', function ($query) {
-                $query->whereYear('created_at', Carbon::now()->year);
-            })
+            ->whereHas('latestPsychosocialCollection')
+            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
                 $query->whereYear('created_at', $request->year ?? '2025')
                     ->withCollectionTypeName('psychosocial-risks')
@@ -80,13 +79,15 @@ class PsychosocialResultsListController
 
         $testCompiled = [];
 
-        foreach ($this->pageData->getCollection() as $user) {
-            $userTest = $user->latestPsychosocialCollection->tests[0];
-            $testCompiled[$user->name]['user'] = $user;
-
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-
-            $this->compileTestResults($user, $evaluatedTest, $testCompiled);
+        foreach ($this->pageData as $user) {
+            $userTest = $user->latestPsychosocialCollection?->tests[0];
+            if($userTest){
+                $testCompiled[$user->name]['user'] = $user;
+                
+                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
+                
+                $this->compileTestResults($user, $evaluatedTest, $testCompiled);
+            }
         }
 
         return $testCompiled;

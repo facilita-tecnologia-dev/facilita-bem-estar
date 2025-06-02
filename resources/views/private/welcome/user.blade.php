@@ -18,13 +18,16 @@
                                 <i class="fa-solid fa-question"></i>
                                 {{ $activeCampaign->name }}
                             </span>
-                            
                             @php
                                 $companyCustomTests = App\Repositories\TestRepository::companyCustomTests();
                                 $defaultTests = App\Repositories\TestRepository::defaultTests();
                                 $user = App\Helpers\AuthGuardHelper::user();
 
-                                $hasCompatibleCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests);
+                                if($activeCampaign->collection_id == 1){
+                                    $hasCompatibleCollection = $user->latestPsychosocialCollection;
+                                } elseif($activeCampaign->collection_id == 2){
+                                    $hasCompatibleCollection = $user->organizationalClimateCollection;
+                                }
                             @endphp
 
                             @if($hasCompatibleCollection)

@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
 class Ansiedade implements RiskEvaluatorInterface
@@ -10,19 +11,19 @@ class Ansiedade implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): float|int
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
     {
-        $riskPoints = 0;
+        $riskLevel = 1;
 
-        if ($average >= 3.5) {
-            $riskPoints++;
+        if (!$average >= 3.5) {
+            return $riskLevel;
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
             $answer = $riskQuestion['related_question_answer'];
 
-            if ($answer >= 4) {
-                $riskPoints++;
+            if (!$answer >= 4) {
+                return $riskLevel;
             }
         }
 
@@ -30,12 +31,25 @@ class Ansiedade implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
         })->first();
 
-        if ($turnover && $turnover['value'] > 50) {
-            if ($riskPoints <= 2) {
-                $riskPoints++;
+        if($turnover->value !== 'null'){
+            if($turnover->value > 50){
+                $probability = 3;
+            } else {
+                $probability = 2;
             }
+        } else{        
+            $probability = RiskService::calculateProbability($average);
         }
 
-        return $riskPoints;
+        if($testSeverity < 3){
+            return $riskLevel;
+        }
+        
+        $riskLevel = match (true) {
+            ($probability == 2 && $testSeverity == 2) || ($probability == 3 && $testSeverity == 2) => 3,
+            default => 1,
+        };
+
+        return $riskLevel;
     }
 }

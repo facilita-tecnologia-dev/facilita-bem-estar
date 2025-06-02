@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
 class RigidezOrganizacional implements RiskEvaluatorInterface
@@ -10,30 +11,20 @@ class RigidezOrganizacional implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): float|int
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
     {
-        $riskPoints = 0;
+        $riskLevel = 1;
 
-        if ($average < 3.5) {
-            $riskPoints++;
+        if (!$average > 3.5) {
+            return $riskLevel;
         }
+
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
             $answer = $riskQuestion['related_question_answer'];
-            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
 
-            if ($parentQuestionStatement == 'Tenho autonomia para realizar as tarefas como julgo melhor') {
-
-                if ($answer <= 2) {
-                    $riskPoints++;
-                }
-            }
-
-            if ($parentQuestionStatement == 'Tenho liberdade para opinar sobre o meu trabalho') {
-
-                if ($answer <= 2) {
-                    $riskPoints++;
-                }
+            if (!$answer <= 2) {
+                return $riskLevel;
             }
         }
 
@@ -41,12 +32,26 @@ class RigidezOrganizacional implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'extra-hours';
         })->first();
 
-        if ($extraHours && $extraHours['value'] > 50) {
-            if ($riskPoints <= 2) {
-                $riskPoints++;
+        if($extraHours->value !== 'null'){
+            if($extraHours->value > 50){
+                $probability = 3;
+            } else {
+                $probability = 2;
             }
+        } else{        
+            $probability = RiskService::calculateProbability($average);
         }
 
-        return $riskPoints;
+        if($testSeverity < 2){
+            return $riskLevel;
+        }
+        
+        $riskLevel = match (true) {
+            $probability == 1 && $testSeverity == 2 => 2,
+            $probability == 2 && $testSeverity == 2 => 3,
+            default => 1,
+        };
+
+        return $riskLevel;
     }
 }

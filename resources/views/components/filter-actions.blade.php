@@ -20,11 +20,11 @@
 
         <x-form id="filter-form" class="w-full grid grid-cols-1 md:grid-cols-2 gap-2 items-center flex-1 overflow-auto">
             @if(in_array('name', $modalFilters))
-                <x-form.input-text icon="search" name="name" label="Nome" placeholder="Nome do colaborador" value="{{ $filtersApplied['name'] ?? null }}" />
+                <x-form.input-text name="name" label="Nome" placeholder="Nome do colaborador" value="{{ $filtersApplied['name'] ?? null }}" />
             @endif
             
             @if(in_array('cpf', $modalFilters))
-                <x-form.input-text icon="id" name="cpf" label="CPF" placeholder="CPF do colaborador" value="{{ $filtersApplied['CPF'] ?? null }}" />
+                <x-form.input-text name="cpf" label="CPF" placeholder="CPF do colaborador" value="{{ $filtersApplied['CPF'] ?? null }}" />
             @endif
     
             @if(in_array('gender', $modalFilters))

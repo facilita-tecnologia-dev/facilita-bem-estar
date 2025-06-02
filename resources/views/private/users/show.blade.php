@@ -3,15 +3,20 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>    
-            <x-structure.page-title :title="$user->name" :back="$user->id == App\Helpers\AuthGuardHelper::user()->id ? null : route('user.index')" />
+            <x-structure.page-title 
+                :title="$user->name"
+                :back="Gate::allows('user-index') ? route('user.index') : null"
+                :breadcrumbs="[
+                    'Lista de colaboradores' => Gate::allows('user-index') ? route('user.index') : null,
+                    'Colaborador - Detalhe' => '',
+                ]"
+            />
 
             @if(session('message'))
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        {{ session('message') }}
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    {{ session('message') }}
+                </x-structure.message>
             @endif
     
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
@@ -73,11 +78,14 @@
                         <p class="text-sm sm:text-base text-left">{{ $latestOrganizationalClimateCollectionDate ?? 'Nunca' }}</p>
                     </div>
 
-                    @if(str_starts_with($user->password, 'temp_') && strlen($user->password) == 37)
-                        <div class="md:col-span-2 bg-red-200/50 rounded-md p-4 space-y-1">
+                    @if(str_starts_with($user->password, 'temp_') && strlen($user->password) == 15)
+                        <div class="md:col-span-2 bg-blue-200/50 rounded-md p-4 space-y-1">
                             <p class="text-sm sm:text-base text-gray-800">Este gestor ainda não definiu uma senha. No próximo acesso, deverá usar a senha provisória e será solicitado a criar uma nova.</p> 
-                            <button class="text-sm sm:text-base break-all text-red-500 underline text-left" onclick="navigator.clipboard.writeText('{{ $user->password }}')">
-                                Clique aqui para copiar a senha provisória: {{ $user->password }}
+                            <button class="text-sm sm:text-base break-all text-left" onclick="navigator.clipboard.writeText('{{ $user->password }}')">
+                                Clique no texto sublinhado para copiar a senha provisória: 
+                                <span class="text-blue-500 underline active:text-blue-700" data-tippy-content="Clique para copiar">
+                                    {{ $user->password }}
+                                </span>
                             </button>
                         </div>
                     @endif

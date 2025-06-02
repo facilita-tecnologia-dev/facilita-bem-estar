@@ -6,7 +6,7 @@
     <div class="relative">
         <select name="company_id" class="w-full bg-transparent border border-gray-400 pl-2 pr-9 py-1.5 rounded-md flex items-center gap-2 justify-start focus:bg-gray-200 hover:bg-gray-200 transition appearance-none focus:outline-none">
             @foreach ($companies as $company)
-                <option value="{{ $company['value'] }}" class="w-full truncate">{{ $company['option'] }}</option>
+                <option value="{{ $company['id'] }}" class="w-full truncate" {{ $company['id'] == session('company')->id ? 'selected' : '' }}>{{ $company['name'] }}</option>
             @endforeach
         </select>
         <div class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">

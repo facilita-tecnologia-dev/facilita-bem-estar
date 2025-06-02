@@ -21,9 +21,6 @@ class UserTestFactory extends Factory
     {
         return [
             'test_id' => fake()->uuid(),
-            'score' => fake()->numberBetween(10, 120),
-            'severity_title' => 1,
-            'severity_color' => 1,
         ];
     }
 }

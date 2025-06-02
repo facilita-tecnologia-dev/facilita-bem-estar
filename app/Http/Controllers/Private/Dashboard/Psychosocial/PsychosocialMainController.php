@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
+use App\Models\Risk;
 use App\Models\User;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
@@ -50,9 +51,7 @@ class PsychosocialMainController
         $query = session('company')->users()->getQuery();
 
         return $this->filterService->apply($query)
-            ->whereHas('latestPsychosocialCollection', function ($query) {
-                $query->whereYear('created_at', Carbon::now()->year);
-            })
+            ->whereHas('latestPsychosocialCollection')
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->withLatestPsychosocialCollection(function ($query) use ($request) {
                 $query->whereYear('created_at', $request->year ?? '2025')
@@ -169,7 +168,7 @@ class PsychosocialMainController
         return [
             'Geral' => [
                 'count' => $usersWithCollection->count(),
-                'per_cent' => ($usersWithCollection->count() / session('company')->users->count()) * 100,
+                'per_cent' => ($usersWithCollection->count() / session('company')->users->count() ?? 1) * 100,
             ],
         ];
     }

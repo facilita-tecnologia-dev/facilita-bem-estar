@@ -28,5 +28,13 @@
     class="bg-cover h-screen"
 >
     {{ $slot }}
+
+
+    <!-- Tippy.js styles -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+
+    <!-- Tippy.js core -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
 </body>
 </html>

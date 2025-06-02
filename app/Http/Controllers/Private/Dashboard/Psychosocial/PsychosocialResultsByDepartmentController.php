@@ -40,9 +40,7 @@ class PsychosocialResultsByDepartmentController
         $query = session('company')->users()->getQuery();
 
         return $this->filterService->apply($query)
-            ->whereHas('latestPsychosocialCollection', function ($query) {
-                $query->whereYear('created_at', Carbon::now()->year);
-            })
+            ->whereHas('latestPsychosocialCollection')
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
                 $query->whereYear('created_at', $request->year ?? '2025')
@@ -73,7 +71,8 @@ class PsychosocialResultsByDepartmentController
         $testCompiled = [];
 
         foreach ($this->pageData as $user) {
-            $userTest = $user->latestPsychosocialCollection->tests[0];
+   
+            $userTest = $user->latestPsychosocialCollection?->tests[0];
             $userDepartment = $user->department;
 
             $this->sumDepartmentCount($userDepartment, $testCompiled);

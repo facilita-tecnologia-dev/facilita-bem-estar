@@ -55,8 +55,6 @@ class TestsController
             }
         }
 
-
-
         $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
             $relatedDefaultQuestion = $question->relatedQuestion;
 
@@ -212,6 +210,7 @@ class TestsController
             $newUserCollection = UserCollection::create([
                 'user_id' => AuthGuardHelper::user()->id,
                 'collection_id' => $collection->id,
+                'company_id' => session('company')->id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -298,9 +297,6 @@ class TestsController
                         'custom_question_option_id' => $relatedCustomOptionOnDatabase->id,
                     ]);
                 });
-
-                dump($userCustomTest, $userCustomTest->answers, '-', '-');
-
             }); 
         });
 

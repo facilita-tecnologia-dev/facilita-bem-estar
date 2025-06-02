@@ -7,18 +7,16 @@
                 title="Editar coleção de Testes"
                 :back="route('company-collections')"
                 :breadcrumbs="[
-                    'Coleções' => route('company-collections'),
+                    'Coleções de Testes' => route('company-collections'),
                     'Editar coleção' => '',
                 ]"
             />
 
             @if(session('message'))
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        {{ session('message') }}
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    {{ session('message') }}
+                </x-structure.message>
             @endif
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 text-sm sm:text-base">

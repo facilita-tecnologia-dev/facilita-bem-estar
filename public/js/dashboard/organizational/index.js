@@ -35,7 +35,10 @@ window.addEventListener('DOMContentLoaded', () => {
             const wrapper = document.getElementById(departmentKeys[index]);
 
             const labels = Object.keys(testType);
-            const data = labels.map(label => testType[label]['total_average']);
+            let data = [];
+
+            data.push(labels.map(label => testType[label]['total_average']))
+            
             const colors = createColorPalette(labels.length);
 
             createBarChart(wrapper, chartId, labels, data, null, colors);

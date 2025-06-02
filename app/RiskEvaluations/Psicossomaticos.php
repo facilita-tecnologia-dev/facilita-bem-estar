@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
 class Psicossomaticos implements RiskEvaluatorInterface
@@ -10,22 +11,33 @@ class Psicossomaticos implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): float|int
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
     {
-        $riskPoints = 0;
+        $riskLevel = 1;
 
-        if ($average >= 3) {
-            $riskPoints++;
+        if (!$average >= 3) {
+            return $riskLevel;
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
             $answer = $riskQuestion['related_question_answer'];
 
-            if ($answer >= 3) {
-                $riskPoints++;
+            if (!$answer >= 3) {
+                return $riskLevel;
             }
         }
 
-        return $riskPoints;
+        $probability = RiskService::calculateProbability($average);
+
+        if($testSeverity < 3){
+            return $riskLevel;
+        }
+
+        $riskLevel = match (true) {
+            ($probability == 3 && $testSeverity  == 3) || ($probability == 2 && $testSeverity == 3) => 3,
+            default => 1,
+        };
+
+        return $riskLevel;
     }
 }

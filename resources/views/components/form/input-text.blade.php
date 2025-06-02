@@ -13,15 +13,12 @@
 
 <div data-role="input-text" class="w-full">
     @if($label)
-        <label
-            class="block text-base font-semibold mb-1 text-gray-800"
-            for="{{ $id ? $id : $name }}"
-        >
+        <x-form.input-label for="{{ $id ? $id : $name }}">
             {{ $label }}
-        </label>
+        </x-form.input-label>
     @endif
 
-    <div class="relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
+    <x-form.input-wrapper>
     
         @if($icon && $icon === 'search')
             <i class="fa-solid fa-magnifying-glass text-gray-800"></i>
@@ -32,7 +29,7 @@
         @endif
 
         <input type="{{ $type }}"
-            class="w-full h-[43px] focus:outline-0 bg-transparent"
+            class="w-full focus:outline-0 bg-transparent px-3"
             name="{{ $name }}"
             id="{{ $id ? $id : $name }}"
             placeholder="{{ $placeholder }}"
@@ -42,11 +39,7 @@
             {{ $readonly ? 'readonly' : '' }}
         >
 
-        @if($icon && $icon === '%')
-            <i class="fa-solid fa-percent text-gray-800"></i>
-        @endif
-
-    </div>
+    </x-form.input-wrapper>
 
     @error($name)
         <x-form.error-span text="{{ $message }}" />

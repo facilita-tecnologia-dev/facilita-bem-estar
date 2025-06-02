@@ -27,7 +27,6 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
     const chart = document.createElement('canvas');
     chart.classList = 'w-full';
     chart.id = chartId;
-
     
     if(orientation == 'vertical'){
         chart.style.width = '100%';
@@ -36,7 +35,6 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
     } else{
         chart.style.height = 40 * data.length + 'px';
     }
-
 
     if(!wrapper){
         return;
@@ -48,17 +46,38 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
     let delayed;
     let captured;
 
-    new Chart(chart, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
+    let datasets = []
+
+    if(Array.isArray(data) && data.every(item => Array.isArray(item))){
+        data.forEach(array => {
+            const dataset = {
+                data: array,
                 backgroundColor: colors,
                 borderWidth: 1,
                 borderRadius: 4,
                 minBarThickness: 70,
-            }]
+            }
+
+            datasets.push(dataset);
+        });
+    } else{
+        const dataset = {
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 1,
+            borderRadius: 4,
+            minBarThickness: 70,
+        }
+
+        datasets.push(dataset);
+    }
+
+    new Chart(chart, {
+        type: 'bar',
+        data: {
+
+            labels: labels,
+            datasets: datasets
         },
         options: {
             legend: {

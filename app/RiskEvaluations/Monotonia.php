@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
 class Monotonia implements RiskEvaluatorInterface
@@ -10,34 +11,36 @@ class Monotonia implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): float|int
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
     {
-        $riskPoints = 0;
+        $riskLevel = 1;
 
-        if ($average <= 2.5) {
-            $riskPoints += 1.5;
+        if (!$average >= 2.5) {
+            return $riskLevel;
         }
+
         foreach ($risk->relatedQuestions as $riskQuestion) {
             $answer = $riskQuestion['related_question_answer'];
             $parentQuestionStatement = $riskQuestion['parent_question_statement'];
 
             if ($parentQuestionStatement == 'As tarefas que executo em meu trabalho são variadas') {
-                if ($answer <= 2) {
-                    $riskPoints += 1.5;
+                if (!$answer <= 2) {
+                    return $riskLevel;
                 }
             }
         }
 
-        $turnover = $metrics->filter(function ($companyMetric) {
-            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
-        })->first();
+        $probability = RiskService::calculateProbability($average);
 
-        if ($turnover && $turnover['value'] < 20) {
-            if ($riskPoints <= 2) {
-                $riskPoints++;
-            }
+        if($testSeverity < 1){
+            return $riskLevel;
         }
 
-        return $riskPoints;
+        $riskLevel = match (true) {
+            ($probability == 1 && $testSeverity == 1) || ($probability == 2 && $testSeverity == 1) => 1,
+            default => 1,
+        };
+
+        return $riskLevel;
     }
 }

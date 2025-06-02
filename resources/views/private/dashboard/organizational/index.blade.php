@@ -4,7 +4,12 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Clima Organizacional" />
+            <x-structure.page-title 
+                title="Clima Organizacional" 
+                :breadcrumbs="[
+                    'Clima Organizacional' => '',
+                ]"
+            />
 
             @if($organizationalClimateResults)
                 <div class="w-full flex flex-row gap-4">

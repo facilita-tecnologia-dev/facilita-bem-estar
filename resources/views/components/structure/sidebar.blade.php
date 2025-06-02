@@ -12,6 +12,25 @@
     </header>
 
     <div class="flex-1 px-4 py-8 flex flex-col gap-6">
+        <x-sidebar.menu title="Home">
+            @if(Auth::guard('user')->check())
+                <x-sidebar.item href="{{ route('welcome.user') }}" class="">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+                    Home
+                </x-sidebar.item>
+            @elseif (Auth::guard('company')->check())
+                <x-sidebar.item href="{{ route('welcome.company') }}" class="">
+                    <div class="w-5 flex justify-center items-center">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+                    Home
+                </x-sidebar.item>
+            @endif
+
+        </x-sidebar.menu>
+
         @canany(['psychosocial-dashboard-view', 'organizational-dashboard-view', 'feedbacks-index', 'metrics-edit', 'demographics-dashboard-view'])
             <x-sidebar.menu title="Dados">
                 @can('psychosocial-dashboard-view')
@@ -153,7 +172,7 @@
             </x-sidebar.item>
         </x-sidebar.menu>
         
-        <x-modal.background data-role="reset-password-modal">
+        <x-modal.background data-role="logout-modal">
             <x-modal.wrapper class="max-w-[450px]">
                 <x-modal.title>Fazer logout</x-modal.title>
 
@@ -169,7 +188,6 @@
                 <x-sidebar.switch-company :companies="$companiesToSwitch" />
             </x-sidebar.menu>
         @endcan
-
     </div>
 
     @if(Auth::guard('user')->check())

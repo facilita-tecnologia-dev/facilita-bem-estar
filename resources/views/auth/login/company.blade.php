@@ -13,7 +13,7 @@
                     <x-form action="{{ route('auth.login.empresa') }}" class="w-full flex flex-col gap-3 items-center" post>
                         <x-form.input-text name="cnpj" placeholder="CNPJ (00.000.000/0000-00)" />
                         <x-form.input-text type="password" name="password" placeholder="Senha" />
-                        <x-action tag="button" type="submit">Login</x-action>
+                        <x-action tag="button" type="submit" variant="secondary" width="full">Login</x-action>
                     </x-form>
 
                     <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>

@@ -93,14 +93,15 @@ class LoginController
         ]);
 
         $isTempPassword = $this->authService->checkIsTemporaryPassword($user->password);
-        
         if($isTempPassword){
             if($validatedData['password'] !== $user->password){
                 SessionErrorHelper::flash('password', 'A senha está incorreta.');
                 return back();
             }
         } else{
-            return redirect()->to($this->authService->checkPasswordHash($validatedData['password'], $user->password));
+            if(!$this->authService->checkPasswordHash($validatedData['password'], $user->password)){
+                return back();
+            }
         }
 
         $this->authService->login($user);
@@ -116,17 +117,21 @@ class LoginController
         if(request('company_id') === session('company_id')){
             return back();
         }
-
+     
         /** @var User $user */
         $user = AuthGuardHelper::user();
+        
+        $roleInCurrentCompany = $user->roleInCompany(session('company'));
 
         $this->authService->logout($request);
         
+        
         $company = Company::firstWhere('id', request('company_id'));
-        $roleInCompany = $user->roleInCompany($company);
+        $roleInRequestCompany = $user->roleInCompany($company);
+        
         session(['company' => $company]);
         
-        if($roleInCompany->name === 'manager'){
+        if($roleInCurrentCompany->name === 'employee' && $roleInRequestCompany->name === 'manager'){
             return redirect()->to(route('auth.login.gestor.senha', $user));
         } 
 

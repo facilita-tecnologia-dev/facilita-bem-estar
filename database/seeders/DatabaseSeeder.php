@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
         DB::table('company_users')->truncate();
         DB::table('users')->truncate();
         DB::table('user_answers')->truncate();
+        DB::table('user_custom_answers')->truncate();
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         // User::factory(50)
@@ -43,19 +44,23 @@ class DatabaseSeeder extends Seeder
         //         'collections'
         //     )
         //     ->create();
+        $company = Company::first();
 
         $users = User::factory(350)->create();
+        
 
-        $users->each(function ($user) use ($testTypes) {
+        $users->each(function ($user) use ($testTypes, $company) {
             $userCollection1 = UserCollection::factory()->create([
                 'user_id' => $user->id,
                 'collection_id' => 1,
+                'company_id' => $company->id,
                 'created_at' => Carbon::now()->subDays(rand(10, 200)),
             ]);
 
             $userCollection2 = UserCollection::factory()->create([
                 'user_id' => $user->id,
                 'collection_id' => 2,
+                'company_id' => $company->id,
                 'created_at' => Carbon::now()->subDays(rand(10, 200)),
             ]);
 

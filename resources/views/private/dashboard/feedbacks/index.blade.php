@@ -3,7 +3,12 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Lista de comentários" />
+            <x-structure.page-title 
+                title="Lista de comentários" 
+                :breadcrumbs="[
+                    'Lista de comentários' => '',
+                ]"
+            />
 
             @if($userFeedbacks)
                 <div class="w-full flex flex-col-reverse md:flex-row gap-4 items-start">

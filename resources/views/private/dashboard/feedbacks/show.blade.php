@@ -4,11 +4,11 @@
         
         <x-structure.main-content-container>
             <x-structure.page-title 
-                title="Comentário | Detalhe"
+                title="Comentário - Detalhe"
                 :back="route('feedbacks.index')"
                 :breadcrumbs="[
                     'Comentários' => route('feedbacks.index'),
-                    'Comentário | Detalhe' => '',
+                    'Comentário - Detalhe' => '',
                 ]"
             />
             
@@ -29,20 +29,6 @@
                 </div>
 
             </div>
-
-            {{-- <x-table>
-                <x-table.head class="flex items-center">
-                    <x-table.head.th>Outros comentários desse setor</x-table.head.th>
-                </x-table.head>
-                <x-table.body>
-                    @foreach ($otherFeedbacksFromSameUser as $otherFeedback)
-                        <x-table.body.tr tag="a" href="{{ route('feedbacks.show', $otherFeedback) }}" class="flex items-center justify-between gap-4">
-                            <x-table.body.td class="truncate" title="{{ $otherFeedback->content }}">{{ $otherFeedback->content }}</x-table.body.td>
-                            <x-table.body.td>{{ $otherFeedback->created_at->format('d/m/Y') }}</x-table.body.td>
-                        </x-table.body.tr>
-                    @endforeach
-                </x-table.body>
-            </x-table> --}}
 
         </x-structure.main-content-container>
     </x-structure.page-container>

@@ -55,22 +55,18 @@ class OrganizationalAnswersController
             ->getQuery();
             
         return $this->filterService->apply($query)
-            ->whereHas('organizationalClimateCollections', function ($query) {
-                $query->whereYear('created_at', Carbon::now()->year);
-            })
+            ->whereHas('latestOrganizationalClimateCollection')
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->WithOrganizationalClimateCollections(function ($query) use ($request) {
+            ->withLatestOrganizationalClimateCollection(function ($query) use ($request) {
                 $query->whereYear('created_at', $request->year ?? now()->year)
                     ->withCollectionTypeName('organizational-climate')
                     ->withTests(function ($query) use ($request) {
                         $query
-                            // ->when($request->test, fn ($q) => $q->justOneTest($request->test))
                             ->withAnswers()
                             ->withTestType();
                     })
                     ->withCustomTests(function($query) use ($request) {
                         $query
-                            // ->when($request->test, fn ($q) => $q->justOneCustomTest($request->test))
                             ->withAnswers()
                             ->withCustomTestType();
                     });
@@ -104,9 +100,9 @@ class OrganizationalAnswersController
         $metrics = session('company')->metrics;
 
         $testCompiled = [];
-        
+
         foreach ($this->pageData as $user) {
-            if ($user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $this->companyCustomTests, $this->defaultTests)) {
+            if ($user->latestOrganizationalClimateCollection) {
                 $this->compileUserResults($user, $metrics, $testCompiled, $request);
             }
         }
@@ -120,11 +116,10 @@ class OrganizationalAnswersController
 
     private function compileUserResults(User $user, Collection $metrics, &$testCompiled, Request $request)
     {
-        $latestOrganizationalCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $this->companyCustomTests, $this->defaultTests);
 
-        if($latestOrganizationalCollection){
-            $defaultTests = $latestOrganizationalCollection->tests->map(function($defaultTest) use($user, $latestOrganizationalCollection) {
-                $relatedCustomTest = $latestOrganizationalCollection->customTests
+        if($user->latestOrganizationalClimateCollection){
+            $defaultTests = $user->latestOrganizationalClimateCollection->tests->map(function($defaultTest) use($user) {
+                $relatedCustomTest = $user->latestOrganizationalClimateCollection->customTests
                 ->first(fn($userCustomTest) => $userCustomTest->relatedCustomTest->test_id == $defaultTest->test_id);
     
                 if($relatedCustomTest){
@@ -136,7 +131,7 @@ class OrganizationalAnswersController
                 return $defaultTest;
             });
             
-            $customTests = $latestOrganizationalCollection->customTests
+            $customTests = $user->latestOrganizationalClimateCollection->customTests
             ->filter(function($customTest){
                 return !$customTest->relatedCustomTest->test_id;
             });
@@ -150,13 +145,13 @@ class OrganizationalAnswersController
                 });
             }
 
-            $mergedUserTests->each(function($userTest) use($latestOrganizationalCollection, $metrics, $user, &$testCompiled) {
+            $mergedUserTests->each(function($userTest) use($metrics, $user, &$testCompiled) {
                 $testDisplayName = $userTest instanceof UserCustomTest ?
                                     $userTest->relatedCustomTest->display_name :
                                     $userTest->testType->display_name;
             
                 
-                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics, $latestOrganizationalCollection['collection_type_name']);
+                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics, $user->latestOrganizationalClimateCollection['collection_type_name']);
                 $questions = $userTest->answers->map(fn($answer) => $answer instanceof UserCustomAnswer ?
                                                                                 $answer->relatedQuestion : 
                                                                                 $answer->parentQuestion);

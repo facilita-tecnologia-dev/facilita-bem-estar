@@ -122,9 +122,7 @@ class AuthServiceProvider extends ServiceProvider
                 $companyCustomTests = TestRepository::companyCustomTests();
                 $defaultTests = TestRepository::defaultTests();
 
-                $hasCompatibleCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests);
-
-                return $user->hasPermission('answer_tests') && $eligibilityService->hasActiveOrganizationalCampaign() && !$hasCompatibleCollection;
+                return $user->hasPermission('answer_tests') && $eligibilityService->hasActiveOrganizationalCampaign() && !$user->latestOrganizationalClimateCollection;
             }
 
             return false;

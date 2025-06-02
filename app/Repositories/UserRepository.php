@@ -51,9 +51,9 @@ class UserRepository
             
             if($userRole->name == 'manager'){
                 if(!$user->password){
-                    $userData['password'] = 'temp_' . bin2hex(random_bytes(16));
+                    $userData['password'] = 'temp_' . bin2hex(random_bytes(5));
                 }
-            }       
+            }
             
             $user->update($userData);
 

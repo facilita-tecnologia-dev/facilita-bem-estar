@@ -99,7 +99,7 @@ class UserController
     {
         Gate::authorize('user-show');
 
-        $latestOrganizationalClimateCollectionDate = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $this->companyCustomTests, $this->defaultTests)?->created_at->diffForHumans() ?? 'Nunca';
+        $latestOrganizationalClimateCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
         $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
 
         return view('private.users.show', compact('user', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
@@ -131,7 +131,7 @@ class UserController
 
         $this->userRepository->update($request->safe(), $user);
 
-        return back()->with('message', 'Perfil do colaborador atualizado com sucesso!');
+        return to_route('user.show', $user)->with('message', 'Perfil do colaborador atualizado com sucesso!');
     }
 
     public function destroy(User $user)
@@ -345,7 +345,20 @@ class UserController
         if($user){
             $user->companies()->syncWithoutDetaching([session('company')->id => ['role_id' => 2]]);
         }
+
+        session(['company' => session('company')->load('users')]);
         
         return redirect()->to(route('user.index'));
+    }
+
+    public function checkCpf(Request $request)
+    {
+        $request->validate([
+            'cpf' => ['required']
+        ]);
+
+        $exists = User::where('cpf', $request['cpf'])->exists();
+
+        return response()->json(['exists' => $exists]);
     }
 }

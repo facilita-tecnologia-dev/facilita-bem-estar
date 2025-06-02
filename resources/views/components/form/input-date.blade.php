@@ -12,25 +12,21 @@
 
 <div class="w-full">
     @if($label)
-        <label
-            class="block text-base font-semibold mb-1 text-gray-800"
-            for="{{ $id ? $id : $name }}"
-        >
+        <x-form.input-label for="{{ $id ? $id : $name }}">
             {{ $label }}
-        </label>
+        </x-form.input-label>
     @endif
 
 
-        <div class="relative w-full flex items-center gap-3 bg-gray-100 rounded-md px-3 border border-[#FF8AAF] text-base text-gray-800 placeholder:text-gray-500">
-
+        <x-form.input-wrapper>
             <input type="{{ $type ?? 'date' }}"
-                {{ $attributes->merge(['class' => 'w-full h-[43px] focus:outline-0 bg-transparent']) }}
+                {{ $attributes->merge(['class' => 'w-full focus:outline-0 bg-transparent px-3 cursor-pointer']) }}
                 name="{{ $name }}"
                 id="{{ $id ? $id : $name }}"
                 value="{{ old($name, $value) }}"
                 {{ $disabled ? 'disabled' : '' }}
             >
-        </div>
+        </x-form.input-wrapper>
 
     @error($name)
         <x-form.error-span text="{{ $message }}" />

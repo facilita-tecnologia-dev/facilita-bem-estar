@@ -62,6 +62,8 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('/user/importar', [UserController::class, 'showImport'])->name('user.import');
     Route::post('/user/importar', [UserController::class, 'import']);
 
+    Route::post('/users/check-cpf', [UserController::class, 'checkCpf'])->name('user.create.checkCpf');
+
     Route::get('/user/adicionar-usuario-existente', [UserController::class, 'showAddExistingUser'])->name('user.add-existing');
     Route::post('/user/adicionar-usuario-existente', [UserController::class, 'addExistingUser']);
 

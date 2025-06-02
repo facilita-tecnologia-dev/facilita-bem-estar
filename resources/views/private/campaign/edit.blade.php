@@ -7,19 +7,17 @@
                 title="Editar campanha de testes"
                 :back="route('campaign.show', $campaign)"
                 :breadcrumbs="[
-                    'Campanhas' => route('campaign.index'),
-                    'Campanha | Detalhe' => route('campaign.show', $campaign),
+                    'Lista de Campanhas' => route('campaign.index'),
+                    'Campanha - Detalhe' => route('campaign.show', $campaign),
                     'Editar campanha' => ''
                 ]"
             />
 
             @if(session('message'))
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        {{ session('message') }}
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    {{ session('message') }}
+                </x-structure.message>
             @endif
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">

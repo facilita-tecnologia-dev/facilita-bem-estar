@@ -116,12 +116,14 @@ class AuthService {
     {
         if(!Hash::check($value, $hashed)){ 
             SessionErrorHelper::flash('password', 'A senha está incorreta.');
-            return url()->previous();
+            return false;
         }
+        
+        return true;
     }
 
     public function checkIsTemporaryPassword($password)
     {
-        return str_starts_with($password, 'temp_') && strlen($password) == 37;
+        return str_starts_with($password, 'temp_') && strlen($password) == 15;
     }
 }

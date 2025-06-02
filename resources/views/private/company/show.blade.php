@@ -3,28 +3,35 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            <x-structure.page-title title="Empresa" />
+            <x-structure.page-title 
+                title="Empresa" 
+                :breadcrumbs="[
+                    'Empresa' => '',
+                ]"
+            />
 
             @if(session('message'))
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        {{ session('message') }}
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    {{ session('message') }}
+                </x-structure.message>
             @endif
             
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">
                 <div class="w-full grid gri-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="space-y-2">
+                    <div class="space-y-1">
                         <p class="font-semibold text-base sm:text-lg text-left">Logo da empresa</p>
-                        <img src="{{ asset($company->logo) }}" alt="" class="h-11">
+                        @if($company->logo)
+                            <img src="{{ asset($company->logo) }}" alt="" class="h-11">
+                        @else
+                            <p class="text-sm sm:text-base text-left">Não cadastrado</p>
+                        @endif
                     </div>
-                    <div class="">
+                    <div class="space-y-1">
                         <p class="font-semibold text-base sm:text-lg text-left">Razão social</p>
                         <p class="text-sm sm:text-base text-left">{{ $company->name }}</p>
                     </div>
-                    <div class="">
+                    <div class="space-y-1">
                         <p class="font-semibold text-base sm:text-lg text-left">CNPJ</p>
                         <p class="text-sm sm:text-base text-left">{{ $company->cnpj }}</p>
                     </div>

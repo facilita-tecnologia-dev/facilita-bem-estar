@@ -6,7 +6,7 @@ use App\Models\Risk;
 
 class RiskEvaluatorFactory
 {
-    public function getRiskEvaluator(Risk $risk): ?RiskEvaluatorInterface
+    public static function getRiskEvaluator(Risk $risk): ?RiskEvaluatorInterface
     {
         switch ($risk->name) {
             case 'Conflito de Papéis':

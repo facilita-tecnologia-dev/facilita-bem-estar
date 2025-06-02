@@ -3,8 +3,6 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>
-            {{-- <x-structure.page-title :title="$testName" :back="route('dashboard.psychosocial')" /> --}}
-
             <x-structure.page-title 
                 :title="$testName" 
                 :back="route('dashboard.psychosocial')"
@@ -14,16 +12,14 @@
                 ]"
             />
 
-            <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                    <i class="fa-solid fa-circle-info text-lg"></i>
-                    Resultados do teste de {{ trim($testName) }} divididos por setor.
-                </p>
-            </div>
+            <x-structure.message>
+                <i class="fa-solid fa-circle-info"></i>
+                Resultados do teste de {{ trim($testName) }} divididos por setor.
+            </x-structure.message>
     
             <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @foreach ($resultsPerDepartment as $departmentName => $departmentData)
-                    <a href="{{ route('dashboard.psychosocial.list', [$testName, 'department' => $departmentName])}}" class="bg-white/25 rounded-md px-4 py-5 shadow-md">
+                    <a href="{{ route('dashboard.psychosocial.list', [$testName, 'setor' => $departmentName])}}" class="bg-white/25 rounded-md px-4 py-5 shadow-md">
                         <x-table>
                             <x-table.head class="flex items-center justify-between">
                                 <x-table.head.th class="truncate">{{ $departmentName }}</x-table.head.th>

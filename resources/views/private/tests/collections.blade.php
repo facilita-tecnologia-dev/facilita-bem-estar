@@ -3,15 +3,18 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>      
-            <x-structure.page-title title="Coleções de Testes" />
+            <x-structure.page-title 
+                title="Coleções de Testes" 
+                :breadcrumbs="[
+                    'Coleções de Testes' => '',
+                ]"
+            />
 
             @if($companyActiveCampaigns->count())
-                <div class="bg-white/25 w-full px-6 py-2 rounded-md shadow-md">
-                    <p class="text-sm md:text-base text-gray-800 font-normal text-left flex items-center gap-3">
-                        <i class="fa-solid fa-circle-info text-lg"></i>
-                        Existem campanhas ativas no momento. Por isso, não é possível editar coleções associadas a essas campanhas.
-                    </p>
-                </div>
+                <x-structure.message>
+                    <i class="fa-solid fa-circle-info"></i>
+                    Existem campanhas ativas no momento. Por isso, não é possível editar coleções associadas a essas campanhas.
+                </x-structure.message>
             @endif
 
             <x-table>

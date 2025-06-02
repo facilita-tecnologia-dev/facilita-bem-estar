@@ -52,7 +52,7 @@
             <p>Resultado detalhado da avaliação de riscos psicossociais.</p>
         </div>
         <div class="footer">
-            <p>Relatório desenvolvido por Facilita Tecnologia &copy;</p>
+            <p>Facilita Tecnologia &copy;</p>
             <p>Emissão: {{ date('d/m/Y') }}</p>
         </div>
     </div>
@@ -110,7 +110,7 @@
             </table>
 
             <div class="footer">
-                <p>Relatório desenvolvido por Facilita Tecnologia &copy;</p>
+                <p>Facilita Tecnologia &copy;</p>
                 <p>Emissão: {{ date('d/m/Y') }}</p>
             </div>
         </div>

@@ -74,6 +74,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 1)
+            ->where('company_id', session('company')->id)
+            ->whereYear('created_at', now()->year)
             ->latest();
     }
 
@@ -82,6 +84,8 @@ class User extends Authenticatable
     {      
         return $this->hasOne(UserCollection::class)
             ->where('collection_id', 2)
+            ->where('company_id', session('company')->id)
+            ->whereYear('created_at', now()->year)
             ->latest();
     }
 
@@ -99,19 +103,19 @@ class User extends Authenticatable
         ]);
     }
 
-    public function scopeWithOrganizationalClimateCollections(Builder $query, Closure $callback): Builder
-    {
-        return $query->with([
-            'organizationalClimateCollections' => $callback,
-        ]);
-    }
+    // public function scopeWithOrganizationalClimateCollections(Builder $query, Closure $callback): Builder
+    // {
+    //     return $query->with([
+    //         'organizationalClimateCollections' => $callback,
+    //     ]);
+    // }
 
-    public function scopeWithPsychosocialCollections(Builder $query, Closure $callback): Builder
-    {
-        return $query->with([
-            'psychosocialRiskCollections' => $callback,
-        ]);
-    }
+    // public function scopeWithPsychosocialCollections(Builder $query, Closure $callback): Builder
+    // {
+    //     return $query->with([
+    //         'psychosocialRiskCollections' => $callback,
+    //     ]);
+    // }
 
     public function hasRole(string $role): bool
     {
@@ -160,45 +164,49 @@ class User extends Authenticatable
             ->exists();
     }
 
-    public function getCompatibleOrganizationalCollection($userOrganizationalCollectionsInThisYear, $companyCustomTests, $defaultTests): ?UserCollection
-    {
-        $userCollectionCompatible = $userOrganizationalCollectionsInThisYear->filter(function($userCollection) use($defaultTests, $companyCustomTests) {
-            if(count($userCollection->customTests)){
-                $userCollectionCompanyCustomTests = $userCollection->customTests[0]->relatedCustomTest->parentCompany->customTests;
-                $customTestsAreEqual = $companyCustomTests->count() === $userCollectionCompanyCustomTests->count()
-                && $companyCustomTests->every(function ($companyCustomTest) use ($userCollectionCompanyCustomTests) {
-                    $relatedUserCollectionTest = $userCollectionCompanyCustomTests->firstWhere('key_name', $companyCustomTest->key_name);
+    // public function getCompatibleOrganizationalCollection($userOrganizationalCollectionsInThisYear, $companyCustomTests, $defaultTests): ?UserCollection
+    // {
+    //     $userCollectionCompatible = $userOrganizationalCollectionsInThisYear->filter(function($userCollection) use($defaultTests, $companyCustomTests) {
+    //         if(count($userCollection->customTests)){
+    //             $userCollectionCompanyCustomTests = $userCollection->customTests[0]->relatedCustomTest->parentCompany->customTests;
+    //             $customTestsAreEqual = $companyCustomTests->count() === $userCollectionCompanyCustomTests->count()
+    //             && $companyCustomTests->every(function ($companyCustomTest) use ($userCollectionCompanyCustomTests) {
+    //                 $relatedUserCollectionTest = $userCollectionCompanyCustomTests->firstWhere('key_name', $companyCustomTest->key_name);
                     
-                    if (!$relatedUserCollectionTest) {
-                        return false;
-                    }
+    //                 if (!$relatedUserCollectionTest) {
+    //                     return false;
+    //                 }
 
-                    $companyCustomTestQuestions = $companyCustomTest->questions->pluck('id')->sort()->values()->all();
-                    $relatedUserCollectionTestQuestions = $relatedUserCollectionTest->questions->pluck('id')->sort()->values()->all();
+    //                 $companyCustomTestQuestions = $companyCustomTest->questions->pluck('id')->sort()->values()->all();
+    //                 $relatedUserCollectionTestQuestions = $relatedUserCollectionTest->questions->pluck('id')->sort()->values()->all();
 
-                    return $companyCustomTestQuestions === $relatedUserCollectionTestQuestions;
-                });
+    //                 return $companyCustomTestQuestions === $relatedUserCollectionTestQuestions;
+    //             });
 
-                if($customTestsAreEqual){
-                    return true;
-                }
+    //             if($customTestsAreEqual){
+    //                 return true;
+    //             }
  
-                $customTestsMatchDefaultTests = $userCollectionCompanyCustomTests->every(function ($customTest) use ($defaultTests) {
-                    return $defaultTests->contains('id', $customTest->test_id);
-                });
+    //             $customTestsMatchDefaultTests = $userCollectionCompanyCustomTests->every(function ($customTest) use ($defaultTests) {
+    //                 return $defaultTests->contains('id', $customTest->test_id);
+    //             });
 
-                if(count($companyCustomTests) < 1 && $customTestsMatchDefaultTests){
-                    return true;
-                }
+    //             if(count($companyCustomTests) < 1 && $customTestsMatchDefaultTests){
+    //                 return true;
+    //             }
 
-                return false;
-            }
+    //             return false;
+    //         }
 
-            if(count($companyCustomTests) < 1){
-                return true;
-            }
-        });
+    //         if(count($companyCustomTests) < 1){
+    //             return true;
+    //         }
+    //     });
 
-        return $userCollectionCompatible->first();
-    }
+    //     return $userCollectionCompatible->first();
+    // }
+
+
+
+    // ------------------------------------------------------------------------- 
 }

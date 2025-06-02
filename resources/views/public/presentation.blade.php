@@ -23,15 +23,7 @@
             <img src="{{ asset('assets/logo-facilita.svg') }}" class="h-11 sm:h-14">
         </a>
 
-        <div class="flex items-center gap-2">
-            {{-- <a href="{{ route('auth.login.usuario-interno') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-stethoscope"></i>
-                <span class="hidden sm:block">Login como profissional de saúde</span>
-            </a>
-            <a href="{{ route('auth.login.usuario-interno') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-stethoscope"></i>
-                <span class="hidden sm:block">Registro como profissional de saúde</span>
-            </a> --}}
+        <div class="items-center gap-2 hidden lg:flex">
             <a href="{{ route('auth.login.empresa') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
                 <i class="fa-solid fa-building"></i>
                 <span class="hidden sm:block">Login como empresa</span>
@@ -44,10 +36,28 @@
                 <i class="fa-solid fa-user"></i>
                 <span class="hidden sm:block">Login como colaborador</span>
             </a>
-            {{-- <a href="{{ route('auth.cadastro.usuario-interno') }}" class="text-base font-medium bg-gray-100 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
-                <i class="fa-solid fa-right-to-bracket"></i>
-                <span class="hidden sm:block">Registrar</span>
-            </a> --}}
+        </div>
+
+        <div data-role="login-submenu-button" class="z-20 flex lg:hidden cursor-pointer h-10 w-10 shadow-md rounded-full bg-gray-100 items-center justify-center">
+            <i class="fa-solid fa-bars text-gray-800"></i>
+        </div>
+
+        <div id="login-submenu" class="flex lg:hidden bg-gray-100 z-40 w-[280px] transition-all duration-200 shadow-lg h-auto rounded-bl-md flex-col absolute -right-full pt-8 pb-12 top-0">
+            <div class="flex flex-col gap-4 w-full px-4">
+                <h2 class="font-medium text-lg text-center">Login/Registro</h2>
+                <a href="{{ route('auth.login.empresa') }}" class="text-base font-medium bg-gray-200/75 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+                    <i class="fa-solid fa-building"></i>
+                    <span class="">Login como empresa</span>
+                </a>
+                <a href="{{ route('auth.cadastro.empresa') }}" class="text-base font-medium bg-gray-200/75 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+                    <i class="fa-solid fa-building"></i>
+                    <span class="">Registrar empresa</span>
+                </a>
+                <a href="{{ route('auth.login.usuario-interno') }}" class="text-base font-medium bg-gray-200/75 text-gray-800 px-4 tracking-wider  py-1.5 rounded-md flex items-center gap-2">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="">Login como colaborador</span>
+                </a>
+            </div>
         </div>
 
     </header>

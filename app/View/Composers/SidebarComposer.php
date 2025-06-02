@@ -22,16 +22,11 @@ class SidebarComposer
         $user = AuthGuardHelper::user();
         
         if ($user instanceof User) {
-            $companyCustomTests = TestRepository::companyCustomTests();
-            $defaultTests = TestRepository::defaultTests();
-
-            $hasCompatibleCollection = $user->getCompatibleOrganizationalCollection($user->organizationalClimateCollections, $companyCustomTests, $defaultTests);
-
             $hasAnsweredPsychosocial = $this->elegibilityService->hasAnsweredPsychosocialCollection($user);
-            $hasAnsweredOrganizational = $this->elegibilityService->hasAnsweredOrganizationalCollection($user) && $hasCompatibleCollection;
+            $hasAnsweredOrganizational = $this->elegibilityService->hasAnsweredOrganizationalCollection($user);
             $companiesToSwitch = array_map(fn ($company) => [
-                'option' => $company['name'],
-                'value' => $company['id'],
+                'name' => $company['name'],
+                'id' => $company['id'],
             ], $user->companies->toArray());
 
             $hasActivePsychosocialCampaign = $this->elegibilityService->hasActivePsychosocialCampaign();
@@ -43,6 +38,7 @@ class SidebarComposer
                 'companiesToSwitch' => $companiesToSwitch,
                 'hasActivePsychosocialCampaign' => $hasActivePsychosocialCampaign,
                 'hasActiveOrganizationalCampaign' => $hasActiveOrganizationalCampaign,
+                'isInstanceOfUser' => true,
             ]);
         }
     }

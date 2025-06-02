@@ -1,5 +1,8 @@
-// Sidebar
+document.addEventListener('DOMContentLoaded', function () {
+    tippy('[data-tippy-content]');
+});
 
+// Sidebar
 const sidebarMobileButton = document.querySelector(
     '[data-role="sidebar-mobile-button"]'
 );

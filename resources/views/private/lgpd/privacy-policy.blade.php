@@ -3,7 +3,12 @@
         <x-structure.sidebar />
         
         <x-structure.main-content-container>      
-            <x-structure.page-title title="LGPD" />
+            <x-structure.page-title 
+                title="LGPD"
+                :breadcrumbs="[
+                    'LGPD' => '',
+                ]"
+            />
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 text-sm sm:text-base">
                 <h2 class="text-base sm:text-lg font-semibold mb-2">1. Quem somos</h2>
