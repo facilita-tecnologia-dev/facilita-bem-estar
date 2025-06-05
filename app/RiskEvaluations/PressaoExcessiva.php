@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Models\UserTest;
 use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
@@ -11,55 +12,58 @@ class PressaoExcessiva implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
+    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
     {
+        $riskSeverity = 3;
+
+        $turnover = $metrics->filter(function ($companyMetric) {
+            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
+        })->first();
+
+        if($turnover->value > 50){
+            $probability = 3;
+        } else {
+            $probability = 2;
+        }
+
         $riskLevel = 1;
 
         if (!$average >= 3.5) {
-            return $riskLevel;
+            return [
+                'riskLevel' => $riskLevel,
+                'riskSeverity' => $riskSeverity,
+                'probability' => $probability,
+            ];
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion['related_question_answer'];
+            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
             $parentQuestionStatement = $riskQuestion['parent_question_statement'];
 
             if ($parentQuestionStatement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
                 if (!$answer >= 4) {
-                    return $riskLevel;
+                    return [
+                        'riskLevel' => $riskLevel,
+                        'riskSeverity' => $riskSeverity,
+                        'probability' => 1,
+                    ];
                 }
             }
 
             if ($parentQuestionStatement == 'Há forte controle do trabalho') {
 
                 if (!$answer >= 4) {
-                    return $riskLevel;
+                    return [
+                        'riskLevel' => $riskLevel,
+                        'riskSeverity' => $riskSeverity,
+                        'probability' => 1,
+                    ];
                 }
             }
         }
-
-        $turnover = $metrics->filter(function ($companyMetric) {
-            return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
-        })->first();
-
-        if($turnover->value !== 'null'){
-            if($turnover->value > 50){
-                $probability = 3;
-            } else {
-                $probability = 2;
-            }
-        } else{        
-            $probability = RiskService::calculateProbability($average);
-        }
-
-        if($testSeverity < 3){
-            return $riskLevel;
-        }
         
-        $riskLevel = match (true) {
-            ($probability == 3 && $testSeverity == 3) || ($probability == 2 && $testSeverity == 3) => 3,
-            default => 1,
-        };
-
-        return $riskLevel;
+        $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
+        
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

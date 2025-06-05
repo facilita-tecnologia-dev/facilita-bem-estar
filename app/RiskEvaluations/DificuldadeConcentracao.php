@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Models\UserTest;
 use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
@@ -11,34 +12,36 @@ class DificuldadeConcentracao implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
+    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
     {
+        $riskSeverity = 2;
+
+        $probability = RiskService::calculateProbability($average, 1, 2);
+
         $riskLevel = 1;
 
         if (!$average >= 3) {
-            return $riskLevel;
+            return [
+                'riskLevel' => $riskLevel,
+                'riskSeverity' => $riskSeverity,
+                'probability' => $probability,
+            ];
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion['related_question_answer'];
-
-            if (!$answer >= 3) {
-                return $riskLevel;
+            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
+ 
+            if (!($answer >= 3)) {
+                return [
+                    'riskLevel' => $riskLevel,
+                    'riskSeverity' => $riskSeverity,
+                    'probability' => 1,
+                ];
             }
         }
 
-        $probability = RiskService::calculateProbability($average);
-
-        if($testSeverity < 2){
-            return $riskLevel;
-        }
-
-        $riskLevel = match (true) {
-            $probability == 1 && $testSeverity == 2 => 1,
-            $probability == 2 && $testSeverity == 2 => 2,
-            default => 1,
-        };
-
-        return $riskLevel;
+        $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
+        
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

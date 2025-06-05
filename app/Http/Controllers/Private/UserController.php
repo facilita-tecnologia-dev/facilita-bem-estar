@@ -23,6 +23,7 @@ use App\Services\AuthService;
 use App\Services\User\UserElegibilityService;
 use App\Services\User\UserFilterService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -90,9 +91,13 @@ class UserController
     {
         Gate::authorize('user-create');
 
-        $this->userRepository->store($request->safe());
+        $user = $this->userRepository->store($request->safe());
 
-        return to_route('user.index')->with('message', 'Perfil do colaborador criado com sucesso!');
+        if($user->hasRole('manager')){
+            return to_route('user.department-scope', $user)->with('message', 'Perfil do colaborador criado com sucesso!');
+        }
+
+        return to_route('user.show', $user)->with('message', 'Perfil do colaborador criado com sucesso!');
     }
 
     public function show(User $user)
@@ -101,8 +106,14 @@ class UserController
 
         $latestOrganizationalClimateCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
         $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
+        $hasTemporaryPassword = $user->hasTemporaryPassword();
 
-        return view('private.users.show', compact('user', 'latestPsychosocialCollectionDate', 'latestOrganizationalClimateCollectionDate'));
+        return view('private.users.show', compact(
+            'user', 
+            'latestPsychosocialCollectionDate', 
+            'latestOrganizationalClimateCollectionDate', 
+            'hasTemporaryPassword'
+        ));
     }
 
     public function edit(User $user)
@@ -154,7 +165,20 @@ class UserController
             'import_users' => 'required|file|mimes:xlsx|max:1024',
         ]);
 
-        $this->userRepository->import($request);
+        $importUsers = $this->userRepository->import($request);
+
+        if($importUsers instanceof Collection){
+            $importUsers = $importUsers->map(function($validationError){
+                $username = $validationError->values()['nome_completo'] ?? 'Nome do colaborador ausente';
+                $nameBagFormatted = str_replace('_', ' ', $validationError->errors()[0]);
+                return "Linha " . $validationError->row() . " - " . $username . ' - ' . $nameBagFormatted;
+            });
+
+            return view('private.users.import', [
+                'oi' => 'oi',
+                'failures' => $importUsers,
+            ]);
+        }
 
         return back()->with('message', 'Usuários importados com sucesso');
     }
@@ -264,12 +288,18 @@ class UserController
             ->get();
 
         $newDepartmentScopes = $request->except(['_token', '_method']);
-
+        
         if ($currentDepartmentScopes->count()) {
-            foreach ($newDepartmentScopes as $departmentName => $departmentScopeValue) {
-                $currentDepartment = $currentDepartmentScopes->firstWhere('department', $departmentName);
-                $currentDepartment->allowed = $departmentScopeValue;
-                $currentDepartment->save();
+            foreach($currentDepartmentScopes as $departmentScope) {
+                $newDepartmentRelated = $newDepartmentScopes[$departmentScope->department] ?? null;
+    
+                if($newDepartmentRelated){
+                    $departmentScope->allowed = 1;
+                    $departmentScope->save();
+                } else{
+                    $departmentScope->allowed = 0;
+                    $departmentScope->save();
+                }
             }
         } else {
             foreach ($newDepartmentScopes as $departmentName => $departmentScopeValue) {
@@ -282,7 +312,7 @@ class UserController
             }
         }
 
-        return to_route('user.show', $user)->with('message', 'Visão de Setores atualizada com sucesso!');
+        return to_route('user.permissions', $user)->with('message', 'Visão de Setores atualizada com sucesso!');
     }
 
     public function resetUserPassword(Request $request)

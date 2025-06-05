@@ -19,7 +19,7 @@
 
             <x-structure.message>
                 <i class="fa-solid fa-circle-info"></i>
-                Média percentual dos últimos 12 meses (%)
+                Os indicadores são importantes para avaliar os riscos psicossociais, mas, se não souber, deixe-os em branco.
             </x-structure.message>
 
             <div class="w-full bg-gray-100 rounded-md shadow-md p-4 md:p-8 space-y-6">

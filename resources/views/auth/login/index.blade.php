@@ -25,23 +25,3 @@
 </x-layouts.app>
 
 <script src="{{ asset('js/global.js') }}"></script>
-
-{{-- <script>
-    const toggleLoginFormButtons = document.querySelectorAll('[data-role="toggle-login-form"]');
-
-    toggleLoginFormButtons.forEach(button => {
-        button.addEventListener('click', function(){
-            const bgElement = button.parentElement.querySelector('[data-role="toggle-bg"]');
-
-            if(this.id == 'employee'){
-                bgElement.classList.replace('left-1', 'left-[calc(50%+4px)]')
-                document.querySelector('#login-manager').style.display = 'none';
-                document.querySelector('#login-employee').style.display = 'flex';
-            } else{
-                bgElement.classList.replace('left-[calc(50%+4px)]', 'left-1')
-                document.querySelector('#login-employee').style.display = 'none';
-                document.querySelector('#login-manager').style.display = 'flex';
-            }
-        });
-    });
-</script> --}}

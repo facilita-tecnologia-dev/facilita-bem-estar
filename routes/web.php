@@ -19,6 +19,7 @@ use App\Http\Controllers\Private\Dashboard\Psychosocial\PsychosocialRisksControl
 use App\Http\Controllers\Private\TestsController;
 use App\Http\Controllers\Private\UserController;
 use App\Http\Controllers\Private\UserFeedbackController;
+use App\Http\Controllers\Private\WelcomeController;
 use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
@@ -46,8 +47,8 @@ Route::middleware(GuestMiddleware::class)->group(function () {
 });
 
 Route::middleware(AuthMiddleware::class)->group(function () {
-    Route::view('/bem-vindo/empresa', 'private.welcome.company')->name('welcome.company');
-    Route::view('/bem-vindo/colaborador', 'private.welcome.user')->name('welcome.user');
+    Route::get('/bem-vindo/empresa', [WelcomeController::class, 'welcomeCompany'])->name('welcome.company');
+    Route::get('/bem-vindo/colaborador', [WelcomeController::class, 'welcomeUser'])->name('welcome.user');
 
     Route::get('/colecao/{collection}/teste/{test?}', TestsController::class)->name('responder-teste');
     Route::post('/colecao/{collection}/teste/{test}/enviar', [TestsController::class, 'handleTestSubmit'])->name('enviar-teste');

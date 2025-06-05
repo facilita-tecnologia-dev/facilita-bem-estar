@@ -48,6 +48,7 @@ class PsychosocialResultsByDepartmentController
                     ->withTests(function ($query) use ($testName) {
                         $query
                             ->justOneTest($testName)
+                            ->withAnswers()
                             ->withAnswersSum()
                             ->withAnswersCount()
                             ->withTestType(function ($q) {

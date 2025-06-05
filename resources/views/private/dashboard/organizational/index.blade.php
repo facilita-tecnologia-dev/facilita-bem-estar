@@ -40,7 +40,7 @@
                     <div class="w-fit">
                         <x-form action="{!! route('dashboard.organizational-climate.report', request()->query()) !!}" post>
                             <input type="hidden" name="Geral-to-base-64">
-                            @foreach ($organizationalClimateResults as $testName => $testData)
+                            @foreach ($organizationalClimateResults['main'] as $testName => $testData)
                                 <input type="hidden" name="{{ $testName }}-to-base-64">
                             @endforeach
                             <x-action tag="button" id="create-report-button" disabled style="opacity: 50%">Visualizar relatório</x-action>
@@ -48,12 +48,10 @@
                     </div>
                 </div>
 
-
-            
                 <div class="w-full grid grid-cols-1 gap-4 ">
                     <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers')" id="Geral" title="Índice Geral de Satisfação por Teste" class="" />
                 
-                    @foreach ($organizationalClimateResults as $testName => $testData)
+                    @foreach ($organizationalClimateResults['main'] as $testName => $testData)
                         <x-charts.bar-vertical tag="a" :href="route('dashboard.organizational-climate.by-answers', ['test' => $testName])" :id="$testName" :title="$testName" />
                     @endforeach
                 </div>
@@ -88,6 +86,7 @@
 <script>
     const organizationalTestsParticipation = @json($organizationalTestsParticipation);
     const organizationalClimateResults = @json($organizationalClimateResults);
+    const filtersApplied = @json($filtersApplied);
 </script>
 
 <script src="{{ asset('js/dashboard/charts.js') }}"></script>

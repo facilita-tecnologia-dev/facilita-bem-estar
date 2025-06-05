@@ -38,6 +38,16 @@
             {{ $disabled ? 'disabled' : '' }}
             {{ $readonly ? 'readonly' : '' }}
         >
+        @if($type == "password")
+            <button data-role="toggle-password-visibility" type="button" data-target="{{ $id ? $id : $name }}" class="absolute right-3 text-gray-700">
+                <span data-role="password-hide" class="hidden">
+                    <i class="fa-solid fa-eye-slash"></i>
+                </span>
+                <span data-role="password-show" class="block">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+            </button>
+        @endif
 
     </x-form.input-wrapper>
 

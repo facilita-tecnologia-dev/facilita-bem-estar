@@ -37,6 +37,16 @@ class RiskQuestionMap extends Model
         ]);
     }
 
+    public function scopeWithParentQuestionInverted(Builder $query): Builder
+    {
+        return $query->addSelect([
+            'parent_question_inverted' => DB::table('questions')
+                ->whereColumn('questions.id', 'risk_question_map.question_Id')
+                ->select('questions.inverted')
+                ->limit(1),
+        ]);
+    }
+
     public function scopeWithRelatedQuestionAnswer(Builder $query): Builder
     {
         return $query->addSelect([

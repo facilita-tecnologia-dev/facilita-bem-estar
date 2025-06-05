@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
+use App\Enums\RiskLevelEnum;
+use App\Enums\RiskSeverityEnum;
 use App\Models\User;
 use App\Services\TestService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -33,7 +35,9 @@ class PsychosocialRisksController
                 $query->whereYear('created_at', '2025')
                     ->withCollectionTypeName('psychosocial-risks')
                     ->withTests(function ($query) {
-                        $query->withAnswersSum()
+                        $query
+                            ->withAnswers() 
+                            ->withAnswersSum()
                             ->withAnswersCount()
                             ->withTestType(function ($q) {
                                 $q->withRisks(function ($i) {
@@ -50,6 +54,7 @@ class PsychosocialRisksController
     {
         Gate::authorize('psychosocial-dashboard-view');
         $risks = $this->getCompiledPageData(true);
+        
 
         return view('private.dashboard.psychosocial.risks', compact('risks'));
     }
@@ -64,13 +69,13 @@ class PsychosocialRisksController
         $companyLogo = $company->logo;
         $companyName = $company->name;
 
-        $pdf = Pdf::loadView('pdf.risks-inventory', [
+        $pdf = Pdf::loadView('pdf.test', [
             'risks' => $risks,
             'companyLogo' => $companyLogo,
             'companyName' => $companyName,
-        ])->setPaper('a4', 'portrait');
+        ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream('inventario_de_riscos.pdf');
+        return $pdf->download($companyName . ' - Inventário de Riscos Psicossociais.pdf');
     }
 
     private function getCompiledPageData($onlyCritical = false)
@@ -85,7 +90,7 @@ class PsychosocialRisksController
             }
         }
 
-        $this->updateRisksAverage($onlyCritical, $testCompiled);
+        dd($testCompiled);
 
         return $testCompiled;
     }
@@ -106,7 +111,9 @@ class PsychosocialRisksController
     private function updateRisks(string $testDisplayName, array $evaluatedTest, array &$testCompiled)
     {
         foreach ($evaluatedTest['risks'] as $riskName => $risk) {
-            $testCompiled[$testDisplayName][$riskName]['score'][] = $risk['riskPoints'];
+            $testCompiled[$testDisplayName][$riskName]['score'][] = $risk['riskLevel'];
+            $testCompiled[$testDisplayName][$riskName]['severity'] = $risk['severity'];
+            $testCompiled[$testDisplayName][$riskName]['probability'] = $risk['probability'];
             $testCompiled[$testDisplayName][$riskName]['controlActions'] = $risk['controlActions'];
         }
     }
@@ -115,7 +122,7 @@ class PsychosocialRisksController
     {
         foreach ($testCompiled as $testName => $test) {
             foreach ($test as $riskName => $risk) {
-                $average = array_sum($risk['score']) / count($risk['score']);
+                $average = round(array_sum($risk['score']) / count($risk['score']));
 
                 $this->calculateRiskAverage($average, $onlyCritical, $testName, $riskName, $testCompiled);
             }
@@ -125,23 +132,15 @@ class PsychosocialRisksController
     private function calculateRiskAverage(float $average, bool $onlyCritical, string $testName, string $riskName, array &$testCompiled)
     {
         if ($onlyCritical) {
-            if (ceil($average) != 3) {
+            if ($average < 3) {
                 unset($testCompiled[$testName][$riskName]);
             } else {
-                $testCompiled[$testName][$riskName]['score'] = ceil($average);
-                $testCompiled[$testName][$riskName]['risk'] = 'Risco Alto';
+                $testCompiled[$testName][$riskName]['score'] = $average;
+                $testCompiled[$testName][$riskName]['risk'] = RiskLevelEnum::labelFromValue($average);
             }
         } else {
-            $testCompiled[$testName][$riskName]['score'] = ceil($average);
-
-            $testCompiled[$testName][$riskName]['control-actions'] = 'Risco Alto';
-            if ($average > 2) {
-                $testCompiled[$testName][$riskName]['risk'] = 'Risco Alto';
-            } elseif ($average > 1) {
-                $testCompiled[$testName][$riskName]['risk'] = 'Risco Médio';
-            } else {
-                $testCompiled[$testName][$riskName]['risk'] = 'Risco Baixo';
-            }
+            $testCompiled[$testName][$riskName]['score'] = $average;
+            $testCompiled[$testName][$riskName]['risk'] = RiskLevelEnum::labelFromValue($average);
         }
     }
 }

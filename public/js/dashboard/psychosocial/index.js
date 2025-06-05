@@ -7,14 +7,17 @@ function renderPsychosocialRiskBars(){
     riskBars.forEach((risk)=>{
         const value = risk.dataset.value;
         const bar = risk.querySelector('.bar');
-        const barWidth = (value / 3) * 100; 
+        const barWidth = (value / 4) * 100; 
         
+        console.log(value)
         let barBGColor = '';
         
         if(value == 1){
             barBGColor =  `#4CAF5075`
         } else if(value == 2){
             barBGColor =  `#eddd5875`
+        } else if(value == 3){
+            barBGColor =  `#dc933250`
         } else{
             barBGColor =  `#f5554775`
         }

@@ -3,6 +3,8 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Models\UserTest;
+use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
 class FaltaRecursos implements RiskEvaluatorInterface
@@ -10,31 +12,36 @@ class FaltaRecursos implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
+    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
     {
-        $riskPoints = 0;
+        $riskSeverity = 2;
 
-        if ($average <= 3) {
-            $riskPoints++;
+        $probability = RiskService::calculateProbability($average, 1, 2, true);   
+
+        $riskLevel = 1;
+        
+        if ($average >= 3) {
+            return [
+                'riskLevel' => $riskLevel,
+                'riskSeverity' => $riskSeverity,
+                'probability' => $probability,
+            ];
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion['related_question_answer'];
-            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
-
-            if ($parentQuestionStatement == 'Os recursos de trabalho são em número suficiente para a realização das tarefas') {
-                if ($answer <= 2) {
-                    $riskPoints++;
-                }
-            }
-
-            if ($parentQuestionStatement == 'Os equipamentos são adequados para a realização das tarefas') {
-                if ($answer <= 2) {
-                    $riskPoints++;
-                }
+            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
+            
+            if (!($answer <= 2)) {
+                return [
+                    'riskLevel' => $riskLevel,
+                    'riskSeverity' => $riskSeverity,
+                    'probability' => 1,
+                ];
             }
         }
 
-        return $riskPoints;
+        $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
+        
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

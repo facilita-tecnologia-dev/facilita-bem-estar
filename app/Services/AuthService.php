@@ -87,11 +87,7 @@ class AuthService {
     public function getRedirectLoginRoute(Authenticatable $actor)
     {
         if($actor instanceof Company){
-            if($actor->hasCompletedBasicData()){
-                return route('dashboard.psychosocial');
-            } else{
-                return route('welcome.company');
-            }
+            return route('welcome.company');
         }
 
         if($actor instanceof User){
@@ -122,8 +118,8 @@ class AuthService {
         return true;
     }
 
-    public function checkIsTemporaryPassword($password)
+    public static function createTempPassword(): string
     {
-        return str_starts_with($password, 'temp_') && strlen($password) == 15;
+        return 'temp_' . bin2hex(random_bytes(5));
     }
 }

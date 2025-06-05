@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
+use App\Enums\RiskLevelEnum;
 use App\Models\Risk;
 use App\Models\User;
 use App\Services\TestService;
@@ -31,12 +32,12 @@ class PsychosocialMainController
         Gate::authorize('psychosocial-dashboard-view');
 
         $this->pageData = $this->query($request);
-
+        // dd($this->pageData);
         $psychosocialRiskResults = $this->getCompiledPageData();
         $psychosocialTestsParticipation = $this->getPsychosocialTestsParticipation();
 
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-
+        // dd($psychosocialRiskResults);
         return view('private.dashboard.psychosocial.index', [
             'psychosocialRiskResults' => $psychosocialRiskResults,
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
@@ -54,10 +55,12 @@ class PsychosocialMainController
             ->whereHas('latestPsychosocialCollection')
             ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
             ->withLatestPsychosocialCollection(function ($query) use ($request) {
-                $query->whereYear('created_at', $request->year ?? '2025')
+                $query
                     ->withCollectionTypeName('psychosocial-risks')
                     ->withTests(function ($query) {
-                        $query->withAnswersSum()
+                        $query
+                            ->withAnswers()
+                            ->withAnswersSum()
                             ->withAnswersCount()
                             ->withTestType(function ($q) {
                                 $q->withRisks(function ($i) {
@@ -119,7 +122,7 @@ class PsychosocialMainController
     private function updateTestRisks(string $testDisplayName, array $risks, array &$testCompiled)
     {
         foreach ($risks as $riskName => $risk) {
-            $testCompiled[$testDisplayName]['risks'][$riskName]['score'][] = $risk['riskPoints'];
+            $testCompiled[$testDisplayName]['risks'][$riskName]['score'][] = $risk['riskLevel'];
         }
     }
 
@@ -128,24 +131,18 @@ class PsychosocialMainController
         foreach ($testCompiled as $testName => $test) {
             if (isset($test['risks'])) {
                 foreach ($test['risks'] as $riskName => $testRisk) {
-                    $average = array_sum($testRisk['score']) / count($testRisk['score']);
+                    $average = round(array_sum($testRisk['score']) / count($testRisk['score']));
 
-                    $testCompiled[$testName]['risks'][$riskName]['score'] = ceil($average);
-                    $this->determineRiskLevel($average, $testCompiled, $testName, $riskName);
+                    $testCompiled[$testName]['risks'][$riskName]['score'] = $average;
+                    $testCompiled[$testName]['risks'][$riskName]['risk'] = $this->determineRiskLevel($average);
                 }
             }
         }
     }
 
-    private function determineRiskLevel(float $average, array &$testCompiled, string $testName, string $riskName)
+    private function determineRiskLevel(float $average)
     {
-        if ($average > 2) {
-            $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Alto';
-        } elseif ($average > 1) {
-            $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Médio';
-        } else {
-            $testCompiled[$testName]['risks'][$riskName]['risk'] = 'Risco Baixo';
-        }
+        return RiskLevelEnum::labelFromValue($average);
     }
 
     private function getPsychosocialTestsParticipation()

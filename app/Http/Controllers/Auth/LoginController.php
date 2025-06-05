@@ -92,7 +92,8 @@ class LoginController
             'password' => ['required'],
         ]);
 
-        $isTempPassword = $this->authService->checkIsTemporaryPassword($user->password);
+        $isTempPassword = $user->hasTemporaryPassword();
+
         if($isTempPassword){
             if($validatedData['password'] !== $user->password){
                 SessionErrorHelper::flash('password', 'A senha está incorreta.');

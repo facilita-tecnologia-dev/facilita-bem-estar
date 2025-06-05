@@ -46,36 +46,38 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
     let delayed;
     let captured;
 
-    let datasets = []
+    let datasets = [];
 
-    if(Array.isArray(data) && data.every(item => Array.isArray(item))){
-        data.forEach(array => {
-            const dataset = {
+    const isMultiDataset = Array.isArray(data) && data.every(item => Array.isArray(item));
+    const isMultiColor = Array.isArray(colors) && colors.every(c => Array.isArray(c));
+    const isMultiLabel = Array.isArray(labels) && labels.every(l => Array.isArray(l));
+
+
+    if (isMultiDataset) {
+        data.forEach((array, index) => {
+            datasets.push({
                 data: array,
-                backgroundColor: colors,
+                backgroundColor: isMultiColor ? colors[index] : colors,
                 borderWidth: 1,
                 borderRadius: 4,
                 minBarThickness: 70,
-            }
-
-            datasets.push(dataset);
+                label: isMultiLabel ? labels[index] : undefined
+            });
         });
-    } else{
-        const dataset = {
+    } else {
+        datasets.push({
             data: data,
             backgroundColor: colors,
             borderWidth: 1,
             borderRadius: 4,
             minBarThickness: 70,
-        }
-
-        datasets.push(dataset);
+            label: !isMultiLabel && typeof labels === 'string' ? labels : undefined
+        });
     }
 
     new Chart(chart, {
         type: 'bar',
         data: {
-
             labels: labels,
             datasets: datasets
         },
@@ -106,6 +108,14 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                 tooltip: {
                     callbacks: {
                         title: function(context) {
+                            const chart = context[0].chart;
+                            const datasetCount = chart.data.datasets.length;
+                            const datasetIndex = context[0].datasetIndex;
+                        
+                            if (datasetCount > 1 && datasetIndex === 0) {
+                                return 'Geral da empresa';
+                            }
+                        
                             return context[0].label;
                         },
                         label: function(context) {
@@ -139,7 +149,7 @@ function createBarChart(wrapper, chartId, labels, data, tooltips = null, colors 
                             size: 13
                         },
                         callback: function(value, index, ticks) {
-                            const label = this.getLabelForValue(value);
+                            const label = String(this.getLabelForValue(value));
                             const maxLineLength = 15; // caracteres por linha (ajuste conforme necessário)
                             const words = label.split(' ');
                             const lines = [];

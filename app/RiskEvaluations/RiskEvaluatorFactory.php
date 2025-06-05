@@ -48,7 +48,7 @@ class RiskEvaluatorFactory
             case 'Deterioração da Vida Pessoal':
                 return new Deterioracao;
             case 'Problemas Psicossomáticos':
-                return new Deterioracao;
+                return new Psicossomaticos;
             case 'Distúrbios do Sono':
                 return new DisturbiosSono;
             case 'Afastamentos Frequentes':

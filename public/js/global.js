@@ -159,6 +159,31 @@ function updatePasswordRequirement(requirementId, satisfied){
     }
 }
 
+// Password Show/Hide
+const togglePasswordVisibilityButtons = document.querySelectorAll('[data-role="toggle-password-visibility"]');
+document.addEventListener('DOMContentLoaded', function () {
+    togglePasswordVisibilityButtons.forEach(button => {
+        const targetId = button.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        const hideIcon = button.querySelector('[data-role="password-hide"]');
+        const showIcon = button.querySelector('[data-role="password-show"]');
+
+        button.addEventListener("click", () => {
+            const type = input.getAttribute("type");
+            input.setAttribute("type", type === "password" ? "text" : "password");
+            
+            if(type === "password"){
+                showIcon.classList.replace('block', 'hidden');
+                hideIcon.classList.replace('hidden', 'block');
+            } else{
+                hideIcon.classList.replace('block', 'hidden');
+                showIcon.classList.replace('hidden', 'block');
+            }
+        });
+    });
+});
+
+
 
 // Logout modal
 

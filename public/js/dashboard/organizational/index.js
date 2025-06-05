@@ -28,19 +28,26 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderOrganizationalCategoryCharts() {
-        const departmentKeys = Object.keys(organizationalClimateResults);
+        const departmentKeys = Object.keys(organizationalClimateResults['main']);
 
-        Object.values(organizationalClimateResults).forEach((testType, index) => {
+        Object.values(organizationalClimateResults['main']).forEach((testType, index) => {
             const chartId = `chart_i_${index}`;
             const wrapper = document.getElementById(departmentKeys[index]);
-
             const labels = Object.keys(testType);
-            let data = [];
-
-            data.push(labels.map(label => testType[label]['total_average']))
             
-            const colors = createColorPalette(labels.length);
-
+            let data = [];
+            let colors = [];
+            
+            if(organizationalClimateResults['general']){
+                data.push(labels.map(label => organizationalClimateResults['general'][departmentKeys[index]]['Geral da empresa']['total_average']))
+                colors.push([`hsla(0, 0%, 75%, 0.8)`]);
+                data.push(labels.map(label => testType[label]['total_average']))
+                colors.push(createColorPalette(labels.length));
+            } else{   
+                data = labels.map(label => testType[label]['total_average']);
+                colors = createColorPalette(labels.length);
+            }
+                
             createBarChart(wrapper, chartId, labels, data, null, colors);
         });
     }
@@ -48,8 +55,8 @@ window.addEventListener('DOMContentLoaded', () => {
     function renderGeneralSummaryChart() {
         const chartId = 'test_indicators_chart';
         const wrapper = document.getElementById('Geral');
-        const testTypes = Object.values(organizationalClimateResults);
-        const labels = Object.keys(organizationalClimateResults);
+        const testTypes = Object.values(organizationalClimateResults['main']);
+        const labels = Object.keys(organizationalClimateResults['main']);
         const colors = createColorPalette(labels.length);
 
         const data = testTypes.map(test =>

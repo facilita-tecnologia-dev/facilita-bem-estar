@@ -31,7 +31,8 @@
                                         <div class="flex items-center justify-between bg-gradient-to-b from-[#FFFFFF25] gap-4 px-4 py-2 w-full rounded-md shadow-md
                                             {{ $risk['score'] == 2.0 ? 'to-[#faed5d50]' : '' }}
                                             {{ $risk['score'] == 1.0 ? 'to-[#76fc7150]' : '' }}
-                                            {{ $risk['score'] == 3.0 ? 'to-[#fc6f6f50]' : '' }}
+                                            {{ $risk['score'] == 3.0 ? 'to-[#dc933250]' : '' }}
+                                            {{ $risk['score'] == 4.0 ? 'to-[#fc6f6f50]' : '' }}
                                         ">
                                             <p class="truncate">{{ $key }}</p>
                                             <p class="truncate">{{ $risk['risk'] }}</p>

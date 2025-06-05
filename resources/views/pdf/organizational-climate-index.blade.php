@@ -101,7 +101,7 @@
             bottom: 35px;
             text-align:center;
         ">
-            <span style="margin-right: 4px; font-size:12px;">Relatório desenvolvido por Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
+            <span style="margin-right: 4px; font-size:12px;">Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
             @php
                 $pageCounter++
             @endphp
@@ -130,8 +130,13 @@
             ">
                 @foreach ($chunk as $chartName => $chart)
                     <div style="margin-bottom: 60px;">
-                        <h2 style="margin-bottom: 8px">{{ $chartName }}</h2>
-                        <p style="margin-bottom: 8px; font-size: 12px;">Índice de satisfação (%)</p>
+                        <h2 style="margin-bottom: 12px">{{ $chartName }}</h2>
+                        @if($userDepartmentScopes && $userDepartmentScopes->count())
+                            <div style="margin-bottom: 12px;">
+                                <div style="display:inline-block; width: 10px; height:10px; background-color: #cccccc; margin-right:5px; font-size: 10px;"></div>
+                                <span>Geral da empresa (%)</span>
+                            </div>
+                        @endif
                         <img src="{{ $chart }}" style="width:100%">
                     </div>
                 @endforeach
@@ -143,7 +148,7 @@
                 bottom: 35px;
                 text-align:center;
             ">
-                <span style="margin-right: 4px; font-size:12px;">Relatório desenvolvido por Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
+                <span style="margin-right: 4px; font-size:12px;">Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
                 @php
                     $pageCounter++
                 @endphp
@@ -167,7 +172,7 @@
             <p>Resultado detalhado da avaliação de riscos psicossociais.</p>
         </div>
         <div class="footer">
-            <p>Relatório desenvolvido por Facilita Tecnologia &copy;</p>
+            <p>Facilita Tecnologia &copy;</p>
             <p>Emissão: {{ date('d/m/Y') }}</p>
         </div>
     </div>

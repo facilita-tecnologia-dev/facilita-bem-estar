@@ -21,7 +21,10 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $guarded = [];
+    protected $cachedPermissionMap;
 
+
+    /* ---- Relations ---- */
     public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'company_users')
@@ -35,13 +38,6 @@ class User extends Authenticatable
         ->withPivot('company_id');
     }
 
-    public function roleInCompany(?Company $company = null): Role
-    {
-        $roles = $this->roles()->get(); 
-        $company = $company ?? session('company');
-        return $roles->first(fn($role) => $role->pivot->company_id == $company->id);
-    }
-
     public function feedbacks(): HasMany
     {
         return $this->hasMany(UserFeedback::class);
@@ -50,24 +46,6 @@ class User extends Authenticatable
     public function collections(): HasMany
     {
         return $this->hasMany(UserCollection::class);
-    }
-
-    public function latestCollections(): HasMany
-    {
-        return $this->collections()->latest();
-    }
-
-    public function psychosocialRiskCollections(): HasMany
-    {
-        return $this->hasMany(UserCollection::class)
-        ->where('collection_id', 1);
-    }
-
-    public function organizationalClimateCollections(): HasMany
-    {
-        return $this->hasMany(UserCollection::class)
-        ->where('collection_id', 2)
-        ->whereYear('created_at', now()->year);
     }
 
     public function latestPsychosocialCollection(): HasOne
@@ -79,7 +57,6 @@ class User extends Authenticatable
             ->latest();
     }
 
-
     public function latestOrganizationalClimateCollection(): HasOne
     {      
         return $this->hasOne(UserCollection::class)
@@ -89,6 +66,9 @@ class User extends Authenticatable
             ->latest();
     }
 
+    /* ---- End Relations ---- */
+
+    /* ---- Scopes ---- */
     public function scopeWithLatestOrganizationalClimateCollection(Builder $query, Closure $callback): Builder
     {
         return $query->with([
@@ -102,111 +82,85 @@ class User extends Authenticatable
             'latestPsychosocialCollection' => $callback,
         ]);
     }
+    /* ---- End Scopes ---- */
 
-    // public function scopeWithOrganizationalClimateCollections(Builder $query, Closure $callback): Builder
-    // {
-    //     return $query->with([
-    //         'organizationalClimateCollections' => $callback,
-    //     ]);
-    // }
-
-    // public function scopeWithPsychosocialCollections(Builder $query, Closure $callback): Builder
-    // {
-    //     return $query->with([
-    //         'psychosocialRiskCollections' => $callback,
-    //     ]);
-    // }
+    /* ---- Aux/Verifiers/Conditionals ---- */
+    public function roleInCompany(?Company $company = null): Role
+    {
+        $roles = $this->roles()->get(); 
+        $company = $company ?? session('company');
+        return $roles->first(fn($role) => $role->pivot->company_id == $company->id);
+    }
 
     public function hasRole(string $role): bool
     {
         return $this->roleInCompany()->name == $role;
     }
+ 
 
     public function departmentScopes(): HasMany
     {
         return $this->hasMany(UserDepartmentPermission::class, 'user_id');
     }
 
-    public function hasPermission(string $action): bool
+    public function hasPermission(string $key): bool
     {
-        $permissionId = Permission::where('key_name', $action)->value('id');
-
-        // Permissão específica por setor
-        $hasDepartmentPermission = DB::table('user_custom_permissions')
-            ->where('user_id', $this->id)
-            ->where('company_id', session('company')->id)
-            ->where('permission_id', $permissionId)
-            ->first();
-
-        if ($hasDepartmentPermission) {
-            if ($hasDepartmentPermission->allowed == true) {
-                return true;
-            } else {
-                return false;
-            }
+        if (!$this->cachedPermissionMap) {
+            $this->cachedPermissionMap = $this->loadPermissions();
         }
 
-        // Verifica o papel do usuário na empresa
-        $roleId = DB::table('company_users')
-            ->where('user_id', $this->id)
-            ->where('company_id', session('company')->id)
-            ->value('role_id');
-
-        if (! $roleId) {
-            return false;
+        // 1. Verifica se existe permissão customizada explícita (allowed ou denied)
+        if (array_key_exists($key, $this->cachedPermissionMap['custom'])) {
+            return $this->cachedPermissionMap['custom'][$key] === true;
         }
 
-        // Verifica se o papel tem permissão geral
-        return DB::table('role_permissions')
-            ->where('role_id', $roleId)
-            ->where('permission_id', $permissionId)
-            ->where('allowed', true)
-            ->exists();
+        // 2. Caso contrário, verifica se está permitida via papel
+        return in_array($key, $this->cachedPermissionMap['role']);
     }
 
-    // public function getCompatibleOrganizationalCollection($userOrganizationalCollectionsInThisYear, $companyCustomTests, $defaultTests): ?UserCollection
-    // {
-    //     $userCollectionCompatible = $userOrganizationalCollectionsInThisYear->filter(function($userCollection) use($defaultTests, $companyCustomTests) {
-    //         if(count($userCollection->customTests)){
-    //             $userCollectionCompanyCustomTests = $userCollection->customTests[0]->relatedCustomTest->parentCompany->customTests;
-    //             $customTestsAreEqual = $companyCustomTests->count() === $userCollectionCompanyCustomTests->count()
-    //             && $companyCustomTests->every(function ($companyCustomTest) use ($userCollectionCompanyCustomTests) {
-    //                 $relatedUserCollectionTest = $userCollectionCompanyCustomTests->firstWhere('key_name', $companyCustomTest->key_name);
-                    
-    //                 if (!$relatedUserCollectionTest) {
-    //                     return false;
-    //                 }
+    private function loadPermissions(): array
+    {
+        $companyId = session('company')->id;
 
-    //                 $companyCustomTestQuestions = $companyCustomTest->questions->pluck('id')->sort()->values()->all();
-    //                 $relatedUserCollectionTestQuestions = $relatedUserCollectionTest->questions->pluck('id')->sort()->values()->all();
+        // 1. Permissões customizadas por usuário (tanto allowed quanto denied)
+        $custom = DB::table('user_custom_permissions')
+            ->join('permissions', 'permissions.id', '=', 'user_custom_permissions.permission_id')
+            ->where('user_custom_permissions.user_id', $this->id)
+            ->where('user_custom_permissions.company_id', $companyId)
+            ->select('permissions.key_name', 'user_custom_permissions.allowed')
+            ->get()
+            ->mapWithKeys(fn($row) => [$row->key_name => (bool) $row->allowed])
+            ->toArray();
 
-    //                 return $companyCustomTestQuestions === $relatedUserCollectionTestQuestions;
-    //             });
+        // 2. Papel do usuário
+        $roleId = DB::table('company_users')
+            ->where('user_id', $this->id)
+            ->where('company_id', $companyId)
+            ->value('role_id');
 
-    //             if($customTestsAreEqual){
-    //                 return true;
-    //             }
- 
-    //             $customTestsMatchDefaultTests = $userCollectionCompanyCustomTests->every(function ($customTest) use ($defaultTests) {
-    //                 return $defaultTests->contains('id', $customTest->test_id);
-    //             });
+        // 3. Permissões por papel (somente allowed)
+        $rolePermissions = [];
 
-    //             if(count($companyCustomTests) < 1 && $customTestsMatchDefaultTests){
-    //                 return true;
-    //             }
+        if ($roleId) {
+            $rolePermissions = DB::table('role_permissions')
+                ->join('permissions', 'permissions.id', '=', 'role_permissions.permission_id')
+                ->where('role_permissions.role_id', $roleId)
+                ->where('role_permissions.allowed', true)
+                ->pluck('permissions.key_name')
+                ->toArray();
+        }
 
-    //             return false;
-    //         }
+        return [
+            'custom' => $custom,              // key => bool (true/false)
+            'role'   => $rolePermissions,     // array de key_name
+        ];
+    }
 
-    //         if(count($companyCustomTests) < 1){
-    //             return true;
-    //         }
-    //     });
+    public function hasTemporaryPassword(): bool
+    {
+        return str_starts_with($this->password, 'temp_') && strlen($this->password) == 15;
+    }
 
-    //     return $userCollectionCompatible->first();
-    // }
+    /* ---- End Aux/Verifiers/Conditionals ---- */
 
-
-
-    // ------------------------------------------------------------------------- 
 }

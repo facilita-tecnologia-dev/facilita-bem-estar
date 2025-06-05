@@ -48,12 +48,4 @@ class UserAnswer extends Model
             ->take(1),
         ]);
     }
-
-    // public function scopeWithParentQuestionId($query)
-    // {
-    //     $query->addSelect(['parent_question_id' => Question::select('id')
-    //         ->whereColumn('id', 'user_answers.question_option_id')
-    //         ->take(1),
-    //     ]);
-    // }
 }

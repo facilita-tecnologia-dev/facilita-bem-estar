@@ -41,8 +41,9 @@ class Risk extends Model
 
     public function scopeWithRelatedQuestions(Builder $query): Builder
     {
-        return $query->with('relatedQuestions', fn ($query) => $query->withRelatedQuestionAnswer()
-            ->withParentQuestionStatement());
+        return $query->with('relatedQuestions', fn ($query) => $query
+            ->withParentQuestionStatement()
+            ->withParentQuestionInverted());
     }
 
     public function scopeWithControlActions(Builder $query): Builder

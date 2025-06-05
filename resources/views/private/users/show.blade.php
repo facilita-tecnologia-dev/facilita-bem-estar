@@ -77,19 +77,19 @@
                         <p class="font-semibold text-base sm:text-lg text-left">Último teste de Clima Organizacional realizado:</p>
                         <p class="text-sm sm:text-base text-left">{{ $latestOrganizationalClimateCollectionDate ?? 'Nunca' }}</p>
                     </div>
-
-                    @if(str_starts_with($user->password, 'temp_') && strlen($user->password) == 15)
-                        <div class="md:col-span-2 bg-blue-200/50 rounded-md p-4 space-y-1">
-                            <p class="text-sm sm:text-base text-gray-800">Este gestor ainda não definiu uma senha. No próximo acesso, deverá usar a senha provisória e será solicitado a criar uma nova.</p> 
-                            <button class="text-sm sm:text-base break-all text-left" onclick="navigator.clipboard.writeText('{{ $user->password }}')">
-                                Clique no texto sublinhado para copiar a senha provisória: 
-                                <span class="text-blue-500 underline active:text-blue-700" data-tippy-content="Clique para copiar">
-                                    {{ $user->password }}
-                                </span>
-                            </button>
-                        </div>
-                    @endif
                 </div>
+
+                @if($hasTemporaryPassword)
+                    <div class="md:col-span-2 bg-blue-200/50 rounded-md p-4 space-y-1">
+                        <p class="text-sm sm:text-base text-gray-800">Este gestor ainda não definiu uma senha. No próximo acesso, deverá usar a senha provisória e será solicitado a criar uma nova.</p> 
+                        <button class="text-sm sm:text-base break-all text-left" onclick="navigator.clipboard.writeText('{{ $user->password }}')">
+                            Clique no texto sublinhado para copiar a senha provisória: 
+                            <span class="text-blue-500 underline active:text-blue-700" data-tippy-content="Clique para copiar">
+                                {{ $user->password }}
+                            </span>
+                        </button>
+                    </div>
+                @endif
 
                 <div class="w-full flex flex-row flex-wrap justify-between gap-2">
                     <div class="flex items-center gap-2" data-position="left">
@@ -118,6 +118,28 @@
                 </div>
             </div>
 
+            @if($hasTemporaryPassword /*session('password-warning')*/)
+                <x-modal.background data-role="password-warning-modal" class="!flex">
+                    <x-modal.wrapper class="max-w-[450px]">
+                        <x-modal.title>Aviso - Senha do gestor</x-modal.title>
+                        
+                        <p class="p-2 bg-blue-300/50 rounded-md text-blue-700 text-sm">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                            Este gestor ainda não definiu uma senha. No próximo acesso, deverá usar a senha provisória e será solicitado a criar uma nova.
+                        </p>
+
+                        <div class="text-sm sm:text-base break-all text-left flex flex-col items-center gap-2" >
+                            Clique na senha provisória para copiá-la: 
+                            <button class="text-blue-500 underline active:text-blue-700" data-tippy-content="Clique para copiar" onclick="navigator.clipboard.writeText('{{ $user->password }}')">
+                                {{ $user->password }}
+                            </button>
+                        </div>
+
+                        <x-action variant="danger" width="full" tag="button" type="button" onclick="hidePasswordWarningModal()">Fechar</x-action>
+                    </x-modal.wrapper>
+                </x-modal.background>
+            @endif
+
             <x-modal.background data-role="reset-password-modal">
                 <x-modal.wrapper class="max-w-[450px]">
                     <x-modal.title>Redefinir senha do usuário</x-modal.title>
@@ -139,5 +161,6 @@
     </x-structure.page-container>
 
     <script src="{{ asset('js/global.js') }}"></script>
+    <script src="{{ asset('js/user/show.js') }}"></script>
     <script src="{{ asset('js/reset-password.js') }}"></script>
 </x-layouts.app>

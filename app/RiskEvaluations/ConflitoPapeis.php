@@ -3,6 +3,7 @@
 namespace App\RiskEvaluations;
 
 use App\Models\Risk;
+use App\Models\UserTest;
 use App\Services\RiskService;
 use Illuminate\Support\Collection;
 
@@ -11,34 +12,37 @@ class ConflitoPapeis implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, int $testSeverity): float|int
+    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
     {
-        $riskLevel = 1;
+        $riskSeverity = 2;
 
-        if (!$average >= 3) {
-            return $riskLevel;
+        // Probabilidade
+        $probability = RiskService::calculateProbability($average, 1, 2, true);
+        
+        $riskLevel = 1;
+        
+        if ($average >= 3) {
+            return [
+                'riskLevel' => $riskLevel,
+                'riskSeverity' => $riskSeverity,
+                'probability' => $probability,
+            ];
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $riskQuestion['related_question_answer'];
+            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
 
-            if (!$answer <= 4) {
-                return $riskLevel;
+            if (!($answer <= 2)) {
+                return [
+                    'riskLevel' => $riskLevel,
+                    'riskSeverity' => $riskSeverity,
+                    'probability' => 1,
+                ];
             }
         }
 
-        $probability = RiskService::calculateProbability($average);
+        $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
 
-        if($testSeverity < 2){
-            return $riskLevel;
-        }
-
-        $riskLevel = match (true) {
-            $probability == 1 && $testSeverity == 2 => 1,
-            $probability == 2 && $testSeverity == 2 => 2,
-            default => 1,
-        };
-
-        return $riskLevel;
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

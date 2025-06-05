@@ -2,6 +2,8 @@
 
 namespace App\Handlers\PsychosocialRisks;
 
+use App\Enums\ProbabilityEnum;
+use App\Enums\RiskSeverityEnum;
 use App\Enums\SeverityEnum;
 use App\Models\Risk;
 use App\Models\UserTest;
@@ -18,9 +20,9 @@ class ManagementStyleHandler
         $testRisks = $userTest['testType']['risks']; 
 
         // Severidade
-        $testSeverity = $this->calculateTestSeverity($testRisks);
+        $testSeverity = $this->calculateTestSeverity($userTest, $testRisks);
 
-        $risksList = $this->evaluateRisks($testRisks, $average, $metrics, $testSeverity);
+        $risksList = $this->evaluateRisks($userTest, $testRisks, $average, $metrics, $testSeverity);
 
         $testScore = $this->calculateScore($userTest, $average);
 
@@ -31,35 +33,20 @@ class ManagementStyleHandler
             'risks' => $risksList,
         ];
     }
-      
-    public function calculateRiskQuestionAverage(Risk $risk): int
-    {
-        $sumScore = $risk->relatedQuestions->reduce(function ($acc, $question) {
-            return $acc + $question['related_question_answer'];
-        }, 0);
-        
-        $average = $sumScore / $risk->relatedQuestions->count();
-        
-        if($average > 3.5){
-            return true;
-        }
 
-        return false;
-    }
-
-    public function calculateTestSeverity($testRisks): int
+    public function calculateTestSeverity($userTest, $testRisks): int
     {
         $testSeverity = 1;
     
         foreach ($testRisks as $risk) {
-            if($risk->name == 'Sobrecarga de Trabalho'){
-                $average = $this->calculateRiskQuestionAverage($risk);
-                if($average){$testSeverity = 3;}
+            if($risk->name == 'Pressão Excessiva da Gestão'){
+                $average = RiskService::calculateRiskQuestionAverage($userTest, $risk);
+                if($average){$testSeverity = max($testSeverity, 3);}
             }
 
-            if(in_array($risk->name, ['Rigidez Organizacional', 'Falta de Recursos', 'Imprevisibilidade', 'Conflito de Papéis'])){
-                $average = $this->calculateRiskQuestionAverage($risk);
-                if($average){$testSeverity = 2;}
+            if(in_array($risk->name, ['Gestão Individualista', 'Conflitos com a Gestão', 'Falta de Suporte Gerencial', 'Injustiça Percebida'])){
+                $average = RiskService::calculateRiskQuestionAverage($userTest, $risk);
+                if($average){$testSeverity = max($testSeverity, 2);}
             }
         }
 
@@ -89,14 +76,17 @@ class ManagementStyleHandler
         ];
     }
 
-    public function evaluateRisks($testRisks, $average, $metrics, $testSeverity)
+    public function evaluateRisks($userTest, $testRisks, $average, $metrics, $testSeverity)
     {
         $risksList = [];
 
         foreach ($testRisks as $risk) {
             $handler = RiskService::getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $average, $metrics, $testSeverity);
-            $risksList[$risk->name]['riskPoints'] = $evaluatedRisk;
+            $evaluatedRisk = $handler->evaluateRisk($userTest, $risk, $average, $metrics, $testSeverity);
+            
+            $risksList[$risk->name]['riskLevel'] = $evaluatedRisk['riskLevel'];
+            $risksList[$risk->name]['probability'] = ProbabilityEnum::labelFromValue($evaluatedRisk['probability']);
+            $risksList[$risk->name]['severity'] = RiskSeverityEnum::labelFromValue($evaluatedRisk['riskSeverity']);
             $risksList[$risk->name]['controlActions'] = $risk->controlActions;
         }
         

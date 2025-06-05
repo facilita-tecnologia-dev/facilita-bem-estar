@@ -1,4 +1,4 @@
-@props(['tag' => null, 'id', 'title'])
+@props(['tag' => null, 'id', 'title', 'general' => null])
 
 @php
     $elementTag = $tag === 'a' ? 'a' : 'div';

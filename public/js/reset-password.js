@@ -6,12 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const resetPasswordModal = document.querySelector('[data-role="reset-password-modal"]');
     const openModal = localStorage.getItem('open-reset-password-modal');
 
-    console.log(resetPasswordModal, triggerResetPasswordModal);
-
     if (openModal) {
         showResetPasswordModal(resetPasswordModal);         
     }
-
 
     if(resetPasswordModal){
         body.addEventListener("click", function (event) {

@@ -36,12 +36,7 @@ class CompanyMetricsController
         DB::transaction(function () use ($validatedData) {
             $metrics = Metric::all();
             foreach ($validatedData as $key => $inputMetric) {
-
-                if ($inputMetric == null) {
-                    $inputMetric = 'null';
-                }
-
-                $metric = $metrics->where('key_name', $key)->first();
+                $metric = $metrics->firstWhere('key_name', $key);
 
                 CompanyMetric::updateOrInsert(
                     [
@@ -54,6 +49,8 @@ class CompanyMetricsController
                 );
             }
         });
+
+        session(['company' => session('company')->load('metrics')]);
 
         return back()->with('message', 'Indicadores armazenados com sucesso!');
     }
