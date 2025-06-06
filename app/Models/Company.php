@@ -48,7 +48,7 @@ class Company extends Authenticatable
 
     public function hasCompletedBasicData() : bool
     {
-        return $this->users->count() && $this->logo && $this->metrics()->where('value', '!=', 'null')->count();
+        return $this->users->count() && $this->logo && $this->metrics()->where('value')->count();
     }
 
     public function customTests(): HasMany

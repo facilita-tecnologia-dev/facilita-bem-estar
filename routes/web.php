@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CompanyCampaignController;
 use App\Http\Controllers\CustomCollectionsController;
+use App\Http\Controllers\CustomControlActionController;
 use App\Http\Controllers\Private\CompanyController;
 use App\Http\Controllers\Private\CompanyMetricsController;
 use App\Http\Controllers\Private\Dashboard\Demographics\DemographicsMainController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Private\WelcomeController;
 use App\Http\Controllers\Public\PresentationController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
+use App\Models\CustomControlAction;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -114,6 +116,12 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('empresa/colecoes-de-testes', [CustomCollectionsController::class, 'showCompanyCollections'])->name('company-collections');
     Route::get('empresa/colecoes-de-testes/{collection}/editar', [CustomCollectionsController::class, 'editCollection'])->name('company-collections.update');
     Route::post('empresa/colecoes-de-testes/{collection}/editar', [CustomCollectionsController::class, 'updateCollection']);
+
+    Route::get('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'index'])->name('control-actions.index');
+    Route::post('empresa/medidas-de-controle/criar', [CustomControlActionController::class, 'store'])->name('control-actions.store');
+    Route::put('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'update'])->name('control-actions.update');
+    Route::delete('empresa/medidas-de-controle/{controlAction}/excluir', [CustomControlActionController::class, 'destroy'])->name('control-actions.destroy');
+    // Route::post('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'updateCollection']);
 
     Route::view('/politica-de-privacidade', 'private.lgpd.privacy-policy')->name('privacy-policy');
 

@@ -135,11 +135,11 @@
                         Colaboradores
                     </x-sidebar.item>
                 @endcan
-                <x-sidebar.item href="{{ route('user.index') }}" class="{{ request()->routeIs('user.index') ? 'bg-gray-200' : ''}}">
+                <x-sidebar.item href="{{ route('control-actions.index') }}" class="{{ request()->routeIs('control-actions.index') ? 'bg-gray-200' : ''}}">
                     <div class="w-5 flex justify-center items-center">
                        <i class="fa-solid fa-list-ul"></i>
                     </div>
-                    Medidas de Controle
+                    Planos de Ação
                 </x-sidebar.item>
             </x-sidebar.menu>
         @endcanany

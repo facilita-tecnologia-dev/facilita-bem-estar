@@ -216,6 +216,7 @@ return [
         'end_date' => 'data de encerramento',
         'start_date' => 'data de início',
         'description' => 'descrição',
+        'control_action' => 'medida de controle',
     ],
 
 ];

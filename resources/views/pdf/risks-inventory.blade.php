@@ -97,9 +97,14 @@
                                         </li>
                                     @else
                                         @foreach ($risk['controlActions'] as $action)
-                                            <li class="text-sm w-full rounded-md">
-                                                {{ $action->content }}
-                                            </li>
+                                            @php
+                                                $isAllowed = false;
+                                            @endphp
+                                            @if($isAllowed)
+                                                <li class="text-sm w-full rounded-md">
+                                                    {{ $action->content }}
+                                                </li>
+                                            @endif
                                         @endforeach
                                     @endif
                                 </ul>

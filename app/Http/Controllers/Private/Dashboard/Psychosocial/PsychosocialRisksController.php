@@ -75,7 +75,7 @@ class PsychosocialRisksController
             'companyName' => $companyName,
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download($companyName . ' - Inventário de Riscos Psicossociais.pdf');
+        return $pdf->stream($companyName . ' - Inventário de Riscos Psicossociais.pdf');
     }
 
     private function getCompiledPageData($onlyCritical = false)
@@ -90,7 +90,8 @@ class PsychosocialRisksController
             }
         }
 
-        dd($testCompiled);
+        $this->updateRisksAverage($onlyCritical, $testCompiled);
+
 
         return $testCompiled;
     }

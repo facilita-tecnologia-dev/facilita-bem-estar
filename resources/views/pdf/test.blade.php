@@ -47,8 +47,8 @@
     }
 
     table {margin:0 auto; width:90%; border-collapse:collapse;}
-    td, th {border:1px solid #999; padding:8px; vertical-align:center; font-size:12px;}
-    th {background-color: #333; color: #fff;}
+    td, th {border:1px solid #999; padding:8px; vertical-align:center; font-size:12px; color: #333;}
+    th {background-color: #c3e9fd; color: #333;}
 
     .page-break {
         page-break-after: always;
@@ -81,7 +81,65 @@
     </div>
 
     <div class="page-break"></div>
+    
+    <div style="width: 100%;height: 100%; position: relative; text-align:center;">
+        <div style="width: 100%; position: relative; text-align:center; position: absolute; padding-top: 60px;">    
+            <h2 style="margin-bottom: 8px;">Matriz de Risco</h2>
 
+            <p style="margin-bottom: 16px;">O nível de risco é determinado pela combinação de severidade e probabilidade:</p>
+            
+            <table style="width: 50%;">
+                <tbody>
+                    <tr style="">
+                        <td style="width:25%; font-weight:bold;">Probabilidade/Severidade</td>
+                        <td style="width:5%; font-weight:bold;">Baixa</td>
+                        <td style="width:5%; font-weight:bold;">Moderada</td>
+                        <td style="width:5%; font-weight:bold;">Alta</td>
+                        <td style="width:5%; font-weight:bold;">Crítica</td>
+                    </tr>
+                    <tr style="">
+                        <td style="font-weight: bold;">Improvável</td>
+                        <td>Baixo</td>
+                        <td>Baixo</td>
+                        <td>Moderado</td>
+                        <td>Moderado</td>
+                    </tr>
+                    <tr style="">
+                        <td style="font-weight: bold;">Possível</td>
+                        <td>Baixo</td>
+                        <td>Moderado</td>
+                        <td>Alto</td>
+                        <td>Alto</td>
+                    </tr>
+                    <tr style="">
+                        <td style="font-weight: bold;">Provável</td>
+                        <td>Moderado</td>
+                        <td>Alto</td>
+                        <td>Alto</td>
+                        <td>Crítico</td>
+                    </tr>
+                    <tr style="">
+                        <td style="font-weight: bold;">Muito Provável</td>
+                        <td>Moderado</td>
+                        <td>Alto</td>
+                        <td>Crítico</td>
+                        <td>Crítico</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="width: 100%; position: absolute; bottom: 35px; text-align:center;">
+            <span style="margin-right: 4px; font-size:12px;">Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
+            @php
+                $pageCounter++
+            @endphp
+        </div>
+    </div>
+
+
+    <div class="page-break"></div>
+    
     @php
         $chunks = array_chunk($risks, 1, true); // Divide os gráficos em grupos de 3
     @endphp
@@ -132,9 +190,14 @@
                                                 </li>
                                             @else
                                                 @foreach ($risk['controlActions'] as $action)
-                                                    <li class="text-sm w-full rounded-md">
-                                                        {{ $action->content }}
-                                                    </li>
+                                                    @php
+                                                        $isAllowed = $action instanceof App\Models\ControlAction || $action->allowed;
+                                                    @endphp
+                                                    @if($isAllowed)
+                                                        <li class="text-sm w-full rounded-md">
+                                                            {{ $action->content }}
+                                                        </li>
+                                                    @endif
                                                 @endforeach
                                             @endif
                                         </ul>

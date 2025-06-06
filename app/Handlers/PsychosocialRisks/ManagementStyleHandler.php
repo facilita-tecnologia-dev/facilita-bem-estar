@@ -87,7 +87,7 @@ class ManagementStyleHandler
             $risksList[$risk->name]['riskLevel'] = $evaluatedRisk['riskLevel'];
             $risksList[$risk->name]['probability'] = ProbabilityEnum::labelFromValue($evaluatedRisk['probability']);
             $risksList[$risk->name]['severity'] = RiskSeverityEnum::labelFromValue($evaluatedRisk['riskSeverity']);
-            $risksList[$risk->name]['controlActions'] = $risk->controlActions;
+            $risksList[$risk->name]['controlActions'] = RiskService::getControlActions($risk);
         }
         
         return $risksList;

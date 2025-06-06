@@ -14,7 +14,7 @@ class WelcomeController
         $noCompanyLogo = !session('company')->logo;
         $noCompanyUsers = !session('company')->users->count();
         $noCompanyManager = !session('company')->users->filter(fn($user)=> $user->hasRole('manager'))->count();
-        $noCompanyMetrics = !session('company')->metrics()->where('value', '!=', 'null')->exists();
+        $noCompanyMetrics = !session('company')->metrics()->where('value')->exists();
         $noCompanyCampaigns = !session('company')->campaigns()->exists();
 
         if($noCompanyLogo){$neededActionsCount++;}

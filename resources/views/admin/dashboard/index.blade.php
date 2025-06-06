@@ -39,7 +39,7 @@
                                 @foreach ($metrics as $metric)
                                     <div class="w-full">
                                         <p class="text-sm">{{ $metric->metricType->display_name }}</p>
-                                            @if($metric->value != 'null')
+                                            @if($metric->value)
                                                 <div data-role="metric-bar" data-value="{{ $metric->value }}" class="relative border border-gray-800/50  w-full rounded-md overflow-hidden">
                                                 <div class="bar h-6 bg-[#64B5F6]"></div>
                                                 <p class="text-xs absolute right-2 text-gray-800 top-1/2 -translate-y-1/2">{{ $metric->value }}%</p>

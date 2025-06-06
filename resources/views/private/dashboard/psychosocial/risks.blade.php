@@ -17,6 +17,7 @@
                     </x-action>
                 </div>
             </div>
+            {{-- @dd($risks) --}}
     
             <div class="w-full space-y-8">
                 @foreach ($risks as $testName => $test)
@@ -40,9 +41,14 @@
                                         <p class="px-3 font-semibold">Medidas de Controle e Prevenção</p>
                                         <ul class="grid grid-cols-1 px-4 gap-y-3 gap-x-4 list-disc pl-5">
                                             @foreach ($risk['controlActions'] as $action)
-                                                <li class="text-sm w-full rounded-md">
-                                                    {{ $action->content }}
-                                                </li>
+                                                @php
+                                                    $isAllowed = $action instanceof App\Models\ControlAction || $action->allowed;
+                                                @endphp
+                                                @if($isAllowed)
+                                                    <li class="text-sm w-full rounded-md">
+                                                        {{ $action->content }}
+                                                    </li>
+                                                @endif
                                             @endforeach
                                         </ul>
                                     </div>

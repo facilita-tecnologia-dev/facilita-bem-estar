@@ -100,4 +100,34 @@ class RiskService
 
         return $risco;
     } 
+
+    public static function getControlActions(Risk $risk)
+    {
+        $overrides = $risk->customControlActions
+        ->filter(fn($customControlAction) => $customControlAction['control_action_id'])
+        ->keyBy('control_action_id');;
+
+        $final = $risk->controlActions->map(function ($defaultControlAction) use ($overrides) {
+            if ($overrides->has($defaultControlAction['id'])) {
+                $customControlAction = $overrides[$defaultControlAction['id']];
+
+                return $customControlAction;
+            }
+            
+            return $defaultControlAction;
+        });
+
+
+        $customNew = $risk->customControlActions
+        ->filter(fn($customControlAction) => !$customControlAction['control_action_id']);
+
+        $finalControlActions = $final->concat($customNew);
+
+        $finalControlActions = $finalControlActions->sortBy(
+            fn($item) => $item->content
+        );
+
+               
+        return $finalControlActions;
+    }
 }

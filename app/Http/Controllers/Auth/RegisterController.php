@@ -32,7 +32,7 @@ class RegisterController
                 CompanyMetric::create([
                     'metric_id' => $metric->id,
                     'company_id' => $company->id,
-                    'value' => 'null',
+                    'value' => null,
                 ]);
             }
 

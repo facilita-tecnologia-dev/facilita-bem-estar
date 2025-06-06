@@ -31,6 +31,11 @@ class Risk extends Model
         return $this->hasMany(ControlAction::class);
     }
 
+    public function customControlActions(): HasMany
+    {
+        return $this->hasMany(CustomControlAction::class);
+    }
+
     /**
      * Returns the test related to this risk.
      */
@@ -49,5 +54,10 @@ class Risk extends Model
     public function scopeWithControlActions(Builder $query): Builder
     {
         return $query->with('controlActions');
+    }
+
+    public function scopeWithCustomControlActions(Builder $query): Builder
+    {
+        return $query->with('customControlActions');
     }
 }
