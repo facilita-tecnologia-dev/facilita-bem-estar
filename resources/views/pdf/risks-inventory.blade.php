@@ -5,125 +5,106 @@
   <title>Inventário de Riscos Psicossociais</title>
 
   <style>
-    body        { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color:#1f2937; margin: 0 25px; }
-    h1, h2      { color:#1f2937; margin-bottom: 16px; }
-    h1          { font-size: 32px; margin-top: 16px; font-weight: bold; text-align: center }
-    h2          { font-size: 22px; margin-top: 8px; }
+    body { 
+        font-family: Arial, Helvetica, sans-serif; 
+        font-size: 14px; 
+        color:#1f2937; 
+        margin: 20px 20px 30px 20px;
+    }
 
-    table       { width:100%; border-collapse:collapse; }
-    th, td      { border:1px solid #999; padding:8px; vertical-align:center; }
-    th          { background:#e6f2ff; text-align:left; }
+    table {margin:0 auto; width:90%; border-collapse:collapse;}
+    td, th {border:1px solid #999; padding: 6px; vertical-align:center; font-size:12px; color: #333;}
+    th {background-color: #c3e9fd; color: #333;}
 
-    tbody tr:nth-child(even) { background:#f9f9f9; }
+    .page-break {
+        page-break-after: always;
+    }
 
-    .risco-alto   { color:#b22222; font-weight:bold; }
-    .risco-medio  { color:#ff8c00; font-weight:bold; }
-    .risco-baixo  { color:#228b22; font-weight:bold; }
+    .footer {
+        position: fixed;
+        left: 50%;
+        bottom: 0px;
+        transform: translateX(-50%);
+        text-align: center;
+    }
 
-    ul { margin:0; padding-left:16px; }
-    ul li {margin-bottom: 8px;}
-    ul li:last-of-type {margin-bottom: 0;}
-
-    .page-break { page-break-after:always; }
-
-    .cover            { width:100%; height: 100%; display:table;}
-    /* .cover-inner      { display:table-cell; vertical-align:middle; text-align:center; } */
-    .cover-inner      { width:100%; position: absolute; left:50%; top:50%; transform: translate(-50%, -50%); text-align: center; }
-    .cover p.subtitle { font-size:20px; color:#1f2937; }
-    .cover p { font-size:16px; color:#1f2937; }
-    .logo             { max-width:300px; height:auto; margin:0 auto 20px; }
-
-    .footer { position: absolute; left:50%; bottom:0px; transform: translateX(-50%); text-align: center; }
-    .footer p {font-size: 13px; text-align:center; margin-bottom: 0;}
+    .pagenum:before {
+        content: counter(page);
+    }
   </style>
 </head>
 
 <body>
+    <x-pdf.cover>          
+        @if($companyLogo)
+            <img src="{{ public_path($companyLogo) }}" style="max-width: 8cm; object-fit:contain; margin-bottom: 24px;">            
+        @endif
+        <h2 style="margin-bottom: 18px;">{{ $companyName }}</h2>
+        <h1 style="margin-bottom: 8px; font-size: 32px;">Inventário de Riscos Psicossociais</h1>
+        <p>Resultado detalhado da avaliação de riscos psicossociais.</p>
+    </x-pdf.cover>
 
-    <div class="cover">
-        <div class="cover-inner">
-            @if($companyLogo)
-                <img class="logo" src="{{ public_path($companyLogo) }}" alt="Logo da Empresa">            
-            @else
-                <img class="logo" src="{{ asset('assets/icon-facilita.svg') }}" alt="Logo da Empresa">
-            @endif
-            <h1>{{ $companyName }}</h1>
-            <p class="subtitle">Inventário de Riscos Psicossociais</p>
-            <p>Resultado detalhado da avaliação de riscos psicossociais.</p>
-        </div>
-        <div class="footer">
-            <p>Facilita Tecnologia &copy;</p>
-            <p>Emissão: {{ date('d/m/Y') }}</p>
-        </div>
-    </div>
+    <div class="page-break"></div>
+    
+    {{-- Matriz de Risco --}}
+    <x-pdf.main-content>
+        <x-pdf.risk-matrix />
+    </x-pdf.main-content>
+    
+    <div class="page-break"></div>
 
     @foreach ($risks as $testName => $test)
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fator Identificado</th>
-                    </tr>
-                </thead>
+        {{-- Title --}}
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: left;">Fator Identificado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding:8px;"><h2>{{ $testName }}</h2></td>
+                </tr>
+            </tbody>
+        </table>
+
+        @foreach ($test['risks'] as $key => $risk)
+            <table style="margin-top: 16px;">
                 <tbody>
-                    <tr>
-                        <td style="padding:0 8px;"><h2>{{ $testName }}</h2></ st
-                    </tr>
+                    <tr style="font-weight:bold;">
+                        <td style="width:25%;">Risco Identificado: {{ $key }}</td>
+                        <td style="width:15%;">Severidade: {{ $risk['severity'] }}</td>
+                        <td style="width:15%;">Probabilidade: {{ $risk['probability'] }}</td>
+                        <td style="width:15%;">Nível de Risco: {{ $risk['riskCaption'] }}</td>
+                    </tr>                            
                 </tbody>
             </table>
-            
+
             <table>
                 <thead>
                     <tr>
-                        <th>Risco Identificado</th>
-                        <th>Nível de Risco</th>
-                        <th>Medidas de Controle e Prevenção</th>
+                        <th style="width:25%; font-size: 10px">Medida de Controle</th>
+                        <th style="width:15%; font-size: 10px">Responsável</th>
+                        <th style="width:15%; font-size: 10px">Prazo</th>
+                        <th style="width:15%; font-size: 10px">Situação</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($test as $key => $risk)
+                    @foreach ($risk['controlActions'] as $ca) 
                         <tr>
-                            <td>{{ $key }}</td>
-                            <td>{{ $risk['risk'] }}</td>
-                            <td>
-                                <ul>
-                                    @if($risk['score'] == 1)
-                                        <li class="text-sm w-full rounded-md">
-                                            Não exige ação imediata
-                                        </li>
-                                    @elseif ($risk['score'] == 2)
-                                        <li class="text-sm w-full rounded-md">
-                                            Manter controle e monitoramento
-                                        </li>
-                                    @else
-                                        @foreach ($risk['controlActions'] as $action)
-                                            @php
-                                                $isAllowed = false;
-                                            @endphp
-                                            @if($isAllowed)
-                                                <li class="text-sm w-full rounded-md">
-                                                    {{ $action->content }}
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </ul>
-                            </td>
+                            <td style="width:25%; font-size: 10px;">{{ $ca['content'] }}</td>
+                            <td style="width:15%; font-size: 10px;">{{ $ca['assignee'] ?? 'Indefinido' }}</td>
+                            <td style="width:15%; font-size: 10px;">{{ $ca['deadline'] ?? 'Indefinido' }}</td>
+                            <td style="width:15%; font-size: 10px;">{{ $ca['status'] ?? 'Indefinido' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+        @endforeach
 
-            <div class="footer">
-                <p>Facilita Tecnologia &copy;</p>
-                <p>Emissão: {{ date('d/m/Y') }}</p>
-            </div>
-        </div>
-
-        @if(!$loop->last)
-            <div class="page-break"></div>
-        @endif
+        <div class="page-break"></div>
     @endforeach
 
+    <x-pdf.footer />
 </body>
 </html>

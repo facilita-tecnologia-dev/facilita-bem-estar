@@ -17,38 +17,32 @@
                     </x-action>
                 </div>
             </div>
-            {{-- @dd($risks) --}}
     
             <div class="w-full space-y-8">
-                @foreach ($risks as $testName => $test)
-                    @if(count($test) > 0)
+                @foreach ($riskResults as $testName => $test)
+                    @if(count($test['risks']) > 0)
                         <div class="space-y-4">
                             <div class="bg-gray-100 px-4 py-2 w-full rounded-md shadow-md">
                                 <h2 class="text-xl font-semibold">{{ $testName }}</h2>
                             </div>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                @foreach ($test as $key => $risk)
+                                @foreach ($test['risks'] as $riskName => $risk)
                                     <div class="flex flex-col gap-4 bg-white/25 w-full p-4 rounded-md shadow-md relative left-0 top-0 hover:left-0.5 hover:-top-0.5 transition-all">
                                         <div class="flex items-center justify-between bg-gradient-to-b from-[#FFFFFF25] gap-4 px-4 py-2 w-full rounded-md shadow-md
-                                            {{ $risk['score'] == 2.0 ? 'to-[#faed5d50]' : '' }}
-                                            {{ $risk['score'] == 1.0 ? 'to-[#76fc7150]' : '' }}
-                                            {{ $risk['score'] == 3.0 ? 'to-[#dc933250]' : '' }}
-                                            {{ $risk['score'] == 4.0 ? 'to-[#fc6f6f50]' : '' }}
+                                            {{ $risk['riskLevel'] == 2.0 ? 'to-[#faed5d50]' : '' }}
+                                            {{ $risk['riskLevel'] == 1.0 ? 'to-[#76fc7150]' : '' }}
+                                            {{ $risk['riskLevel'] == 3.0 ? 'to-[#dc933250]' : '' }}
+                                            {{ $risk['riskLevel'] == 4.0 ? 'to-[#fc6f6f50]' : '' }}
                                         ">
-                                            <p class="truncate">{{ $key }}</p>
-                                            <p class="truncate">{{ $risk['risk'] }}</p>
+                                            <p class="truncate">{{ $riskName }}</p>
+                                            <p class="truncate">{{ $risk['riskCaption'] }}</p>
                                         </div>
                                         <p class="px-3 font-semibold">Medidas de Controle e Prevenção</p>
                                         <ul class="grid grid-cols-1 px-4 gap-y-3 gap-x-4 list-disc pl-5">
                                             @foreach ($risk['controlActions'] as $action)
-                                                @php
-                                                    $isAllowed = $action instanceof App\Models\ControlAction || $action->allowed;
-                                                @endphp
-                                                @if($isAllowed)
-                                                    <li class="text-sm w-full rounded-md">
-                                                        {{ $action->content }}
-                                                    </li>
-                                                @endif
+                                                <li class="text-sm w-full rounded-md">
+                                                    {{ $action->content }}
+                                                </li>
                                             @endforeach
                                         </ul>
                                     </div>

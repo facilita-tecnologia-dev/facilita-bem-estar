@@ -25,6 +25,11 @@ class Test extends Model
         return $this->belongsTo(Collection::class, 'collection_id');
     }
 
+    public function userTests()
+    {
+        return $this->hasMany(UserTest::class, 'test_id');
+    }    
+
     public function customTest(): HasOne
     {
         return $this->hasOne(CustomTest::class)->where('company_id', session('company')->id);
@@ -52,6 +57,13 @@ class Test extends Model
     {
         return $query->with([
             'risks' => $callback,
+        ]);
+    }
+
+    public function scopeWithUserTests(Builder $query, Closure $callback): Builder
+    {
+        return $query->with([
+            'userTests' => $callback,
         ]);
     }
 }

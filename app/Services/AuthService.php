@@ -23,7 +23,7 @@ class AuthService {
                 return route('auth.login.usuario-interno.escolher-empresa', $actor);
             }
 
-            session(['company' => $actor->companies->first()]);
+            CompanyService::loadCompanyToSession($actor->companies->first());
 
             if($this->userIsManager($actor)){
                 return route('auth.login.gestor.senha', $actor);
@@ -37,7 +37,7 @@ class AuthService {
 
             $this->login($actor);
 
-            session(['company' => $actor]);
+            CompanyService::loadCompanyToSession($actor);
         }
 
         return $this->getRedirectLoginRoute($actor);

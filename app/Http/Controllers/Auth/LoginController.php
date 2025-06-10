@@ -12,6 +12,7 @@ use App\Rules\validateCNPJ;
 use App\Rules\validateCPF;
 use App\Services\LoginRedirectService;
 use App\Services\AuthService;
+use App\Services\CompanyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -71,7 +72,7 @@ class LoginController
 
     public function loginUserWithCompany(User $user, Company $company)
     {
-        session(['company' => $company]);
+        CompanyService::loadCompanyToSession($company);
 
         if($user->hasRole('manager')){
             return redirect()->to(route('auth.login.gestor.senha', $user));
@@ -130,7 +131,7 @@ class LoginController
         $company = Company::firstWhere('id', request('company_id'));
         $roleInRequestCompany = $user->roleInCompany($company);
         
-        session(['company' => $company]);
+        CompanyService::loadCompanyToSession($company);
         
         if($roleInCurrentCompany->name === 'employee' && $roleInRequestCompany->name === 'manager'){
             return redirect()->to(route('auth.login.gestor.senha', $user));

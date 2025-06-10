@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RiskSeverityEnum;
+use App\Models\ActionPlan;
 use App\Models\ControlAction;
 use App\Models\CustomControlAction;
 use App\Models\Risk;
@@ -10,128 +12,83 @@ use Illuminate\Http\Request;
 class CustomControlActionController
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $risks = Risk::with(['controlActions', 'customControlActions'])->get();
-        
-        $mappedControlActions = $risks->mapWithKeys(function($risk){
-            $overrides = $risk->customControlActions
-            ->filter(fn($customControlAction) => $customControlAction['control_action_id'])
-            ->keyBy('control_action_id');
-
-            $final = $risk->controlActions->map(function ($defaultControlAction) use ($overrides) {
-                if ($overrides->has($defaultControlAction['id'])) {
-                    $customControlAction = $overrides[$defaultControlAction['id']];
-
-                    return $customControlAction;
-                }
-                
-                return $defaultControlAction;
-            });
-
-            $customNew = $risk->customControlActions
-            ->filter(fn($customControlAction) => !$customControlAction['control_action_id']);
-
-            $finalControlActions = $final->concat($customNew);
-
-            $finalControlActions = $finalControlActions->sortBy(
-                fn($item) => $item->content
-            );
-
-            return [$risk->name => $finalControlActions];
-        });
-
-        $risksToSelect = $risks->map(fn($risk) => $risk->name);
-
-        return view('private.control-actions.index', compact('mappedControlActions', 'risksToSelect'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, ActionPlan $actionPlan, Risk $risk)
     {
         $validatedData = $request->validate([
             'control_action' => ['required'],
-            'risk' => ['required'],
+            'severity' => ['required'],
+            'deadline' => ['nullable'],
+            'assignee' => ['nullable'],
+            'status' => ['nullable'],
         ]);
 
         CustomControlAction::create([
             'company_id' => session('company')->id,
-            'risk_id' => Risk::firstWhere('name', $validatedData['risk'])->id,
+            'action_plan_id' => $actionPlan->id,
+            'risk_id' => $risk->id,
             'content' => $validatedData['control_action'],
-            'allowed' => true,
+            'severity' => $validatedData['severity'],
+            'deadline' => $validatedData['deadline'] ?? null,
+            'assignee' => $validatedData['assignee'] ?? null,
+            'status' => $validatedData['status'] ?? null,
         ]);
+
+        session(['company' => session('company')->load('actionPlan.controlActions')]);
 
         return back()->with('message', 'Medida de Controle criada com sucesso!');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(CustomControlAction $customControlAction)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(CustomControlAction $customControlAction)
+    public function edit(ActionPlan $actionPlan, Risk $risk, CustomControlAction $controlAction)
     {
-        //
+        $severities = collect(RiskSeverityEnum::cases())
+            ->map(fn($case) => [
+                'option' => $case->label(),
+                'value'  => $case->value,
+            ])
+        ->all();
+
+        return view('private.control-action.edit', compact('actionPlan', 'risk', 'controlAction', 'severities'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request, ActionPlan $actionPlan, Risk $risk, CustomControlAction $controlAction)
     {
         $validatedData = $request->validate([
-            'control_action_id' => ['required'],
-            'control_action_content' => ['required'],
+            'control_action' => ['required'],
+            'severity' => ['required'],
+            'deadline' => ['nullable'],
+            'assignee' => ['nullable'],
+            'status' => ['nullable'],
         ]);
 
-        $explodedId = explode('_', $validatedData['control_action_id']);
-        $riskId = $explodedId[1];
+        $controlAction->content = $validatedData['control_action'];
+        $controlAction->severity = $validatedData['severity'];
+        $controlAction->deadline = $validatedData['deadline'];
+        $controlAction->assignee = $validatedData['assignee'];
+        $controlAction->status = $validatedData['status'];
 
-        
-        if(str_starts_with($validatedData['control_action_id'], 'default')){
-            $controlAction = ControlAction::firstWhere('id', $riskId);
-            CustomControlAction::create([
-                'company_id' => session('company')->id,
-                'risk_id' => $controlAction->parentRisk->id,
-                'control_action_id' => $controlAction->id,
-                'content' => $validatedData['control_action_content'],
-                'allowed' => false,
-            ]);
-        } else{
-            $customControlAction = CustomControlAction::firstWhere('id', $riskId);
-  
-            $customControlAction->allowed = !($customControlAction->allowed);
+        $controlAction->save();
 
-            $customControlAction->save();
-        }
+        session(['company' => session('company')->load('actionPlan.controlActions')]);
 
-        return back();
+        return to_route('action-plan.risk.edit', ['actionPlan' => $actionPlan, 'risk' => $risk->name])->with('message', 'Medida de controle atualizada com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CustomControlAction $controlAction)
+    public function destroy(ActionPlan $actionPlan, Risk $risk, CustomControlAction $controlAction)
     {
         $controlAction->delete();
+
+        session(['company' => session('company')->load('actionPlan.controlActions')]);
 
         return back()->with('message', 'Medida de Controle excluída com sucesso!');
     }

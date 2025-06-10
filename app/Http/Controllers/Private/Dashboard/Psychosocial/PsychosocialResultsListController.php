@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Models\Company;
+use App\Models\Test;
 use App\Models\User;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
@@ -31,67 +32,66 @@ class PsychosocialResultsListController
         $this->pageData = $this->query($request, $testName);
 
         $usersList = $this->getCompiledPageData();
-        $filteredUserCount = $this->pageData->total();
-        $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
         return view('private.dashboard.psychosocial.list', [
             'testName' => $testName,
             'usersList' => $usersList,
             'pageData' => $this->pageData,
-            'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => $filteredUserCount ? $filteredUserCount : null,
+            'filtersApplied' => array_filter($request->query(), fn ($queryParam) => $queryParam != null),
+            'filteredUserCount' => $this->pageData->firstWhere('display_name', $testName)['userTests']->count(),
         ]);
     }
-
+    
     private function query(Request $request, string $testName)
-    {
-        $query = session('company')->users()
-            ->getQuery();
-
-        return $this->filterService->sort($this->filterService->apply($query))
-            ->whereHas('latestPsychosocialCollection')
-            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
-                $query->whereYear('created_at', $request->year ?? '2025')
-                    ->withCollectionTypeName('psychosocial-risks')
-                    ->withTests(function ($query) use ($testName) {
-                        $query
-                            ->justOneTest($testName)
-                            ->withAnswers()
-                            ->withAnswersSum()
-                            ->withAnswersCount()
-                            ->withTestType(function ($q) {
-                                $q->withRisks(function ($i) {
-                                    $i->withRelatedQuestions()
-                                        ->withControlActions();
-                                });
-                            });
-                    });
+    { 
+        return Test::where('collection_id', 1)
+        ->withUserTests(function($query) use($request, $testName) {
+            $query
+            ->justOneTest($testName)
+            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+            ->whereHas('parentCollection', function ($query) {
+                $query
+                ->where('company_id', session('company')->id)
+                ->whereHas('userOwner', function ($query) {
+                    $this->filterService->apply($query);
+                });
             })
-            ->paginate(15)->appends(request()->query());
+            ->withAvg(['answers as average_value'], 'value')
+            ->with(['parentCollection.userOwner']);
+        })
+        ->withRisks(function($query) use($request) {
+            $query->withRelatedQuestions(function($query) use($request) {
+                $query
+                ->withParentQuestionStatement()
+                ->withParentQuestionInverted()
+                ->withAnswerAverage($request);
+            });
+        })
+        ->get();
     }
 
-    /**
-     * Retorna um objeto Company com os usuarios e seus testes.
-     */
     private function getCompiledPageData()
     {
-        $metrics = session('company')->metrics;
-
         $testCompiled = [];
-
-        foreach ($this->pageData as $user) {
-            $userTest = $user->latestPsychosocialCollection?->tests[0];
-            if($userTest){
-                $testCompiled[$user->name]['user'] = $user;
-                
-                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-                
-                $this->compileTestResults($user, $evaluatedTest, $testCompiled);
-            }
+        
+        foreach($this->pageData as $testType){
+            $this->compileTests($testType, $testCompiled);
         }
 
         return $testCompiled;
+    }
+
+    private function compileTests($testType, &$testCompiled)
+    {
+        $testType->average = round($testType['userTests']->avg('average_value'), 2);
+
+        foreach($testType['userTests'] as $userTest){
+            $user = $userTest['parentCollection']['userOwner'];
+
+            $evaluatedTest = $this->testService->evaluateTest($testType, $userTest, session('company')->metrics);
+            $testCompiled[$user->name]['user'] = $user;
+            $this->compileTestResults($user, $evaluatedTest, $testCompiled);
+        }
     }
 
     private function compileTestResults(User $user, array $evaluatedTest, array &$testCompiled)

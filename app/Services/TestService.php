@@ -58,11 +58,10 @@ class TestService
         return true;
     }
 
-    public function evaluateTest(UserTest | UserCustomTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
+    public function evaluateTest(Test $testType, UserTest | CustomTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
     {        
-        $testType = $userTest instanceof UserCustomTest ? $userTest->relatedCustomTest : $userTest->testType;
         $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
-        $evaluatedTest = $handler->process($userTest, $metrics);
+        $evaluatedTest = $handler->process($testType, $userTest, $metrics);
 
         return $evaluatedTest;
     }

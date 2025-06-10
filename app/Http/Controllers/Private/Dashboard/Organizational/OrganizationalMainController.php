@@ -100,7 +100,7 @@ class OrganizationalMainController
             'userDepartmentScopes' => $userDepartmentScopes,
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream('graficos_clima_organizacional.pdf');
+        return $pdf->download('graficos_clima_organizacional.pdf');
     }
 
     private function getCompiledPageData(array $filtersApplied)

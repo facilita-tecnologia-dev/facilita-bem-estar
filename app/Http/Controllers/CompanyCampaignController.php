@@ -41,7 +41,7 @@ class CompanyCampaignController
     public function store(CampaignStoreRequest $request)
     {
         Gate::authorize('campaign-create');
-        $companyHasSameCampaignThisYear = session('company')->hasSameCampaignThisYear($request->validated('collection_id'));
+        $companyHasSameCampaignThisYear = session('company')->hasCampaignThisYear($request->validated('collection_id'));
         
         if ($companyHasSameCampaignThisYear) {
             return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes de '.$companyHasSameCampaignThisYear->collection->name.' em 2025.');

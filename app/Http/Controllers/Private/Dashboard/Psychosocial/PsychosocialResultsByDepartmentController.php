@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
+use App\Models\Test;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
 use Carbon\Carbon;
@@ -28,7 +29,7 @@ class PsychosocialResultsByDepartmentController
         $this->pageData = $this->query($request, $testName);
 
         $resultsPerDepartment = $this->getCompiledPageData();
-
+        
         return view('private.dashboard.psychosocial.by-department', compact(
             'testName',
             'resultsPerDepartment',
@@ -37,57 +38,58 @@ class PsychosocialResultsByDepartmentController
 
     private function query(Request $request, string $testName)
     {
-        $query = session('company')->users()->getQuery();
-
-        return $this->filterService->apply($query)
-            ->whereHas('latestPsychosocialCollection')
-            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->withLatestPsychosocialCollection(function ($query) use ($request, $testName) {
-                $query->whereYear('created_at', $request->year ?? '2025')
-                    ->withCollectionTypeName('psychosocial-risks')
-                    ->withTests(function ($query) use ($testName) {
-                        $query
-                            ->justOneTest($testName)
-                            ->withAnswers()
-                            ->withAnswersSum()
-                            ->withAnswersCount()
-                            ->withTestType(function ($q) {
-                                $q->withRisks(function ($i) {
-                                    $i->withRelatedQuestions()
-                                        ->withControlActions();
-                                });
-                            });
-                    });
+        return Test::where('collection_id', 1)
+        ->withUserTests(function($query) use($request, $testName) {
+            $query
+            ->justOneTest($testName)
+            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+            ->whereHas('parentCollection', function ($query) {
+                $query
+                ->where('company_id', session('company')->id)
+                ->whereHas('userOwner', function ($query) {
+                    $this->filterService->apply($query);
+                });
             })
-            ->get();
+            ->withAvg(['answers as average_value'], 'value')
+            ->with(['parentCollection.userOwner']);
+        })
+        ->withRisks(function($query) use($request) {
+            $query->withRelatedQuestions(function($query) use($request) {
+                $query
+                ->withParentQuestionStatement()
+                ->withParentQuestionInverted()
+                ->withAnswerAverage($request);
+            });
+        })
+        ->get();
     }
 
-    /**
-     * Compila os dados dividindo-os por setor para enviar para a view
-     */
     private function getCompiledPageData()
     {
-        $metrics = session('company')->metrics;
-
         $testCompiled = [];
-
-        foreach ($this->pageData as $user) {
-   
-            $userTest = $user->latestPsychosocialCollection?->tests[0];
-            $userDepartment = $user->department;
-
-            $this->sumDepartmentCount($userDepartment, $testCompiled);
-
-            $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-
-            $this->compileTestResults($userDepartment, $evaluatedTest, $testCompiled);
-
-            $this->sortSeveritiesByDepartment($userDepartment, $testCompiled);
+        
+        foreach($this->pageData as $testType){
+            $this->compileTests($testType, $testCompiled);
         }
 
         return $testCompiled;
     }
 
+    private function compileTests($testType, &$testCompiled)
+    {
+        $testType->average = round($testType['userTests']->avg('average_value'), 2);
+
+        foreach($testType['userTests'] as $userTest){
+            $userDepartment = $userTest['parentCollection']['userOwner']['department'];
+            $this->sumDepartmentCount($userDepartment, $testCompiled);
+
+            $evaluatedTest = $this->testService->evaluateTest($testType, $userTest, session('company')->metrics);
+
+            $this->updateTestSeverities($userDepartment, $evaluatedTest, $testCompiled);
+            $this->sortSeveritiesByDepartment($userDepartment, $testCompiled);
+        }
+    }
+    
     private function sumDepartmentCount(string $userDepartment, array &$testCompiled)
     {
         if (! isset($testCompiled[$userDepartment]['total'])) {
@@ -97,7 +99,7 @@ class PsychosocialResultsByDepartmentController
         $testCompiled[$userDepartment]['total']++;
     }
 
-    private function compileTestResults(string $userDepartment, array $evaluatedTest, array &$testCompiled)
+    private function updateTestSeverities(string $userDepartment, array $evaluatedTest, array &$testCompiled)
     {
         if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
             $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;

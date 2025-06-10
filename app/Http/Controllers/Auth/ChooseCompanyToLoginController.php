@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\Collection;
 use App\Models\Company;
+use App\Services\CompanyService;
 use Illuminate\Support\Facades\Auth;
 
 class ChooseCompanyToLoginController
@@ -17,8 +18,8 @@ class ChooseCompanyToLoginController
 
     public function attemptInternalLoginWithCompany(Company $company)
     {
-        session(['company' => $company]);
-
+        CompanyService::loadCompanyToSession($company);
+        dd('oi');
         if (session('company')->id == 2) {
             if (Auth::user()->hasRole('manager')) {
                 return redirect()->route('dashboard.organizational-climate');

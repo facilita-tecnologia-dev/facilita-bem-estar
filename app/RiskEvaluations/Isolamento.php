@@ -2,6 +2,7 @@
 
 namespace App\RiskEvaluations;
 
+use App\Enums\RiskLevelEnum;
 use App\Models\Risk;
 use App\Models\UserTest;
 use App\Services\RiskService;
@@ -12,7 +13,7 @@ class Isolamento implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
     {
         $riskSeverity = 2;
 
@@ -29,9 +30,9 @@ class Isolamento implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
+            $averageAnswers = $riskQuestion->average_value;
  
-            if (!($answer >= 3)) {
+            if (!($averageAnswers >= 3)) {
                 return [
                     'riskLevel' => $riskLevel,
                     'riskSeverity' => $riskSeverity,
@@ -42,6 +43,6 @@ class Isolamento implements RiskEvaluatorInterface
 
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-        return compact('probability', 'riskLevel', 'riskSeverity');
+         return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

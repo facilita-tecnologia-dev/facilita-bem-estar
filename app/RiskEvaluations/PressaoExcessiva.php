@@ -2,6 +2,7 @@
 
 namespace App\RiskEvaluations;
 
+use App\Enums\RiskLevelEnum;
 use App\Models\Risk;
 use App\Models\UserTest;
 use App\Services\RiskService;
@@ -12,7 +13,7 @@ class PressaoExcessiva implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
     {
         $riskSeverity = 3;
 
@@ -37,11 +38,10 @@ class PressaoExcessiva implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
-            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
+            $averageAnswers = $riskQuestion->average_value;
 
-            if ($parentQuestionStatement == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
-                if (!$answer >= 4) {
+            if ($riskQuestion['parent_question_statement'] == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
+                if (!$averageAnswers >= 4) {
                     return [
                         'riskLevel' => $riskLevel,
                         'riskSeverity' => $riskSeverity,
@@ -50,9 +50,9 @@ class PressaoExcessiva implements RiskEvaluatorInterface
                 }
             }
 
-            if ($parentQuestionStatement == 'Há forte controle do trabalho') {
+            if ($riskQuestion['parent_question_statement'] == 'Há forte controle do trabalho') {
 
-                if (!$answer >= 4) {
+                if (!$averageAnswers >= 4) {
                     return [
                         'riskLevel' => $riskLevel,
                         'riskSeverity' => $riskSeverity,
@@ -64,6 +64,6 @@ class PressaoExcessiva implements RiskEvaluatorInterface
         
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-        return compact('probability', 'riskLevel', 'riskSeverity');
+         return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

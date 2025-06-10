@@ -5,7 +5,7 @@
   <title>Inventário de Riscos Psicossociais</title>
 
   <style>
-    body        { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color:#1f2937; margin: 0 25px; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color:#1f2937; margin: 0 25px; }
 
     *{
         padding: 0;
@@ -37,53 +37,25 @@
         $pageCounter = 1;
     @endphp
 
-
-    <div style="
-        width: 100%;   
-        height: 100%;
-        position: relative;
-        /* background-color: lightgray; */
-        text-align:center;   
-    ">
-        <div style="
-            width: 100%;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            text-align:center;
-        ">
+    <x-pdf.page-container>
+        <x-pdf.cover>          
             @if($companyLogo)
                 <img src="{{ public_path($companyLogo) }}" style="max-width: 8cm; object-fit:contain; margin-bottom: 24px;">            
             @endif
             <h2 style="margin-bottom: 18px;">{{ $companyName }}</h2>
             <h1 style="margin-bottom: 8px; font-size: 32px;">Clima Organizacional</h1>
             <p>Resultados dos testes de Clima Organizacional por questão.</p>
-        </div>
+        </x-pdf.cover>
 
-        <div style="
-            width: 100%;
-            position: absolute;
-            bottom: 35px;
-            text-align:center;
-        ">
-            <span style="margin-right: 4px; font-size:12px;">Relatório desenvolvido por Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
-            @php
-                $pageCounter++
-            @endphp
-        </div>
-    </div>
+        <x-pdf.footer :pageCounter="$pageCounter" />
+    </x-pdf.page-container>
 
+    @php $pageCounter++ @endphp
     <div class="page-break"></div>
 
     @foreach ($organizationalClimateResults as $testName => $test)      
-        <div style="
-            width: 100%;   
-            position: relative;
-            text-align:center;
-            padding-top: 60px;   
-        ">
-            <div style="">
+        <x-pdf.page-container>
+            <x-pdf.main-content>
                 <h2 style="margin-bottom: 24px; text-align:center;">{{ $testName }}</h2>
 
                 <table style="margin-bottom: 40px; width:100%; border-collapse:collapse; table-layout: fixed;">
@@ -107,22 +79,12 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-
-            <div style="
-                width: 100%;
-                position: absolute;
-                bottom: 35px;
-                text-align:center;
-            ">
-                <span style="margin-right: 4px; font-size:12px;">Relatório desenvolvido por Facilita Tecnologia &copy; | Emissão: {{ date('d/m/Y') }} | Página {{ $pageCounter }}</span>
-                @php
-                    $pageCounter++
-                @endphp
-            </div>
-        </div>
+            </x-pdf.main-content>
+            <x-pdf.footer :pageCounter="$pageCounter" />
+        </x-pdf.page-container>
 
         @if (!$loop->last)
+            @php $pageCounter++ @endphp
             <div class="page-break"></div>
         @endif
     @endforeach

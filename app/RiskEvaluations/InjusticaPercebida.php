@@ -2,6 +2,7 @@
 
 namespace App\RiskEvaluations;
 
+use App\Enums\RiskLevelEnum;
 use App\Models\Risk;
 use App\Models\UserTest;
 use App\Services\RiskService;
@@ -12,7 +13,7 @@ class InjusticaPercebida implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
     {
         $riskSeverity = 2;
 
@@ -29,11 +30,11 @@ class InjusticaPercebida implements RiskEvaluatorInterface
         }
 
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
+            $averageAnswers = $riskQuestion->average_value;
             $parentQuestionStatement = $riskQuestion['parent_question_statement'];
 
-            if ($parentQuestionStatement == 'Os gestores desta organização se consideram insubstituíveis') {
-                if (!$answer >= 4) {
+            if ($riskQuestion['parent_question_statement'] == 'Os gestores desta organização se consideram insubstituíveis') {
+                if (!$averageAnswers >= 4) {
                     return [
                         'riskLevel' => $riskLevel,
                         'riskSeverity' => $riskSeverity,
@@ -42,8 +43,8 @@ class InjusticaPercebida implements RiskEvaluatorInterface
                 }
             }
 
-            if ($parentQuestionStatement == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
-                if (!$answer <= 2) {
+            if ($riskQuestion['parent_question_statement'] == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
+                if (!$averageAnswers <= 2) {
                     return [
                         'riskLevel' => $riskLevel,
                         'riskSeverity' => $riskSeverity,
@@ -55,6 +56,6 @@ class InjusticaPercebida implements RiskEvaluatorInterface
 
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-        return compact('probability', 'riskLevel', 'riskSeverity');
+         return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

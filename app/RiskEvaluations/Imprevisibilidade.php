@@ -2,6 +2,7 @@
 
 namespace App\RiskEvaluations;
 
+use App\Enums\RiskLevelEnum;
 use App\Models\Risk;
 use App\Models\UserTest;
 use App\Services\RiskService;
@@ -12,7 +13,7 @@ class Imprevisibilidade implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(UserTest $userTest, Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
     {
         $riskSeverity = 2;
 
@@ -30,8 +31,9 @@ class Imprevisibilidade implements RiskEvaluatorInterface
 
   
         foreach ($risk->relatedQuestions as $riskQuestion) {
-            $answer = $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])['related_option_value'];
-            if (!($answer <= 2)) {
+            $averageAnswers = $riskQuestion->average_value;
+
+            if (!($averageAnswers <= 2)) {
                 return [
                     'riskLevel' => $riskLevel,
                     'riskSeverity' => $riskSeverity,
@@ -42,6 +44,6 @@ class Imprevisibilidade implements RiskEvaluatorInterface
         
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-        return compact('probability', 'riskLevel', 'riskSeverity');
+         return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

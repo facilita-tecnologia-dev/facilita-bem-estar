@@ -38,9 +38,8 @@ class OrganizationalAnswersController
     public function __invoke(Request $request)
     {
         Gate::authorize('organizational-dashboard-view');
-
         $this->pageData = $this->query($request);
-
+        
         $organizationalClimateResults = $this->getCompiledPageData($request);
 
         return view('private.dashboard.organizational.by-answers', compact(
@@ -92,7 +91,7 @@ class OrganizationalAnswersController
             'organizationalClimateResults' => $organizationalClimateResults,
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->stream('graficos_clima_organizacional.pdf');
+        return $pdf->download('graficos_clima_organizacional.pdf');
     }
 
     private function getCompiledPageData(Request $request)
@@ -108,7 +107,7 @@ class OrganizationalAnswersController
         }
 
         $this->calculateAverageScoreByQuestion($testCompiled);
-
+        
         krsort($testCompiled);
 
         return $testCompiled;
@@ -135,7 +134,7 @@ class OrganizationalAnswersController
             ->filter(function($customTest){
                 return !$customTest->relatedCustomTest->test_id;
             });
-    
+            
             $mergedUserTests = $defaultTests->merge($customTests);
 
             if($request->test){
@@ -149,13 +148,13 @@ class OrganizationalAnswersController
                 $testDisplayName = $userTest instanceof UserCustomTest ?
                                     $userTest->relatedCustomTest->display_name :
                                     $userTest->testType->display_name;
-            
-                
+                                    
+                                    
                 $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics, $user->latestOrganizationalClimateCollection['collection_type_name']);
                 $questions = $userTest->answers->map(fn($answer) => $answer instanceof UserCustomAnswer ?
-                                                                                $answer->relatedQuestion : 
-                                                                                $answer->parentQuestion);
-    
+                                                                    $answer->relatedQuestion : 
+                                                                    $answer->parentQuestion);
+                                                                    
                 $this->updateAnswers($user, $testDisplayName, $evaluatedTest, $questions->keyBy('id'), $testCompiled);
             });
         }

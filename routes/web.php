@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\CommentsExport;
+use App\Http\Controllers\ActionPlanController;
 use App\Http\Controllers\Auth\ChooseCompanyToLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -117,10 +118,20 @@ Route::middleware(AuthMiddleware::class)->group(function () {
     Route::get('empresa/colecoes-de-testes/{collection}/editar', [CustomCollectionsController::class, 'editCollection'])->name('company-collections.update');
     Route::post('empresa/colecoes-de-testes/{collection}/editar', [CustomCollectionsController::class, 'updateCollection']);
 
-    Route::get('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'index'])->name('control-actions.index');
-    Route::post('empresa/medidas-de-controle/criar', [CustomControlActionController::class, 'store'])->name('control-actions.store');
-    Route::put('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'update'])->name('control-actions.update');
-    Route::delete('empresa/medidas-de-controle/{controlAction}/excluir', [CustomControlActionController::class, 'destroy'])->name('control-actions.destroy');
+    
+    Route::post('empresa/planos-de-acao/{actionPlan}/risco/{risk}/medidas-de-controle/criar', [CustomControlActionController::class, 'store'])->name('action-plan.risk.control-action.store');
+    Route::get('empresa/planos-de-acao/{actionPlan}/risco/{risk}/medidas-de-controle/{controlAction}/editar', [CustomControlActionController::class, 'edit'])->name('action-plan.risk.control-action.edit');
+    Route::put('empresa/planos-de-acao/{actionPlan}/risco/{risk}/medidas-de-controle/{controlAction}/salvar', [CustomControlActionController::class, 'update'])->name('action-plan.risk.control-action.update');
+    Route::delete('empresa/planos-de-acao/{actionPlan}/risco/{risk}/medidas-de-controle/{controlAction}/delete', [CustomControlActionController::class, 'destroy'])->name('action-plan.risk.control-action.destroy');
+
+    // Route::get('empresa/planos-de-acao', [ActionPlanController::class, 'index'])->name('action-plan.index');
+    Route::get('empresa/planos-de-acao/{actionPlan}', [ActionPlanController::class, 'show'])->name('action-plan.show');
+    Route::get('empresa/planos-de-acao/{actionPlan}/risco/{risk}', [ActionPlanController::class, 'edit'])->name('action-plan.risk.edit');
+
+
+    // Route::post('empresa/medidas-de-controle/criar', [CustomControlActionController::class, 'store'])->name('control-actions.store');
+    // Route::put('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'update'])->name('control-actions.update');
+    // Route::delete('empresa/medidas-de-controle/{controlAction}/excluir', [CustomControlActionController::class, 'destroy'])->name('control-actions.destroy');
     // Route::post('empresa/medidas-de-controle/editar', [CustomControlActionController::class, 'updateCollection']);
 
     Route::view('/politica-de-privacidade', 'private.lgpd.privacy-policy')->name('privacy-policy');

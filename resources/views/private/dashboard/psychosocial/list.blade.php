@@ -74,8 +74,6 @@
                 </x-table.body>
             </x-table>
             
-            {{ $pageData->links() }}
-            
         </x-structure.main-content-container>
     </x-structure.page-container>
 

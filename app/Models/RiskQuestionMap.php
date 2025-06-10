@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RiskQuestionMap extends Model
@@ -27,6 +29,11 @@ class RiskQuestionMap extends Model
         return $this->belongsTo(Question::class, 'question_Id', 'id');
     }
 
+    public function answers()
+    {
+        return $this->hasMany(UserAnswer::class, 'question_id', 'question_id');
+    }
+
     public function scopeWithParentQuestionStatement(Builder $query): Builder
     {
         return $query->addSelect([
@@ -47,14 +54,26 @@ class RiskQuestionMap extends Model
         ]);
     }
 
-    public function scopeWithRelatedQuestionAnswer(Builder $query): Builder
+    // public function scopeWithRelatedQuestionAnswer(Builder $query): Builder
+    // {
+    //     return $query->addSelect([
+    //         'related_question_answer' => DB::table('user_answers')
+    //             ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
+    //             ->whereColumn('user_answers.question_id', 'risk_question_map.question_id')
+    //             ->select('question_options.value')
+    //             ->limit(1),
+    //     ]);
+    // }
+
+    public function scopeWithAnswerAverage(Builder $query, Request $request = null): Builder
     {
-        return $query->addSelect([
-            'related_question_answer' => DB::table('user_answers')
-                ->join('question_options', 'user_answers.question_option_id', '=', 'question_options.id')
-                ->whereColumn('user_answers.question_id', 'risk_question_map.question_id')
-                ->select('question_options.value')
-                ->limit(1),
-        ]);
+        return $query
+        ->withAvg(['answers as average_value' => function ($query) use($request) {
+            $query
+            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+            ->whereHas('parentTest.parentCollection', function ($q2) {
+                $q2->where('company_id', session('company')->id);
+            });
+        }], 'value');
     }
 }

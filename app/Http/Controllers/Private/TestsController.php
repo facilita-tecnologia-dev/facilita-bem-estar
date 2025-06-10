@@ -245,6 +245,8 @@ class TestsController
                             'question_option_id' => $relatedOptionOnDatabase->id,
                             'question_id' => $relatedQuestionOnDatabase->id,
                             'user_test_id' => $userTest->id,
+                            'user_id' => AuthGuardHelper::user()->id,
+                            'value' => $defaultQuestionAnswer,
                         ]);
                     });
                 }

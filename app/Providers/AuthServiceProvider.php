@@ -408,5 +408,20 @@ class AuthServiceProvider extends ServiceProvider
 
             return false;
         });
+
+        Gate::define('action-plan-edit', function (?Authenticatable $user) {
+            if (AuthGuardHelper::user() instanceof User) {
+                /** @var User $user */
+                $user = AuthGuardHelper::user();
+
+                return $user->hasPermission('action_plan_edit') && session('company')->hasCampaignThisYear(1, true);
+            }
+
+            if (AuthGuardHelper::user() instanceof Company) {
+                return session('company')->hasCampaignThisYear(1, true);
+            }
+
+            return false;
+        });
     }
 }

@@ -31,7 +31,7 @@
                         <x-table.body.tr 
                             tag="a" 
                             href="{{ route('company-collections.update', $collection) }}" 
-                            class="flex items-center gap-4 {{ session('company')->hasSameCampaignThisYear($collection->id) || $collection->id == 1 ? 'pointer-events-none opacity-50' : '' }}" 
+                            class="flex items-center gap-4 {{ session('company')->hasCampaignThisYear($collection->id) || $collection->id == 1 ? 'pointer-events-none opacity-50' : '' }}" 
                         >
                             <x-table.body.td class="truncate flex-1" title="{{ $collection->name }}">{{ $collection->name }}</x-table.body.td>
                             <x-table.body.td class="flex-1">{{ $collection->tests_count }}</x-table.body.td>

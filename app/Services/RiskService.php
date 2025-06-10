@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\ProbabilityEnum;
+use App\Enums\RiskSeverityEnum;
 use App\Models\Risk;
 use App\RiskEvaluations\RiskEvaluatorFactory;
 use App\RiskEvaluations\RiskEvaluatorInterface;
@@ -36,35 +38,6 @@ class RiskService
         return $probability;
     }
 
-    public static function calculateRiskQuestionAverage($userTest, Risk $risk): int
-    {
-        $mappedRiskQuestions = $risk->relatedQuestions->map(function($question) use($userTest) {
-            $isInverted = $question->parent_question_inverted;
-            $answer = $userTest->answers->firstWhere('question_id', $question['question_Id'])['related_option_value'];
-
-            if($isInverted){
-                if($answer > 3.5){
-                    return 1;
-                } else{
-                    return 0;
-                }
-            } else{
-                if(!($answer > 3.5)){
-                    return 1;
-                } else{
-                    return 0;
-                }
-            }
-        });
-
-    
-        $hasRisk = array_reduce($mappedRiskQuestions->toArray(), function ($acc, $value) {
-            return $acc * $value;
-        }, 1);
-
-        return $hasRisk;
-    }
-
     public static function calculateRiskLevel(int $probability, int $severity, int $min = null, int $max = null): string
     {
         // Matriz de riscos
@@ -97,37 +70,33 @@ class RiskService
                 return $order[$indiceMaximo];
             }
         }
-
+        
         return $risco;
     } 
 
-    public static function getControlActions(Risk $risk)
+    public static function getControlActions(Risk $risk, int $riskLevel)
     {
-        $overrides = $risk->customControlActions
-        ->filter(fn($customControlAction) => $customControlAction['control_action_id'])
-        ->keyBy('control_action_id');;
-
-        $final = $risk->controlActions->map(function ($defaultControlAction) use ($overrides) {
-            if ($overrides->has($defaultControlAction['id'])) {
-                $customControlAction = $overrides[$defaultControlAction['id']];
-
-                return $customControlAction;
-            }
-            
-            return $defaultControlAction;
+        $controlActions = session('company')['actionPlan']['controlActions']
+        ->filter(function($ca) use($risk, $riskLevel) {
+            return $ca['risk']['id'] == $risk->id && $ca['severity'] == $riskLevel;
         });
 
+        return $controlActions;
+    }
 
-        $customNew = $risk->customControlActions
-        ->filter(fn($customControlAction) => !$customControlAction['control_action_id']);
+    public static function evaluateRisks($testType, $metrics)
+    {
+        $risksList = [];
 
-        $finalControlActions = $final->concat($customNew);
+        foreach ($testType['risks'] as $risk) {
+            $handler = RiskService::getRiskEvaluatorHandler($risk);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $testType['average'], $metrics);
+            $risksList[$risk->name]['riskLevel'] = $evaluatedRisk['riskLevel'];
+            $risksList[$risk->name]['probability'] = ProbabilityEnum::labelFromValue($evaluatedRisk['probability']);
+            $risksList[$risk->name]['severity'] = RiskSeverityEnum::labelFromValue($evaluatedRisk['riskSeverity']);
+            $risksList[$risk->name]['controlActions'] = RiskService::getControlActions($risk, $evaluatedRisk['riskLevel']);
+        }
 
-        $finalControlActions = $finalControlActions->sortBy(
-            fn($item) => $item->content
-        );
-
-               
-        return $finalControlActions;
+        return $risksList;
     }
 }

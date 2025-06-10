@@ -135,12 +135,14 @@
                         Colaboradores
                     </x-sidebar.item>
                 @endcan
-                <x-sidebar.item href="{{ route('control-actions.index') }}" class="{{ request()->routeIs('control-actions.index') ? 'bg-gray-200' : ''}}">
-                    <div class="w-5 flex justify-center items-center">
-                       <i class="fa-solid fa-list-ul"></i>
-                    </div>
-                    Planos de Ação
-                </x-sidebar.item>
+                @can('action-plan-edit')
+                    <x-sidebar.item href="{{ route('action-plan.show', App\Models\ActionPlan::firstWhere('company_id', session('company')->id)) }}" class="{{ request()->routeIs('action-plan.show') ? 'bg-gray-200' : ''}}">
+                        <div class="w-5 flex justify-center items-center">
+                            <i class="fa-solid fa-list-ul"></i>
+                        </div>
+                        Plano de Ação
+                    </x-sidebar.item>
+                @endcan
             </x-sidebar.menu>
         @endcanany
 
@@ -160,14 +162,6 @@
                 </x-sidebar.item>
             </x-sidebar.menu>
         @endcan
-
- 
-        {{-- <div class="submenu space-y-3">
-            <p class="uppercase text-xs font-semibold px-2">Saúde</p>
-            <a href="" class="px-2 py-1.5 rounded-md flex items-center gap-2 justify-start hover:bg-gray-200 transition">
-       
-            </a>
-        </div> --}}
         
         <x-sidebar.menu title="Logout">
             <x-sidebar.item href="{{ route('logout') }}" onclick="return confirm('Você deseja mesmo sair?')">

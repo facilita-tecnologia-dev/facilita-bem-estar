@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
 use App\Enums\RiskLevelEnum;
-use App\Models\Risk;
-use App\Models\User;
+use App\Models\Test;
+use App\Services\Dashboard\PsychosocialRiskService;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
 
 class PsychosocialMainController
 {
@@ -19,10 +18,13 @@ class PsychosocialMainController
 
     protected $filterService;
 
+    protected $psychosocialService;
+
     protected $pageData;
 
-    public function __construct(TestService $testService, UserFilterService $filterService)
+    public function __construct(PsychosocialRiskService $psychosocialService, TestService $testService, UserFilterService $filterService)
     {
+        $this->psychosocialService = $psychosocialService;
         $this->testService = $testService;
         $this->filterService = $filterService;
     }
@@ -32,155 +34,86 @@ class PsychosocialMainController
         Gate::authorize('psychosocial-dashboard-view');
 
         $this->pageData = $this->query($request);
-        // dd($this->pageData);
-        $psychosocialRiskResults = $this->getCompiledPageData();
-        $psychosocialTestsParticipation = $this->getPsychosocialTestsParticipation();
 
+        $psychosocialRiskResults = $this->getCompiledPageData();
+        $psychosocialTestsParticipation = $this->psychosocialService->getParticipation($this->pageData[0]['userTests']);
+        
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
-        // dd($psychosocialRiskResults);
+
         return view('private.dashboard.psychosocial.index', [
             'psychosocialRiskResults' => $psychosocialRiskResults,
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
             'companyHasTests' => session('company')->users()->has('collections')->exists(),
             'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($this->pageData) > 0 ? count($this->pageData) : null,
+            'filteredUserCount' => count($this->pageData[0]['userTests']) > 0 ? count($this->pageData[0]['userTests']) : null,
         ]);
     }
 
     private function query(Request $request)
     {
-        $query = session('company')->users()->getQuery();
-
-        return $this->filterService->apply($query)
-            ->whereHas('latestPsychosocialCollection')
-            ->select('users.id', 'users.name', 'users.birth_date', 'users.department', 'users.occupation')
-            ->withLatestPsychosocialCollection(function ($query) use ($request) {
+        return Test::where('collection_id', 1)
+        ->withUserTests(function($query) use($request) {
+            $query
+            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+            ->whereHas('parentCollection', function ($query) {
                 $query
-                    ->withCollectionTypeName('psychosocial-risks')
-                    ->withTests(function ($query) {
-                        $query
-                            ->withAnswers()
-                            ->withAnswersSum()
-                            ->withAnswersCount()
-                            ->withTestType(function ($q) {
-                                $q->withRisks(function ($i) {
-                                    $i->withRelatedQuestions()
-                                        ->withControlActions();
-                                });
-                            });
-                    });
+                ->where('company_id', session('company')->id)
+                ->whereHas('userOwner', function ($query) {
+                    $this->filterService->apply($query);
+                });
             })
-            ->get();
+            ->withAvg(['answers as average_value'], 'value')
+            ->with(['parentCollection.userOwner']);
+        })
+        ->withRisks(function($query) use($request) {
+            $query->withRelatedQuestions(function($query) use($request) {
+                $query
+                ->withParentQuestionStatement()
+                ->withParentQuestionInverted()
+                ->withAnswerAverage($request);
+            });
+        })
+        ->get();
     }
 
     private function getCompiledPageData()
     {
-        $metrics = session('company')->metrics;
         $testCompiled = [];
-
-        foreach ($this->pageData as $user) {
-            if ($user->latestPsychosocialCollection) {
-                $this->compileUserTests($user, $metrics, $testCompiled);
-            }
+        
+        foreach($this->pageData as $testType){
+            $this->compileTests($testType, $testCompiled);
         }
-
-        $this->calculateAverageRiskScores($testCompiled);
-
-        krsort($testCompiled);
 
         return $testCompiled;
     }
 
-    private function compileUserTests(User $user, Collection $metrics, array &$testCompiled)
+    private function compileTests($testType, &$testCompiled)
     {
-        if ($user['latestPsychosocialCollection']) {
-            foreach ($user['latestPsychosocialCollection']->tests as $userTest) {
-                $testDisplayName = $userTest->testType->display_name;
-                $evaluatedTest = $this->testService->evaluateTest($userTest, $metrics);
-
-                $this->updateTestSeverities($testDisplayName, $evaluatedTest, $testCompiled);
-
-                if (isset($evaluatedTest['risks'])) {
-                    $this->updateTestRisks($testDisplayName, $evaluatedTest['risks'], $testCompiled);
-                }
-            }
+        $testType->average = round($testType['userTests']->avg('average_value'), 2);
+        
+        foreach($testType['userTests'] as $userTest){
+            $evaluatedTest = $this->testService->evaluateTest($testType, $userTest, session('company')->metrics);
+            $this->updateTestSeverities($testType, $evaluatedTest, $testCompiled);
         }
+        
+        foreach($evaluatedTest['risks'] as &$risk){
+            $risk['riskCaption'] = RiskLevelEnum::labelFromValue($risk['riskLevel']);
+        }
+
+        $testCompiled[$testType['display_name']] = array_merge($testCompiled[$testType['display_name']], $evaluatedTest);
     }
 
-    private function updateTestSeverities(string $testDisplayName, array $evaluatedTest, array &$testCompiled)
+    private function updateTestSeverities(Test $testType, array &$evaluatedTest, array &$testCompiled)
     {
-        if (! isset($testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']])) {
-            $testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']] = [
+        if (! isset($testCompiled[$testType['display_name']]['severities'][$evaluatedTest['severity_title']])) {
+            $testCompiled[$testType['display_name']]['severities'][$evaluatedTest['severity_title']] = [
                 'count' => 0,
                 'severity_color' => $evaluatedTest['severity_color'],
             ];
         }
 
-        $testCompiled[$testDisplayName]['severities'][$evaluatedTest['severity_title']]['count'] += 1;
+        $testCompiled[$testType['display_name']]['severities'][$evaluatedTest['severity_title']]['count'] += 1;
     }
 
-    private function updateTestRisks(string $testDisplayName, array $risks, array &$testCompiled)
-    {
-        foreach ($risks as $riskName => $risk) {
-            $testCompiled[$testDisplayName]['risks'][$riskName]['score'][] = $risk['riskLevel'];
-        }
-    }
 
-    private function calculateAverageRiskScores(array &$testCompiled)
-    {
-        foreach ($testCompiled as $testName => $test) {
-            if (isset($test['risks'])) {
-                foreach ($test['risks'] as $riskName => $testRisk) {
-                    $average = round(array_sum($testRisk['score']) / count($testRisk['score']));
-
-                    $testCompiled[$testName]['risks'][$riskName]['score'] = $average;
-                    $testCompiled[$testName]['risks'][$riskName]['risk'] = $this->determineRiskLevel($average);
-                }
-            }
-        }
-    }
-
-    private function determineRiskLevel(float $average)
-    {
-        return RiskLevelEnum::labelFromValue($average);
-    }
-
-    private function getPsychosocialTestsParticipation()
-    {
-        $usersWithCollection = $this->pageData;
-        $usersByDepartment = session('company')->users->groupBy('department');
-
-        if (! $usersWithCollection->count()) {
-            return null;
-        }
-
-        $participation = $this->calculateGeneralParticipation($usersWithCollection);
-        $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
-
-        return $participation;
-    }
-
-    private function calculateGeneralParticipation($usersWithCollection)
-    {
-        return [
-            'Geral' => [
-                'count' => $usersWithCollection->count(),
-                'per_cent' => ($usersWithCollection->count() / session('company')->users->count() ?? 1) * 100,
-            ],
-        ];
-    }
-
-    private function calculateDepartmentParticipation(Collection $usersWithCollection, Collection $usersByDepartment)
-    {
-        $departmentParticipation = [];
-
-        foreach ($usersByDepartment as $departmentName => $department) {
-            $departmentParticipation[$departmentName] = [
-                'count' => $usersWithCollection->where('department', $departmentName)->count(),
-                'per_cent' => ($usersWithCollection->where('department', $departmentName)->count() / $department->count()) * 100,
-            ];
-        }
-
-        return $departmentParticipation;
-    }
 }

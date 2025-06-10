@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,12 +45,25 @@ class Risk extends Model
         return $this->belongsTo(Test::class, 'test_id');
     }
 
-    public function scopeWithRelatedQuestions(Builder $query): Builder
+    public function scopeWithRelatedQuestions(Builder $query, Closure $callback): Builder
     {
-        return $query->with('relatedQuestions', fn ($query) => $query
-            ->withParentQuestionStatement()
-            ->withParentQuestionInverted());
+        // return $query->with('relatedQuestions', fn ($query) => $query
+        //     ->withParentQuestionStatement()
+        //     ->withParentQuestionInverted()
+        //     ->withRelatedQuestionAnswer()
+        // );
+
+        return $query->with([
+            'relatedQuestions' => $callback,
+        ]);
     }
+
+    // public function scopeWithRisks(Builder $query, Closure $callback): Builder
+    // {
+    //     return $query->with([
+    //         'risks' => $callback,
+    //     ]);
+    // }
 
     public function scopeWithControlActions(Builder $query): Builder
     {

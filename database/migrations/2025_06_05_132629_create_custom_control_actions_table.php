@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ActionPlan;
 use App\Models\Company;
 use App\Models\ControlAction;
 use App\Models\Risk;
@@ -17,10 +18,9 @@ return new class extends Migration
         Schema::create('custom_control_actions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Company::class);
-            $table->foreignIdFor(ControlAction::class)->nullable();
+            $table->foreignIdFor(ActionPlan::class);
             $table->foreignIdFor(Risk::class);
             $table->string('content');
-            $table->boolean('allowed')->default(true);
             $table->timestamps();
         });
     }
