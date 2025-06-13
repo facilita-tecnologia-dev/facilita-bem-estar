@@ -21,40 +21,34 @@ class ConflitosGestao implements RiskEvaluatorInterface
 
         $riskLevel = 1;
 
-        if (!$average >= 3.5) {
-            return [
-                'riskLevel' => $riskLevel,
-                'riskSeverity' => $riskSeverity,
-                'probability' => $probability,
-            ];
-        }
+        if (!($average >= 3.5)) {
+            $allAnswersBelowCondition = true;
 
-        foreach ($risk->relatedQuestions as $riskQuestion) {
-            $averageAnswers = $riskQuestion->average_value;
-
-            if ($riskQuestion['parent_question_statement'] == 'Em meu trabalho, incentiva-se a idolatria dos chefes') {
-                if (!$averageAnswers >= 4) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
+            foreach ($risk->relatedQuestions as $riskQuestion) {
+                $averageAnswers = $riskQuestion->average_value;
+    
+                if ($riskQuestion['parent_question_statement'] == 'Em meu trabalho, incentiva-se a idolatria dos chefes') {
+                    if (!($averageAnswers >= 4)) {
+                        $allAnswersBelowCondition = false;
+                        break;
+                    }
+                }
+    
+                if ($riskQuestion['parent_question_statement'] == 'Os gestores se preocupam com o bem estar dos trabalhadores') {
+                    if (!($averageAnswers <= 2)) {
+                        $allAnswersBelowCondition = false;
+                        break;
+                    }
                 }
             }
 
-            if ($riskQuestion['parent_question_statement'] == 'Os gestores se preocupam com o bem estar dos trabalhadores') {
-                if (!$averageAnswers <= 2) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
-                }
+            if ($allAnswersBelowCondition) {
+                $riskSeverity--;
             }
         }
 
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-         return compact('probability', 'riskLevel', 'riskSeverity');
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

@@ -26,7 +26,7 @@
                     
                     <x-form.select 
                         name="collection_id" 
-                        label="Coleção de testes" 
+                        label="Formulário de Pesquisa" 
                         disabled="{{ $campaign->start_date < now() ? true : false }}" 
                         value="{{ old('collection_id', $campaign->collection_id) }}" 
                         :options="$collectionsToSelect" 

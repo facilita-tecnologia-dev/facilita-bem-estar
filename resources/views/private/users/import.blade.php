@@ -33,6 +33,7 @@
                     <x-action 
                         variant="secondary" 
                         tag="button"
+                        type="button"
                         data-tippy-content="Os formatos das colunas do arquivo modelo devem ser mantidos, para evitar erros na importação. Se o arquivo contiver colaboradores já cadastrados, seus dados serão sobrescritos."
                     >
                         <i class="fa-solid fa-question text-base"></i>

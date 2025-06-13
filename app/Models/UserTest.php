@@ -33,7 +33,7 @@ class UserTest extends Model
      */
     public function testType(): BelongsTo
     {
-        return $this->belongsTo(Test::class, 'test_id');
+        return $this->belongsTo(CustomTest::class, 'test_id');
     }
 
     /**

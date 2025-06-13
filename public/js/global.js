@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    tippy('[data-tippy-content]');
+    tippy('[data-tippy-content]', {
+        allowHTML: true
+    });
 });
 
 // Sidebar

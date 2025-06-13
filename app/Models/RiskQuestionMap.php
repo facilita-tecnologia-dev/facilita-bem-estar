@@ -76,4 +76,14 @@ class RiskQuestionMap extends Model
             });
         }], 'value');
     }
+
+    public function scopeWithAnswersByDepartment(Builder $query): Builder
+    {
+        return $query->with(['answers' => function ($query) {
+            $query->with(['user.department' => function ($query) {
+                $query->select('id', 'name');
+            }])
+            ->select('id', 'question_id', 'user_id', 'value', 'created_at');
+        }]);
+    }
 }

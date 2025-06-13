@@ -30,12 +30,12 @@ class UserAnswer extends Model
      */
     public function parentQuestion(): BelongsTo
     {
-        return $this->belongsTo(Question::class, 'question_id');
+        return $this->belongsTo(CustomQuestion::class, 'question_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

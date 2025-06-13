@@ -11,8 +11,6 @@ class CustomQuestion extends Model
     protected $guarded = [];
     public $timestamps = false;
 
-    protected $with = ['options'];
-
     public function parentTest(): BelongsTo
     {
         return $this->belongsTo(CustomTest::class);
@@ -23,13 +21,8 @@ class CustomQuestion extends Model
         return $this->hasMany(CustomQuestionOption::class);
     }
 
-    public function relatedQuestion(): BelongsTo
+    public function answers(): HasMany
     {
-        return $this->belongsTo(Question::class, 'question_id');
-    }
-
-    public function userAnswers(): HasMany
-    {
-        return $this->hasMany(UserCustomAnswer::class, 'custom_question_id');
+        return $this->hasMany(UserAnswer::class, 'question_id');
     }
 }

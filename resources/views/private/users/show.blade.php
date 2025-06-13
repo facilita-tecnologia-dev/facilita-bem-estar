@@ -30,6 +30,10 @@
                         <p class="text-sm sm:text-base text-left">{{ $user->cpf ?? 'Não cadastrado' }}</p>
                     </div>
                     <div class="">
+                        <p class="font-semibold text-base sm:text-lg text-left">E-mail:</p>
+                        <p class="text-sm sm:text-base text-left">{{ $user->email ?? 'Não cadastrado' }}</p>
+                    </div>
+                    <div class="">
                         <p class="font-semibold text-base sm:text-lg text-left">Idade:</p>
                         <p class="text-sm sm:text-base text-left">{{ $user->birth_date ? Carbon\Carbon::parse($user->birth_date)->age . ' anos' : 'Não cadastrado' }}</p>
                     </div>

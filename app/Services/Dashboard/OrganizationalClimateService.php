@@ -47,7 +47,10 @@ class OrganizationalClimateService
             ->where('allowed', 1)
             ->pluck('department')
             ->toArray();
+            
 
-        return $users->filter(fn($u) => in_array($u->department, $allowedDepartments));
+        return $users->filter(function ($u) use ($allowedDepartments) {
+            return $u instanceof User && in_array($u->department, $allowedDepartments);
+        });
     }
 }

@@ -44,30 +44,52 @@ class PsychosocialResultsListController
     
     private function query(Request $request, string $testName)
     { 
-        return Test::where('collection_id', 1)
-        ->withUserTests(function($query) use($request, $testName) {
-            $query
-            ->justOneTest($testName)
-            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
-            ->whereHas('parentCollection', function ($query) {
+        $psychosocialCampaign = session('company')->campaigns()
+            ->whereYear('end_date', now()->year)
+            ->whereHas('collection', function($query){
+                $query->where('collection_id', 1);
+            })
+            ->first();
+
+        if($psychosocialCampaign){
+            $psychosocialCollection = $psychosocialCampaign['collection'];
+
+            $customTests = $psychosocialCollection
+            ->tests()
+            ->with('userTests', function($query) use($request, $testName) {
                 $query
-                ->where('company_id', session('company')->id)
-                ->whereHas('userOwner', function ($query) {
-                    $this->filterService->apply($query);
+                ->justOneTest($testName)
+                ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+                ->whereHas('parentCollection', function ($query) {
+                    $query
+                    ->where('company_id', session('company')->id)
+                    ->whereHas('userOwner', function ($query) {
+                        $this->filterService->apply($query);
+                    });
+                })
+                ->withAvg(['answers as average_value'], 'value')
+                ->with(['parentCollection.userOwner']);
+            })
+            ->get();
+
+            $testTypes = Test::where('collection_id', 1)
+            ->withRisks(function($query) use($request) {
+                $query->withRelatedQuestions(function($query) use($request) {
+                    $query
+                    ->withParentQuestionStatement()
+                    ->withParentQuestionInverted()
+                    ->withAnswerAverage($request);
                 });
             })
-            ->withAvg(['answers as average_value'], 'value')
-            ->with(['parentCollection.userOwner']);
-        })
-        ->withRisks(function($query) use($request) {
-            $query->withRelatedQuestions(function($query) use($request) {
-                $query
-                ->withParentQuestionStatement()
-                ->withParentQuestionInverted()
-                ->withAnswerAverage($request);
-            });
-        })
-        ->get();
+            ->get();
+            
+            foreach($testTypes as $test){
+                $relatedTest = $customTests->firstWhere('key_name', $test['key_name']);
+                $test->userTests = $relatedTest['userTests'];
+            }
+        }
+
+        return $testTypes ?? [];
     }
 
     private function getCompiledPageData()

@@ -22,10 +22,12 @@ use App\Rules\validateCPF;
 use App\Services\AuthService;
 use App\Services\User\UserElegibilityService;
 use App\Services\User\UserFilterService;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password as FacadePassword;
 use Illuminate\Validation\Rules\Password;
 
 class UserController
@@ -45,9 +47,6 @@ class UserController
         $this->filterService = $filterService;
         $this->elegibilityService = $elegibilityService;
         $this->userRepository = $userRepository;
-
-        $this->companyCustomTests = TestRepository::companyCustomTests();
-        $this->defaultTests = TestRepository::defaultTests();
     }
 
     public function index(Request $request)
@@ -175,7 +174,6 @@ class UserController
             });
 
             return view('private.users.import', [
-                'oi' => 'oi',
                 'failures' => $importUsers,
             ]);
         }
@@ -288,49 +286,50 @@ class UserController
             ->get();
 
         $newDepartmentScopes = $request->except(['_token', '_method']);
-        
-        if ($currentDepartmentScopes->count()) {
-            foreach($currentDepartmentScopes as $departmentScope) {
-                $newDepartmentRelated = $newDepartmentScopes[$departmentScope->department] ?? null;
-    
-                if($newDepartmentRelated){
-                    $departmentScope->allowed = 1;
-                    $departmentScope->save();
-                } else{
-                    $departmentScope->allowed = 0;
-                    $departmentScope->save();
-                }
+
+        foreach($currentDepartmentScopes as $departmentScope){
+            $newDepartmentRelated = $newDepartmentScopes[$departmentScope->department] ?? null;
+
+            if($newDepartmentRelated){
+                $departmentScope->allowed = 1;
+                $departmentScope->save();
+            } else{
+                $departmentScope->allowed = 0;
+                $departmentScope->save();
             }
-        } else {
-            foreach ($newDepartmentScopes as $departmentName => $departmentScopeValue) {
+        }
+
+        foreach($newDepartmentScopes as $departmentName => $departmentScope){
+            if(! $currentDepartmentScopes->firstWhere('department', $departmentName)){
                 UserDepartmentPermission::create([
                     'company_id' => session('company')->id,
                     'user_id' => $user->id,
                     'department' => $departmentName,
-                    'allowed' => $departmentScopeValue,
+                    'allowed' => $departmentScope,
                 ]);
             }
         }
 
+
         return to_route('user.permissions', $user)->with('message', 'Visão de Setores atualizada com sucesso!');
     }
 
-    public function resetUserPassword(Request $request)
-    {
-        $validatedData = $request->validate([
-            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
-        ]);
+    // public function resetUserPassword(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+    //     ]);
 
-        /** @var User $user */
-        $user = AuthGuardHelper::user(); 
+    //     /** @var User $user */
+    //     $user = AuthGuardHelper::user(); 
 
-        $user->password = Hash::make($validatedData['password']);
-        $user->save();
+    //     $user->password = Hash::make($validatedData['password']);
+    //     $user->save();
 
-        $authService = app(AuthService::class);
+    //     $authService = app(AuthService::class);
 
-        return redirect()->to($authService->getRedirectLoginRoute($user));
-    }
+    //     return redirect()->to($authService->getRedirectLoginRoute($user));
+    // }
 
     public function resetPasswordOnShowScreen(Request $request, User $user)
     {   
@@ -387,8 +386,65 @@ class UserController
             'cpf' => ['required']
         ]);
 
-        $exists = User::where('cpf', $request['cpf'])->exists();
+        $user = User::where('cpf', $request['cpf'])->first();
 
-        return response()->json(['exists' => $exists]);
+        return response()->json(['user' => $user]);
+    }
+
+    public function showForgotPassword()
+    {
+        return view('auth.login.user.forgot-password');
+    }
+
+    public function sendResetEmail(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $status = FacadePassword::broker('users')->sendResetLink(
+            $request->only('email'),
+            function ($user, $token) {
+                $user->sendPasswordResetNotification($token, 'user');
+            }
+        );
+
+        return $status === FacadePassword::ResetLinkSent
+        ? back()->with(['message' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function showResetPassword(Request $request, string $token)
+    {
+        return view('auth.login.user.reset-password', [
+            'token' => $token,
+            'email' => request('email')
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validatedData = $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ]);
+        
+        $status = FacadePassword::broker('users')->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ]);
+    
+                $user->save();
+    
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === FacadePassword::PasswordReset
+        ? to_route('auth.login.usuario-interno')->with('message', __($status))
+        : back()->withErrors(['password' => [__($status)]]);
     }
 }

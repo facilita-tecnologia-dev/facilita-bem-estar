@@ -44,9 +44,10 @@ class DatabaseSeeder extends Seeder
         //         'collections'
         //     )
         //     ->create();
+
         $company = Company::first();
 
-        $users = User::factory(350)->create();
+        $users = User::factory(150)->create();
         
 
         $users->each(function ($user) use ($testTypes, $company) {
@@ -67,32 +68,38 @@ class DatabaseSeeder extends Seeder
             $collection1Tests = $testTypes->where('collection_id', 1);
             $collection2Tests = $testTypes->where('collection_id', 2);
 
-            $collection1Tests->each(function ($test) use ($userCollection1) {
+            $collection1Tests->each(function ($test) use ($user, $userCollection1) {
                 $userTest = UserTest::factory()->create([
                     'user_collection_id' => $userCollection1->id,
                     'test_id' => $test->id,
                 ]);
 
-                $userTest->testType->questions->each(function ($question) use ($userTest) {
+                $userTest->testType->questions->each(function ($question) use ($user, $userTest) {
+                    $option = $question->options[rand(0, 4)];
                     UserAnswer::factory()->create([
                         'user_test_id' => $userTest->id,
+                        'user_id' => $user->id,
+                        'value' => $option->value,
                         'question_id' => $question->id,
-                        'question_option_id' => $question->options[rand(0, 4)]->id,
+                        'question_option_id' => $option->id,
                     ]);
                 });
             });
 
-            $collection2Tests->each(function ($test) use ($userCollection2) {
+            $collection2Tests->each(function ($test) use ($user, $userCollection2) {
                 $userTest = UserTest::factory()->create([
                     'user_collection_id' => $userCollection2->id,
                     'test_id' => $test->id,
                 ]);
 
-                $userTest->testType->questions->each(function ($question) use ($userTest) {
+                $userTest->testType->questions->each(function ($question) use ($user, $userTest) {
+                    $option = $question->options[rand(0, 4)];
                     UserAnswer::factory()->create([
                         'user_test_id' => $userTest->id,
+                        'user_id' => $user->id,
+                        'value' => $option->value,
                         'question_id' => $question->id,
-                        'question_option_id' => $question->options[rand(0, 4)]->id,
+                        'question_option_id' => $option->id,
                     ]);
                 });
             });

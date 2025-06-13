@@ -13,8 +13,10 @@
     }
 
     table {margin:0 auto; width:90%; border-collapse:collapse;}
-    td, th {border:1px solid #999; padding: 6px; vertical-align:center; font-size:12px; color: #333;}
+    td, th {border:1px solid #999; padding: 5px; vertical-align:center; font-size:12px; color: #333;}
     th {background-color: #c3e9fd; color: #333;}
+
+    p, h2 {margin: 2px;}
 
     .page-break {
         page-break-after: always;
@@ -63,19 +65,31 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="padding:8px;"><h2>{{ $testName }}</h2></td>
+                    <td><h2>{{ $testName }}</h2></td>
                 </tr>
             </tbody>
         </table>
 
         @foreach ($test['risks'] as $key => $risk)
-            <table style="margin-top: 16px;">
+            <table style="margin-top: 12px;">
                 <tbody>
-                    <tr style="font-weight:bold;">
-                        <td style="width:25%;">Risco Identificado: {{ $key }}</td>
-                        <td style="width:15%;">Severidade: {{ $risk['severity'] }}</td>
-                        <td style="width:15%;">Probabilidade: {{ $risk['probability'] }}</td>
-                        <td style="width:15%;">Nível de Risco: {{ $risk['riskCaption'] }}</td>
+                    <tr>
+                        <td style="width:25%;">
+                            <p>Risco Identificado:</p> 
+                            <span style="font-weight:bold; margin: 2px;">{{ $key }}</span>
+                        </td>
+                        <td style="width:15%;">
+                            <p>Severidade:</p> 
+                            <span style="font-weight:bold; margin: 2px;">{{ $risk['severity'] }}</span>
+                        </td>
+                        <td style="width:15%;">
+                            <p>Probabilidade:</p> 
+                            <span style="font-weight:bold; margin: 2px;">{{ $risk['probability'] }}</span>
+                        </td>
+                        <td style="width:15%;">
+                            <p>Nível de Risco:</p> 
+                            <span style="font-weight:bold; margin: 2px;">{{ $risk['riskCaption'] }}</span>
+                        </td>
                     </tr>                            
                 </tbody>
             </table>
@@ -84,8 +98,8 @@
                 <thead>
                     <tr>
                         <th style="width:25%; font-size: 10px">Medida de Controle</th>
-                        <th style="width:15%; font-size: 10px">Responsável</th>
                         <th style="width:15%; font-size: 10px">Prazo</th>
+                        <th style="width:15%; font-size: 10px">Responsável</th>
                         <th style="width:15%; font-size: 10px">Situação</th>
                     </tr>
                 </thead>
@@ -93,8 +107,8 @@
                     @foreach ($risk['controlActions'] as $ca) 
                         <tr>
                             <td style="width:25%; font-size: 10px;">{{ $ca['content'] }}</td>
-                            <td style="width:15%; font-size: 10px;">{{ $ca['assignee'] ?? 'Indefinido' }}</td>
                             <td style="width:15%; font-size: 10px;">{{ $ca['deadline'] ?? 'Indefinido' }}</td>
+                            <td style="width:15%; font-size: 10px;">{{ $ca['assignee'] ?? 'Indefinido' }}</td>
                             <td style="width:15%; font-size: 10px;">{{ $ca['status'] ?? 'Indefinido' }}</td>
                         </tr>
                     @endforeach

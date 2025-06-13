@@ -16,6 +16,6 @@ class CompanyCampaign extends Model
 
     public function collection(): BelongsTo
     {
-        return $this->BelongsTo(Collection::class);
+        return $this->BelongsTo(CustomCollection::class);
     }
 }

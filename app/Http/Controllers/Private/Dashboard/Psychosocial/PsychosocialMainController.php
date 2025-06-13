@@ -36,7 +36,9 @@ class PsychosocialMainController
         $this->pageData = $this->query($request);
 
         $psychosocialRiskResults = $this->getCompiledPageData();
-        $psychosocialTestsParticipation = $this->psychosocialService->getParticipation($this->pageData[0]['userTests']);
+        $userTests = isset($this->pageData[0]['userTests']) ? $this->pageData[0]['userTests'] : collect();
+
+        $psychosocialTestsParticipation = $this->psychosocialService->getParticipation($userTests);
         
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
 
@@ -45,43 +47,68 @@ class PsychosocialMainController
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
             'companyHasTests' => session('company')->users()->has('collections')->exists(),
             'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($this->pageData[0]['userTests']) > 0 ? count($this->pageData[0]['userTests']) : null,
+            'filteredUserCount' => count($userTests) > 0 ? count($userTests) : null,
         ]);
     }
 
     private function query(Request $request)
     {
-        return Test::where('collection_id', 1)
-        ->withUserTests(function($query) use($request) {
-            $query
-            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
-            ->whereHas('parentCollection', function ($query) {
+        $psychosocialCampaign = session('company')->campaigns()
+            ->whereYear('end_date', now()->year)
+            ->whereHas('collection', function($query){
+                $query->where('collection_id', 1);
+            })
+            ->first();
+
+        if($psychosocialCampaign){
+            $psychosocialCollection = $psychosocialCampaign['collection'];
+
+            $customTests = $psychosocialCollection
+            ->tests()
+            ->with('userTests', function($query) use($request) {
                 $query
-                ->where('company_id', session('company')->id)
-                ->whereHas('userOwner', function ($query) {
-                    $this->filterService->apply($query);
+                ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+                ->whereHas('parentCollection', function ($query) {
+                    $query
+                    ->where('company_id', session('company')->id)
+                    ->whereHas('userOwner', function ($query) {
+                        $this->filterService->apply($query);
+                    });
+                })
+                ->withAvg(['answers as average_value'], 'value')
+                ->with(['parentCollection.userOwner']);
+            })
+            ->get();
+
+            $testTypes = Test::where('collection_id', 1)
+            ->withRisks(function($query) use($request) {
+                $query->withRelatedQuestions(function($query) use($request) {
+                    $query
+                    ->withParentQuestionStatement()
+                    ->withParentQuestionInverted()
+                    ->withAnswerAverage($request);
                 });
             })
-            ->withAvg(['answers as average_value'], 'value')
-            ->with(['parentCollection.userOwner']);
-        })
-        ->withRisks(function($query) use($request) {
-            $query->withRelatedQuestions(function($query) use($request) {
-                $query
-                ->withParentQuestionStatement()
-                ->withParentQuestionInverted()
-                ->withAnswerAverage($request);
-            });
-        })
-        ->get();
+            ->get();
+            
+            foreach($testTypes as $test){
+                $relatedTest = $customTests->firstWhere('key_name', $test['key_name']);
+                $test->userTests = $relatedTest['userTests'];
+            }
+
+        }
+
+       return $testTypes ?? [];
     }
 
     private function getCompiledPageData()
     {
         $testCompiled = [];
-        
+
         foreach($this->pageData as $testType){
-            $this->compileTests($testType, $testCompiled);
+            if($testType['userTests']->count()){
+                $this->compileTests($testType, $testCompiled);
+            }
         }
 
         return $testCompiled;

@@ -21,28 +21,8 @@ class Monotonia implements RiskEvaluatorInterface
 
         $riskLevel = 1;
 
-        if ($average >= 2.5) {
-            return [
-                'riskLevel' => $riskLevel,
-                'riskSeverity' => $riskSeverity,
-                'probability' => $probability,
-            ];
-        }
-
-        foreach ($risk->relatedQuestions as $riskQuestion) {
-            $averageAnswers = $riskQuestion->average_value;
-
-            if (!($averageAnswers <= 2)) {
-                return [
-                    'riskLevel' => $riskLevel,
-                    'riskSeverity' => $riskSeverity,
-                    'probability' => 1,
-                ];
-            }
-        }
-
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-         return compact('probability', 'riskLevel', 'riskSeverity');
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

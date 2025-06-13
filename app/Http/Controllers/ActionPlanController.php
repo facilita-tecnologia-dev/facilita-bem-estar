@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\RiskLevelEnum;
 use App\Enums\RiskSeverityEnum;
 use App\Models\ActionPlan;
+use App\Models\CustomControlAction;
 use App\Models\Risk;
 use App\Models\Test;
 use App\Services\TestService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class ActionPlanController
@@ -52,29 +54,75 @@ class ActionPlanController
         return view('private.action-plan.edit', compact('actionPlan', 'riskName', 'risk', 'severities', 'identifiedRisk'));
     }
 
+    public function update(Request $request, ActionPlan $actionPlan, Risk $risk)
+    {
+        $validatedData = $request->validate([
+            'risk.*.control_actions' => ['required', 'array'],
+            'risk.*.control_actions.*.content' => ['required', 'string'],
+            'risk.*.control_actions.*.deadline' => ['nullable', 'string'],
+            'risk.*.control_actions.*.assignee' => ['nullable', 'string'],
+            'risk.*.control_actions.*.status' => ['nullable', 'string'],
+        ]);
+
+        foreach($validatedData['risk'][$risk->id]['control_actions'] as $controlActionId => $controlAction){
+            $controlActionRelated = CustomControlAction::firstWhere('id', $controlActionId);
+        
+            $controlActionRelated['content'] = $controlAction['content'];
+            $controlActionRelated['deadline'] = $controlAction['deadline'];
+            $controlActionRelated['assignee'] = $controlAction['assignee'];
+            $controlActionRelated['status'] = $controlAction['status'];
+
+            $controlActionRelated->save();
+        }
+
+        session(['company' => session('company')->load('actionPlan.controlActions')]);
+
+        return back()->with('message', 'Medidas de controle atualizadas com sucesso!');
+    }
+
     private function query()
     {
-        return Test::where('collection_id', 1)
-        ->withUserTests(function($query) {
-            $query
-            ->whereYear('created_at', Carbon::now()->year)
-            ->whereHas('parentCollection', function ($query) {
-                $query
-                ->where('company_id', session('company')->id)
-                ->whereHas('userOwner');
+        $psychosocialCampaign = session('company')->campaigns()
+            ->whereYear('end_date', now()->year)
+            ->whereHas('collection', function($query){
+                $query->where('collection_id', 1);
             })
-            ->withAvg(['answers as average_value'], 'value')
-            ->with(['parentCollection.userOwner']);
-        })
-        ->withRisks(function($query) {
-            $query->withRelatedQuestions(function($query) {
+            ->first();
+
+        $psychosocialCollection = $psychosocialCampaign['collection'];
+
+        $customTests = $psychosocialCollection
+            ->tests()
+            ->with('userTests', function($query){
                 $query
-                ->withParentQuestionStatement()
-                ->withParentQuestionInverted()
-                ->withAnswerAverage();
-            });
-        })
+                ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+                ->whereHas('parentCollection', function ($query) {
+                    $query
+                    ->where('company_id', session('company')->id)
+                    ->whereHas('userOwner');
+                })
+                ->withAvg(['answers as average_value'], 'value')
+                ->with(['parentCollection.userOwner']);
+            })
         ->get();
+
+        $testTypes = Test::where('collection_id', 1)
+            ->withRisks(function($query) {
+                $query->withRelatedQuestions(function($query) {
+                    $query
+                    ->withParentQuestionStatement()
+                    ->withParentQuestionInverted()
+                    ->withAnswerAverage();
+                });
+            })
+        ->get();
+        
+        foreach($testTypes as $test){
+            $relatedTest = $customTests->firstWhere('key_name', $test['key_name']);
+            $test->userTests = $relatedTest['userTests'];
+        }
+
+        return $testTypes;
     }
 
     private function getCompiledPageData()

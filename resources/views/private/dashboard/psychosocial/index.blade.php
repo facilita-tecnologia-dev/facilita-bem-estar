@@ -81,7 +81,7 @@
 
             @else
                 @if($companyHasTests)
-                    <div class="w-full flex flex-col items-center gap-2">
+                    <div class="w-full flex flex-col items-center gap-2 justify-center flex-1">
                         <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">
                         <p class="text-base text-center">Nenhum resultado encontrado, tente novamente.</p>
                     </div>

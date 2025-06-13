@@ -8,11 +8,13 @@
                     <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
                     <div class="flex flex-col gap-2 items-center">
                         <h1 class="text-3xl md:text-4xl font-semibold text-center text-gray-800">Redefina a sua senha</h1>
-                        <p class="text-base text-center text-gray-800">Redefina sua senha provisória para acessar o sistema.</p>
+                        <p class="text-base text-center text-gray-800">Redefina sua senha para acessar o sistema.</p>
                     </div>
                 </div>
 
-                <x-form action="{{ route('auth.login.redefinir-senha') }}" class="w-full flex flex-col gap-4 items-center" post>
+                <x-form action="{{ route('user.password.update') }}" class="w-full flex flex-col gap-4 items-center" post>
+                    <input type="hidden" name="token" value={{ $token }}>
+                    <input type="hidden" name="email" value={{ $email }}>
                     <x-form.input-text type="password" name="password" placeholder="Digite sua senha" oninput="checkPasswordSteps(event)" />
                     <x-password-requirements/>
                     <x-form.input-text type="password" name="password_confirmation" placeholder="Digite sua senha novamente" />

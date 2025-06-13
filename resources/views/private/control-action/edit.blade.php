@@ -26,7 +26,6 @@
                     <x-form.input-text name="deadline" label="Prazo" placeholder="Digite o prazo" value="{{ old('deadline', $controlAction->deadline) }}"/>
                     <x-form.input-text name="assignee" label="Responsável" placeholder="Digite o responsável" value="{{ old('assignee', $controlAction->assignee) }}"/>
                     <x-form.input-text name="status" label="Situação" placeholder="Digite a situação" value="{{ old('status', $controlAction->status) }}"/>
-                    <x-form.select name="severity" :options="$severities" label="Nível de Risco" value="{{ old('severity', $controlAction->severity) }}"/>
                 </x-form>
 
                 <div class="w-full flex flex-row justify-between gap-2">

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\CustomResetPassword;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,6 +28,12 @@ class Company extends Authenticatable
             ->withTimestamps();
     }
 
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'company_users')
+        ->withPivot('company_id');
+    }
+
     public function feedbacks(): HasMany
     {
         return $this->hasMany(UserFeedback::class);
@@ -47,9 +54,9 @@ class Company extends Authenticatable
         return $this->hasOne(ActionPlan::class);
     }
     
-    public function customTests(): HasMany
+    public function customCollections(): HasMany
     {
-        return $this->hasMany(CustomTest::class);
+        return $this->hasMany(CustomCollection::class);
     }
 
     /* --- End Relations --- */
@@ -74,7 +81,9 @@ class Company extends Authenticatable
             ->when($finalized, function($q){
                 $q->where('end_date', '<' , now());
             })
-            ->where('collection_id', $collectionId)
+            ->whereHas('collection', function($query) use($collectionId) {
+                $query->where('collection_id', $collectionId);
+            })
             ->exists();
     }
 
@@ -83,5 +92,11 @@ class Company extends Authenticatable
         $name = explode(' ', $this->name);
 
         return $name[0];
+    }
+
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token, 'company'));
     }
 }

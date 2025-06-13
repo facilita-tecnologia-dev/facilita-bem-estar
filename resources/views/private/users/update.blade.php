@@ -27,6 +27,8 @@
                     
                     <x-form.input-text name="cpf" label="CPF apenas números" value="{{ $user->cpf }}" readonly/>
                     
+                    <x-form.input-text name="email" label="E-mail" value="{{ $user->email }}" placeholder="Digite o e-mail do usuário" />
+                    
                     <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" value="{{ $user->birth_date }}" label="Data de nascimento"/>
 
                     <x-form.select name="gender" label="Sexo" :options="$gendersToSelect" value="{{ $user->gender }}" />

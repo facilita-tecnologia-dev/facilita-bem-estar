@@ -80,7 +80,7 @@
             </x-sidebar.menu>
         @endcanany
             
-        @canany(['campaign-index', 'answer-psychosocial-test', 'answer-organizational-test', 'collections-index'])
+        @canany(['campaign-index', 'answer-psychosocial-test', 'answer-organizational-test', 'custom-collections-index'])
             <x-sidebar.menu title="Testes">
                 @can('campaign-index')
                     <x-sidebar.item href="{{ route('campaign.index') }}" class="{{ request()->routeIs('campaign.index') ? 'bg-gray-200' : ''}}">
@@ -90,29 +90,33 @@
                         Campanhas
                     </x-sidebar.item>
                 @endcan
-                @can('collections-index')
-                    <x-sidebar.item href="{{ route('company-collections') }}" class="{{ request()->routeIs('company-collections') ? 'bg-gray-200' : ''}}">
+                @can('custom-collections-index')
+                    <x-sidebar.item href="{{ route('custom-collections.index') }}" class="{{ request()->routeIs('custom-collections.index') ? 'bg-gray-200' : ''}}">
                         <div class="w-5 flex justify-center items-center">
                             <i class="fa-solid fa-book"></i>
                         </div>
-                        Coleções de Testes
+                        Formulários de Pesquisa
                     </x-sidebar.item>
                 @endcan
                 @can('answer-psychosocial-test')
-                    <x-sidebar.item href="{{ route('responder-teste', App\Models\Collection::firstWhere('key_name', 'psychosocial-risks')) }}" class="{{ $hasAnsweredPsychosocial  ? 'pointer-events-none opacity-50' : '' }}">
-                        <div class="w-5 flex justify-center items-center">
-                            <i class="fa-solid fa-question"></i>
-                        </div>
-                        Riscos Psicossociais
-                    </x-sidebar.item>
+                    @if($activePsychosocialCampaign)
+                        <x-sidebar.item href="{{ route('responder-teste', $activePsychosocialCampaign->collection) }}" class="{{ $hasAnsweredPsychosocial  ? 'pointer-events-none opacity-50' : '' }}">
+                            <div class="w-5 flex justify-center items-center">
+                                <i class="fa-solid fa-question"></i>
+                            </div>
+                            Riscos Psicossociais
+                        </x-sidebar.item>
+                    @endif
                 @endcan
                 @can('answer-organizational-test')
-                    <x-sidebar.item href="{{ route('responder-teste', App\Models\Collection::firstWhere('key_name', 'organizational-climate')) }}" class="{{ $hasAnsweredOrganizational  ? 'pointer-events-none opacity-50' : '' }}">
-                        <div class="w-5 flex justify-center items-center">
-                            <i class="fa-solid fa-question"></i>
-                        </div>
-                        Clima Organizacional
-                    </x-sidebar.item>
+                    @if($activeOrganizationalCampaign)
+                        <x-sidebar.item href="{{ route('responder-teste', $activeOrganizationalCampaign->collection) }}" class="{{ $hasAnsweredOrganizational  ? 'pointer-events-none opacity-50' : '' }}">
+                            <div class="w-5 flex justify-center items-center">
+                                <i class="fa-solid fa-question"></i>
+                            </div>
+                            Clima Organizacional
+                        </x-sidebar.item>
+                    @endif
                 @endcan
             </x-sidebar.menu>
         @endcanany

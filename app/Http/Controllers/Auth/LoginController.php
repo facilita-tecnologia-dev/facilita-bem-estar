@@ -67,7 +67,7 @@ class LoginController
 
     public function showChooseCompany(User $user)
     {
-        return view('auth.login.choose-company', compact('user'));
+        return view('auth.login.user.choose-company', compact('user'));
     }
 
     public function loginUserWithCompany(User $user, Company $company)
@@ -75,7 +75,7 @@ class LoginController
         CompanyService::loadCompanyToSession($company);
 
         if($user->hasRole('manager')){
-            return redirect()->to(route('auth.login.gestor.senha', $user));
+            return redirect()->to(route('auth.login.usuario-interno.senha', $user));
         }
 
         $this->authService->login($user);
@@ -84,7 +84,7 @@ class LoginController
     }
 
     public function showPasswordForm(User $user){
-        return view('auth.login.password', compact('user'));
+        return view('auth.login.user.password', compact('user'));
     }
 
     public function checkManagerPassword(Request $request, User $user)
@@ -134,7 +134,7 @@ class LoginController
         CompanyService::loadCompanyToSession($company);
         
         if($roleInCurrentCompany->name === 'employee' && $roleInRequestCompany->name === 'manager'){
-            return redirect()->to(route('auth.login.gestor.senha', $user));
+            return redirect()->to(route('auth.login.usuario-interno.senha', $user));
         } 
 
         $this->authService->login($user);

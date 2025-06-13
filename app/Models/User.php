@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\CustomResetPassword;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,13 +46,15 @@ class User extends Authenticatable
 
     public function collections(): HasMany
     {
-        return $this->hasMany(UserCollection::class);
+        return $this->hasMany(UserCollection::class, 'user_id');
     }
 
     public function latestPsychosocialCollection(): HasOne
     {
         return $this->hasOne(UserCollection::class)
-            ->where('collection_id', 1)
+            ->whereHas('collectionType', function ($query) {
+                $query->where('collection_id', 1); // <-- ID da collectionType
+            })
             ->where('company_id', session('company')->id)
             ->whereYear('created_at', now()->year)
             ->latest();
@@ -60,7 +63,9 @@ class User extends Authenticatable
     public function latestOrganizationalClimateCollection(): HasOne
     {      
         return $this->hasOne(UserCollection::class)
-            ->where('collection_id', 2)
+            ->whereHas('collectionType', function ($query) {
+                $query->where('collection_id', 2); // <-- ID da collectionType
+            })
             ->where('company_id', session('company')->id)
             ->whereYear('created_at', now()->year)
             ->latest();
@@ -163,4 +168,8 @@ class User extends Authenticatable
 
     /* ---- End Aux/Verifiers/Conditionals ---- */
 
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token, 'user'));
+    }
 }

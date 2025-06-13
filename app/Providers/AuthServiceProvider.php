@@ -105,7 +105,7 @@ class AuthServiceProvider extends ServiceProvider
                 $user = AuthGuardHelper::user();
 
                 $eligibilityService = app(UserElegibilityService::class);
-
+                
                 return $user->hasPermission('answer_tests') && $eligibilityService->hasActivePsychosocialCampaign();
             }
 
@@ -338,7 +338,7 @@ class AuthServiceProvider extends ServiceProvider
             return false;
         });
         
-        Gate::define('collections-index', function (?Authenticatable $user) {
+        Gate::define('custom-collections-index', function (?Authenticatable $user) {
             if (AuthGuardHelper::user() instanceof User) {
                 /** @var User $user */
                 $user = AuthGuardHelper::user();
@@ -383,7 +383,7 @@ class AuthServiceProvider extends ServiceProvider
             return false;
         });
 
-        Gate::define('collections-index', function (?Authenticatable $user) {
+        Gate::define('custom-collections-index', function (?Authenticatable $user) {
             if (AuthGuardHelper::user() instanceof User) {
                 /** @var User $user */
                 $user = AuthGuardHelper::user();

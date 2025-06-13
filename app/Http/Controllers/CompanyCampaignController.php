@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CampaignStoreRequest;
 use App\Http\Requests\CampaignUpdateRequest;
+use App\Mail\CampaignEmail;
 use App\Models\Collection;
 use App\Models\Company;
 use App\Models\CompanyCampaign;
+use App\Models\CustomCollection;
+use App\Models\User;
 use App\Repositories\CampaignRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 
 class CompanyCampaignController
 {
@@ -30,8 +35,10 @@ class CompanyCampaignController
     public function create()
     {
         Gate::authorize('campaign-create');
-        $collectionsToSelect = Collection::all()->map(fn ($collection) => [
-            'option' => $collection->name,
+   
+        $collectionsToSelect = session('company')['customCollections']
+        ->map(fn ($collection) => [
+            'option' => $collection['collection_id'] == 2 ? $collection->name . ' (Clima Organizacional)' :  $collection->name,
             'value' => $collection->id,
         ]);
 
@@ -41,7 +48,12 @@ class CompanyCampaignController
     public function store(CampaignStoreRequest $request)
     {
         Gate::authorize('campaign-create');
-        $companyHasSameCampaignThisYear = session('company')->hasCampaignThisYear($request->validated('collection_id'));
+
+        $psychosocialCollection = session('company')['customCollections']->firstWhere('collection_id', 1);
+
+        $collectionId = request('collection_id') == $psychosocialCollection['id'] ? 1 : 2;
+
+        $companyHasSameCampaignThisYear = session('company')->hasCampaignThisYear($collectionId);
         
         if ($companyHasSameCampaignThisYear) {
             return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes de '.$companyHasSameCampaignThisYear->collection->name.' em 2025.');
@@ -103,5 +115,17 @@ class CompanyCampaignController
         $this->campaignRepository->destroy($campaign);
 
         return to_route('campaign.index')->with('message', 'Campanha excluída com sucesso.');
+    }
+
+    public function dispatchNotifications(CompanyCampaign $campaign)
+    {
+        $usersWithEmail = session('company')->users->where('email');
+        
+        $usersWithEmail->each(function($user) use($campaign) {
+            Mail::to($user->email)->queue(new CampaignEmail($user, session('company'), $campaign));
+        });
+        
+        // return new CampaignEmail($usersWithEmail->first(), session('company'), $campaign);
+        return back()->with('message', 'Notificações disparadas com sucesso!');
     }
 }

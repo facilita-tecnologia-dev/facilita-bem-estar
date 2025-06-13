@@ -32,12 +32,15 @@ class SidebarComposer
             $hasActivePsychosocialCampaign = $this->elegibilityService->hasActivePsychosocialCampaign();
             $hasActiveOrganizationalCampaign = $this->elegibilityService->hasActiveOrganizationalCampaign();
 
+            $activePsychosocialCampaign = $hasActivePsychosocialCampaign ? session('company')->getActiveCampaigns()->filter(fn($campaign) => $campaign->collection->collection_id == 1)->first() : null;
+            $activeOrganizationalCampaign = $hasActiveOrganizationalCampaign ? session('company')->getActiveCampaigns()->filter(fn($campaign) => $campaign->collection->collection_id == 2)->first() : null;
+            
             $view->with([
                 'hasAnsweredPsychosocial' => $hasAnsweredPsychosocial,
                 'hasAnsweredOrganizational' => $hasAnsweredOrganizational,
                 'companiesToSwitch' => $companiesToSwitch,
-                'hasActivePsychosocialCampaign' => $hasActivePsychosocialCampaign,
-                'hasActiveOrganizationalCampaign' => $hasActiveOrganizationalCampaign,
+                'activePsychosocialCampaign' => $activePsychosocialCampaign,
+                'activeOrganizationalCampaign' => $activeOrganizationalCampaign,
                 'isInstanceOfUser' => true,
             ]);
         }

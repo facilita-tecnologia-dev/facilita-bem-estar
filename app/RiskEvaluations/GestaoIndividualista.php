@@ -29,36 +29,30 @@ class GestaoIndividualista implements RiskEvaluatorInterface
 
         $riskLevel = 1;
 
-        if (!$average >= 3) {
-            return [
-                'riskLevel' => $riskLevel,
-                'riskSeverity' => $riskSeverity,
-                'probability' => $probability,
-            ];
-        }
+        if (!($average >= 3)) {
+            $allAnswersBelowCondition = true;
 
-        foreach ($risk->relatedQuestions as $riskQuestion) {
-            $averageAnswers = $riskQuestion->average_value;
-            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
-
-            if ($riskQuestion['parent_question_statement'] == 'Aqui os gestores preferem trabalhar individualmente') {
-                if (!$averageAnswers >= 4) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
+            foreach ($risk->relatedQuestions as $riskQuestion) {
+                $averageAnswers = $riskQuestion->average_value;
+                $parentQuestionStatement = $riskQuestion['parent_question_statement'];
+    
+                if ($riskQuestion['parent_question_statement'] == 'Aqui os gestores preferem trabalhar individualmente') {
+                    if (!($averageAnswers >= 4)) {
+                        $allAnswersBelowCondition = false;
+                        break;
+                    }
+                }
+    
+                if ($riskQuestion['parent_question_statement'] == 'O trabalho coletivo é valorizado pelos gestores') {
+                    if (!($averageAnswers <= 2)) {
+                        $allAnswersBelowCondition = false;
+                        break;
+                    }
                 }
             }
-
-            if ($riskQuestion['parent_question_statement'] == 'O trabalho coletivo é valorizado pelos gestores') {
-                if (!$averageAnswers <= 2) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
-                }
+            
+            if ($allAnswersBelowCondition) {
+                $riskSeverity--;
             }
         }
 

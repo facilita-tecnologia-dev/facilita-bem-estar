@@ -48,11 +48,6 @@ class Test extends Model
         return $this->hasMany(Risk::class);
     }
 
-    // public function scopeWithQuestions(Builder $query)
-    // {
-    //     $query->with('questions:id,test_id,statement');
-    // }
-
     public function scopeWithRisks(Builder $query, Closure $callback): Builder
     {
         return $query->with([

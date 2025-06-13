@@ -21,41 +21,35 @@ class InjusticaPercebida implements RiskEvaluatorInterface
 
         $riskLevel = 1;
 
-        if (!$average >= 3) {
-            return [
-                'riskLevel' => $riskLevel,
-                'riskSeverity' => $riskSeverity,
-                'probability' => $probability,
-            ];
-        }
+        if (!($average >= 3)) {
+            $allAnswersBelowCondition = true;
 
-        foreach ($risk->relatedQuestions as $riskQuestion) {
-            $averageAnswers = $riskQuestion->average_value;
-            $parentQuestionStatement = $riskQuestion['parent_question_statement'];
-
-            if ($riskQuestion['parent_question_statement'] == 'Os gestores desta organização se consideram insubstituíveis') {
-                if (!$averageAnswers >= 4) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
+            foreach ($risk->relatedQuestions as $riskQuestion) {
+                $averageAnswers = $riskQuestion->average_value;
+                $parentQuestionStatement = $riskQuestion['parent_question_statement'];
+    
+                if ($riskQuestion['parent_question_statement'] == 'Os gestores desta organização se consideram insubstituíveis') {
+                    if (!($averageAnswers >= 4)) {
+                        $allAnswersBelowCondition = false;
+                        break;
+                    }
+                }
+    
+                if ($riskQuestion['parent_question_statement'] == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
+                    if (!($averageAnswers <= 2)) {
+                        $allAnswersBelowCondition = false;
+                        break;
+                    }
                 }
             }
-
-            if ($riskQuestion['parent_question_statement'] == 'Existem oportunidades semelhante de ascensão para todas as pessoas') {
-                if (!$averageAnswers <= 2) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
-                }
+            
+            if ($allAnswersBelowCondition) {
+                $riskSeverity--;
             }
         }
 
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-         return compact('probability', 'riskLevel', 'riskSeverity');
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

@@ -25,23 +25,25 @@ class UserElegibilityService
 
     private function activeCompanyCampaigns()
     {
-        return Company::firstWhere('id', session('company')->id)
+        return session('company')
             ->campaigns()
             ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now());
+            ->where('end_date', '>=', now())
+            ->get()
+            ->groupBy('collection.collection_id');
     }
 
     public function hasActivePsychosocialCampaign(): bool
     {
         $activeCampaigns = $this->activeCompanyCampaigns();
 
-        return $activeCampaigns->where('collection_id', 1)->exists();
+        return isset($activeCampaigns[1]);
     }
 
     public function hasActiveOrganizationalCampaign(): bool
     {
         $activeCampaigns = $this->activeCompanyCampaigns();
 
-        return $activeCampaigns->where('collection_id', 2)->exists();
+        return isset($activeCampaigns[2]);
     }
 }

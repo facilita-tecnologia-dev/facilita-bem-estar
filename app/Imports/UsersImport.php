@@ -39,6 +39,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
                         'gender' => $row['sexo'],
                         'marital_status' => $row['estado_civil'],
                         'education_level' => $row['grau_de_instrucao'],
+                        'email' => $row['email'],
                     ]);
                 
                     $user->companies()->syncWithoutDetaching([
@@ -59,6 +60,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
                     'gender' => $row['sexo'],
                     'marital_status' => $row['estado_civil'],
                     'education_level' => $row['grau_de_instrucao'],
+                    'email' => $row['email'],
                 ]);
 
                 DB::table('company_users')->insert([
@@ -87,6 +89,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
             'sexo' => ['required'],
             'estado_civil' => ['required'],
             'grau_de_instrucao' => ['required'],
+            'email' => ['required'],
         ];
     }
 
@@ -99,7 +102,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
         try {
             return Carbon::parse($value)->format('Y-m-d');
         } catch (\Exception $e) {
-            return null; // ou lançar exceção/logar
+            return null;
         }
     }
 }

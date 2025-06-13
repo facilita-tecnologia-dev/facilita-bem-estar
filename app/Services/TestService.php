@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Handlers\TestHandlerFactory;
 use App\Helpers\AuthGuardHelper;
 use App\Models\Collection;
+use App\Models\CustomCollection;
 use App\Models\CustomTest;
 use App\Models\PendingTestAnswer;
 use App\Models\Test;
@@ -21,13 +22,16 @@ class TestService
         $this->handlerFactory = $handlerFactory;
     }
 
-    public function process(Collection $collection, Test | CustomTest $test, array $answers): bool
+    public function process(CustomCollection $collection, Test | CustomTest $test, array $answers): bool
     {
+
         $answersValues = array_map(function ($value) {
             return (int) $value;
         }, $answers);
-    
-        session(["$collection->key_name|$test->key_name|result" => $answersValues]);
+
+        $sessionKey = $collection->collectionType->key_name . "|" . $test->key_name ."|result";
+        
+        session([$sessionKey=> $answersValues]);
         
         // $pendingAnswers = [];
         // $questions = $test->questions->keyBy('id');
@@ -58,7 +62,7 @@ class TestService
         return true;
     }
 
-    public function evaluateTest(Test $testType, UserTest | CustomTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
+    public function evaluateTest(Test | CustomTest $testType, UserTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
     {        
         $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
         $evaluatedTest = $handler->process($testType, $userTest, $metrics);

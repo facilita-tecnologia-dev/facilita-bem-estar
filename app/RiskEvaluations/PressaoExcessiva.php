@@ -29,41 +29,25 @@ class PressaoExcessiva implements RiskEvaluatorInterface
 
         $riskLevel = 1;
 
-        if (!$average >= 3.5) {
-            return [
-                'riskLevel' => $riskLevel,
-                'riskSeverity' => $riskSeverity,
-                'probability' => $probability,
-            ];
-        }
+        if (!($average >= 3.5)) {
+            $allAnswersBelowCondition = true;
 
-        foreach ($risk->relatedQuestions as $riskQuestion) {
-            $averageAnswers = $riskQuestion->average_value;
-
-            if ($riskQuestion['parent_question_statement'] == 'Os gestores desta organização fazem qualquer coisa para chamar a atenção') {
-                if (!$averageAnswers >= 4) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
+            foreach ($risk->relatedQuestions as $riskQuestion) {
+                $averageAnswers = $riskQuestion->average_value;
+                
+                if (!($averageAnswers >= 4)) {
+                    $allAnswersBelowCondition = false;
+                    break;
                 }
             }
-
-            if ($riskQuestion['parent_question_statement'] == 'Há forte controle do trabalho') {
-
-                if (!$averageAnswers >= 4) {
-                    return [
-                        'riskLevel' => $riskLevel,
-                        'riskSeverity' => $riskSeverity,
-                        'probability' => 1,
-                    ];
-                }
+            
+            if ($allAnswersBelowCondition) {
+                $riskSeverity--;
             }
         }
         
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
-         return compact('probability', 'riskLevel', 'riskSeverity');
+        return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

@@ -11,6 +11,12 @@ class CompanyService
 {
     public static function loadCompanyToSession(Company $company): void
     {
-        session(['company' => $company->load(['users', 'actionPlan.controlActions.risk', 'metrics', 'campaigns'])]);
+        session(['company' => $company->load([
+            'users', 
+            'actionPlan.controlActions.risk', 
+            'metrics', 
+            'campaigns', 
+            'customCollections'
+        ])]);
     }
 }

@@ -11,14 +11,9 @@ class CustomTest extends Model
     protected $guarded = [];
     public $timestamps = false;
 
-    public function parentCompany(): BelongsTo
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
-
     public function parentCollection(): BelongsTo
     {
-        return $this->belongsTo(Collection::class, 'collection_id');
+        return $this->belongsTo(CustomCollection::class);
     }
 
     public function questions(): HasMany
@@ -26,8 +21,8 @@ class CustomTest extends Model
         return $this->hasMany(CustomQuestion::class);
     }
 
-    public function userCustomTests(): HasMany
+    public function userTests(): HasMany
     {
-        return $this->hasMany(UserCustomTest::class);
+        return $this->hasMany(UserTest::class, 'test_id');
     }
 }

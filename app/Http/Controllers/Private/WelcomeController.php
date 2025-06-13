@@ -8,29 +8,25 @@ class WelcomeController
 {
     public function welcomeCompany()
     {
-        $totalActions = 5;
-        $neededActionsCount = 0;
+        $neededActions = true;
+        $currentStep = 1;
 
-        $noCompanyLogo = !session('company')->logo;
-        $noCompanyUsers = !session('company')->users->count();
-        $noCompanyManager = !session('company')->users->filter(fn($user)=> $user->hasRole('manager'))->count();
-        $noCompanyMetrics = !session('company')->metrics()->where('value')->exists();
-        $noCompanyCampaigns = !session('company')->campaigns()->exists();
+        $companyLogo = session('company')->logo;
+        $companyUsers = session('company')->users->count();
+        $companyManager = session('company')->roles->where('name', 'manager')->isNotEmpty();
+        $companyMetrics = session('company')->metrics()->where('value', '!=', null)->exists();
+        $companyCampaigns = session('company')->campaigns()->exists();
 
-        if($noCompanyLogo){$neededActionsCount++;}
-        if($noCompanyUsers){$neededActionsCount++;}
-        if($noCompanyManager){$neededActionsCount++;}
-        if($noCompanyMetrics){$neededActionsCount++;}
-        if($noCompanyCampaigns){$neededActionsCount++;}
+        if($companyLogo){$currentStep++;}
+        if($companyUsers){$currentStep++;}
+        if($companyManager){$currentStep++;}
+        if($companyMetrics){$currentStep++;}
+        if($companyCampaigns){$neededActions = false;}
+
 
         return view('private.welcome.company', [
-            'totalActions' => $totalActions,
-            'neededActionsCount' => $neededActionsCount,
-            'noCompanyLogo' => $noCompanyLogo,
-            'noCompanyUsers' => $noCompanyUsers,
-            'noCompanyManager' => $noCompanyManager,
-            'noCompanyMetrics' => $noCompanyMetrics,
-            'noCompanyCampaigns' => $noCompanyCampaigns,
+            'neededActions' => $neededActions,
+            'currentStep' => $currentStep,
         ]);
     }
 

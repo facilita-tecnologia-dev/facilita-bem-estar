@@ -11,12 +11,18 @@
                     </div>
 
                     <x-form action="{{ route('auth.login.empresa') }}" class="w-full flex flex-col gap-3 items-center" post>
+                        @if(session('message'))
+                            <span class="text-green-500 text-sm text-center">{{ session('message') }}</span>
+                        @endif
                         <x-form.input-text name="cnpj" placeholder="CNPJ (00.000.000/0000-00)" />
                         <x-form.input-text type="password" name="password" placeholder="Senha" />
                         <x-action tag="button" type="submit" variant="secondary" width="full">Login</x-action>
                     </x-form>
 
-                    <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
+                    <div class="w-full flex justify-between gap-2">
+                        <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
+                        <a href="{{ route('company.password.request') }}" class="text-sm underline">Esqueci minha senha</a>
+                    </div>
                 </div>
             </div>
         </div>

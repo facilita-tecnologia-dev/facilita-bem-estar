@@ -13,6 +13,7 @@
                     <x-form action="{{ route('auth.cadastro.empresa') }}" class="w-full flex flex-col gap-3 items-center" post>
                         <x-form.input-text name="name" placeholder="Razão Social" />
                         <x-form.input-text name="cnpj" placeholder="CNPJ (00.000.000/0000-00)" />
+                        <x-form.input-text name="email" placeholder="E-mail" />
                         <x-form.input-text type="password" name="password" placeholder="Senha" oninput="checkPasswordSteps(event)"/>
                         <x-password-requirements/>
                         <x-form.input-text type="password" name="password_confirmation" placeholder="Confirme sua senha" />

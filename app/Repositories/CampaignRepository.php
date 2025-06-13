@@ -12,7 +12,7 @@ class CampaignRepository
     {
         return DB::transaction(function () use ($request) {
             $validatedData = $request->validated();
-
+   
             $campaign = CompanyCampaign::create([
                 'company_id' => session('company')->id,
                 'collection_id' => $validatedData['collection_id'],
@@ -21,6 +21,8 @@ class CampaignRepository
                 'start_date' => $validatedData['start_date'],
                 'end_date' => $validatedData['end_date'],
             ]);
+
+            session(['company' => session('company')->load('campaigns')]);
 
             return $campaign;
         });
@@ -31,6 +33,9 @@ class CampaignRepository
         return DB::transaction(function () use ($campaign, $request) {
             $campaign->update($request->safe()->toArray());
 
+            
+            session(['company' => session('company')->load('campaigns')]);
+            
             return $campaign;
         });
     }

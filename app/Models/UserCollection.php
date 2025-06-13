@@ -15,7 +15,7 @@ class UserCollection extends Model
 
     protected $table = 'user_collections';
 
-    protected $fillable = ['user_id', 'collection_id'];
+    protected $guarded = [];
 
     public function userOwner(): BelongsTo
     {
@@ -24,7 +24,7 @@ class UserCollection extends Model
 
     public function collectionType(): BelongsTo
     {
-        return $this->belongsTo(Collection::class, 'collection_id');
+        return $this->belongsTo(CustomCollection::class, 'collection_id');
     }
 
     public function tests(): HasMany

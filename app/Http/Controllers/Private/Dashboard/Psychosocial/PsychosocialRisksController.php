@@ -58,27 +58,49 @@ class PsychosocialRisksController
 
     private function query(Request $request)
     {
-        return Test::where('collection_id', 1)
-        ->withUserTests(function($query) use($request) {
-            $query
-            ->whereYear('created_at', $request->year ?? Carbon::now()->year)
-            ->whereHas('parentCollection', function ($query) {
-                $query
-                ->where('company_id', session('company')->id)
-                ->whereHas('userOwner');
+        $psychosocialCampaign = session('company')->campaigns()
+            ->whereYear('end_date', now()->year)
+            ->whereHas('collection', function($query){
+                $query->where('collection_id', 1);
             })
-            ->withAvg(['answers as average_value'], 'value')
-            ->with(['parentCollection.userOwner']);
-        })
-        ->withRisks(function($query) use($request) {
-            $query->withRelatedQuestions(function($query) use($request) {
-                $query
-                ->withParentQuestionStatement()
-                ->withParentQuestionInverted()
-                ->withAnswerAverage($request);
-            });
-        })
-        ->get();
+        ->first();
+
+        if($psychosocialCampaign){
+            $psychosocialCollection = $psychosocialCampaign['collection'];
+
+            $customTests = $psychosocialCollection
+                ->tests()
+                ->with('userTests', function($query){
+                    $query
+                    ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+                    ->whereHas('parentCollection', function ($query) {
+                        $query
+                        ->where('company_id', session('company')->id)
+                        ->whereHas('userOwner');
+                    })
+                    ->withAvg(['answers as average_value'], 'value')
+                    ->with(['parentCollection.userOwner']);
+                })
+            ->get();
+
+            $testTypes = Test::where('collection_id', 1)
+                ->withRisks(function($query) {
+                    $query->withRelatedQuestions(function($query) {
+                        $query
+                        ->withParentQuestionStatement()
+                        ->withParentQuestionInverted()
+                        ->withAnswerAverage();
+                    });
+                })
+            ->get();
+            
+            foreach($testTypes as $test){
+                $relatedTest = $customTests->firstWhere('key_name', $test['key_name']);
+                $test->userTests = $relatedTest['userTests'];
+            }
+        }
+
+        return $testTypes ?? [];
     }
 
     private function getCompiledPageData($onlyCritical = false)

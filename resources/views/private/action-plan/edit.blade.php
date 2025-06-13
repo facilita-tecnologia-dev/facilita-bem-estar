@@ -19,10 +19,12 @@
                 </x-structure.message>
             @endif
 
-            <div class="w-full space-y-2">
-                <div class="w-full bg-gray-100 rounded-md shadow-md p-4 flex items-center justify-between">
-                    <h2 class="text-base sm:text-lg font-semibold">{{ $risk->name }}</h2>
+            <x-form action="{{ route('action-plan.risk.update', ['actionPlan' => $actionPlan, 'risk' => $risk]) }}" put class="w-full space-y-2">
+                <div class="w-full bg-gray-100 rounded-md shadow-md p-4 flex items-center gap-2">
+                    <h2 class="text-base sm:text-lg font-semibold flex-1">{{ $risk->name }}</h2>
+                    
                     <x-action variant="secondary" tag="button" type="button" onclick="showAddControlActionModal()">Adicionar medida</x-action>
+                    <x-action variant="secondary" tag="button">Salvar alterações</x-action>
                 </div>
              
                 <x-table>
@@ -45,32 +47,52 @@
                             Situação
                         </x-table.head.th>
                         <x-table.head.th class="w-12"></x-table.head.th>
-                        <x-table.head.th class="w-12"></x-table.head.th>
                     </x-table.head>
                     <x-table.body>
                         @foreach ($identifiedRisk['controlActions'] as $controlAction)
                             <x-table.body.tr class="flex items-center gap-4">
-                                <x-table.body.td class="truncate flex-1" title="{{ $controlAction->content }}">{{ $controlAction->content }}</x-table.body.td>
-                                <x-table.body.td class="w-40" title="{{ $controlAction->deadline ?? 'Indefinido' }}">{{ $controlAction->deadline ?? 'Indefinido' }}</x-table.body.td>
-                                <x-table.body.td class="w-40" title="{{ $controlAction->assignee ?? 'Indefinido' }}">{{ $controlAction->assignee ?? 'Indefinido' }}</x-table.body.td>
-                                <x-table.body.td class="w-40" title="{{ $controlAction->status ?? 'Indefinido' }}">{{ $controlAction->status ?? 'Indefinido' }}</x-table.body.td>
-                                <x-table.body.td class="w-12">
-                                    <x-action href="{{ route('action-plan.risk.control-action.edit', ['actionPlan' => $actionPlan, 'risk' => $risk, 'controlAction' => $controlAction]) }}" variant="primary">
-                                        <i class="fa-solid fa-pencil pointer-events-none"></i>    
-                                    </x-action>    
+                                <x-table.body.td class="truncate flex-1" title="{{ $controlAction->content }}">
+                                    <input 
+                                        type="text" 
+                                        name="risk[{{ $risk->id }}][control_actions][{{ $controlAction->id }}][content]" 
+                                        value="{{ $controlAction->content }}"
+                                        class="w-full bg-gray-100 border border-gray-300 focus:outline-gray-400 py-1 px-2 rounded-md"
+                                    >
+                                </x-table.body.td>
+                                <x-table.body.td class="w-40" title="{{ $controlAction->deadline ?? 'Indefinido' }}">
+                                    <input 
+                                        type="text" 
+                                        name="risk[{{ $risk->id }}][control_actions][{{ $controlAction->id }}][deadline]" 
+                                        value="{{ $controlAction->deadline ?? 'Indefinido' }}"
+                                        class="w-full bg-gray-100 border border-gray-300 focus:outline-gray-400 py-1 px-2 rounded-md"
+                                    >
+                                </x-table.body.td>
+                                <x-table.body.td class="w-40" title="{{ $controlAction->assignee ?? 'Indefinido' }}">
+                                    <input 
+                                        type="text" 
+                                        name="risk[{{ $risk->id }}][control_actions][{{ $controlAction->id }}][assignee]" 
+                                        value="{{ $controlAction->assignee ?? 'Indefinido' }}"
+                                        class="w-full bg-gray-100 border border-gray-300 focus:outline-gray-400 py-1 px-2 rounded-md"
+                                    >
+                                </x-table.body.td>
+                                <x-table.body.td class="w-40" title="{{ $controlAction->status ?? 'Indefinido' }}">
+                                    <input 
+                                        type="text" 
+                                        name="risk[{{ $risk->id }}][control_actions][{{ $controlAction->id }}][status]" 
+                                        value="{{ $controlAction->status ?? 'Indefinido' }}"
+                                        class="w-full bg-gray-100 border border-gray-300 focus:outline-gray-400 py-1 px-2 rounded-md"
+                                    >
                                 </x-table.body.td>
                                 <x-table.body.td class="w-12">
-                                    <x-form action="{{ route('action-plan.risk.control-action.destroy', ['actionPlan' => $actionPlan, 'risk' => $risk, 'controlAction' => $controlAction]) }}" delete>
-                                        <x-action tag="button" variant="danger">
-                                            <i class="fa-solid fa-trash pointer-events-none"></i>    
-                                        </x-action>    
-                                    </x-form>
+                                    <x-action href="{{ route('action-plan.risk.control-action.destroy', ['actionPlan' => $actionPlan, 'risk' => $risk, 'controlAction' => $controlAction]) }}" data-tippy-content="Excluir medida de controle" variant="danger">
+                                        <i class="fa-solid fa-trash pointer-events-none"></i>    
+                                    </x-action>
                                 </x-table.body.td>
                             </x-table.body.tr>
                         @endforeach
                     </x-table.body>
                 </x-table>
-            </div>
+            </x-form>
                 
             <x-modal.background data-role="add-control-action-modal">
                 <x-modal.wrapper class="max-w-[450px]">

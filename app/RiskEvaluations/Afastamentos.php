@@ -28,24 +28,21 @@ class Afastamentos implements RiskEvaluatorInterface
         }
 
         $riskLevel = 1;
+        
+        if (!($average >= 3)) {
+            $allAnswersBelowCondition = true;
+        
+            foreach ($risk->relatedQuestions as $riskQuestion) {
+                $averageAnswers = $riskQuestion->average_value;
 
-        if (!$average >= 3) {
-            return [
-                'riskLevel' => $riskLevel,
-                'riskSeverity' => $riskSeverity,
-                'probability' => $probability,
-            ];
-        }
-
-        foreach ($risk->relatedQuestions as $riskQuestion) {
-            $averageAnswers = $riskQuestion->average_value;
-
-            if (!($averageAnswers >= 3)) {
-                return [
-                    'riskLevel' => $riskLevel,
-                    'riskSeverity' => $riskSeverity,
-                    'probability' => 1,
-                ];
+                if (!($averageAnswers >= 3)) {
+                    $allAnswersBelowCondition = false;
+                    break;
+                }
+            }
+        
+            if ($allAnswersBelowCondition) {
+                $riskSeverity--;
             }
         }
         

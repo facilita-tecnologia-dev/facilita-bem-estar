@@ -31,6 +31,8 @@
 
                     <x-form.input-text name="name" label="Nome completo" placeholder="Digite o nome completo do usuário"/>
                     
+                    <x-form.input-text name="email" label="E-mail" placeholder="Digite o e-mail do usuário"/>
+                    
                     <x-form.input-date name="birth_date" max="{{ Carbon\Carbon::now()->subYears(16)->toDateString() }}" label="Data de nascimento"/>
 
                     <x-form.select name="gender" label="Sexo" :options="$gendersToSelect"/>
@@ -56,9 +58,6 @@
                         <x-action href="{{ route('user.index') }}" variant="danger">Cancelar</x-action>
                     </div>
                     <div class="flex items-center gap-2" data-position="right">
-                        @can('user-create')
-                            <x-action href="{{ route('user.add-existing') }}" variant="secondary">Vincular usuário por CPF</x-action>
-                        @endcan
                         <x-action tag="button" type="submit" form="form-create-user" variant="secondary">Salvar</x-action>
                     </div>
                 </div>
@@ -94,12 +93,21 @@
 
                     const data = await response.json();
 
-                    console.log(data);
-
-                    if (data.exists) {
+                    if (data.user) {
                         messageDiv.textContent = 'CPF já está cadastrado.';
                         messageDiv.classList.add('text-red-500');
                         messageDiv.classList.remove('text-green-500');
+
+                        document.querySelector('input[name="name"]').value = data.user.name;
+                        document.querySelector('input[name="email"]').value = data.user.email;
+                        document.querySelector('input[name="birth_date"]').value = data.user.birth_date;
+                        document.querySelector('select[name="gender"]').value = data.user.gender;
+                        document.querySelector('input[name="marital_status"]').value = data.user.marital_status;
+                        document.querySelector('input[name="education_level"]').value = data.user.education_level;
+                        document.querySelector('input[name="department"]').value = data.user.department;
+                        document.querySelector('input[name="occupation"]').value = data.user.occupation;
+                        document.querySelector('input[name="work_shift"]').value = data.user.work_shift;
+                        document.querySelector('input[name="admission"]').value = data.user.admission;
                     } else {
                         messageDiv.textContent = 'CPF disponível.';
                         messageDiv.classList.add('text-green-500');
@@ -107,6 +115,7 @@
                     }
 
                 } catch (error) {
+                    console.log(error);
                     messageDiv.textContent = 'Erro ao verificar CPF.';
                 }
             });

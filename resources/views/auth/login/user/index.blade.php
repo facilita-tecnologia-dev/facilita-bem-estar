@@ -13,11 +13,17 @@
                     </div>
 
                     <x-form action="{{ route('auth.login.usuario-interno') }}" class="w-full flex flex-col gap-4 items-center" post>
+                        @if(session('message'))
+                            <span class="text-green-500 text-sm text-center">{{ session('message') }}</span>
+                        @endif
                         <x-form.input-text name="cpf" placeholder="CPF (000.000.000-00)" />
                         <x-action tag="button" type="submit" variant="secondary" width="full">Fazer login</x-action>
                     </x-form>
 
-                    <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
+                    <div class="w-full flex justify-between gap-2">
+                        <a href="{{ route('apresentacao') }}" class="text-sm underline">Voltar para a Home</a>
+                        <a href="{{ route('user.password.request') }}" class="text-sm underline">Esqueci minha senha</a>
+                    </div>
                 </div>
             </div>
         </div>

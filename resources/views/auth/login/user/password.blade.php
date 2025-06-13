@@ -17,7 +17,7 @@
                     </div>
                 </div>
 
-                <x-form action="{{ route('auth.login.gestor.verificar-senha', $user) }}" class="w-full flex flex-col gap-4 items-center" post>
+                <x-form action="{{ route('auth.login.usuario-interno.verificar-senha', $user) }}" class="w-full flex flex-col gap-4 items-center" post>
                     <x-form.input-text type="password" name="password" placeholder="Digite sua senha" />
                     <x-action tag="button" type="submit" variant="secondary" width="full">Fazer login</x-action>
                 </x-form>

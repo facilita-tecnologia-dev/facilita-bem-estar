@@ -32,6 +32,7 @@
                     </div>
                     <x-form.input-text class="opacity-70" name="name" label="Razão Social" value="{{ $company->name }}" disabled placeholder="Digite a razão social da sua empresa"/>
                     <x-form.input-text class="opacity-70" name="cnpj" label="CNPJ" value="{{ $company->cnpj }}" disabled placeholder="Digite o cnpj da sua empresa"/>
+                    <x-form.input-text name="email" label="E-mail" value="{{ $company->email }}" placeholder="Digite o email da sua empresa"/>
                 </x-form>
 
                 <div class="w-full flex flex-row justify-between gap-2">

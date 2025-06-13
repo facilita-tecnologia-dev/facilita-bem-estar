@@ -5,7 +5,7 @@
         <x-structure.main-content-container class="items-center">
             <x-structure.page-title title="{{ $collection->key_name == 'psychosocial-risks' ? 'Etapa - '.$testIndex : $test->display_name }}" centered />
 
-            <div class="flex flex-col items-center gap-8">
+            <div class="w-full flex flex-col items-center gap-8">
                 <div class="flex flex-col gap-3 w-full max-w-[550px] max-h-full">
                     <p class="text-lg font-semibold text-left text-gray-800">
                         {{ $test->statement }}
@@ -28,8 +28,8 @@
                                 @foreach ($question['options']->sortByDesc('value') as $optionNumber => $option)
                                     <x-test.option 
                                         :option="$option" 
-                                        name="{{ $question instanceof App\Models\CustomQuestion ? 'custom_' . $question->id : 'default_' . $question->id }}" 
-                                        id="{{ $question instanceof App\Models\CustomQuestion ? 'custom_' . $option->id : 'default_' . $option->id }}"
+                                        name="{{  $question->id }}" 
+                                        id="{{ 'question_' . $question->id . '_' . $option->id }}"
                                         :pendingAnswer="$pendingAnswer" 
                                     />
                                 @endforeach
@@ -39,17 +39,17 @@
                                 @enderror
                             </div>
                         @endforeach
+                        <div class="w-full flex items-center justify-between">
+                            <div class="{{ $testIndex == 1 ? 'pointer-events-none opacity-50' : '' }}">
+                                <x-action href="{{ route('responder-teste', [$collection, $testIndex - 1]) }}" variant="primary">
+                                    Voltar
+                                </x-action>
+                            </div>
+                            <x-action form="test-form" type="submit" tag="button" variant="primary">
+                                Prosseguir
+                            </x-action>
+                        </div>
                     </x-form>
-                </div>
-                <div class="w-full flex items-center justify-between">
-                    <div class="{{ $testIndex == 1 ? 'pointer-events-none opacity-50' : '' }}">
-                        <x-action href="{{ route('responder-teste', [$collection, $testIndex - 1]) }}" variant="primary">
-                            Voltar
-                        </x-action>
-                    </div>
-                    <x-action form="test-form" type="submit" tag="button" variant="primary">
-                        Prosseguir
-                    </x-action>
                 </div>
             </div>
         </x-structure.main-content-container>

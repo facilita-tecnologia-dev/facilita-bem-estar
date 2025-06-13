@@ -26,18 +26,19 @@ class AuthService {
             CompanyService::loadCompanyToSession($actor->companies->first());
 
             if($this->userIsManager($actor)){
-                return route('auth.login.gestor.senha', $actor);
+                return route('auth.login.usuario-interno.senha', $actor);
             }
 
             $this->login($actor);
         }
 
         if($actor instanceof Company){
-            $this->checkPasswordHash($data['password'], $actor->password);
-
-            $this->login($actor);
-
-            CompanyService::loadCompanyToSession($actor);
+            if($this->checkPasswordHash($data['password'], $actor->password)){   
+                $this->login($actor);
+                CompanyService::loadCompanyToSession($actor);
+            } else{
+                return url()->previous();
+            }
         }
 
         return $this->getRedirectLoginRoute($actor);
@@ -91,15 +92,7 @@ class AuthService {
         }
 
         if($actor instanceof User){
-            $userRoleName = $actor->roleInCompany(session('company'))->name;
-
-            if($userRoleName == 'manager'){
-                return route('dashboard.psychosocial');
-            }
-            
-            if($userRoleName == 'employee'){
-                return route('welcome.user');
-            }
+            return route('welcome.user');
         }
     }
 

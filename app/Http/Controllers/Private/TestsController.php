@@ -3,15 +3,9 @@
 namespace App\Http\Controllers\Private;
 
 use App\Helpers\AuthGuardHelper;
-use App\Models\Collection;
-use App\Models\CustomQuestion;
-use App\Models\CustomTest;
-use App\Models\PendingTestAnswer;
-use App\Models\Test;
+use App\Models\CustomCollection;
 use App\Models\UserAnswer;
 use App\Models\UserCollection;
-use App\Models\UserCustomAnswer;
-use App\Models\UserCustomTest;
 use App\Models\UserTest;
 use App\Services\TestService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -27,25 +21,9 @@ class TestsController
         $this->testService = $testService;
     }
 
-    public function __invoke(Collection $collection, $testIndex = 1)
+    public function __invoke(CustomCollection $collection, $testIndex = 1)
     {
-        $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-        $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
-        
-        $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase)->filter(function($test){
-            if($test instanceof CustomTest){
-                return !$test->is_deleted;
-            }
-            
-            if($test->customTest){
-                if($test->customTest->company_id == session('company')->id){
-                    return !$test->customTest->is_deleted ? true : false;
-                }
-            }
-
-            return true;
-        });
-
+        $tests = $collection->tests;
         $test = $tests->firstWhere('order', $testIndex);
 
         if($test == null){
@@ -55,48 +33,15 @@ class TestsController
             }
         }
 
-        $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
-            $relatedDefaultQuestion = $question->relatedQuestion;
-
-            return $relatedDefaultQuestion ? $relatedDefaultQuestion : $question;
-        });
-
-        $test->setRelation('questions', $mergedQuestions->shuffle());
-
-
         // $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', AuthGuardHelper::user()->id)->where('test_id', '=', $test->id)->get();
 
         return view('private.tests.test', compact('test', 'testIndex', /*'pendingAnswers',*/ 'collection'));
     }
 
-    public function handleTestSubmit(Request $request, Collection $collection, $testIndex)
+    public function handleTestSubmit(Request $request, CustomCollection $collection, $testIndex)
     {
-        $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-        $customTestsOnDatabase = $collection->customTests()->where('company_id', session('company')->id)->with('questions')->get();
-
-        $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase)->filter(function($test){
-            if($test instanceof CustomTest){
-                return !$test->is_deleted;
-            }
-            
-            if($test->customTest){
-                if($test->customTest->company_id == session('company')->id){
-                    return !$test->customTest->is_deleted ? true : false;
-                }
-            }
-
-            return true;
-        });
-        
+        $tests = $collection->tests;
         $test = $tests->firstWhere('order', $testIndex);
-        
-        $mergedQuestions = $test->questions->where('is_deleted', false)->map(function($question){
-            $relatedDefaultQuestion = $question->relatedQuestion;
-
-            return $relatedDefaultQuestion ? $relatedDefaultQuestion : $question;
-        });
-
-        $test->setRelation('questions', $mergedQuestions);
         
         $validationRules = $this->generateValidationRules($test);
         $validatedData = $request->validate($validationRules);
@@ -106,14 +51,14 @@ class TestsController
         if ($testIndex == $tests->max('order')) {
             $testAnswers = $this->getTestAnswersFromSession($collection);
             $storedAnswers = $this->storeResultsOnDatabase($collection, $testAnswers);
-            
+
             if (! $storedAnswers) {
                 return back();
             }
 
             $request->session()->forget(array_keys($testAnswers));
 
-            if ($collection->key_name == 'organizational-climate') {
+            if ($collection['collection_id'] == 2) {
                 return to_route('feedbacks.create');
             }
 
@@ -126,21 +71,13 @@ class TestsController
     private function generateValidationRules($test): array
     {
         $validationRules = $test->questions->mapWithKeys(function($question, $id){
-            if($question instanceof CustomQuestion){
-                if($question->question_id){
-                    return ['custom_' . $question->question_id => 'required'];
-                }else{
-                    return ['custom_' . $question->id => 'required'];
-                }
-            } else{
-                return ['default_' . $question->id => 'required'];
-            }
+            return [$question->id => 'required'];
         });
 
         return $validationRules->toArray();
     }
 
-    private function getTestAnswersFromSession(Collection $collection): array
+    private function getTestAnswersFromSession(CustomCollection $collection): array
     {
         $testAnswers = collect(session()->all())
             ->filter(function ($_, $key) use ($collection) {
@@ -151,7 +88,7 @@ class TestsController
         return $testAnswers;
     }
 
-    private function storeResultsOnDatabase(Collection $collection, array $testAnswers): array
+    private function storeResultsOnDatabase(CustomCollection $collection, array $testAnswers): array
     {
         $compiledTestAnswers = Collect($testAnswers)->mapWithKeys(function($answers, $testSessionKey){
             $sessionKeyExploded = explode('|', $testSessionKey);
@@ -160,53 +97,9 @@ class TestsController
             return [$testKeyName => $answers];
         });
 
-        $defaultTestsOnDatabase = $collection->tests()->with('questions')->get();
-        $customTestsOnDatabase = $collection->customTests()->with('questions')->get();
-
-        $tests = $this->getTestsFromDatabase($collection, $defaultTestsOnDatabase, $customTestsOnDatabase)->filter(function($test){
-            if($test instanceof CustomTest){
-                return !$test->is_deleted;
-            }
-            
-            if($test->customTest){
-                if($test->customTest->company_id == session('company')->id){
-                    return !$test->customTest->is_deleted ? true : false;
-                }
-            }
-
-            return true;
-        });
-
-        $defaultTestsOnRequest = collect();
-        $customTestsOnRequest = collect();
-
-        foreach($compiledTestAnswers as $testKeyName => $answers){
-            $relatedTestOnDatabase = $tests->firstWhere('key_name', $testKeyName);
-
-            $defaultQuestionAnswers = collect();
-            $customQuestionAnswers = collect();
-
-            foreach($answers as $key => $value){
-                if(str_starts_with($key, 'default')){
-                    $defaultQuestionAnswers->put($key, $value);
-                } else{
-                    $customQuestionAnswers->put($key, $value);
-                }
-            }
-
-            $answers = [
-                'default' => $defaultQuestionAnswers,
-                'custom' => $customQuestionAnswers
-            ];
-
-            if($relatedTestOnDatabase instanceof CustomTest){
-                $customTestsOnRequest->put($testKeyName, $answers);
-            }else{
-                $defaultTestsOnRequest->put($testKeyName, $answers);
-            }
-        }
+        $tests = $collection->tests;
         
-        DB::transaction(function() use($collection, $defaultTestsOnRequest, $customTestsOnRequest, $tests){
+        DB::transaction(function() use($collection, $tests, $compiledTestAnswers){
             $newUserCollection = UserCollection::create([
                 'user_id' => AuthGuardHelper::user()->id,
                 'collection_id' => $collection->id,
@@ -215,97 +108,34 @@ class TestsController
                 'updated_at' => now(),
             ]);
 
-            $defaultTestsOnRequest->each(function($defaultTest, $testKeyName) use($newUserCollection, $tests) {
-                // criar o user_test
-                $relatedTestOnDatabase = $tests->firstWhere('key_name', $testKeyName);
-
-                $mergedQuestions = $relatedTestOnDatabase->questions->where('is_deleted', false)->map(function($question){
-                    $relatedDefaultQuestion = $question->relatedQuestion;
-                    return $relatedDefaultQuestion ? $relatedDefaultQuestion : $question;
-                });
-
-
-
+            $tests->each(function($test) use($newUserCollection, $compiledTestAnswers) {
                 $userTest = UserTest::create([
                     'user_collection_id' => $newUserCollection->id,
-                    'test_id' => $relatedTestOnDatabase->id,
+                    'test_id' => $test->id,
                 ]);
 
-                $hasDefaultQuestions = isset($defaultTest['default']) && count($defaultTest['default']) > 0;
-       
-                if($hasDefaultQuestions){    
-                    // armazenar respostas padrão
-                    Collect($defaultTest['default'])->each(function($defaultQuestionAnswer, $key) use($userTest, $mergedQuestions){
-                        $questionId = str_replace('default_', '', $key);
+                $testAnswers = $compiledTestAnswers[$test->key_name];
 
-                        $relatedQuestionOnDatabase = $mergedQuestions->firstWhere('id', $questionId);            
-                        $relatedOptionOnDatabase = $relatedQuestionOnDatabase->options->firstWhere('value', $defaultQuestionAnswer);
-                        
-                        UserAnswer::create([
-                            'question_option_id' => $relatedOptionOnDatabase->id,
-                            'question_id' => $relatedQuestionOnDatabase->id,
-                            'user_test_id' => $userTest->id,
-                            'user_id' => AuthGuardHelper::user()->id,
-                            'value' => $defaultQuestionAnswer,
-                        ]);
-                    });
-                }
+                $test->questions->each(function($question) use($userTest, $testAnswers) {
+                    $questionAnswer = $testAnswers[$question->id];
 
-                $hasCustomQuestions = isset($defaultTest['custom']) && count($defaultTest['custom']) > 0;
-
-                // se necessário, criar user_custom_test
-                if($hasCustomQuestions){
-                    $relatedCustomTestOnDatabase = $relatedTestOnDatabase->customTest;
-
-                    $userCustomTest = UserCustomTest::create([
-                        'user_collection_id' => $newUserCollection->id,
-                        'custom_test_id' => $relatedCustomTestOnDatabase->id,
+                    $option = $question->options->firstWhere('value', $questionAnswer);
+                    
+                    UserAnswer::create([
+                        'question_option_id' => $option->id,
+                        'question_id' => $question->id,
+                        'user_test_id' => $userTest->id,
+                        'user_id' => AuthGuardHelper::user()->id,
+                        'value' => $questionAnswer,
                     ]);
-
-                    // armazenar respostas custom
-                    Collect($defaultTest['custom'])->each(function($customQuestionAnswer, $key) use($userCustomTest, $mergedQuestions){
-                        $questionId = str_replace('custom_', '', $key);
-
-                        $relatedCustomQuestionOnDatabase = $mergedQuestions->firstWhere('id', $questionId);            
-                        $relatedCustomOptionOnDatabase = $relatedCustomQuestionOnDatabase->options->firstWhere('value', $customQuestionAnswer);
-
-                        UserCustomAnswer::create([
-                            'user_custom_test_id' => $userCustomTest->id,
-                            'custom_question_id' => $relatedCustomQuestionOnDatabase->id,
-                            'custom_question_option_id' => $relatedCustomOptionOnDatabase->id,
-                        ]);
-
-                    });
-                }
+                });  
             });
-
-            $customTestsOnRequest->each(function($customTest, $testKeyName) use($newUserCollection, $tests) {
-                $relatedCustomTestOnDatabase = $tests->firstWhere('key_name', $testKeyName);
-                
-                $userCustomTest = UserCustomTest::create([
-                    'user_collection_id' => $newUserCollection->id,
-                    'custom_test_id' => $relatedCustomTestOnDatabase->id,
-                ]);
-
-                Collect($customTest['custom'])->each(function($customQuestionAnswer, $key) use($relatedCustomTestOnDatabase, $userCustomTest){
-                    $questionId = str_replace('custom_', '', $key);
-
-                    $relatedCustomQuestionOnDatabase = $relatedCustomTestOnDatabase->questions->firstWhere('id', $questionId);            
-                    $relatedCustomOptionOnDatabase = $relatedCustomQuestionOnDatabase->options->firstWhere('value', $customQuestionAnswer);
-
-                    UserCustomAnswer::create([
-                        'user_custom_test_id' => $userCustomTest->id,
-                        'custom_question_id' => $relatedCustomQuestionOnDatabase->id,
-                        'custom_question_option_id' => $relatedCustomOptionOnDatabase->id,
-                    ]);
-                });
-            }); 
         });
 
         return $compiledTestAnswers->toArray();
     }
 
-    private function getTestsFromDatabase(Collection $collection, EloquentCollection $defaultTestsOnDatabase,  EloquentCollection $customTestsOnDatabase){
+    private function getTestsFromDatabase(CustomCollection $collection, EloquentCollection $defaultTestsOnDatabase,  EloquentCollection $customTestsOnDatabase){
         $newCustomTestsOnDatabase = $customTestsOnDatabase->whereNull('test_id');
 
         $compiled = $defaultTestsOnDatabase->map(function($test) use($collection, $customTestsOnDatabase) {
@@ -338,5 +168,4 @@ class TestsController
 
         return $compiled;
     }
-
 }
