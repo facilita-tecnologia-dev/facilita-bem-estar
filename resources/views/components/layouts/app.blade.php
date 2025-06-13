@@ -12,8 +12,8 @@
 
     {{-- <link rel="shortcut icon" href="{{ asset('assets/icon-facilita.svg') }}" type="image/x-icon"> --}}
 
-    @vite(['resources/css/app.css'])
-    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-C9fhWCIr.css') }}"> --}}
+    {{-- @vite(['resources/css/app.css']) --}}
+    <link rel="stylesheet" href="{{ asset('build/assets/app-DpN9Z-qG.css') }}">
     <title>Facilita Saúde Mental</title>
 </head>
 <body
