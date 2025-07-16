@@ -62,24 +62,30 @@ class PsychosocialMainController
 
         if($psychosocialCampaign){
             $psychosocialCollection = $psychosocialCampaign['collection'];
-
+            
             $customTests = $psychosocialCollection
-            ->tests()
-            ->with('userTests', function($query) use($request) {
-                $query
-                ->whereYear('created_at', $request->year ?? Carbon::now()->year)
-                ->whereHas('parentCollection', function ($query) {
+                ->tests()
+                ->with('userTests', function($query) use($request) {
                     $query
-                    ->where('company_id', session('company')->id)
-                    ->whereHas('userOwner', function ($query) {
-                        $this->filterService->apply($query);
-                    });
+                    ->select('id', 'user_collection_id', 'test_id')
+                    ->whereYear('created_at', $request->year ?? Carbon::now()->year)
+                    ->whereHas('parentCollection', function ($query) {
+                        $query
+                        ->where('company_id', session('company')->id)
+                        ->whereHas('userOwner', function ($query) {
+                            $this->filterService->apply($query);
+                        });
+                    })
+                    ->withAvg(['answers as average_value'], 'value')
+                    ->with([
+                        'parentCollection' => function ($query) {
+                            $query->select('id', 'user_id')->with(['userOwner:id' ]);
+                        }
+                    ]);
                 })
-                ->withAvg(['answers as average_value'], 'value')
-                ->with(['parentCollection.userOwner']);
-            })
-            ->get();
+                ->get();
 
+            // dd($customTests[0]['userTests'][0]);
             $testTypes = Test::where('collection_id', 1)
             ->withRisks(function($query) use($request) {
                 $query->withRelatedQuestions(function($query) use($request) {

@@ -11,6 +11,13 @@
                     Resultado detalhado da avaliação de riscos psicossociais que necessitam intervenção.
                 </x-structure.message>
 
+                @can('action-plan-edit')
+                    <div class="w-full md:w-fit">
+                        <x-action href="{{ route('action-plan.show', App\Models\ActionPlan::firstWhere('company_id', session('company')->id)) }}" width="full">
+                            Editar Plano de Ação
+                        </x-action>
+                    </div>
+                @endcan
                 <div class="w-full md:w-fit">
                     <x-action href="{{ route('dashboard.psychosocial.risks.pdf') }}" width="full">
                         Visualizar Inventário de Riscos

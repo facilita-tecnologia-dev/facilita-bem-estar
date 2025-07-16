@@ -28,7 +28,7 @@ class CompanyCampaignController
     {
         Gate::authorize('campaign-index');
         $companyCampaigns = Company::firstWhere('id', session('company')->id)->campaigns()->with('collection')->paginate(15);
-
+        // dd($companyCampaigns);
         return view('private.campaign.index', compact('companyCampaigns'));
     }
 
@@ -56,7 +56,7 @@ class CompanyCampaignController
         $companyHasSameCampaignThisYear = session('company')->hasCampaignThisYear($collectionId);
         
         if ($companyHasSameCampaignThisYear) {
-            return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes de '.$companyHasSameCampaignThisYear->collection->name.' em 2025.');
+            return back()->with('message', 'Sua empresa já cadastrou uma campanha de testes com o mesmo tipo em ' . now()->year . '.');
         }
 
         $this->campaignRepository->store($request);

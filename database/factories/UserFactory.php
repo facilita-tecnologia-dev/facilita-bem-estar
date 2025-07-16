@@ -34,6 +34,7 @@ class UserFactory extends Factory
         return [
             'name' => $faker->name(),
             'cpf' => $faker->unique()->cpf(),
+            'email' => $faker->email(),
             'birth_date' => $faker->date($format = 'Y-m-d', $max = '2007-01-01', $min = '1930-01-01'),
             'gender' => $faker->randomElement(GenderEnum::cases())->value,
             'department' => $faker->randomElement(DepartmentEnum::cases())->value,

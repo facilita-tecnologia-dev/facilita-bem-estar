@@ -43,17 +43,7 @@
 
                         <x-filter-actions
                             :filtersApplied="$filtersApplied"
-                            :modalFilters="[
-                                'gender', 
-                                'department', 
-                                'occupation', 
-                                'work_shift', 
-                                'marital_status', 
-                                'education_level', 
-                                'age_range', 
-                                'admission_range', 
-                                'year'
-                            ]" 
+                            :modalFilters="['gender', 'department', 'occupation', 'work_shift', 'marital_status', 'education_level', 'age_range', 'admission_range', 'year']" 
                         />
                     </div>
                 </div>
