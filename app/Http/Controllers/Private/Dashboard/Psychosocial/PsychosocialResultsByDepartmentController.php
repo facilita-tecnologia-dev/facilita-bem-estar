@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Private\Dashboard\Psychosocial;
 
+use App\Enums\RiskLevelEnum;
+use App\Enums\RiskSeverityEnum;
 use App\Models\Test;
 use App\Services\TestService;
 use App\Services\User\UserFilterService;
@@ -23,15 +25,17 @@ class PsychosocialResultsByDepartmentController
         $this->filterService = $filterService;
     }
 
-    public function __invoke(Request $request, $testName)
+    public function __invoke(Request $request, $testName, $riskName)
     {
         Gate::authorize('psychosocial-dashboard-view');
+        
         $this->pageData = $this->query($request, $testName);
 
-        $resultsPerDepartment = $this->getCompiledPageData();
+        $resultsPerDepartment = $this->getCompiledPageData($riskName);
 
         return view('private.dashboard.psychosocial.by-department', compact(
             'testName',
+            'riskName',
             'resultsPerDepartment',
         ));
     }
@@ -48,8 +52,9 @@ class PsychosocialResultsByDepartmentController
         if($psychosocialCampaign){
             $psychosocialCollection = $psychosocialCampaign['collection'];
 
-            $customTests = $psychosocialCollection
+            $customTest = $psychosocialCollection
                 ->tests()
+                ->where('display_name', $testName)
                 ->with('userTests', function($query) use($request, $testName) {
                     $query
                     ->justOneTest($testName)
@@ -62,11 +67,13 @@ class PsychosocialResultsByDepartmentController
                         });
                     })
                     ->withAvg(['answers as average_value'], 'value')
+                    ->withAnswers()
                     ->with(['parentCollection.userOwner']);
                 })
-            ->get();
+            ->first();
 
-            $testTypes = Test::where('collection_id', 1)
+            $testType = Test::where('collection_id', 1)
+                ->where('display_name', $testName)
                 ->withRisks(function($query) use($request) {
                     $query->withRelatedQuestions(function($query) use($request) {
                         $query
@@ -75,39 +82,32 @@ class PsychosocialResultsByDepartmentController
                         ->withAnswerAverage($request);
                     });
                 })
-            ->get();
-            
-            foreach($testTypes as $test){
-                $relatedTest = $customTests->firstWhere('key_name', $test['key_name']);
-                $test->userTests = $relatedTest['userTests'];
-            }
+            ->first();
+        
+            $testType->userTests = $customTest['userTests'];
         }
 
-        return $testTypes ?? [];
+        return $testType ?? [];
     }
 
-    private function getCompiledPageData()
+    private function getCompiledPageData($riskName)
     {
         $testCompiled = [];
         
-        foreach($this->pageData as $testType){
-            $this->compileTests($testType, $testCompiled);
-        }
+        $this->compileTests($this->pageData, $riskName, $testCompiled);
 
         return $testCompiled;
     }
 
-    private function compileTests($testType, &$testCompiled)
+    private function compileTests($testType, $riskName, &$testCompiled)
     {
-        $testType->average = round($testType['userTests']->avg('average_value'), 2);
-
         foreach($testType['userTests'] as $userTest){
             $userDepartment = $userTest['parentCollection']['userOwner']['department'];
             $this->sumDepartmentCount($userDepartment, $testCompiled);
 
-            $evaluatedTest = $this->testService->evaluateTest($testType, $userTest, session('company')->metrics);
+            $evaluatedTest = $this->testService->evaluateIndividualTest($testType, $userTest, session('company')->metrics);
 
-            $this->updateTestSeverities($userDepartment, $evaluatedTest, $testCompiled);
+            $this->updateTestSeverities($userDepartment, $evaluatedTest, $riskName, $testCompiled);
             $this->sortSeveritiesByDepartment($userDepartment, $testCompiled);
         }
     }
@@ -121,15 +121,17 @@ class PsychosocialResultsByDepartmentController
         $testCompiled[$userDepartment]['total']++;
     }
 
-    private function updateTestSeverities(string $userDepartment, array $evaluatedTest, array &$testCompiled)
+    private function updateTestSeverities(string $userDepartment, array $evaluatedTest, string $riskName, array &$testCompiled)
     {
-        if (! isset($testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']])) {
-            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count'] = 0;
-            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_color'] = $evaluatedTest['severity_color'];
-            $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['severity_key'] = $evaluatedTest['severity_key'];
+        $riskLevel = RiskLevelEnum::labelFromValue($evaluatedTest['risks'][$riskName]['riskLevel']);
+        
+        if (! isset($testCompiled[$userDepartment]['severities'][$riskLevel])) {
+            $testCompiled[$userDepartment]['severities'][$riskLevel]['count'] = 0;
+            $testCompiled[$userDepartment]['severities'][$riskLevel]['severity_key'] = $evaluatedTest['risks'][$riskName]['riskLevel'];
+            $testCompiled[$userDepartment]['severities'][$riskLevel]['severity_name'] = $riskLevel;
         }
 
-        $testCompiled[$userDepartment]['severities'][$evaluatedTest['severity_title']]['count']++;
+        $testCompiled[$userDepartment]['severities'][$riskLevel]['count']++;
     }
 
     private function sortSeveritiesByDepartment(string $userDepartment, array &$testCompiled)

@@ -1,6 +1,7 @@
-renderPsychosocialTestsParticipation();
-renderPsychosocialCharts();
-renderPsychosocialRiskBars()
+document.addEventListener('DOMContentLoaded', function(){
+    renderPsychosocialTestsParticipation();
+    renderPsychosocialRiskBars()
+});
 
 function renderPsychosocialRiskBars(){
     const riskBars = document.querySelectorAll('[data-role="risk-bar"]');
@@ -9,19 +10,8 @@ function renderPsychosocialRiskBars(){
         const bar = risk.querySelector('.bar');
         const barWidth = (value / 4) * 100; 
         
-        console.log(value)
-        let barBGColor = '';
+        let barBGColor = riskColors[value] ?? riskColors.default;
         
-        if(value == 1){
-            barBGColor =  `#4CAF5075`
-        } else if(value == 2){
-            barBGColor =  `#eddd5875`
-        } else if(value == 3){
-            barBGColor =  `#dc933250`
-        } else{
-            barBGColor =  `#f5554775`
-        }
-
         bar.style.backgroundColor = barBGColor;
         bar.style.width = barWidth.toFixed() + "%";
     })
@@ -52,22 +42,10 @@ function renderPsychosocialTestsParticipation(){
     createBarChart(wrapper, chartId, labels, data, tooltips, colors);
 }
 
-function renderPsychosocialCharts(){
-    const keys = Object.keys(psychosocialRiskResults);
-    Object.values(psychosocialRiskResults).forEach((testType, index) => {
-        const data = Object.values(testType.severities).map(test => {
-            return test.count
-        });
-    
-        const chartId = `psychosocial_chart_${index}`;
-        const wrapper = document.getElementById(keys[index])
-
-        const colors = Object.values(testType.severities).map(test => {
-            return severityColors[test.severity_color]
-        });
-
-        const labels = Object.keys(testType.severities)
-
-        createDoughnutChart(wrapper, chartId, labels, data, colors, chartLabelTypes.DETAILED_PERCENT);
-    });   
-}
+const riskColors = {
+    1: '#A8E6CFCC',
+    2: '#DDE26F75',
+    3: '#F6B26B75',
+    4: '#F26C6C75',
+    default: '#333',
+};

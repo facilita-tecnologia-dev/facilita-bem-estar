@@ -63,7 +63,7 @@
                     </x-table.body>
                 </x-table>
                 
-                {{ $userFeedbacks->links() }}
+                {{ $userFeedbacks->links('vendor.pagination.tailwind') }}
             @else
                 <div class="w-full flex flex-col items-center gap-2">
                     <img src="{{ asset('assets/registers-not-found.svg') }}" alt="" class="max-w-72">

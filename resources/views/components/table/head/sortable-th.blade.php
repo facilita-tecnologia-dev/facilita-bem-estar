@@ -16,6 +16,7 @@
     if($queryParam){
         $query = array_merge($queryParam, $query);
     }
+
 @endphp
 
 <span data-role="th" {{ $attributes->merge(['class' => 'text-sm sm:text-base font-semibold']) }}>

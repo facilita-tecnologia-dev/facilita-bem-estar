@@ -14,11 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias([
-            // 'can-access-psychosocial' => CanAccessPsychosocialMiddleware::class,
-            // 'can-access-organizational' => CanAccessOrganizationalMiddleware::class,
-            // 'is-manager' => InternalManagerMiddleware::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -17,6 +17,39 @@ class RiskService
         return $handler;
     }
 
+    public static function evaluateRisks($testType, $metrics)
+    {
+        $risksList = [];
+
+        foreach ($testType['risks'] as $risk) {
+            $handler = RiskService::getRiskEvaluatorHandler($risk);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $testType['average'], $metrics);
+            
+            $risksList[$risk->name]['riskLevel'] = $evaluatedRisk['riskLevel'];
+            $risksList[$risk->name]['probability'] = ProbabilityEnum::labelFromValue($evaluatedRisk['probability']);
+            $risksList[$risk->name]['severity'] = RiskSeverityEnum::labelFromValue($evaluatedRisk['riskSeverity']);
+            $risksList[$risk->name]['controlActions'] = RiskService::getControlActions($risk, $evaluatedRisk['riskLevel']);
+        }
+
+        return $risksList;
+    }
+
+    public static function evaluateIndividualTestRisks($testType, $userTest, $metrics)
+    {
+        $risksList = [];
+        foreach ($testType['risks'] as $risk) {
+            $handler = RiskService::getRiskEvaluatorHandler($risk);
+            $evaluatedRisk = $handler->evaluateRisk($risk, $userTest['average_value'], $metrics, $userTest);
+            
+            $risksList[$risk->name]['riskLevel'] = $evaluatedRisk['riskLevel'];
+            $risksList[$risk->name]['probability'] = ProbabilityEnum::labelFromValue($evaluatedRisk['probability']);
+            $risksList[$risk->name]['severity'] = RiskSeverityEnum::labelFromValue($evaluatedRisk['riskSeverity']);
+            $risksList[$risk->name]['controlActions'] = RiskService::getControlActions($risk, $evaluatedRisk['riskLevel']);
+        }
+
+        return $risksList;
+    }
+
     public static function calculateProbability(float $average, int $min = null, int $max = null, bool $inverted = false)
     {
         $probability = $inverted ? 4 : 1;
@@ -82,21 +115,5 @@ class RiskService
         });
 
         return $controlActions;
-    }
-
-    public static function evaluateRisks($testType, $metrics)
-    {
-        $risksList = [];
-
-        foreach ($testType['risks'] as $risk) {
-            $handler = RiskService::getRiskEvaluatorHandler($risk);
-            $evaluatedRisk = $handler->evaluateRisk($risk, $testType['average'], $metrics);
-            $risksList[$risk->name]['riskLevel'] = $evaluatedRisk['riskLevel'];
-            $risksList[$risk->name]['probability'] = ProbabilityEnum::labelFromValue($evaluatedRisk['probability']);
-            $risksList[$risk->name]['severity'] = RiskSeverityEnum::labelFromValue($evaluatedRisk['riskSeverity']);
-            $risksList[$risk->name]['controlActions'] = RiskService::getControlActions($risk, $evaluatedRisk['riskLevel']);
-        }
-
-        return $risksList;
     }
 }

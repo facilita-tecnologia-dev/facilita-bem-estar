@@ -13,7 +13,7 @@ class GestaoIndividualista implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, ?UserTest $userTest = null): array
     {
         $riskSeverity = 2;
 
@@ -33,7 +33,7 @@ class GestaoIndividualista implements RiskEvaluatorInterface
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
-                $averageAnswers = $riskQuestion->average_value;
+                $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
                 $parentQuestionStatement = $riskQuestion['parent_question_statement'];
     
                 if ($riskQuestion['parent_question_statement'] == 'Aqui os gestores preferem trabalhar individualmente') {

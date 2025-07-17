@@ -61,19 +61,10 @@ class UserTest extends Model
     {
         return $query->with([
             'answers' => function ($q) {
-                $q->select('id', 'user_test_id', 'question_id', 'question_option_id', 'value');
+                $q->select('id', 'user_test_id', 'question_id', 'value');
             },
         ]);
     }
-    // public function scopeWithAnswers(Builder $query): Builder
-    // {
-    //     return $query->with([
-    //         'answers' => function ($q) {
-    //             $q->select('id', 'user_test_id', 'question_id', 'question_option_id')
-    //                 ->withRelatedOptionValue();
-    //         },
-    //     ]);
-    // }
 
     public function scopeWithAnswersSum(Builder $query): Builder
     {

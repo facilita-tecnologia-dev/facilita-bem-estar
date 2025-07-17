@@ -50,18 +50,18 @@
 
                 <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach ($psychosocialRiskResults as $testTypeName => $results)
-                        <a href="{{ route('dashboard.psychosocial.by-department', $testTypeName)}}" class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center shadow-md rounded-md bg-gray-100/60 relative left-0 top-0 hover:left-1 hover:-top-1 transition-all">
+                        <div class="w-full px-2 py-6 flex flex-col justify-start gap-5 items-center shadow-md rounded-md bg-gray-100/60">
                             <p class="text-center font-semibold truncate">{{ $testTypeName }}</p>
-                            <x-charts.doughnut :id="$testTypeName"/>
+                            {{-- <x-charts.doughnut :id="$testTypeName"/> --}}
                             
                             @if(isset($results['risks']))
-                                <div class="w-full space-y-2 px-4">
+                                <div class="w-full flex flex-col gap-1 px-4">
                                     @foreach ($results['risks'] as $riskName => $risk)
-                                        <x-charts.risk-bar :riskName="$riskName" :risk="$risk" />
+                                        <x-charts.risk-bar :riskName="$riskName" :risk="$risk" href="{{ route('dashboard.psychosocial.by-department', ['testName' => $testTypeName, 'riskName' => $riskName ])}}" />
                                     @endforeach
                                 </div>
                             @endif
-                        </a>
+                        </div>
                     @endforeach
                 </div>
                 

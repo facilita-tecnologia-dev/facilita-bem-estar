@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('custom_tests', function (Blueprint $table) {
-            $table->string('key_name')->nullable();
-            $table->string('reference')->nullable();
-            $table->string('number_of_questions')->nullable();
-            $table->string('handler_type')->nullable();
-            $table->text('statement')->nullable();
-        });
+        // Schema::table('custom_tests', function (Blueprint $table) {
+        //     $table->string('key_name')->nullable();
+        //     $table->string('reference')->nullable();
+        //     $table->string('number_of_questions')->nullable();
+        //     $table->string('handler_type')->nullable();
+        //     $table->text('statement')->nullable();
+        // });
     }
 
     /**

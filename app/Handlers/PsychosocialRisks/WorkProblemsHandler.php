@@ -15,39 +15,21 @@ use App\Services\RiskService;
 
 class WorkProblemsHandler
 {
-    public function process(Test $testType, UserTest | CustomTest $userTest, Collection $metrics): array
+    public function processTests(Test $testType, Collection $metrics): array
     {
         $risksList = RiskService::evaluateRisks($testType, $metrics);
-        $testScore = $this->calculateScore($userTest, $userTest['average_value']);
-
+        
         return [
-            'severity_title' => $testScore['severityTitle'],
-            'severity_color' => $testScore['severityColor'],
-            'severity_key' => $testScore['severityKey'],
             'risks' => $risksList,
         ];
     }
 
-    public function calculateScore($userTest, $average)
+    public function processIndividualTest(Test $testType, UserTest $userTest, Collection $metrics): array
     {
-        if ($average >= 3.7) {
-            $severityTitle = 'Risco Alto';
-            $severityColor = SeverityEnum::CRITICO->value;
-            $severityKey = 5;
-        } elseif ($average >= 2.3) {
-            $severityTitle = 'Risco Médio';
-            $severityColor = SeverityEnum::MEDIO->value;
-            $severityKey = 3;
-        } else {
-            $severityTitle = 'Risco Baixo';
-            $severityColor = SeverityEnum::MINIMO->value;
-            $severityKey = 1;
-        }
-
+        $risksList = RiskService::evaluateIndividualTestRisks($testType, $userTest, $metrics);
+        
         return [
-            'severityTitle' => $severityTitle,
-            'severityColor' => $severityColor,
-            'severityKey' => $severityKey,
+            'risks' => $risksList,
         ];
     }
 }

@@ -36,8 +36,8 @@ class PsychosocialMainController
         $this->pageData = $this->query($request);
 
         $psychosocialRiskResults = $this->getCompiledPageData();
-        $userTests = isset($this->pageData[0]['userTests']) ? $this->pageData[0]['userTests'] : collect();
-
+        
+        $userTests = isset($this->pageData) ? $this->pageData : collect();
         $psychosocialTestsParticipation = $this->psychosocialService->getParticipation($userTests);
         
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
@@ -62,9 +62,10 @@ class PsychosocialMainController
 
         if($psychosocialCampaign){
             $psychosocialCollection = $psychosocialCampaign['collection'];
-            
+
             $customTests = $psychosocialCollection
                 ->tests()
+                ->select('id', 'custom_collection_id', 'display_name', 'key_name', 'handler_type')
                 ->with('userTests', function($query) use($request) {
                     $query
                     ->select('id', 'user_collection_id', 'test_id')
@@ -79,13 +80,12 @@ class PsychosocialMainController
                     ->withAvg(['answers as average_value'], 'value')
                     ->with([
                         'parentCollection' => function ($query) {
-                            $query->select('id', 'user_id')->with(['userOwner:id' ]);
+                            $query->select('id', 'user_id')->with(['userOwner:id,department' ]);
                         }
                     ]);
                 })
-                ->get();
+            ->get();
 
-            // dd($customTests[0]['userTests'][0]);
             $testTypes = Test::where('collection_id', 1)
             ->withRisks(function($query) use($request) {
                 $query->withRelatedQuestions(function($query) use($request) {
@@ -95,13 +95,13 @@ class PsychosocialMainController
                     ->withAnswerAverage($request);
                 });
             })
+            ->select('id', 'collection_id', 'key_name', 'display_name', 'handler_type')
             ->get();
-            
+
             foreach($testTypes as $test){
                 $relatedTest = $customTests->firstWhere('key_name', $test['key_name']);
                 $test->userTests = $relatedTest['userTests'];
             }
-
         }
 
        return $testTypes ?? [];
@@ -122,31 +122,16 @@ class PsychosocialMainController
 
     private function compileTests($testType, &$testCompiled)
     {
+        $testCompiled[$testType['display_name']] = [];
+
         $testType->average = round($testType['userTests']->avg('average_value'), 2);
         
-        foreach($testType['userTests'] as $userTest){
-            $evaluatedTest = $this->testService->evaluateTest($testType, $userTest, session('company')->metrics);
-            $this->updateTestSeverities($testType, $evaluatedTest, $testCompiled);
-        }
-        
+        $evaluatedTest = $this->testService->evaluateTests($testType, session('company')->metrics);
+
         foreach($evaluatedTest['risks'] as &$risk){
             $risk['riskCaption'] = RiskLevelEnum::labelFromValue($risk['riskLevel']);
         }
 
         $testCompiled[$testType['display_name']] = array_merge($testCompiled[$testType['display_name']], $evaluatedTest);
     }
-
-    private function updateTestSeverities(Test $testType, array &$evaluatedTest, array &$testCompiled)
-    {
-        if (! isset($testCompiled[$testType['display_name']]['severities'][$evaluatedTest['severity_title']])) {
-            $testCompiled[$testType['display_name']]['severities'][$evaluatedTest['severity_title']] = [
-                'count' => 0,
-                'severity_color' => $evaluatedTest['severity_color'],
-            ];
-        }
-
-        $testCompiled[$testType['display_name']]['severities'][$evaluatedTest['severity_title']]['count'] += 1;
-    }
-
-
 }

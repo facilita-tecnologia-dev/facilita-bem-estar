@@ -13,7 +13,7 @@ class FaltaSuporte implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, ?UserTest $userTest = null): array
     {
         $riskSeverity = 2;
 
@@ -25,7 +25,7 @@ class FaltaSuporte implements RiskEvaluatorInterface
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
-                $averageAnswers = $riskQuestion->average_value;
+                $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
     
                 if (!($averageAnswers <= 2)) {
                     $allAnswersBelowCondition = false;

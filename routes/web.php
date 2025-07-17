@@ -140,8 +140,8 @@ Route::middleware(AuthMiddleware::class)->group(function () {
         Route::get('psicossocial/riscos', PsychosocialRisksController::class)->name('dashboard.psychosocial.risks');
         Route::get('psicossocial/riscos/pdf', [PsychosocialRisksController::class, 'generatePDF'])->name('dashboard.psychosocial.risks.pdf');
 
-        Route::get('psicossocial/{test}/departamentos', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
-        Route::get('psicossocial/{test}/lista', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
+        Route::get('psicossocial/{testName}/{riskName}/departamentos', PsychosocialResultsByDepartmentController::class)->name('dashboard.psychosocial.by-department');
+        Route::get('psicossocial/{testName}/{riskName}/lista', PsychosocialResultsListController::class)->name('dashboard.psychosocial.list');
     });
 
     Route::prefix('empresa/colecoes-de-testes')->group(function(){

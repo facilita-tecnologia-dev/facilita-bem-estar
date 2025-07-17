@@ -47,23 +47,10 @@ class Risk extends Model
 
     public function scopeWithRelatedQuestions(Builder $query, Closure $callback): Builder
     {
-        // return $query->with('relatedQuestions', fn ($query) => $query
-        //     ->withParentQuestionStatement()
-        //     ->withParentQuestionInverted()
-        //     ->withRelatedQuestionAnswer()
-        // );
-
         return $query->with([
             'relatedQuestions' => $callback,
         ]);
     }
-
-    // public function scopeWithRisks(Builder $query, Closure $callback): Builder
-    // {
-    //     return $query->with([
-    //         'risks' => $callback,
-    //     ]);
-    // }
 
     public function scopeWithControlActions(Builder $query): Builder
     {

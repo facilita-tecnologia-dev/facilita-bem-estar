@@ -13,7 +13,7 @@ class FaltaReconhecimento implements RiskEvaluatorInterface
     /**
      * @param  Collection<int, \App\Models\Metric>  $metrics
      */
-    public function evaluateRisk(Risk $risk, float $average, Collection $metrics): array
+    public function evaluateRisk(Risk $risk, float $average, Collection $metrics, ?UserTest $userTest = null): array
     {
         $riskSeverity = 1;
 

@@ -24,7 +24,6 @@ class TestService
 
     public function process(CustomCollection $collection, Test | CustomTest $test, array $answers): bool
     {
-
         $answersValues = array_map(function ($value) {
             return (int) $value;
         }, $answers);
@@ -62,10 +61,18 @@ class TestService
         return true;
     }
 
-    public function evaluateTest(Test | CustomTest $testType, UserTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
+    public function evaluateTests(Test | CustomTest $testType, EloquentCollection $metrics, ?string $collectionKeyName = null,): array
     {        
         $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
-        $evaluatedTest = $handler->process($testType, $userTest, $metrics);
+        $evaluatedTest = $handler->processTests($testType, $metrics);
+
+        return $evaluatedTest;
+    }
+
+    public function evaluateIndividualTest(Test | CustomTest $testType, UserTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null,): array
+    {        
+        $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
+        $evaluatedTest = $handler->processIndividualTest($testType, $userTest, $metrics);
 
         return $evaluatedTest;
     }
