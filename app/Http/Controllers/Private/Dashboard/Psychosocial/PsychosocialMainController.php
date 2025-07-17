@@ -47,7 +47,7 @@ class PsychosocialMainController
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
             'companyHasTests' => session('company')->users()->has('collections')->exists(),
             'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($userTests) > 0 ? count($userTests) : null,
+            'filteredUserCount' => count($userTests[0]['userTests']) > 0 ? count($userTests[0]['userTests']) : null,
         ]);
     }
 

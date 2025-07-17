@@ -61,7 +61,7 @@ class TestService
         return true;
     }
 
-    public function evaluateTests(Test | CustomTest $testType, EloquentCollection $metrics, ?string $collectionKeyName = null,): array
+    public function evaluateTests(Test | CustomTest $testType, EloquentCollection $metrics, ?string $collectionKeyName = null): array
     {        
         $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
         $evaluatedTest = $handler->processTests($testType, $metrics);
@@ -69,7 +69,7 @@ class TestService
         return $evaluatedTest;
     }
 
-    public function evaluateIndividualTest(Test | CustomTest $testType, UserTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null,): array
+    public function evaluateIndividualTest(Test | CustomTest $testType, UserTest $userTest, EloquentCollection $metrics, ?string $collectionKeyName = null): array
     {        
         $handler = $this->handlerFactory->getHandler($testType, $collectionKeyName ?? null);
         $evaluatedTest = $handler->processIndividualTest($testType, $userTest, $metrics);

@@ -65,7 +65,7 @@ class RiskQuestionMap extends Model
     //     ]);
     // }
 
-    public function scopeWithAnswerAverage(Builder $query, Request $request = null): Builder
+    public function scopeWithAnswerAverage(Builder $query, ?Request $request = null): Builder
     {
         return $query
         ->withAvg(['answers as average_value' => function ($query) use($request) {

@@ -12,9 +12,9 @@ use Illuminate\Support\Collection;
 
 class OrganizationalClimateHandler
 {
-    public function process(Test | CustomTest $testType, UserTest $userTest, Collection $metrics): array
+    public function processIndividualTest(Test | CustomTest $testType, UserTest $userTest, Collection $metrics): array
     {
-        $processedAnswers = [];
+      $processedAnswers = [];
         foreach ($userTest->answers as $answer) {
             $questionId = $answer->question_id;
             $processedAnswers[$questionId] = Helper::multiplyAnswer($answer['value']);
