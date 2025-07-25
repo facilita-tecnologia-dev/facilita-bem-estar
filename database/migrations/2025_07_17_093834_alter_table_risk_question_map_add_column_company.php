@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('risk_question_map', function (Blueprint $table) {
-            $table->foreignIdFor(Company::class)->constrained()->onDelete('cascade')->default(1);
+            // $table->foreignIdFor(Company::class)->constrained()->onDelete('cascade')->default(1);
         });
     }
 
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('risk_question_map', function (Blueprint $table) {
-            $table->dropForeignIdFor(Company::class);
+            // $table->dropForeignIdFor(Company::class);
         });
     }
 };
