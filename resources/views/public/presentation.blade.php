@@ -10,10 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/1cb73192b4.js" crossorigin="anonymous"></script>
 
-    {{-- @vite('resources/css/app.css') --}}
-    <link rel="stylesheet" href="{{ asset('build/assets/app-BcQdXe5W.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <title>Facilita Saúde Mental</title>
+    <title>Facilita Saúde Mentala</title>
 </head>
 <body class="bg-gray-100">
     <img src="{{ asset('assets/top-gradient.png') }}" class="block absolute left-0 top-0 w-full h-[700px] object-cover" alt="">
@@ -65,7 +64,7 @@
     <x-structure.section class="relative">
         <div class="flex flex-col gap-8 md:gap-12 items-center">
             <div class="flex flex-col gap-2 items-center">
-                <x-structure.heading tag="h1" >Facilita Saúde Mental</x-structure.heading>
+                <x-structure.heading tag="h1" >Facilita Saúde Mentaaaal</x-structure.heading>
                 <x-structure.text-content>seu parceiro que facilita a gestão da <span class="underline">saúde mental</span> e de <span class="underline">riscos psicossociais</span> no trabalho.</x-structure.text-content>
             </div>
             <img src="{{ asset('assets/mockup-saude-mental.png') }}" class="w-full max-w-[470px] h-fit object-contain" alt="">
