@@ -1,0 +1,30 @@
+name: "Deploy to Hostinger"
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        
+      - name: Setup SSH key and known hosts
+        run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+        chmos 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 151.106.96.153 >> ~/.ssh/known_hosts
+
+      - name: Execute remote deploy
+        run: |
+          ssh -i ~/.ssh/id_rsa u958695462@151.106.96.153 << 'EOF'
+            cd ~/public_html/backup.facilitatecnologia.com.br
+            git pull origin master
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+          EOF
