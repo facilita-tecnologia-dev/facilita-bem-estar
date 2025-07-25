@@ -29,6 +29,7 @@ class CompanyCampaignController
         Gate::authorize('campaign-index');
         $companyCampaigns = Company::firstWhere('id', session('company')->id)->campaigns()->with('collection')->paginate(15);
 
+        
         return view('private.campaign.index', compact('companyCampaigns'));
     }
 
