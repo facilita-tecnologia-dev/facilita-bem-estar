@@ -24,7 +24,7 @@ jobs:
       - name: Execute remote deploy
         run: |
           ssh -i $HOME/.ssh/id_rsa -p 65002 u958695462@151.106.96.153 << 'EOF'
-            cd ~/public_html/backup.facilitatecnologia.com.br
+            cd ~/public_html/facilitatecnologia.com.br/public/backup.facilitatecnologia.com.br
             git pull origin master
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
