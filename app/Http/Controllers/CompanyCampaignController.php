@@ -29,7 +29,7 @@ class CompanyCampaignController
         Gate::authorize('campaign-index');
         $companyCampaigns = Company::firstWhere('id', session('company')->id)->campaigns()->with('collection')->paginate(15);
 
-        
+
         return view('private.campaign.index', compact('companyCampaigns'));
     }
 
@@ -126,7 +126,6 @@ class CompanyCampaignController
             Mail::to($user->email)->queue(new CampaignEmail($user, session('company'), $campaign));
         });
         
-        // return new CampaignEmail($usersWithEmail->first(), session('company'), $campaign);
         return back()->with('message', 'Notificações disparadas com sucesso!');
     }
 }
