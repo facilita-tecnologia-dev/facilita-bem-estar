@@ -14,7 +14,8 @@
                     <x-form action="{{ route('enviar-teste', [$collection, $testIndex]) }}" class="flex-1 flex flex-col gap-5" id="test-form" post>
                         @foreach ($test->questions as $key => $question)
                             @php
-                                $pendingAnswer = $pendingAnswers[$key]->value ?? '';
+                                $sessionKey = $collection->collectionType->key_name . "|" . $test->key_name ."|result";
+                                $pendingAnswer = session($sessionKey)[$question->id] ?? '';
                             @endphp
 
                             <div data-role="test-question" class="w-full flex flex-col gap-2 items-center">

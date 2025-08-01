@@ -34,7 +34,6 @@
                     } else{
                         $optionValue = $option;
                     }
-                    // dump($value, old($name), old($name) == $optionValue || $value == $optionValue ? 'selected' : '');
                 @endphp
 
                 <option class="p-1.5 cursor-pointer rounded-md mt-1 checked:bg-gradient-to-b checked:from-sky-300/50 checked:to-sky-300/50" value="{{ $optionValue }}" {{ in_array($optionValue, old($name, $value ?? [])) ? 'selected' : '' }}>{{ $optionText }}</option>
