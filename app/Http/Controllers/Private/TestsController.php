@@ -25,7 +25,7 @@ class TestsController
     {
         $tests = $collection->tests;
         $test = $tests->firstWhere('order', $testIndex);
-
+        
         if($test == null){
             while($test == null){   
                 $testIndex++;
@@ -33,9 +33,11 @@ class TestsController
             }
         }
 
+        $collectionType = $collection->collectionType;
+
         // $pendingAnswers = PendingTestAnswer::query()->where('user_id', '=', AuthGuardHelper::user()->id)->where('test_id', '=', $test->id)->get();
 
-        return view('private.tests.test', compact('test', 'testIndex', /*'pendingAnswers',*/ 'collection'));
+        return view('private.tests.test', compact('test', 'testIndex', /*'pendingAnswers',*/ 'collection', 'collectionType'));
     }
 
     public function handleTestSubmit(Request $request, CustomCollection $collection, $testIndex)

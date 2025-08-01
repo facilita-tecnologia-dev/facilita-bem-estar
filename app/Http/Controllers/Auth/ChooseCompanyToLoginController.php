@@ -13,13 +13,13 @@ class ChooseCompanyToLoginController
     {
         $userCompanies = Auth::user()->companies;
 
-        return view('auth.login.choose-company', compact('userCompanies'));
+        return view('auth.login.user.choose-company', compact('userCompanies'));
     }
 
     public function attemptInternalLoginWithCompany(Company $company)
     {
         CompanyService::loadCompanyToSession($company);
-        dd('oi');
+
         if (session('company')->id == 2) {
             if (Auth::user()->hasRole('manager')) {
                 return redirect()->route('dashboard.organizational-climate');
