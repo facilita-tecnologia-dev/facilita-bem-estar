@@ -45,7 +45,7 @@
                         <x-table.head.sortable-th class="w-1/2 md:w-48" field="department">
                             Setor
                         </x-table.head.sortable-th>
-                        <x-table.head.sortable-th class="hidden md:block w-24" field="work_shift">
+                        <x-table.head.sortable-th class="hidden md:block w-32" field="work_shift">
                             Turno
                         </x-table.head.sortable-th>
                         <x-table.head.th class="flex-1">Comentário</x-table.head.th>
