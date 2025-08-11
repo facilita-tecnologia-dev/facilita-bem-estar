@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ProbabilityEnum;
 use App\Enums\RiskSeverityEnum;
+use App\Models\ActionPlan;
 use App\Models\Risk;
 use App\RiskEvaluations\RiskEvaluatorFactory;
 use App\RiskEvaluations\RiskEvaluatorInterface;

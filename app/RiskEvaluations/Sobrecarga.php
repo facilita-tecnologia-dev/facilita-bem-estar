@@ -21,7 +21,7 @@ class Sobrecarga implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'extra-hours';
         })->first();
 
-        if($extraHours->value > 75){
+        if($extraHours && $extraHours->value > 75){
             $probability = 4;
         } else {
             $probability = 3;

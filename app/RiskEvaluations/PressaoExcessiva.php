@@ -21,7 +21,7 @@ class PressaoExcessiva implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'turnover';
         })->first();
 
-        if($turnover->value > 50){
+        if($turnover && $turnover->value > 50){
             $probability = 3;
         } else {
             $probability = 2;

@@ -22,7 +22,7 @@ class Esgotamento implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'absenteeism';
         })->first();
 
-        if($absenteeism->value > 75){
+        if($absenteeism && $absenteeism->value > 75){
             $probability = 4;
         } else {
             $probability = 3;

@@ -22,7 +22,7 @@ class RigidezOrganizacional implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'extra-hours';
         })->first();
 
-        if($extraHours->value > 50){
+        if($extraHours && $extraHours->value > 50){
             $probability = 3;
         } else {
             $probability = 2;

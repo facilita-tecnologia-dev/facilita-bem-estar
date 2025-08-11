@@ -22,7 +22,7 @@ class DanosFisicos implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'accidents';
         })->first();
 
-        if($accidents->value > 50){
+        if($accidents && $accidents->value > 50){
             $probability = 3;
         } else {
             $probability = 2;

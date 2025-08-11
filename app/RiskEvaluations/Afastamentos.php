@@ -21,7 +21,7 @@ class Afastamentos implements RiskEvaluatorInterface
             return $companyMetric['metricType'] && $companyMetric['metricType']['key_name'] === 'absences';
         })->first();
 
-        if($absences->value > 75){
+        if($absences && $absences->value > 75){
             $probability = 4;
         } else {
             $probability = 3;
