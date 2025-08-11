@@ -24,7 +24,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
     {
         return DB::transaction(function () use ($row) {
             if ($row['nome_completo'] != null) {
-                $birth_date = $this->convertDate($row['data_de_nascimento']);
+                $birth_date = $this->convertDate($row['data_de_nascimento']) ?? '';
                 $admission = $this->convertDate($row['admissao']);
                 $user = User::firstWhere('cpf', $row['cpf']);
 
@@ -36,9 +36,9 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
                         'occupation' => $row['cargo'],
                         'work_shift' => $row['turno'],
                         'admission' => $admission,
-                        'gender' => $row['sexo'],
-                        'marital_status' => $row['estado_civil'],
-                        'education_level' => $row['grau_de_instrucao'],
+                        'gender' => $row['sexo'] ?? '',
+                        'marital_status' => $row['estado_civil'] ?? '',
+                        'education_level' => $row['grau_de_instrucao'] ?? '',
                         'email' => $row['email'] ?? '',
                     ]);
                 
@@ -57,9 +57,9 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
                     'occupation' => $row['cargo'],
                     'work_shift' => $row['turno'],
                     'admission' => $admission,
-                    'gender' => $row['sexo'],
-                    'marital_status' => $row['estado_civil'],
-                    'education_level' => $row['grau_de_instrucao'],
+                    'gender' => $row['sexo'] ?? '',
+                    'marital_status' => $row['estado_civil'] ?? '',
+                    'education_level' => $row['grau_de_instrucao'] ?? '',
                     'email' => $row['email'] ?? '',
                 ]);
 
@@ -80,15 +80,15 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
     {
         return [
             'nome_completo' => ['required'],
-            'data_de_nascimento' => ['required'],
+            'data_de_nascimento' => ['nullable'],
             'cpf' => ['required'],
             'setor' => ['required'],
             'cargo' => ['required'],
             'turno' => ['required'],
             'admissao' => ['required'],
-            'sexo' => ['required'],
-            'estado_civil' => ['required'],
-            'grau_de_instrucao' => ['required'],
+            'sexo' => ['nullable'],
+            'estado_civil' => ['nullable'],
+            'grau_de_instrucao' => ['nullable'],
             'email' => ['nullable'],
         ];
     }
