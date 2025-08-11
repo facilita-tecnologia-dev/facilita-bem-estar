@@ -108,9 +108,9 @@ class LoginController
 
         $this->authService->login($user);
         
-        if($isTempPassword){
-            return redirect()->to(route('auth.login.redefinir-senha'));
-        }
+        // if($isTempPassword){
+        //     return redirect()->to(route('user.password.update'));
+        // }
 
         return redirect()->to($this->authService->getRedirectLoginRoute($user));
     }

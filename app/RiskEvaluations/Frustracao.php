@@ -25,7 +25,8 @@ class Frustracao implements RiskEvaluatorInterface
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
-                $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
+                // $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
+                $averageAnswers = rand(1,5);
      
                 if (!($averageAnswers >= 3)) {
                     $allAnswersBelowCondition = false;

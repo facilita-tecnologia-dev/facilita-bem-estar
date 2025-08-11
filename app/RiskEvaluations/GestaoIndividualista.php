@@ -33,7 +33,8 @@ class GestaoIndividualista implements RiskEvaluatorInterface
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
-                $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
+                // $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
+                $averageAnswers = rand(1,5);
                 $parentQuestionStatement = $riskQuestion['parent_question_statement'];
     
                 if ($riskQuestion['parent_question_statement'] == 'Aqui os gestores preferem trabalhar individualmente') {
