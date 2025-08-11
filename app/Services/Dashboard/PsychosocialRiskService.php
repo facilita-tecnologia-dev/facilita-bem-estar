@@ -10,16 +10,20 @@ class PsychosocialRiskService
 
     public function getParticipation($userTests)
     {
-        $usersWithCollection = $userTests[0]['userTests']->map(fn($item) => $item->parentCollection->userOwner);
-        $usersByDepartment = session('company')->users->groupBy('department');
-        if (! $usersWithCollection->count()) {
-            return null;
-        }
-        
-        $participation = $this->calculateGeneralParticipation($usersWithCollection);
-        $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
+        if(count($userTests) > 0){
+            $usersWithCollection = $userTests->map(fn($item) => $item->parentCollection->userOwner);
+            $usersByDepartment = session('company')->users->groupBy('department');
+            if (! $usersWithCollection->count()) {
+                return null;
+            }
+            
+            $participation = $this->calculateGeneralParticipation($usersWithCollection);
+            $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
 
-        return $participation;
+            return $participation;
+        }
+
+        return [];
     }
 
     private function calculateGeneralParticipation($usersWithCollection)

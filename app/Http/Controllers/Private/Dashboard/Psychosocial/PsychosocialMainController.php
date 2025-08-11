@@ -37,7 +37,7 @@ class PsychosocialMainController
 
         $psychosocialRiskResults = $this->getCompiledPageData();
         
-        $userTests = isset($this->pageData) ? $this->pageData : collect();
+        $userTests = isset($this->pageData[0]) ? $this->pageData[0]['userTests'] : collect();
         $psychosocialTestsParticipation = $this->psychosocialService->getParticipation($userTests);
         
         $filtersApplied = array_filter($request->query(), fn ($queryParam) => $queryParam != null);
@@ -47,7 +47,7 @@ class PsychosocialMainController
             'psychosocialTestsParticipation' => $psychosocialTestsParticipation,
             'companyHasTests' => session('company')->users()->has('collections')->exists(),
             'filtersApplied' => $filtersApplied,
-            'filteredUserCount' => count($userTests[0]['userTests']) > 0 ? count($userTests[0]['userTests']) : null,
+            'filteredUserCount' => count($userTests) > 0 ? count($userTests) : null,
         ]);
     }
 
