@@ -28,7 +28,7 @@
                 <x-form action="{{ route('company-metrics') }}" id="form-update-company-profile" post class="w-full grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
 
                     <div class="flex gap-2 items-end">
-                        <x-form.input-text type="number" icon="%" min="0" max="100" name="turnover" value="{{ $metrics['turnover']['value'] ?? '' }}" label="Rotatividade" placeholder="Digite a porcentagem de rotatividade na sua empresa"/>
+                        <x-form.input-text type="number" icon="%" min="0" max="100" step="0.01" name="turnover" value="{{ $metrics['turnover']['value'] ?? '' }}" label="Rotatividade" placeholder="Digite a porcentagem de rotatividade na sua empresa"/>
                         <x-action 
                             tag="button" 
                             type="button" 
@@ -40,7 +40,7 @@
                     </div>
                     
                     <div class="flex gap-2 items-end">
-                        <x-form.input-text type="number" icon="%" min="0" max="100" name="absenteeism" value="{{ $metrics['absenteeism']['value'] ?? '' }}" label="Absenteísmo" placeholder="Digite a porcentagem de absenteísmo na sua empresa"/>
+                        <x-form.input-text type="number" icon="%" min="0" max="100" step="0.01" name="absenteeism" value="{{ $metrics['absenteeism']['value'] ?? '' }}" label="Absenteísmo" placeholder="Digite a porcentagem de absenteísmo na sua empresa"/>
                         <x-action 
                             tag="button"
                             type="button"
@@ -52,7 +52,7 @@
                     </div>
                     
                     <div class="flex gap-2 items-end">
-                        <x-form.input-text type="number" icon="%" min="0" max="100" name="extra-hours" value="{{ $metrics['extra-hours']['value'] ?? '' }}" label="Horas Extras / Horas Trabalhadas" type="number" placeholder="Digite a porcentagem de horas extras na sua empresa"/>
+                        <x-form.input-text type="number" icon="%" min="0" max="100" step="0.01" name="extra-hours" value="{{ $metrics['extra-hours']['value'] ?? '' }}" label="Horas Extras / Horas Trabalhadas" type="number" placeholder="Digite a porcentagem de horas extras na sua empresa"/>
                         <x-action 
                             tag="button"
                             type="button"
@@ -64,7 +64,7 @@
                     </div>
                     
                     <div class="flex gap-2 items-end">
-                        <x-form.input-text type="number" icon="%" min="0" max="100" name="accidents" value="{{ $metrics['accidents']['value'] ?? '' }}" label="Acidentes" placeholder="Digite a porcentagem de acidentes na sua empresa"/>
+                        <x-form.input-text type="number" icon="%" min="0" max="100" step="0.01" name="accidents" value="{{ $metrics['accidents']['value'] ?? '' }}" label="Acidentes" placeholder="Digite a porcentagem de acidentes na sua empresa"/>
                         <x-action 
                             tag="button"
                             type="button"
@@ -76,7 +76,7 @@
                     </div>
                     
                     <div class="flex gap-2 items-end">
-                        <x-form.input-text type="number" icon="%" min="0" max="100" name="absences" value="{{ $metrics['absences']['value'] ?? '' }}" label="Afastamentos" placeholder="Digite a porcentagem de afastamentos na sua empresa"/>
+                        <x-form.input-text type="number" icon="%" min="0" max="100" step="0.01" name="absences" value="{{ $metrics['absences']['value'] ?? '' }}" label="Afastamentos" placeholder="Digite a porcentagem de afastamentos na sua empresa"/>
                         <x-action 
                             tag="button"
                             type="button"
