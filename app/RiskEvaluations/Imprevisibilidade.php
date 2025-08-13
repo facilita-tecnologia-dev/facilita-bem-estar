@@ -20,6 +20,7 @@ class Imprevisibilidade implements RiskEvaluatorInterface
         $probability = RiskService::calculateProbability($average, 1, 2, true);   
 
         $riskLevel = 1;
+        $allAnswersBelowCondition = false;
 
         if (!($average >= 3)) {
             $allAnswersBelowCondition = true;

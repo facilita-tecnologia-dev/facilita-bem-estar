@@ -28,6 +28,7 @@ class Afastamentos implements RiskEvaluatorInterface
         }
 
         $riskLevel = 1;
+        $allAnswersBelowCondition = false;
         
         if (!($average >= 4)) {
             $allAnswersBelowCondition = true;

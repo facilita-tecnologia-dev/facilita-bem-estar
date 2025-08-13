@@ -20,6 +20,7 @@ class InjusticaPercebida implements RiskEvaluatorInterface
         $probability = RiskService::calculateProbability($average, 1, 2);
 
         $riskLevel = 1;
+        $allAnswersBelowCondition = false;
 
         if (!($average >= 3)) {
             $allAnswersBelowCondition = true;

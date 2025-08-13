@@ -20,6 +20,7 @@ class Psicossomaticos implements RiskEvaluatorInterface
         $probability = RiskService::calculateProbability($average, 2, 3);
 
         $riskLevel = 1;
+        $allAnswersBelowCondition = false;
 
         if (!($average >= 4)) {
             $allAnswersBelowCondition = true;

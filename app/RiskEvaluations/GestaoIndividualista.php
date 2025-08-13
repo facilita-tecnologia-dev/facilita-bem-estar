@@ -28,6 +28,7 @@ class GestaoIndividualista implements RiskEvaluatorInterface
         }
 
         $riskLevel = 1;
+        $allAnswersBelowCondition = false;
 
         if (!($average >= 3)) {
             $allAnswersBelowCondition = true;

@@ -28,6 +28,7 @@ class Sobrecarga implements RiskEvaluatorInterface
         }
 
         $riskLevel = 1;
+        $allAnswersBelowCondition = false;
 
         if (!($average > 3.5)) {
             $allAnswersBelowCondition = true;
