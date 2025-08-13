@@ -26,8 +26,7 @@ class DisturbiosSono implements RiskEvaluatorInterface
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
-                // $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
-                $averageAnswers = 3;
+                $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
     
                 if ($averageAnswers >= 3) {
                     $allAnswersBelowCondition = false;

@@ -21,7 +21,8 @@ class Risk extends Model
      */
     public function relatedQuestions()
     {
-        return $this->hasMany(RiskQuestionMap::class, 'risk_id');
+        return $this->hasMany(RiskQuestionMap::class, 'risk_id')
+                ->where('company_id', session('company')->id);
     }
 
     /**
