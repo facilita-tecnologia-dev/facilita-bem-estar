@@ -30,26 +30,26 @@ class DanosFisicos implements RiskEvaluatorInterface
 
         $riskLevel = 1;
 
-        if (!($average >= 3.5)) {
+        if (!($average >= 4)) {
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
                 // $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
-                $averageAnswers = rand(1,5);
+                $averageAnswers = 3;
     
-                if (!($averageAnswers >= 4)) {
+                if ($averageAnswers >= 4) {
                     $allAnswersBelowCondition = false;
                     break;
                 }
-            }
-            
-            if ($allAnswersBelowCondition) {
-                $riskSeverity--;
             }
         }
 
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
+        if ($allAnswersBelowCondition) {
+            $riskLevel--;
+        }
+
         return compact('probability', 'riskLevel', 'riskSeverity');
     }
 }

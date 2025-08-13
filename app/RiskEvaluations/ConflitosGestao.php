@@ -26,7 +26,7 @@ class ConflitosGestao implements RiskEvaluatorInterface
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
                 // $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
-                $averageAnswers = rand(1,5);
+                $averageAnswers = 3;
     
                 if ($riskQuestion['parent_question_statement'] == 'Em meu trabalho, incentiva-se a idolatria dos chefes') {
                     if (!($averageAnswers >= 4)) {

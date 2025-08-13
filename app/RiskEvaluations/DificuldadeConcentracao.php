@@ -26,7 +26,7 @@ class DificuldadeConcentracao implements RiskEvaluatorInterface
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
                 // $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
-                $averageAnswers = rand(1,5);
+                $averageAnswers = 3;
      
                 if (!($averageAnswers >= 3)) {
                     $allAnswersBelowCondition = false;

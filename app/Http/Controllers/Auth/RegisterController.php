@@ -14,6 +14,7 @@ use App\Models\CustomQuestion;
 use App\Models\CustomQuestionOption;
 use App\Models\CustomTest;
 use App\Models\Metric;
+use App\Models\RiskQuestionMap;
 use App\Models\Test;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\Auth;
@@ -38,8 +39,8 @@ class RegisterController
             ]);
 
             $this->createMetrics($company);
-            $this->createActionPlan($company);
             $this->createCustomCollections($company);
+            $this->createActionPlan($company);
             
             Auth::guard('company')->login($company);
             session()->regenerate();
@@ -82,6 +83,17 @@ class RegisterController
                             'custom_test_id' => $customTest['id'],
                             'statement' => $question['statement']
                         ]);
+
+                        $riskQuestion = RiskQuestionMap::where('question_Id', $question['id'])
+                                                            ->where('company_id', 0)
+                                                            ->first(); 
+                        if($riskQuestion) {
+                            RiskQuestionMap::create([
+                                'risk_id' => $riskQuestion['risk_id'],
+                                'question_Id' => $customQuestion['id'],
+                                'company_id' => $company['id']
+                            ]);
+                        }
     
                         foreach($question['options'] as $option){
                             CustomQuestionOption::create([
