@@ -22,6 +22,7 @@ class FaltaRecursos implements RiskEvaluatorInterface
         $riskLevel = 1;
         $allAnswersBelowCondition = false;
         
+        
         if (!($average >= 3)) {
             $allAnswersBelowCondition = true;
 
