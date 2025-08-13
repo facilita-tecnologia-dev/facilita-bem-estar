@@ -76,27 +76,27 @@ class DatabaseSeeder extends Seeder
         // });   
 
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        DB::table('users')->truncate();
-        DB::table('company_users')->truncate();
-        DB::table('user_collections')->truncate();
-        DB::table('user_tests')->truncate();
-        DB::table('user_answers')->truncate();
+        // DB::table('users')->truncate();
+        // DB::table('company_users')->truncate();
+        // DB::table('user_collections')->truncate();
+        // DB::table('user_tests')->truncate();
+        // DB::table('user_answers')->truncate();
 
-        DB::table('companies')->truncate();
-        DB::table('action_plans')->truncate();
-        DB::table('custom_control_actions')->truncate();
-        DB::table('company_campaigns')->truncate();
-        DB::table('company_metrics')->truncate();
-        DB::table('custom_collections')->truncate();
-        DB::table('custom_tests')->truncate();
-        DB::table('custom_questions')->truncate();
-        DB::table('custom_question_options')->truncate();
-        DB::table('user_custom_permissions')->truncate();
-        DB::table('user_department_permissions')->truncate();
-        DB::table('user_feedback')->truncate();
+        // DB::table('companies')->truncate();
+        // DB::table('action_plans')->truncate();
+        // DB::table('custom_control_actions')->truncate();
+        // DB::table('company_campaigns')->truncate();
+        // DB::table('company_metrics')->truncate();
+        // DB::table('custom_collections')->truncate();
+        // DB::table('custom_tests')->truncate();
+        // DB::table('custom_questions')->truncate();
+        // DB::table('custom_question_options')->truncate();
+        // DB::table('user_custom_permissions')->truncate();
+        // DB::table('user_department_permissions')->truncate();
+        // DB::table('user_feedback')->truncate();
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
