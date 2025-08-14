@@ -26,7 +26,11 @@ class InjusticaPercebida implements RiskEvaluatorInterface
             $allAnswersBelowCondition = true;
 
             foreach ($risk->relatedQuestions as $riskQuestion) {
-                $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
+                if(session('company')->id === 1){
+                    $averageAnswers =  $riskQuestion->average_value;
+                } else{
+                    $averageAnswers = $userTest ? $userTest->answers->firstWhere('question_id', $riskQuestion['question_Id'])->value : $riskQuestion->average_value;
+                }
                 $parentQuestionStatement = $riskQuestion['parent_question_statement'];
     
                 if ($riskQuestion['parent_question_statement'] == 'Os gestores desta organização se consideram insubstituíveis') {

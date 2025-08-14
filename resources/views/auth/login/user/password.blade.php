@@ -7,7 +7,7 @@
                 <div class="w-full flex flex-col items-center gap-4">
                     <img src="{{ asset('assets/icon-facilita.svg') }}" alt="">
                     <div class="flex flex-col gap-2 items-center">
-                        @if(str_starts_with($user->password, 'temp_') && strlen($user->password) == 37)
+                        @if($user->hasTemporaryPassword())
                             <h1 class="text-3xl md:text-4xl font-semibold text-center text-gray-800">Digite sua senha provisória</h1>
                             <p class="text-base text-center text-gray-800">Entre com sua senha provisória para redefinir a sua senha.</p>
                         @else

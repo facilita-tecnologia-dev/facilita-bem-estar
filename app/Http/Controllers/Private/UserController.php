@@ -337,16 +337,29 @@ class UserController
             "current_password" => ['required'],
             'new_password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
+        
+        if($user->hasTemporaryPassword()){
+            if($validatedData['current_password'] !== $user->password){
+                SessionErrorHelper::flash('current_password', 'Senha incorreta.');
+                return back();
+            }
 
-        if(!Hash::check($validatedData['current_password'], $user->password)){
-            SessionErrorHelper::flash('current_password', 'Senha incorreta.');
-            return back();
+            if($validatedData['new_password'] === $user->password){
+                SessionErrorHelper::flash('new_password', 'Essa senha já foi/está sendo utilizada.');
+                return back();
+            }
+        } else{
+            if(!Hash::check($validatedData['current_password'], $user->password)){
+                SessionErrorHelper::flash('current_password', 'Senha incorreta.');
+                return back();
+            }
+
+            if(Hash::check($validatedData['new_password'], $user->password)){
+                SessionErrorHelper::flash('new_password', 'Essa senha já foi/está sendo utilizada.');
+                return back();
+            }
         }
 
-        if(Hash::check($validatedData['new_password'], $user->password)){
-            SessionErrorHelper::flash('new_password', 'Essa senha já foi/está sendo utilizada.');
-            return back();
-        }
 
         $user->update([
             'password' => Hash::make($validatedData['new_password']),
