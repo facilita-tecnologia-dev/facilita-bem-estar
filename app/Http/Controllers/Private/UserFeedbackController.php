@@ -82,7 +82,7 @@ class UserFeedbackController
             'content' => $validatedData['feedback'],
         ]);
 
-        return to_route('responder-teste.thanks');
+        return to_route('logout');
     }
 
     /**

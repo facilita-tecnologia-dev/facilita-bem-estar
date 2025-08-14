@@ -64,7 +64,8 @@ class TestsController
                 return to_route('feedbacks.create');
             }
 
-            return to_route('responder-teste.thanks');
+            // return to_route('responder-teste.thanks');
+            return to_route('logout');
         }
 
         return to_route('responder-teste', [$collection, $testIndex + 1]);
