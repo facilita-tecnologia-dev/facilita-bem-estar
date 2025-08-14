@@ -20,7 +20,6 @@ class Monotonia implements RiskEvaluatorInterface
         $probability = RiskService::calculateProbability($average, 1, 2, true);   
 
         $riskLevel = 1;
-        $allAnswersBelowCondition = false;
 
         $riskLevel = RiskService::calculateRiskLevel($probability, $riskSeverity);
         
