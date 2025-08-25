@@ -74,6 +74,10 @@
                         <p class="text-sm sm:text-base text-left">{{ $user->roles[0]->display_name }}</p>
                     </div>
                     <div class="">
+                        <p class="font-semibold text-base sm:text-lg text-left">Status:</p>
+                        <p class="text-sm sm:text-base text-left">{{ App\Enums\EmployeeStatusEnum::labelFromValue($userStatus) }}</p>
+                    </div>
+                    <div class="">
                         <p class="font-semibold text-base sm:text-lg text-left">Último teste de Riscos Psicossociais realizado:</p>
                         <p class="text-sm sm:text-base text-left">{{ $latestPsychosocialCollectionDate ?? 'Nunca' }}</p>
                     </div>

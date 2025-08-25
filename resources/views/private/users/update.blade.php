@@ -47,6 +47,7 @@
 
                     <x-form.select name="role" label="Gestor/Colaborador" :options="$rolesToSelect" value="{{ $roleDisplayName }}" />
                     
+                    <x-form.select name="status" label="Status" :options="$employeeStatusToSelect" value="{{ $userStatus }}" />
                 </x-form>
 
                 <div class="w-full flex flex-row justify-between gap-2">

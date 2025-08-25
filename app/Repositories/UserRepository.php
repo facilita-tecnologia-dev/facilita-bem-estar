@@ -59,11 +59,14 @@ class UserRepository
 
     public function update(ValidatedInput $data, User $user): User
     {
-
         return DB::transaction(function () use ($data, $user) {
-            $userData = $data->except('role');
+            $userData = $data->except(['role', 'status']);
             
             $userRole = Role::where('display_name', InternalUserRoleEnum::from($data['role'])->value)->first();
+            
+            $user->companies()->syncWithoutDetaching([
+                session('company')->id => ['status' => $data['status']]
+            ]);
 
             if($userRole->name == 'manager'){
                 if(!$user->password){

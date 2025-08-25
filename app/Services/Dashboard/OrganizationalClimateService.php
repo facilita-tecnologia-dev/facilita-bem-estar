@@ -21,7 +21,7 @@ class OrganizationalClimateService
                 $q->whereYear('created_at', $request->year ?? now()->year)
                   ->withCollectionTypeName('organizational-climate')
                   ->withTests(fn($q) => $q->withAnswers()->withTestType())
-                  ->withCustomTests(fn($q) => $q->withAnswers()->withCustomTestType())
+                //   ->withCustomTests(fn($q) => $q->withAnswers()->withCustomTestType())
             );
 
         $users = $query->getQuery();

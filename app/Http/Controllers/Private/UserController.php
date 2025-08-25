@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Private;
 
+use App\Enums\EmployeeStatusEnum;
 use App\Enums\GenderEnum;
 use App\Enums\InternalUserRoleEnum;
 use App\Helpers\AuthGuardHelper;
@@ -106,12 +107,14 @@ class UserController
         $latestOrganizationalClimateCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
         $latestPsychosocialCollectionDate = $user['latestPsychosocialCollection']?->created_at->diffForHumans() ?? 'Nunca';
         $hasTemporaryPassword = $user->hasTemporaryPassword();
+        $userStatus = $user->companies->where('id', session('company')->id)[0]['pivot']['status'];
 
         return view('private.users.show', compact(
             'user', 
             'latestPsychosocialCollectionDate', 
             'latestOrganizationalClimateCollectionDate', 
-            'hasTemporaryPassword'
+            'hasTemporaryPassword',
+            'userStatus'
         ));
     }
 
@@ -120,6 +123,8 @@ class UserController
         Gate::authorize('user-edit');
 
         $gendersToSelect = array_map(fn (GenderEnum $gender) => $gender->value, GenderEnum::cases());
+        $employeeStatusToSelect = array_map(fn (EmployeeStatusEnum $status) => ['option' => EmployeeStatusEnum::labelFromValue($status->value), 'value' => $status->value], EmployeeStatusEnum::cases());
+        
         $rolesToSelect = array_map(fn ($role) => InternalUserRoleEnum::from($role['display_name'])->value,
             Role::whereIn('id', [1, 2])->get()->toArray()
         );
@@ -127,11 +132,15 @@ class UserController
         $roleId = $user->companies()->where('companies.id', session('company')->id)->first()->pivot['role_id'];
         $roleDisplayName = Role::whereId($roleId)->first()->display_name;
 
+        $userStatus = $user->companies->where('id', session('company')->id)[0]['pivot']['status'];
+
         return view('private.users.update', compact(
             'user',
             'rolesToSelect',
             'gendersToSelect',
+            'employeeStatusToSelect',
             'roleDisplayName',
+            'userStatus',
         ));
     }
 

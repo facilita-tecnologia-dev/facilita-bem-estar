@@ -32,6 +32,10 @@ class DatabaseSeeder extends Seeder
         //     ->where('collection_id', 1)
         //     ->with('tests.questions.options')
         //     ->first();
+        // $companyOrganizationalCollection = CustomCollection::where('company_id', $company->id)
+        //     ->where('collection_id', 2)
+        //     ->with('tests.questions.options')
+        //     ->first();
 
         // $campaign = CompanyCampaign::create([
         //     'company_id' => $company['id'],
@@ -42,19 +46,29 @@ class DatabaseSeeder extends Seeder
         //     'collection_id' => $companyPsychosocialCollection['id'],
         // ]);
 
-        // $users = User::factory(150)->create();
+        // $campaign = CompanyCampaign::create([
+        //     'company_id' => $company['id'],
+        //     'name' => "Campanha de Clima Organizacional",
+        //     'description' => "Descrição da minha campanha",
+        //     'start_date' => "2025-05-23 14:54:00",
+        //     'end_date' => "2025-05-23 14:54:00",
+        //     'collection_id' => $companyOrganizationalCollection['id'],
+        // ]);
 
-        // $users->each(function($user) use($company, $companyPsychosocialCollection) {
-        //     DB::transaction(function() use($company, $user, $companyPsychosocialCollection){
+        // $users = User::factory(150)->create();
+        // $users = $company->users();
+
+        // $users->each(function($user) use($company, $companyOrganizationalCollection) {
+        //     DB::transaction(function() use($company, $user, $companyOrganizationalCollection){
         //         $newUserCollection = UserCollection::create([
         //             'user_id' => $user->id,
-        //             'collection_id' => $companyPsychosocialCollection->id,
+        //             'collection_id' => $companyOrganizationalCollection->id,
         //             'company_id' => $company->id,
         //             'created_at' => now(),
         //             'updated_at' => now(),
         //         ]);
 
-        //         foreach($companyPsychosocialCollection->tests as $test){
+        //         foreach($companyOrganizationalCollection->tests as $test){
         //             $userTest = UserTest::create([
         //                 'user_collection_id' => $newUserCollection->id,
         //                 'test_id' => $test->id,

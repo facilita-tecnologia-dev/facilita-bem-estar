@@ -200,8 +200,10 @@ class OrganizationalMainController
 
     private function getOrganizationalTestsParticipation()
     {
-        $usersWithCollection = $this->scopedTestResults;
-        $usersByDepartment = $this->organizationalClimateService->filterByDepartmentScope(session('company')->users)->groupBy('department');
+        $activeUsers = session('company')->users()->wherePivot('status', 1)->get();
+
+        $usersWithCollection = $this->scopedTestResults->filter(fn($user) => $activeUsers->firstWhere('id', $user->id));
+        $usersByDepartment = $this->organizationalClimateService->filterByDepartmentScope($activeUsers->groupBy('department'));
         
         if (! $usersWithCollection->count()) {
             return null;

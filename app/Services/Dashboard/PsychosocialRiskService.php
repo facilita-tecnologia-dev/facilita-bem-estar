@@ -9,15 +9,20 @@ class PsychosocialRiskService
     /* Participation */
 
     public function getParticipation($userTests)
-    {
+    {   
         if(count($userTests) > 0){
-            $usersWithCollection = $userTests->map(fn($item) => $item->parentCollection->userOwner);
-            $usersByDepartment = session('company')->users->groupBy('department');
+            $activeUsers = session('company')->users()->wherePivot('status', 1)->get();
+            $usersByDepartment = $activeUsers->groupBy('department');
+            
+            $usersWithCollection = $userTests->map(fn($item) => $item->parentCollection->userOwner)
+                                            ->filter(fn($user) => $activeUsers->firstWhere('id', $user->id));
+
             if (! $usersWithCollection->count()) {
                 return null;
             }
+
             
-            $participation = $this->calculateGeneralParticipation($usersWithCollection);
+            $participation = $this->calculateGeneralParticipation($usersWithCollection, $activeUsers);
             $participation += $this->calculateDepartmentParticipation($usersWithCollection, $usersByDepartment);
 
             return $participation;
@@ -26,12 +31,12 @@ class PsychosocialRiskService
         return [];
     }
 
-    private function calculateGeneralParticipation($usersWithCollection)
+    private function calculateGeneralParticipation($usersWithCollection, $activeUsers)
     {
         return [
             'Geral' => [
                 'count' => $usersWithCollection->count(),
-                'per_cent' => ($usersWithCollection->count() / session('company')->users->count() ?? 1) * 100,
+                'per_cent' => floor(($usersWithCollection->count() / $activeUsers->count() ?? 1) * 100),
             ],
         ];
     }
@@ -40,9 +45,11 @@ class PsychosocialRiskService
     {
         $departmentParticipation = [];
         foreach ($usersByDepartment as $departmentName => $department) {
+            $usersInDepartmentWithCollection = $usersWithCollection->where('department', $departmentName)->count();
+
             $departmentParticipation[$departmentName] = [
                 'count' => $usersWithCollection->where('department', $departmentName)->count(),
-                'per_cent' => ($usersWithCollection->where('department', $departmentName)->count() / $department->count()) * 100,
+                'per_cent' => floor(($usersInDepartmentWithCollection / $department->count()) * 100),
             ];
         }
 

@@ -29,7 +29,7 @@ class User extends Authenticatable
     public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'company_users')
-            ->withPivot('role_id')
+            ->withPivot('role_id', 'status')
             ->withTimestamps();
     }
 
@@ -101,7 +101,6 @@ class User extends Authenticatable
     {
         return $this->roleInCompany()->name == $role;
     }
- 
 
     public function departmentScopes(): HasMany
     {
